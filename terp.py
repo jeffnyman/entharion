@@ -20,7 +20,7 @@ class Memory:
 
         opcode_byte = self.data[current_byte]
 
-        print(f"Opcode: {hex(opcode_byte)}")
+        print("Opcode: " + str(opcode_byte) + " (" + hex(opcode_byte) + ")")
 
         # According to the specification, each instruction has a form. The
         # possible forms are: long, short, extended or variable. To check
@@ -52,9 +52,11 @@ class Memory:
 
         # According to the specification, each operand has a type.
 
-        operand_type = self.read_operand_type(form, opcode_byte)
+        operand_types = []
 
-        print(f"Operand Type: {operand_type}")
+        operand_types = self.read_operand_type(form, opcode_byte)
+
+        print(f"Operand Type: {operand_types}")
        
     def read_operand_type(self, form, byte):
         """
@@ -65,28 +67,28 @@ class Memory:
         value of 0 means a small and 1 means a variable.
         """
 
-        operand_type = None
-
         if form == OPCODE_FORM.SHORT:
             if byte & 0b00100000 == 0b00100000:
-                operand_type = OPERAND_TYPE.Variable
+                return [OPERAND_TYPE.Variable]
             elif byte & 0b00010000 == 0b00010000:
-                operand_type = OPERAND_TYPE.Small
+                return [OPERAND_TYPE.Small]
             elif byte & 0b00000000 == 0b00000000:
-                operand_type = OPERAND_TYPE.Large
+                return [OPERAND_TYPE.Large]
         elif form == OPCODE_FORM.LONG:
+            operand_types = []
+
             if byte & 0b01000000 == 0b01000000:
-                operand_type = OPERAND_TYPE.Variable
+                operand_types.append(OPERAND_TYPE.Variable)
             else:
-                operand_type = OPERAND_TYPE.Small
+                operand_types.append(OPERAND_TYPE.Small)
             if byte & 0b00100000 == 0b00100000:
-                operand_type = OPERAND_TYPE.Variable
+                operand_types.append(OPERAND_TYPE.Variable)
             else:
-                operand_type = OPERAND_TYPE.Small
+                operand_types.append(OPERAND_TYPE.Small)
+            
+            return operand_types
         else:
             print("Not sure what type will be.")
-
-        return operand_type
 
     def read_operand_count(self, form, byte):
         """
