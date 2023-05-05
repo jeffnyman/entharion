@@ -7,6 +7,11 @@ OPERAND_COUNT = Enum("OperandCount", "OP0 OP1 OP2 VAR")
 OPERAND_TYPE = Enum("OperandType", "Small Large Variable")
 
 
+class Instruction:
+    def details(self):
+        pass
+
+
 class Memory:
     def __init__(self, data):
         self.data = data
@@ -57,6 +62,8 @@ class Memory:
         operand_types = self.read_operand_type(form, opcode_byte)
 
         print(f"Operand Type: {operand_types}")
+
+        return Instruction()
        
     def read_operand_type(self, form, byte):
         """
@@ -185,7 +192,8 @@ def main():
 
     assert isinstance(zcode.data, bytes), "zcode must be of type bytes"
 
-    zcode.read_instruction(zcode.pc)
+    instruction = zcode.read_instruction(zcode.pc)
+    instruction.details()
 
 
 if __name__ == "__main__":
