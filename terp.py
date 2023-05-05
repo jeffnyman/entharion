@@ -54,6 +54,10 @@ class Memory:
 
         print("Opcode: " + str(opcode_byte) + " (" + hex(opcode_byte) + ")" + " (" + self.binary(opcode_byte) + ")")
 
+        # NOTE: This line is crucial. I'm not quite clear why I have to
+        # immediately increment the current byte.
+        current_byte += 1
+
         # According to the specification, a single Z-machine instruction
         # consists of an opcode, which is either 1 or 2 bytes.
 
@@ -91,7 +95,11 @@ class Memory:
 
         operand_types = []
 
-        operand_types = self.read_operand_type(form, opcode_byte)
+        if form == OPCODE_FORM.VARIABLE:
+            operand_types = self.read_operand_type(form, self.data[current_byte])
+            current_byte += 1
+        else:
+            operand_types = self.read_operand_type(form, opcode_byte)
 
         # For each of the operand types that were found, the operand for
         # each type must be determined.
@@ -101,12 +109,15 @@ class Memory:
         for operand_type in operand_types:
             if operand_type == OPERAND_TYPE.Large:
                 operands.append(self.read_word(current_byte))
+                current_byte += 2
 
             if operand_type == OPERAND_TYPE.Small:
                 operands.append(self.read_byte(current_byte))
+                current_byte += 1
 
             if operand_type == OPERAND_TYPE.Variable:
                 operands.append(self.read_byte(current_byte))
+                current_byte +- 1
 
         return Instruction(opcode, operand_types, operands)
     
@@ -173,7 +184,7 @@ class Memory:
             
             return operand_types
 
-    def read_operand_type_from_byte(value):
+    def read_operand_type_from_byte(self, value):
         if value == 0:
             return OPERAND_TYPE.Large
         elif value == 1:
@@ -239,11 +250,6 @@ class Memory:
 
         routine = Routine()
         routine.return_address = self.pc + 2
-
-        # BUG: I will need to look at operands here. But the operands for
-        # the call instruction that I get are coming back as empty. This
-        # means I cannot reference anything. Somewhere in my logic is a
-        # very bad bug.
 
         self.pc += 1
 
