@@ -8,6 +8,13 @@ class Memory:
 
         self.read_starting_address()
 
+    def read_instruction(self, offset):
+        current_byte = offset
+
+        opcode_byte = self.data[current_byte]
+
+        print(f"Opcode: ${hex(opcode_byte)}")
+
     def read_starting_address(self):
         """
         According to the specification, for versions 1 to 5 of zcode, the
@@ -33,6 +40,8 @@ def main():
     zcode = Loader.load(sys.argv[1])
 
     assert isinstance(zcode.data, bytes), "zcode must be of type bytes"
+
+    zcode.read_instruction(zcode.pc)
 
 
 if __name__ == "__main__":
