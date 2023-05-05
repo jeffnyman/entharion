@@ -98,14 +98,33 @@ class Memory:
 
             if byte & 0b11000000 == 0b11000000:
                 return operand_types
+            else:
+                operand_types.append(self.read_operand_type_from_byte(byte >> 6))
             
             if byte & 0b00001100 == 0b00001100:
                 return operand_types
+            else:
+                operand_types.append(self.read_operand_type_from_byte((byte & 0b00110000) >> 4))
             
+            if byte & 0b00001100 == 0b00001100:
+                return operand_types
+            else:
+                operand_types.append(self.read_operand_type_from_byte((byte & 0b00001100) >> 2))
+
             if byte & 0b00000011 == 0b00000011:
                 return operand_types
+            else:
+                operand_types.append(self.read_operand_type_from_byte(byte & 0b00000011))
             
             return operand_types
+
+    def read_operand_type_from_byte(value):
+        if value == 0:
+            return OPERAND_TYPE.Large
+        elif value == 1:
+            return OPERAND_TYPE.Small
+        else:
+            return OPERAND_TYPE.Variable
 
     def read_operand_count(self, form, byte):
         """
