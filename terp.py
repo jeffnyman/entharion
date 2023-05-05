@@ -2,8 +2,9 @@ import sys
 
 from enum import Enum
 
-FORM = Enum("FORM", "SHORT LONG VARIABLE EXTENDED")
-OP_COUNT = Enum("OperandCount", "OP0 OP1 OP2 VAR")
+OPCODE_FORM = Enum("OpcodeForm", "SHORT LONG VARIABLE EXTENDED")
+OPERAND_COUNT = Enum("OperandCount", "OP0 OP1 OP2 VAR")
+
 
 class Memory:
     def __init__(self, data):
@@ -31,13 +32,13 @@ class Memory:
         # If the top two bits of the opcode are b19 the form is short.
 
         if self.version >= 5 and opcode_byte == 0xbe:
-            form = FORM.EXTENDED
+            form = OPCODE_FORM.EXTENDED
         elif opcode_byte & 0b11000000 == 0b11000000:
-            form = FORM.VARIABLE
+            form = OPCODE_FORM.VARIABLE
         elif opcode_byte & 0b10000000 == 0b10000000:
-            form = FORM.SHORT
+            form = OPCODE_FORM.SHORT
         else:
-            form = FORM.LONG
+            form = OPCODE_FORM.LONG
 
         print(f"OpForm: {form.name}")
 
@@ -61,7 +62,7 @@ class Memory:
         value of 0 means a small and 1 means a variable.
         """
 
-        if form == FORM.SHORT:
+        if form == OPCODE_FORM.SHORT:
             print("Type will be either Variable, Large, or Small")
             if byte & 0b00100000 == 0b00100000:
                 print("OpType: Variable")
@@ -69,7 +70,7 @@ class Memory:
                 print("OpType: Small")
             elif byte & 0b00000000 == 0b00000000:
                 print("OpType: Large")
-        elif form == FORM.LONG:
+        elif form == OPCODE_FORM.LONG:
             print("Type will be either Variable or Small")
             if byte & 0b01000000 == 0b01000000:
                 print("OpType: Variable")
@@ -91,20 +92,20 @@ class Memory:
         the operand count is 2OP; if it is 1, then the count is VAR.
         """
 
-        if form == FORM.LONG:
-            opcount = OP_COUNT.OP2
-        elif form == FORM.SHORT:
+        if form == OPCODE_FORM.LONG:
+            opcount = OPERAND_COUNT.OP2
+        elif form == OPCODE_FORM.SHORT:
             if byte & 0b00110000 == 0b00110000:
-                opcount = OP_COUNT.OP0
+                opcount = OPERAND_COUNT.OP0
             else:
-                opcount = OP_COUNT.OP1
-        elif form == FORM.EXTENDED:
-            opcount = OP_COUNT.VAR
+                opcount = OPERAND_COUNT.OP1
+        elif form == OPCODE_FORM.EXTENDED:
+            opcount = OPERAND_COUNT.VAR
         else:
             if byte & 0b00100000 == 0b00100000:
-                opcount = OP_COUNT.VAR
+                opcount = OPERAND_COUNT.VAR
             else:
-                opcount = OP_COUNT.OP2
+                opcount = OPERAND_COUNT.OP2
 
         return opcount
 
