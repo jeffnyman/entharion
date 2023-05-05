@@ -41,14 +41,14 @@ class Memory:
         else:
             form = OPCODE_FORM.LONG
 
-        print(f"OpForm: {form.name}")
+        print(f"Opcode Form: {form.name}")
 
         # According to the specification, each instruction has an operand
         # count. The possible counts are: 0OP, 1OP, 2OP or VAR.
 
-        opcount = self.read_operand_count(form, opcode_byte)
+        operand_count = self.read_operand_count(form, opcode_byte)
 
-        print(f"OpCount: {opcount.name}")
+        print(f"Operand Count: {operand_count.name}")
 
         # According to the specification, each operand has a type.
 
@@ -97,22 +97,24 @@ class Memory:
         the operand count is 2OP; if it is 1, then the count is VAR.
         """
 
+        operand_count = None
+
         if form == OPCODE_FORM.LONG:
-            opcount = OPERAND_COUNT.OP2
+            operand_count = OPERAND_COUNT.OP2
         elif form == OPCODE_FORM.SHORT:
             if byte & 0b00110000 == 0b00110000:
-                opcount = OPERAND_COUNT.OP0
+                operand_count = OPERAND_COUNT.OP0
             else:
-                opcount = OPERAND_COUNT.OP1
+                operand_count = OPERAND_COUNT.OP1
         elif form == OPCODE_FORM.EXTENDED:
-            opcount = OPERAND_COUNT.VAR
+            operand_count = OPERAND_COUNT.VAR
         else:
             if byte & 0b00100000 == 0b00100000:
-                opcount = OPERAND_COUNT.VAR
+                operand_count = OPERAND_COUNT.VAR
             else:
-                opcount = OPERAND_COUNT.OP2
+                operand_count = OPERAND_COUNT.OP2
 
-        return opcount
+        return operand_count
 
     def read_starting_address(self):
         """
