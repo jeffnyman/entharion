@@ -8,8 +8,14 @@ OPERAND_TYPE = Enum("OperandType", "Small Large Variable")
 
 
 class Instruction:
+    def __init__(self, opcode, operand_types):
+        self.opcode = opcode
+        self.operand_types = operand_types
+
     def details(self):
-        pass
+        print("INSTRUCTION")
+        print(f"Opcode Name: {self.opcode}")
+        print(f"Operand Types: {self.operand_types}")
 
 
 class Memory:
@@ -31,8 +37,6 @@ class Memory:
         # consists of an opcode, which is either 1 or 2 bytes.
 
         opcode = self.determine_opcode(opcode_byte)
-
-        print(f"Opcode Name: {opcode}")
 
         # According to the specification, each instruction has a form. The
         # possible forms are: long, short, extended or variable. To check
@@ -68,9 +72,7 @@ class Memory:
 
         operand_types = self.read_operand_type(form, opcode_byte)
 
-        print(f"Operand Type: {operand_types}")
-
-        return Instruction()
+        return Instruction(opcode, operand_types)
     
     def determine_opcode(self, byte):
         if byte == 224:
@@ -111,7 +113,6 @@ class Memory:
             
             return operand_types
         else:
-            print("Need to get multiple type values ...")
             operand_types = []
 
             if byte & 0b11000000 == 0b11000000:
