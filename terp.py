@@ -145,7 +145,7 @@ class Memory:
             else:
                 operand_types.append(self.read_operand_type_from_byte(byte >> 6))
             
-            if byte & 0b00001100 == 0b00001100:
+            if byte & 0b00110000 == 0b00110000:
                 return operand_types
             else:
                 operand_types.append(self.read_operand_type_from_byte((byte & 0b00110000) >> 4))
