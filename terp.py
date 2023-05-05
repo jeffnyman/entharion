@@ -82,6 +82,12 @@ class Memory:
 
         operand_types = self.read_operand_type(form, opcode_byte)
 
+        # For each of the operand types that were found, the operand for
+        # each type must be determined.
+
+        for operand_type in operand_types:
+            print(operand_type)
+
         return Instruction(opcode, operand_types)
     
     def determine_opcode(self, byte):
