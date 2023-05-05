@@ -38,7 +38,9 @@ class Instruction:
         print("---------------------------------------")
         print(f"Opcode Name: {self.opcode}")
         print(f"Operand Types: {self.operand_types}")
-        print(f"Operands: {self.operands}")
+
+        operands_formatted = [f"{op} (0x{op:x})" for op in self.operands]
+        print(f"Operands: {operands_formatted}")
 
 
 class Memory:
@@ -46,8 +48,13 @@ class Memory:
         self.data = data
         self.pc = 0
         self.version = self.data[0x00]
+        self.routine_offset = self.read_word(0x28)
+        self.strings_offset = self.read_word(0x2a)
 
         self.read_starting_address()
+
+        print(f"Zcode version: {self.version}")
+        print(f"Starting address: {self.pc} ({hex(self.pc)})")
 
     def read_instruction(self, offset):
         current_byte = offset
@@ -55,7 +62,7 @@ class Memory:
         opcode_byte = self.data[current_byte]
 
         print("\n---------------------------------------")
-        print("Opcode Byte: " + str(opcode_byte) + " (" + hex(opcode_byte) + ")" + " (" + self.binary(opcode_byte) + ")")
+        print(f"Opcode Byte: {str(opcode_byte)} ({hex(opcode_byte)}) ({self.binary(opcode_byte)})")
         print("---------------------------------------")
 
         # NOTE: This line is crucial. I'm not quite clear why I have to
