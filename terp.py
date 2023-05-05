@@ -25,7 +25,7 @@ class Instruction:
         self.operands = operands
 
     def execute(self, memory):
-        print("Executing opcode: " + str(self.opcode))
+        print("\nEXECUTING: " + str(self.opcode))
 
         if (self.opcode == 'call'):
             memory.call(self.operand_types, self.operands)
@@ -33,7 +33,9 @@ class Instruction:
             raise Exception("Not implemented")
         
     def details(self):
+        print("\n---------------------------------------")
         print("INSTRUCTION")
+        print("---------------------------------------")
         print(f"Opcode Name: {self.opcode}")
         print(f"Operand Types: {self.operand_types}")
         print(f"Operands: {self.operands}")
@@ -52,7 +54,9 @@ class Memory:
 
         opcode_byte = self.data[current_byte]
 
-        print("Opcode: " + str(opcode_byte) + " (" + hex(opcode_byte) + ")" + " (" + self.binary(opcode_byte) + ")")
+        print("\n---------------------------------------")
+        print("Opcode Byte: " + str(opcode_byte) + " (" + hex(opcode_byte) + ")" + " (" + self.binary(opcode_byte) + ")")
+        print("---------------------------------------")
 
         # NOTE: This line is crucial. I'm not quite clear why I have to
         # immediately increment the current byte.
