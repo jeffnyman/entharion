@@ -1,5 +1,9 @@
 import sys
 
+from enum import Enum
+
+FORM = Enum("FORM", "SHORT LONG VARIBLE EXTENDED")
+
 
 class Memory:
     def __init__(self, data):
@@ -14,7 +18,7 @@ class Memory:
 
         opcode_byte = self.data[current_byte]
 
-        print(f"Opcode: ${hex(opcode_byte)}")
+        print(f"Opcode: {hex(opcode_byte)}")
 
         # According to the specification, each instruction has a form. The
         # possible forms are: long, short, extended or variable. To check
@@ -27,13 +31,15 @@ class Memory:
         # If the top two bits of the opcode are b19 the form is short.
 
         if self.version >= 5 and opcode_byte == 0xbe:
-            print("EXTENDED form.")
+            form = FORM.EXTENDED
         elif opcode_byte & 0b11000000 == 0b11000000:
-            print("VARIABLE form")
+            form = FORM.VARIBLE
         elif opcode_byte & 0b10000000 == 0b10000000:
-            print("SHORT form")
+            form = FORM.SHORT
         else:
-            print("LONG form")
+            form = FORM.LONG
+
+        print(f"FORM: {form.name}")
 
     def read_starting_address(self):
         """
