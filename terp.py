@@ -4,6 +4,21 @@ import sys
 class Memory:
     def __init__(self, data):
         self.data = data
+        self.pc = 0
+
+        self.read_starting_address()
+
+    def read_starting_address(self):
+        """
+        According to the specification, for versions 1 to 5 of zcode, the
+        word at 0x06 contains the byte address of the first instruction
+        to execute.
+        """
+
+        self.pc = self.read_word(0x06)
+
+    def read_word(self, offset):
+        return (self.data[offset] << 8) + self.data[offset + 1]
 
 
 class Loader:
