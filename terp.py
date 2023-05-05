@@ -12,6 +12,16 @@ class Instruction:
         self.opcode = opcode
         self.operand_types = operand_types
 
+    def execute(self, memory):
+        print("Executing opcode: " + str(self.opcode))
+
+        if (self.opcode == 'call'):
+            print("Handle call")
+        else:
+            raise Exception("Not implemented")
+        
+        memory.pc += 1
+
     def details(self):
         print("INSTRUCTION")
         print(f"Opcode Name: {self.opcode}")
@@ -204,8 +214,10 @@ def main():
 
     assert isinstance(zcode.data, bytes), "zcode must be of type bytes"
 
-    instruction = zcode.read_instruction(zcode.pc)
-    instruction.details()
+    while True:
+        instruction = zcode.read_instruction(zcode.pc)
+        instruction.details()
+        instruction.execute(zcode)
 
 
 if __name__ == "__main__":
