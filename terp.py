@@ -28,7 +28,7 @@ class Instruction:
         print("Executing opcode: " + str(self.opcode))
 
         if (self.opcode == 'call'):
-            memory.call()
+            memory.call(self.operand_types, self.operands)
         else:
             raise Exception("Not implemented")
         
@@ -229,7 +229,7 @@ class Memory:
 
         return binary_str.zfill(8)
     
-    def call(self):
+    def call(self, operand_types, operands):
         """
         According to the specification, this opcode calls a given routine with
         0, 1, 2 or 3 arguments as supplied and stores any return value from
@@ -239,6 +239,11 @@ class Memory:
 
         routine = Routine()
         routine.return_address = self.pc + 2
+
+        # BUG: I will need to look at operands here. But the operands for
+        # the call instruction that I get are coming back as empty. This
+        # means I cannot reference anything. Somewhere in my logic is a
+        # very bad bug.
 
         self.pc += 1
 
