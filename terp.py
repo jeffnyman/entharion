@@ -2,7 +2,7 @@ import sys
 
 from enum import Enum
 
-FORM = Enum("FORM", "SHORT LONG VARIBLE EXTENDED")
+FORM = Enum("FORM", "SHORT LONG VARIABLE EXTENDED")
 
 
 class Memory:
@@ -33,13 +33,45 @@ class Memory:
         if self.version >= 5 and opcode_byte == 0xbe:
             form = FORM.EXTENDED
         elif opcode_byte & 0b11000000 == 0b11000000:
-            form = FORM.VARIBLE
+            form = FORM.VARIABLE
         elif opcode_byte & 0b10000000 == 0b10000000:
             form = FORM.SHORT
         else:
             form = FORM.LONG
 
         print(f"FORM: {form.name}")
+
+        # According to the specification, each instruction has an operand
+        # count. The possible counts are: 0OP, 1OP, 2OP or VAR.
+
+        self.read_operand_count(form, opcode_byte)
+
+    def read_operand_count(self, form, byte):
+        """
+        According to the specification, in long form the operand count is
+        always 2OP. In short form, bits 4 and 5 of the opcode byte give an
+        operand type. If this operand type is b11 then the operand count is
+        0OP, otherwise it will be 1OP. In variable form, if bit 5 is 0 then
+        the operand count is 2OP; if it is 1, then the count is VAR.
+        """
+
+        if form == FORM.LONG:
+            print("Form: LONG")
+            print("OpCount: 2OP")
+        elif form == FORM.SHORT:
+            print("FORM: SHORT")
+            if byte & 0b00110000 == 0b00110000:
+                print("OpCount: 0OP")
+            else:
+                print("OpCount: 1OP")
+        elif form == FORM.EXTENDED:
+            print("FORM: Extended")
+            print("OpCount: VAR")
+        else:
+            if byte & 0b00100000 == 0b00100000:
+                print("OpCount: VAR")
+            else:
+                print("OpCount: 2OP")
 
     def read_starting_address(self):
         """
