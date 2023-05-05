@@ -48,6 +48,40 @@ class Memory:
 
         print(f"OpCount: {opcount.name}")
 
+        # According to the specification, each operand has a type.
+
+        self.read_operand_type(form, opcode_byte)
+       
+    def read_operand_type(self, form, byte):
+        """
+        According to the specification, in a short form opcode, bits 4 and 5
+        of the opcode give the operand type. A value of 01 means a small while
+        a value of 10 means a variable. In a long form opcode, bit 6 of the
+        opcode gives the type of the first operand, bit 5 of the second. A
+        value of 0 means a small and 1 means a variable.
+        """
+
+        if form == FORM.SHORT:
+            print("Type will be either Variable, Large, or Small")
+            if byte & 0b00100000 == 0b00100000:
+                print("OpType: Variable")
+            elif byte & 0b00010000 == 0b00010000:
+                print("OpType: Small")
+            elif byte & 0b00000000 == 0b00000000:
+                print("OpType: Large")
+        elif form == FORM.LONG:
+            print("Type will be either Variable or Small")
+            if byte & 0b01000000 == 0b01000000:
+                print("OpType: Variable")
+            else:
+                print("OpType: Small")
+            if byte & 0b00100000 == 0b00100000:
+                print("OpType: Variable")
+            else:
+                print("OpType: Small")
+        else:
+            print("Not sure what type will be.")
+
     def read_operand_count(self, form, byte):
         """
         According to the specification, in long form the operand count is
