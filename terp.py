@@ -27,6 +27,13 @@ class Memory:
 
         print("Opcode: " + str(opcode_byte) + " (" + hex(opcode_byte) + ")" + " (" + self.binary(opcode_byte) + ")")
 
+        # According to the specification, a single Z-machine instruction
+        # consists of an opcode, which is either 1 or 2 bytes.
+
+        opcode = self.determine_opcode(opcode_byte)
+
+        print(f"Opcode Name: {opcode}")
+
         # According to the specification, each instruction has a form. The
         # possible forms are: long, short, extended or variable. To check
         # for the extended requires knowing the version of the zcode.
@@ -64,6 +71,10 @@ class Memory:
         print(f"Operand Type: {operand_types}")
 
         return Instruction()
+    
+    def determine_opcode(self, byte):
+        if byte == 224:
+            return "call"
        
     def read_operand_type(self, form, byte):
         """
