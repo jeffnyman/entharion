@@ -65,6 +65,11 @@ class Memory:
         a value of 10 means a variable. In a long form opcode, bit 6 of the
         opcode gives the type of the first operand, bit 5 of the second. A
         value of 0 means a small and 1 means a variable.
+
+        In variable or extended forms, a byte of 4 operand types is provided.
+        This byte contains four 2-bit fields: bits 6 and 7 are the first field,
+        bits 0 and 1 the fourth. A value of 00 means large, 01 means small,
+        10 means variable, and 11 means ommitted (as in not present).
         """
 
         if form == OPCODE_FORM.SHORT:
@@ -88,7 +93,19 @@ class Memory:
             
             return operand_types
         else:
-            print("Not sure what type will be.")
+            print("Need to get multiple type values ...")
+            operand_types = []
+
+            if byte & 0b11000000 == 0b11000000:
+                return operand_types
+            
+            if byte & 0b00001100 == 0b00001100:
+                return operand_types
+            
+            if byte & 0b00000011 == 0b00000011:
+                return operand_types
+            
+            return operand_types
 
     def read_operand_count(self, form, byte):
         """
