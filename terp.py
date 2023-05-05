@@ -19,9 +19,10 @@ class Routine:
 
 
 class Instruction:
-    def __init__(self, opcode, operand_types):
+    def __init__(self, opcode, operand_types, operands):
         self.opcode = opcode
         self.operand_types = operand_types
+        self.operands = operands
 
     def execute(self, memory):
         print("Executing opcode: " + str(self.opcode))
@@ -35,6 +36,7 @@ class Instruction:
         print("INSTRUCTION")
         print(f"Opcode Name: {self.opcode}")
         print(f"Operand Types: {self.operand_types}")
+        print(f"Operands: {self.operands}")
 
 
 class Memory:
@@ -94,17 +96,19 @@ class Memory:
         # For each of the operand types that were found, the operand for
         # each type must be determined.
 
+        operands = []
+
         for operand_type in operand_types:
             if operand_type == OPERAND_TYPE.Large:
-                print("Operand: LARGE")
+                operands.append(self.read_word(current_byte))
 
             if operand_type == OPERAND_TYPE.Small:
-                print("Operand: SMALL")
+                operands.append(self.read_byte(current_byte))
 
             if operand_type == OPERAND_TYPE.Variable:
-                print("Operand: VARIABLE")
+                operands.append(self.read_byte(current_byte))
 
-        return Instruction(opcode, operand_types)
+        return Instruction(opcode, operand_types, operands)
     
     def determine_opcode(self, byte):
         if byte == 224:
@@ -214,6 +218,9 @@ class Memory:
 
         self.pc = self.read_word(0x06)
 
+    def read_byte(self, offset):
+        return self.data[offset]
+    
     def read_word(self, offset):
         return (self.data[offset] << 8) + self.data[offset + 1]
     
