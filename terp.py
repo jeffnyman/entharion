@@ -5,6 +5,7 @@ class Memory:
     def __init__(self, data):
         self.data = data
         self.pc = 0
+        self.version = self.data[0x00]
 
         self.read_starting_address()
 
@@ -14,6 +15,10 @@ class Memory:
         opcode_byte = self.data[current_byte]
 
         print(f"Opcode: ${hex(opcode_byte)}")
+
+        # According to the specification, each instruction has a form. The
+        # possible forms are: long, short, extended or variable. To check
+        # for the extended requires knowing the version of the zcode.
 
     def read_starting_address(self):
         """
