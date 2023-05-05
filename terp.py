@@ -20,6 +20,21 @@ class Memory:
         # possible forms are: long, short, extended or variable. To check
         # for the extended requires knowing the version of the zcode.
 
+        # If the opcode is 190 (x0BE in hex) and the version of the zcode
+        # is 5 or later, the form is extended.
+
+        # If the top two bits of the opcode are b11 the form is variable.
+        # If the top two bits of the opcode are b19 the form is short.
+
+        if self.version >= 5 and opcode_byte == 0xbe:
+            print("EXTENDED form.")
+        elif opcode_byte & 0b11000000 == 0b11000000:
+            print("VARIABLE form")
+        elif opcode_byte & 0b10000000 == 0b10000000:
+            print("SHORT form")
+        else:
+            print("LONG form")
+
     def read_starting_address(self):
         """
         According to the specification, for versions 1 to 5 of zcode, the
