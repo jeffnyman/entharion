@@ -3,7 +3,7 @@ import sys
 from enum import Enum
 
 FORM = Enum("FORM", "SHORT LONG VARIABLE EXTENDED")
-
+OP_COUNT = Enum("OperandCount", "OP0 OP1 OP2 VAR")
 
 class Memory:
     def __init__(self, data):
@@ -39,12 +39,14 @@ class Memory:
         else:
             form = FORM.LONG
 
-        print(f"FORM: {form.name}")
+        print(f"OpForm: {form.name}")
 
         # According to the specification, each instruction has an operand
         # count. The possible counts are: 0OP, 1OP, 2OP or VAR.
 
-        self.read_operand_count(form, opcode_byte)
+        opcount = self.read_operand_count(form, opcode_byte)
+
+        print(f"OpCount: {opcount.name}")
 
     def read_operand_count(self, form, byte):
         """
@@ -56,22 +58,21 @@ class Memory:
         """
 
         if form == FORM.LONG:
-            print("Form: LONG")
-            print("OpCount: 2OP")
+            opcount = OP_COUNT.OP2
         elif form == FORM.SHORT:
-            print("FORM: SHORT")
             if byte & 0b00110000 == 0b00110000:
-                print("OpCount: 0OP")
+                opcount = OP_COUNT.OP0
             else:
-                print("OpCount: 1OP")
+                opcount = OP_COUNT.OP1
         elif form == FORM.EXTENDED:
-            print("FORM: Extended")
-            print("OpCount: VAR")
+            opcount = OP_COUNT.VAR
         else:
             if byte & 0b00100000 == 0b00100000:
-                print("OpCount: VAR")
+                opcount = OP_COUNT.VAR
             else:
-                print("OpCount: 2OP")
+                opcount = OP_COUNT.OP2
+
+        return opcount
 
     def read_starting_address(self):
         """
