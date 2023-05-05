@@ -4,6 +4,7 @@ from enum import Enum
 
 OPCODE_FORM = Enum("OpcodeForm", "SHORT LONG VARIABLE EXTENDED")
 OPERAND_COUNT = Enum("OperandCount", "OP0 OP1 OP2 VAR")
+OPERAND_TYPE = Enum("OperandType", "Small Large Variable")
 
 
 class Memory:
@@ -51,7 +52,9 @@ class Memory:
 
         # According to the specification, each operand has a type.
 
-        self.read_operand_type(form, opcode_byte)
+        operand_type = self.read_operand_type(form, opcode_byte)
+
+        print(f"Operand Type: {operand_type}")
        
     def read_operand_type(self, form, byte):
         """
@@ -62,26 +65,28 @@ class Memory:
         value of 0 means a small and 1 means a variable.
         """
 
+        operand_type = None
+
         if form == OPCODE_FORM.SHORT:
-            print("Type will be either Variable, Large, or Small")
             if byte & 0b00100000 == 0b00100000:
-                print("OpType: Variable")
+                operand_type = OPERAND_TYPE.Variable
             elif byte & 0b00010000 == 0b00010000:
-                print("OpType: Small")
+                operand_type = OPERAND_TYPE.Small
             elif byte & 0b00000000 == 0b00000000:
-                print("OpType: Large")
+                operand_type = OPERAND_TYPE.Large
         elif form == OPCODE_FORM.LONG:
-            print("Type will be either Variable or Small")
             if byte & 0b01000000 == 0b01000000:
-                print("OpType: Variable")
+                operand_type = OPERAND_TYPE.Variable
             else:
-                print("OpType: Small")
+                operand_type = OPERAND_TYPE.Small
             if byte & 0b00100000 == 0b00100000:
-                print("OpType: Variable")
+                operand_type = OPERAND_TYPE.Variable
             else:
-                print("OpType: Small")
+                operand_type = OPERAND_TYPE.Small
         else:
             print("Not sure what type will be.")
+
+        return operand_type
 
     def read_operand_count(self, form, byte):
         """
