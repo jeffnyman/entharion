@@ -7,6 +7,17 @@ OPERAND_COUNT = Enum("OperandCount", "OP0 OP1 OP2 VAR")
 OPERAND_TYPE = Enum("OperandType", "Small Large Variable")
 
 
+class Routine:
+    """
+    According to the specification, a routine begins with one byte indicating
+    the number of local variables it has (between 0 and 15 inclusive).
+    """
+
+    def __init__(self):
+        self.local_variables = []
+        self.return_address = 0x0000
+
+
 class Instruction:
     def __init__(self, opcode, operand_types):
         self.opcode = opcode
@@ -208,8 +219,12 @@ class Memory:
         """
         According to the specification, this opcode calls a given routine with
         0, 1, 2 or 3 arguments as supplied and stores any return value from
-        the call.
+        the call. A routine is required to begin at an address in memory which
+        can be represented by a packed address.
         """
+
+        routine = Routine()
+        routine.return_address = self.pc + 2
 
         self.pc += 1
 
