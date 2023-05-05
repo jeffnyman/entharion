@@ -20,7 +20,7 @@ class Memory:
 
         opcode_byte = self.data[current_byte]
 
-        print("Opcode: " + str(opcode_byte) + " (" + hex(opcode_byte) + ")")
+        print("Opcode: " + str(opcode_byte) + " (" + hex(opcode_byte) + ")" + " (" + self.binary(opcode_byte) + ")")
 
         # According to the specification, each instruction has a form. The
         # possible forms are: long, short, extended or variable. To check
@@ -146,6 +146,11 @@ class Memory:
 
     def read_word(self, offset):
         return (self.data[offset] << 8) + self.data[offset + 1]
+    
+    def binary(self, value):
+        binary_str = bin(value)[2:]
+
+        return binary_str.zfill(8)
 
 
 class Loader:
