@@ -16,12 +16,10 @@ class Instruction:
         print("Executing opcode: " + str(self.opcode))
 
         if (self.opcode == 'call'):
-            print("Handle call")
+            memory.call()
         else:
             raise Exception("Not implemented")
         
-        memory.pc += 1
-
     def details(self):
         print("INSTRUCTION")
         print(f"Opcode Name: {self.opcode}")
@@ -205,6 +203,15 @@ class Memory:
         binary_str = bin(value)[2:]
 
         return binary_str.zfill(8)
+    
+    def call(self):
+        """
+        According to the specification, this opcode calls a given routine with
+        0, 1, 2 or 3 arguments as supplied and stores any return value from
+        the call.
+        """
+
+        self.pc += 1
 
 
 class Loader:
