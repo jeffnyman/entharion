@@ -95,7 +95,14 @@ class Memory:
         # each type must be determined.
 
         for operand_type in operand_types:
-            print(operand_type)
+            if operand_type == OPERAND_TYPE.Large:
+                print("Operand: LARGE")
+
+            if operand_type == OPERAND_TYPE.Small:
+                print("Operand: SMALL")
+
+            if operand_type == OPERAND_TYPE.Variable:
+                print("Operand: VARIABLE")
 
         return Instruction(opcode, operand_types)
     
