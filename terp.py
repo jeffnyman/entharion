@@ -23,16 +23,17 @@ class Routine:
 
 
 class Instruction:
-    def __init__(self, opcode, operand_types, operands):
+    def __init__(self, opcode, operand_types, operands, store_variable):
         self.opcode = opcode
         self.operand_types = operand_types
         self.operands = operands
+        self.store_variable = store_variable
 
     def execute(self, memory):
         print("\nEXECUTING: " + str(self.opcode))
 
         if self.opcode in ["call", "call_vs"]:
-            memory.call(self.operand_types, self.operands)
+            memory.call(self.operand_types, self.operands, self.store_variable)
         else:
             raise Exception("Not implemented")
         
@@ -45,6 +46,7 @@ class Instruction:
 
         operands_formatted = [f"{op} (0x{op:x})" for op in self.operands]
         print(f"Operands: {operands_formatted}")
+        print(f"Store Variable: {self.store_variable}")
 
 
 class Memory:
@@ -63,6 +65,8 @@ class Memory:
 
     def read_instruction(self, offset):
         current_byte = offset
+
+        store_variable = None
 
         opcode_byte = self.data[current_byte]
 
@@ -135,7 +139,15 @@ class Memory:
                 operands.append(self.read_byte(current_byte))
                 current_byte +- 1
 
-        return Instruction(opcode, operand_types, operands)
+        # According to the specification, store instructions will return some
+        # value so these instructions must be followed by a single byte that
+        # gives the variable number of where to put the returned result.
+
+        if self.is_store_instruction(opcode):
+            store_variable = self.read_byte(current_byte)
+            current_byte += 1
+
+        return Instruction(opcode, operand_types, operands, store_variable)
     
     def determine_opcode(self, byte):
         if byte == 224:
@@ -278,7 +290,7 @@ class Memory:
 
         return binary_str.zfill(8)
     
-    def call(self, operand_types, operands):
+    def call(self, operand_types, operands, store_variable):
         """
         According to the specification, this opcode calls a given routine with
         0, 1, 2 or 3 arguments as supplied and stores any return value from
@@ -377,6 +389,16 @@ class Memory:
         top_routine = self.routine_callstack[-1]
 
         return top_routine.local_variables[number]
+    
+    def is_store_instruction(self, opcode):
+        """
+        
+        """
+
+        if opcode == "call":
+            return True
+        
+        return False
 
 
 class Loader:
