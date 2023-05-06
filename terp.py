@@ -55,7 +55,7 @@ class Instruction:
 
 class Memory:
     def __init__(self, data):
-        self.data = data
+        self.data = bytearray(data)
         self.pc = 0
         self.version = self.data[0x00]
         self.global_table_start = self.read_word(0x0c)
@@ -465,8 +465,8 @@ class Loader:
 
 def main():
     zcode = Loader.load(sys.argv[1])
-
-    assert isinstance(zcode.data, bytes), "zcode must be of type bytes"
+    
+    assert isinstance(zcode.data, bytearray), "zcode must be of type bytearray"
 
     while True:
         instruction = zcode.read_instruction(zcode.pc)
