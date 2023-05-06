@@ -308,6 +308,31 @@ class Memory:
             else:
                 routine.local_variables.append(0)
 
+        # The local variable values have to be set based on the values of
+        # the operands.
+
+        print(f"Operand Values: {list(zip(operand_types, operands))}")
+        operand_list = list(zip(operand_types, operands))
+        operand_list.pop(0)
+
+        operand_values = []
+
+        # The operands can be word constants (00), byte constants (01), or
+        # a variable number (10), which would be a byte. It's necessary to
+        # set the value of the local variable appropriately based on the
+        # operand type.
+
+        for operand_pair in operand_list:
+            if operand_pair[0] == OPERAND_TYPE.Variable:
+                operand_values.append(self.read_variable(operand_pair[1]))
+            else:
+                operand_values.append(operand_pair[1])
+
+        for index, operand in enumerate(operand_values):
+            routine.local_variables[index] = operand
+
+        print(f"Called with values: {routine.local_variables}")
+
         # It's necesary to set the pc to the instruction after the header.
         # Since versions 5 and up don't include the two byte portion that
         # provides variable values, that has to be accounted for here.
@@ -326,9 +351,24 @@ class Memory:
         # track of calls.
 
         self.routine_callstack.append(routine)
-        print(self.routine_callstack)
-        
+        print(f"Routine callstack: {self.routine_callstack}")
+
         routine.details()
+
+    def read_variable(self, number):
+        """
+        According to the specification, local variables are numbered from 1 to
+        15 (hexadecimal values 0x01 to 0x0f) and global variables are numbered
+        from 16 to 255 (hexadecimal values 0x10 to 0xff).
+        """
+
+        if number == 0x00:
+            print("Pop the stack")
+
+        if number > 0x00 and number < 0x10:
+            print("Local variable")
+        else:
+            print("Global variable")
 
 
 class Loader:
