@@ -79,11 +79,6 @@ class Memory:
         # immediately increment the current byte.
         current_byte += 1
 
-        # According to the specification, a single Z-machine instruction
-        # consists of an opcode, which is either 1 or 2 bytes.
-
-        opcode = self.determine_opcode(opcode_byte, operand_count)
-
         # According to the specification, each instruction has a form. The
         # possible forms are: long, short, extended or variable. To check
         # for the extended requires knowing the version of the zcode.
@@ -111,6 +106,11 @@ class Memory:
         operand_count = self.read_operand_count(form, opcode_byte)
 
         print(f"Operand Count: {operand_count.name}")
+
+        # According to the specification, a single Z-machine instruction
+        # consists of an opcode, which is either 1 or 2 bytes.
+
+        opcode = self.determine_opcode(opcode_byte, operand_count)
 
         # According to the specification, each operand has a type.
 
@@ -392,10 +392,6 @@ class Memory:
         return top_routine.local_variables[number]
     
     def is_store_instruction(self, opcode):
-        """
-        
-        """
-
         if opcode == "call":
             return True
         
