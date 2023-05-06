@@ -397,6 +397,8 @@ class Memory:
                 result += operand_pair[1]
                 
         print(f"add: sum: {str(result)}")
+        
+        self.set_variable(instruction.store_variable, result)
 
         self.pc += 2 * len(instruction.operands)
 
@@ -425,6 +427,15 @@ class Memory:
     
     def read_global_variable_addr(self, number):
         return self.global_table_start + (number * 2)
+    
+    def set_variable(sefl, number, value):
+        if number == 0x00:
+            print("Push the stack")
+        
+        if number > 0x00 and number < 0x10:
+            print("SET LOCAL VARIABLE")
+        else:
+            print("SET GLOBAL VARIABLE")
         
     def is_store_instruction(self, opcode):
         if opcode in ["add", "call"]:
