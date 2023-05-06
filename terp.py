@@ -383,6 +383,19 @@ class Memory:
         According ot the specification, this instruction simply does a signed
         16-bit addition.
         """
+        
+        result = 0
+        
+        operand_list = zip(instruction.operand_types, instruction.operands)
+        
+        for operand_pair in operand_list:
+            if operand_pair[0] == OPERAND_TYPE.Variable:
+                print(f"add: variable op val: {str(self.read_variable(operand_pair[1]))}")
+                result += self.read_variable(operand_pair[1])
+            else:
+                result += operand_pair[1]
+                
+        print(f"add: sum: {str(result)}")
 
         self.pc += 2 * len(instruction.operands)
 
