@@ -235,16 +235,35 @@ class Memory:
         """
         According to the specification, for versions 1 to 5 of zcode, the
         word at 0x06 contains the byte address of the first instruction
-        to execute.
+        to execute. In version 6 of zcode, there is a main() routine and
+        the packed address of that routine is stored in the word at 0x06.
         """
 
-        self.pc = self.read_word(0x06)
+        if self.version != 6:
+            self.pc = self.read_word(0x06)
+        else:
+            self.pc = self.read_packed(self.read_word(0x06), True)
 
     def read_byte(self, offset):
         return self.data[offset]
     
     def read_word(self, offset):
         return (self.data[offset] << 8) + self.data[offset + 1]
+    
+    def read_packed(self, offset, is_routine):
+        if self.version < 4:
+            return 2 * offset
+        
+        if self.version < 6:
+            return 4 * offset
+        
+        if self.version < 8 and is_routine:
+            return 4 * offset + (8 * self.routine_offset)
+        
+        if self.version < 8:
+            return 4 * offset + (8 * self.strings_offset)
+        
+        return 8 * offset
     
     def binary(self, value):
         binary_str = bin(value)[2:]
