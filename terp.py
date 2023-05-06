@@ -67,6 +67,7 @@ class Memory:
         current_byte = offset
 
         store_variable = None
+        operand_count = None
 
         opcode_byte = self.data[current_byte]
 
@@ -81,7 +82,7 @@ class Memory:
         # According to the specification, a single Z-machine instruction
         # consists of an opcode, which is either 1 or 2 bytes.
 
-        opcode = self.determine_opcode(opcode_byte)
+        opcode = self.determine_opcode(opcode_byte, operand_count)
 
         # According to the specification, each instruction has a form. The
         # possible forms are: long, short, extended or variable. To check
@@ -149,9 +150,9 @@ class Memory:
 
         return Instruction(opcode, operand_types, operands, store_variable)
     
-    def determine_opcode(self, byte):
-        if byte == 224:
-            if self.version >3:
+    def determine_opcode(self, byte, operand_count):
+        if operand_count == OPERAND_COUNT.VAR and byte == 224:
+            if self.version > 3:
                 return "call_vs"
             else:
                 return "call"
