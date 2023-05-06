@@ -31,7 +31,7 @@ class Instruction:
     def execute(self, memory):
         print("\nEXECUTING: " + str(self.opcode))
 
-        if (self.opcode == 'call'):
+        if self.opcode in ["call", "call_vs"]:
             memory.call(self.operand_types, self.operands)
         else:
             raise Exception("Not implemented")
@@ -139,7 +139,10 @@ class Memory:
     
     def determine_opcode(self, byte):
         if byte == 224:
-            return "call"
+            if self.version >3:
+                return "call_vs"
+            else:
+                return "call"
        
     def read_operand_type(self, form, byte):
         """
