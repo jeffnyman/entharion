@@ -34,6 +34,8 @@ class Instruction:
 
         if self.opcode in ["call", "call_vs"]:
             memory.call(self.operand_types, self.operands, self.store_variable)
+        elif self.opcode == "add":
+            memory.add(self)
         else:
             raise Exception("Not implemented")
         
@@ -156,6 +158,9 @@ class Memory:
                 return "call_vs"
             else:
                 return "call"
+            
+        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 20:
+            return "add"
        
     def read_operand_type(self, form, byte):
         """
@@ -371,6 +376,14 @@ class Memory:
 
         routine.details()
 
+    def add(self, instruction):
+        """
+        According ot the specification, this instruction simply does a signed
+        16-bit addition.
+        """
+
+        self.pc += 2 * len(instruction.operands)
+
     def read_variable(self, number):
         """
         According to the specification, local variables are numbered from 1 to
@@ -392,7 +405,7 @@ class Memory:
         return top_routine.local_variables[number]
     
     def is_store_instruction(self, opcode):
-        if opcode == "call":
+        if opcode in ["add", "call"]:
             return True
         
         return False
