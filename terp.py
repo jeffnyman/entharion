@@ -369,9 +369,14 @@ class Memory:
             print("Pop the stack")
 
         if number > 0x00 and number < 0x10:
-            print("Local variable")
+            return self.read_local_variable(number - 0x01)
         else:
             print("Global variable")
+
+    def read_local_variable(self, number):
+        top_routine = self.routine_callstack[-1]
+
+        return top_routine.local_variables[number]
 
 
 class Loader:
