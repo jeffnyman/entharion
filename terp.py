@@ -58,6 +58,7 @@ class Memory:
         self.data = data
         self.pc = 0
         self.version = self.data[0x00]
+        self.global_table_start = self.read_word(0x0c)
         self.routine_offset = self.read_word(0x28)
         self.strings_offset = self.read_word(0x2a)
         self.routine_callstack = []
@@ -412,13 +413,19 @@ class Memory:
         if number > 0x00 and number < 0x10:
             return self.read_local_variable(number - 0x01)
         else:
-            print("Global variable")
+            return self.read_global_variable_value(number - 0x10)
 
     def read_local_variable(self, number):
         top_routine = self.routine_callstack[-1]
 
         return top_routine.local_variables[number]
     
+    def read_global_variable_value(self, number):
+        return self.data[self.read_global_variable_addr(number)]
+    
+    def read_global_variable_addr(self, number):
+        return self.global_table_start + (number * 2)
+        
     def is_store_instruction(self, opcode):
         if opcode in ["add", "call"]:
             return True
