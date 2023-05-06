@@ -281,7 +281,40 @@ class Memory:
         routine = Routine()
         routine.return_address = self.pc + 2
 
-        self.pc += 1
+        # The first operand is the address to call.
+
+        routine_address = self.read_packed(operands[0], True)
+        print(f"Routine address: {hex(routine_address)}")
+
+        # Determine the number of local variables in the routine.
+
+        variable_count = self.read_byte(routine_address)
+        print(f"Local variable count: {str(variable_count)}")
+
+        # According to the specification, in zcode versions 1 to 4, a number
+        # of two-byte words are provided that give initial values for the
+        # local variables. In zcode versions 5 and later, the initial values
+        # are all set to zero.
+
+        for variable in range(variable_count):
+            if self.version < 5:
+                variable_value = self.read_word(routine_address + 1 + (2 * variable))
+                routine.local_variables.append(variable_value)
+            else:
+                routine.local_variables.append(0)
+
+        # It's necesary to set the pc to the instruction after the header.
+        # Since versions 5 and up don't include the two byte portion that
+        # provides variable values, that has to be accounted for here.
+
+        updated_pc = routine_address + 1
+
+        if self.version < 5:
+            updated_pc += 2 * variable_count
+
+        print(f"Next instruction: {hex(updated_pc)}")
+
+        self.pc = updated_pc
 
 
 class Loader:
