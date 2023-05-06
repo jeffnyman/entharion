@@ -17,6 +17,10 @@ class Routine:
         self.local_variables = []
         self.return_address = 0x0000
 
+    def details(self):
+        print("** Routine Call **")
+        print(f"Local variables: {self.local_variables}")
+
 
 class Instruction:
     def __init__(self, opcode, operand_types, operands):
@@ -50,6 +54,7 @@ class Memory:
         self.version = self.data[0x00]
         self.routine_offset = self.read_word(0x28)
         self.strings_offset = self.read_word(0x2a)
+        self.routine_callstack = []
 
         self.read_starting_address()
 
@@ -315,6 +320,15 @@ class Memory:
         print(f"Next instruction: {hex(updated_pc)}")
 
         self.pc = updated_pc
+
+        # The newly created routine has to be added to a routine callstack.
+        # This is so that the interpreter can trace execution by keeping
+        # track of calls.
+
+        self.routine_callstack.append(routine)
+        print(self.routine_callstack)
+        
+        routine.details()
 
 
 class Loader:
