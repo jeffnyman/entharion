@@ -428,14 +428,25 @@ class Memory:
     def read_global_variable_addr(self, number):
         return self.global_table_start + (number * 2)
     
-    def set_variable(sefl, number, value):
+    def set_variable(self, number, value):
         if number == 0x00:
             print("Push the stack")
         
         if number > 0x00 and number < 0x10:
             print("SET LOCAL VARIABLE")
         else:
-            print("SET GLOBAL VARIABLE")
+            self.set_global_variable(number - 0x10, value)
+            
+    def set_global_variable(self, number, value):
+        # It's necessary to split the value into two parts: the top four
+        # bytes and the bottom four bytes.
+        top_byte = (value & 0x1111111100000000) >> 8
+        bottom_byte = value & 0x11111111
+        
+        top_address = self.global_table_start + (number * 2)
+        
+        self.data[top_address] = top_byte
+        self.data[top_address + 1] = bottom_byte
         
     def is_store_instruction(self, opcode):
         if opcode in ["add", "call"]:
