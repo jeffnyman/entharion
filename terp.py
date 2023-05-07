@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 
+import os
 import sys
 
 from enum import Enum
@@ -7,6 +8,16 @@ from enum import Enum
 OPCODE_FORM = Enum("OpcodeForm", "SHORT LONG VARIABLE EXTENDED")
 OPERAND_COUNT = Enum("OperandCount", "OP0 OP1 OP2 VAR")
 OPERAND_TYPE = Enum("OperandType", "Small Large Variable")
+
+
+if os.path.exists("log.txt"):
+    with open("log.txt", "w"):
+        pass
+
+
+def log(message):
+    with open("log.txt", "a") as logfile:
+        print(message, file=logfile)
 
 
 class Routine:
@@ -20,8 +31,8 @@ class Routine:
         self.return_address = 0x0000
 
     def details(self):
-        print("** Routine Call **")
-        print(f"Local variables: {self.local_variables}")
+        log("** Routine Call **")
+        log(f"Local variables: {self.local_variables}")
 
 
 class Instruction:
@@ -42,7 +53,7 @@ class Instruction:
         self.branch_offset = branch_offset
 
     def execute(self, memory):
-        print("\nEXECUTING: " + str(self.opcode))
+        log("\nEXECUTING: " + str(self.opcode))
 
         if self.opcode in ["call", "call_vs"]:
             memory.call(self.operand_types, self.operands, self.store_variable)
@@ -54,16 +65,16 @@ class Instruction:
             raise Exception("Not implemented")
 
     def details(self):
-        print("\n---------------------------------------")
-        print("INSTRUCTION")
-        print("---------------------------------------")
-        print(f"Opcode Name: {self.opcode}")
-        print(f"Operand Types: {self.operand_types}")
+        log("\n---------------------------------------")
+        log("INSTRUCTION")
+        log("---------------------------------------")
+        log(f"Opcode Name: {self.opcode}")
+        log(f"Operand Types: {self.operand_types}")
 
         operands_formatted = [f"{op} (0x{op:x})" for op in self.operands]
-        print(f"Operands: {operands_formatted}")
-        print(f"Store Variable: {self.store_variable}")
-        print(f"Branch Offset: {self.branch_offset}")
+        log(f"Operands: {operands_formatted}")
+        log(f"Store Variable: {self.store_variable}")
+        log(f"Branch Offset: {self.branch_offset}")
 
 
 class Memory:
@@ -78,8 +89,8 @@ class Memory:
 
         self.read_starting_address()
 
-        print(f"Zcode version: {self.version}")
-        print(f"Starting address: {self.pc} ({hex(self.pc)})")
+        log(f"Zcode version: {self.version}")
+        log(f"Starting address: {self.pc} ({hex(self.pc)})")
 
     def read_instruction(self, offset):
         current_byte = offset
@@ -89,11 +100,11 @@ class Memory:
 
         opcode_byte = self.data[current_byte]
 
-        print("\n---------------------------------------")
-        print(
+        log("\n---------------------------------------")
+        log(
             f"Opcode Byte: {str(opcode_byte)} ({hex(opcode_byte)}) ({self.binary(opcode_byte)})"
         )
-        print("---------------------------------------")
+        log("---------------------------------------")
 
         current_byte += 1
 
@@ -116,14 +127,14 @@ class Memory:
         else:
             form = OPCODE_FORM.LONG
 
-        print(f"Opcode Form: {form.name}")
+        log(f"Opcode Form: {form.name}")
 
         # According to the specification, each instruction has an operand
         # count. The possible counts are: 0OP, 1OP, 2OP or VAR.
 
         operand_count = self.read_operand_count(form, opcode_byte)
 
-        print(f"Operand Count: {operand_count.name}")
+        log(f"Operand Count: {operand_count.name}")
 
         # According to the specification, a single Z-machine instruction
         # consists of an opcode, which is either 1 or 2 bytes.
@@ -366,12 +377,12 @@ class Memory:
         # The first operand is the address to call.
 
         routine_address = self.read_packed(operands[0], True)
-        print(f"Routine address: {hex(routine_address)}")
+        log(f"Routine address: {hex(routine_address)}")
 
         # Determine the number of local variables in the routine.
 
         variable_count = self.read_byte(routine_address)
-        print(f"Local variable count: {str(variable_count)}")
+        log(f"Local variable count: {str(variable_count)}")
 
         # According to the specification, in zcode versions 1 to 4, a number
         # of two-byte words are provided that give initial values for the
@@ -388,7 +399,7 @@ class Memory:
         # The local variable values have to be set based on the values of
         # the operands.
 
-        print(f"Operand Values: {list(zip(operand_types, operands))}")
+        log(f"Operand Values: {list(zip(operand_types, operands))}")
         operand_list = list(zip(operand_types, operands))
         operand_list.pop(0)
 
@@ -408,7 +419,7 @@ class Memory:
         for index, operand in enumerate(operand_values):
             routine.local_variables[index] = operand
 
-        print(f"Called with values: {routine.local_variables}")
+        log(f"Called with values: {routine.local_variables}")
 
         # It's necesary to set the pc to the instruction after the header.
         # Since versions 5 and up don't include the two byte portion that
@@ -419,7 +430,7 @@ class Memory:
         if self.version < 5:
             updated_pc += 2 * variable_count
 
-        print(f"Next instruction: {hex(updated_pc)}")
+        log(f"Next instruction: {hex(updated_pc)}")
 
         self.pc = updated_pc
 
@@ -428,7 +439,7 @@ class Memory:
         # track of calls.
 
         self.routine_callstack.append(routine)
-        print(f"Routine callstack: {self.routine_callstack}")
+        log(f"Routine callstack: {self.routine_callstack}")
 
         routine.details()
 
@@ -444,14 +455,12 @@ class Memory:
 
         for operand_pair in operand_list:
             if operand_pair[0] == OPERAND_TYPE.Variable:
-                print(
-                    f"add: variable op val: {str(self.read_variable(operand_pair[1]))}"
-                )
+                log(f"add: variable op val: {str(self.read_variable(operand_pair[1]))}")
                 result += self.read_variable(operand_pair[1])
             else:
                 result += operand_pair[1]
 
-        print(f"add: sum: {str(result)}")
+        log(f"add: sum: {str(result)}")
 
         self.set_variable(instruction.store_variable, result)
 
@@ -480,10 +489,10 @@ class Memory:
 
         if operand_values[0] == operand_values[1] and instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
-            print(f"je:branch_on_true:jumped to {hex(self.pc)}")
+            log(f"je:branch_on_true:jumped to {hex(self.pc)}")
         elif operand_values[0] == operand_values[1] and not instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
-            print(f"je:branch_on_false:jumped to {hex(self.pc)}")
+            log(f"je:branch_on_false:jumped to {hex(self.pc)}")
 
     def read_variable(self, number):
         """
@@ -493,7 +502,7 @@ class Memory:
         """
 
         if number == 0x00:
-            print("Pop the stack")
+            print("POP THE STACK")
 
         if number > 0x00 and number < 0x10:
             return self.read_local_variable(number - 0x01)
@@ -513,7 +522,7 @@ class Memory:
 
     def set_variable(self, number, value):
         if number == 0x00:
-            print("Push the stack")
+            print("PUSH THE STACK")
 
         if number > 0x00 and number < 0x10:
             print("SET LOCAL VARIABLE")
