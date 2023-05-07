@@ -222,3 +222,49 @@ Here's another way to frame it, showing a byte and how that byte is broken down.
 Here the "C" refers to "operand count." This represents what the Z-Machine specification says.
 
 > In variable form, if bit 5 is 0 then the count is 2OP; if it is 1, then the count is VAR. The opcode number is given in the bottom 5 bits.
+
+## Example in Context
+
+Here's some example output from the TXD tool that was generated from a version 1 implementation of _Zork 1_.
+
+```
+47b3:  e0 03 23 86 2c d0 ff ff 00
+       call 470c #2cd0 #ffff -> sp
+```
+
+The first line represents a specific address and then the bytes of data that start at that address. The second line represents a schematic of how this byte data is interpreted in the context of the Z-Machine.
+
+Each two-digit hexadecimal value represents a single byte of data. Therefore, the values `e0`, `03`, `23`, `86`, `2c`, `d0`, `ff`, `ff`, and `00` correspond to nine bytes of data. The first byte `e0` is the opcode for the instruction, which is a `call` instruction. The remaining eight bytes `03 23 86 2c d0 ff ff 00` are arguments or operands that provide additional information to the instruction.
+
+Here's a more full breakdown of some TXD output:
+
+```
+Main routine 47b2, 0 locals ()
+
+ 47b3:  e0 03 23 86 2c d0 ff ff 00
+        call 470c #2cd0 #ffff -> sp
+
+Routine 470c, 3 locals (0000, 0000, 0000)
+
+ 4713:  e0 2f 23 90 01 03
+        call 4720 local0 -> local2
+
+Routine 4720, 5 locals (0000, 0000, 0000, 0000, 0000)
+
+ 472b:  54 82 b4 03
+        add g72 #b4 -> local2
+```
+
+Here's a breakdown of what's happening based on the disassembly:
+
+1. The program begins executing at address `0x47b2`, which is the start of the `main` routine.
+
+2. The first instruction in the main routine is located at address `0x47b3`, which is a `call` instruction. This is calling the routine at address `0x470c` with two arguments, `0x2cd0` and `0xffff`. The `call` instruction also specifies that the return value from the called routine should be stored on the stack.
+
+3. Then, the called routine at address `0x470c` is executing and makes a `call` instruction to another routine at address `0x4720`. This `call` instruction is passing the value of `local0` as an argument to the called routine, and specifies that the return value should be stored in `local2`.
+
+4. The routine at `0x470c` is calling the routine at address `0x4720` with one argument (`local0`).
+
+5. The routine at `0x4720` performs an addition (`add`) operation and stores the result in `local2`.
+
+This essentially shows how I have to build "Entharion", and by extension, "Quendor." I'm using the output of TXD to see how a given zcode program operates and then I'm working out how to handle each opcode encountered by looking at the Z-Machine specification.
