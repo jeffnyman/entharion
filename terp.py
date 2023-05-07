@@ -478,6 +478,13 @@ class Memory:
         # four possible operands.
         self.pc += 4
 
+        if operand_values[0] == operand_values[1] and instruction.branch_on_true:
+            self.pc += instruction.branch_offset - 2
+            print(f"je:branch_on_true:jumped to {hex(self.pc)}")
+        elif operand_values[0] == operand_values[1] and not instruction.branch_on_true:
+            self.pc += instruction.branch_offset - 2
+            print(f"je:branch_on_false:jumped to {hex(self.pc)}")
+
     def read_variable(self, number):
         """
         According to the specification, local variables are numbered from 1 to
