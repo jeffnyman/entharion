@@ -44,7 +44,7 @@ class Instruction:
         store_variable,
         branch_on_true,
         branch_offset,
-        instruction_length
+        instruction_length,
     ):
         self.opcode = opcode
         self.operand_types = operand_types
@@ -58,7 +58,9 @@ class Instruction:
         log("\nEXECUTING: " + str(self.opcode))
 
         if self.opcode in ["call", "call_vs"]:
-            memory.call(self.operand_types, self.operands, self.store_variable, self.length)
+            memory.call(
+                self.operand_types, self.operands, self.store_variable, self.length
+            )
         elif self.opcode == "add":
             memory.add(self)
         elif self.opcode == "je":
@@ -102,12 +104,6 @@ class Memory:
 
         opcode_byte = self.data[current_byte]
 
-        log("\n---------------------------------------")
-        log(
-            f"Opcode Byte: {str(opcode_byte)} ({hex(opcode_byte)}) ({self.binary(opcode_byte)})"
-        )
-        log("---------------------------------------")
-
         current_byte += 1
 
         # According to the specification, each instruction has a form. The
@@ -129,14 +125,10 @@ class Memory:
         else:
             form = OPCODE_FORM.LONG
 
-        log(f"Opcode Form: {form.name}")
-
         # According to the specification, each instruction has an operand
         # count. The possible counts are: 0OP, 1OP, 2OP or VAR.
 
         operand_count = self.read_operand_count(form, opcode_byte)
-
-        log(f"Operand Count: {operand_count.name}")
 
         # According to the specification, a single Z-machine instruction
         # consists of an opcode, which is either 1 or 2 bytes.
@@ -202,13 +194,18 @@ class Memory:
                 next_branch_byte = self.read_byte(current_byte)
                 branch_offset = ((branch_byte & 0b00011111) << 5) + next_branch_byte
                 current_byte += 1
-                
+
         instruction_length = current_byte - offset
-        
+
+        instruction_bytes = self.data[offset : offset + instruction_length]
+
+        log("Instruction: " + " ".join([f"{byte:02X}" for byte in instruction_bytes]))
         log(f"Instruction Length: {instruction_length}")
-        
-        instruction_bytes = self.data[offset:offset+instruction_length]
-        print("Instruction bytes:", ' '.join([f"{byte:02X}" for byte in instruction_bytes]))
+        log(f"Opcode Byte: {opcode_byte} ({hex(opcode_byte)}) ({opcode_byte:08b})")
+        log(f"Opcode Form: {form.name}")
+        log(f"Operand Count: {operand_count.name}")
+
+        log("---------------------------------------")
 
         return Instruction(
             opcode,
@@ -217,7 +214,7 @@ class Memory:
             store_variable,
             branch_on_true,
             branch_offset,
-            instruction_length
+            instruction_length,
         )
 
     def determine_opcode(self, byte, operand_count):
