@@ -38,6 +38,8 @@ class Instruction:
             memory.call(self.operand_types, self.operands, self.store_variable)
         elif self.opcode == "add":
             memory.add(self)
+        elif self.opcode == "je":
+            memory.je(self)
         else:
             raise Exception("Not implemented")
         
@@ -402,6 +404,28 @@ class Memory:
         self.set_variable(instruction.store_variable, result)
 
         self.pc += 2 * len(instruction.operands)
+        
+    def je(self, instruction):
+        """
+        According to the specifiction, this instruction causes a jump if the
+        first operand, a, is equal to any of the subsequent operands. An
+        example is that `je a b` will ump if it's true that a = b.
+        """
+        
+        operand_list = zip(instruction.operand_types, instruction.operands)
+        
+        operand_values = []
+        
+        for operand_pair in operand_list:
+            if operand_pair[0] == OPERAND_TYPE.Variable:
+                operand_values.append(self.read_variable(operand_pair[1]))
+            else:
+                operand_values.append(operand_pair[1])
+                
+        # It's necessary to move past the instruction, whih can take
+        # four possible operands.
+        self.pc += 4
+                
 
     def read_variable(self, number):
         """
