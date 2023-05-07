@@ -44,6 +44,7 @@ class Instruction:
         store_variable,
         branch_on_true,
         branch_offset,
+        instruction_length
     ):
         self.opcode = opcode
         self.operand_types = operand_types
@@ -51,6 +52,7 @@ class Instruction:
         self.store_variable = store_variable
         self.branch_on_true = branch_on_true
         self.branch_offset = branch_offset
+        self.length = instruction_length
 
     def execute(self, memory):
         log("\nEXECUTING: " + str(self.opcode))
@@ -200,6 +202,10 @@ class Memory:
                 next_branch_byte = self.read_byte(current_byte)
                 branch_offset = ((branch_byte & 0b00011111) << 5) + next_branch_byte
                 current_byte += 1
+                
+        instruction_length = current_byte - offset
+        
+        log(f"Instruction Length: {instruction_length}")
 
         return Instruction(
             opcode,
@@ -208,6 +214,7 @@ class Memory:
             store_variable,
             branch_on_true,
             branch_offset,
+            instruction_length
         )
 
     def determine_opcode(self, byte, operand_count):
