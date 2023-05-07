@@ -58,7 +58,7 @@ class Instruction:
         log("\nEXECUTING: " + str(self.opcode))
 
         if self.opcode in ["call", "call_vs"]:
-            memory.call(self.operand_types, self.operands, self.store_variable)
+            memory.call(self.operand_types, self.operands, self.store_variable, self.length)
         elif self.opcode == "add":
             memory.add(self)
         elif self.opcode == "je":
@@ -370,7 +370,7 @@ class Memory:
 
         return binary_str.zfill(8)
 
-    def call(self, operand_types, operands, store_variable):
+    def call(self, operand_types, operands, store_variable, instr_length):
         """
         According to the specification, this opcode calls a given routine with
         0, 1, 2 or 3 arguments as supplied and stores any return value from
@@ -379,7 +379,7 @@ class Memory:
         """
 
         routine = Routine()
-        routine.return_address = self.pc + 2
+        routine.return_address = self.pc + instr_length
 
         # The first operand is the address to call.
 
