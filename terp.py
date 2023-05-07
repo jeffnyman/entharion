@@ -25,11 +25,13 @@ class Routine:
 
 
 class Instruction:
-    def __init__(self, opcode, operand_types, operands, store_variable):
+    def __init__(self, opcode, operand_types, operands, store_variable, branch_on_true, branch_offset):
         self.opcode = opcode
         self.operand_types = operand_types
         self.operands = operands
         self.store_variable = store_variable
+        self.branch_on_true = branch_on_true
+        self.branch_offset = branch_offset
 
     def execute(self, memory):
         print("\nEXECUTING: " + str(self.opcode))
@@ -53,6 +55,7 @@ class Instruction:
         operands_formatted = [f"{op} (0x{op:x})" for op in self.operands]
         print(f"Operands: {operands_formatted}")
         print(f"Store Variable: {self.store_variable}")
+        print(f"Branch Offset: {self.branch_offset}")
 
 
 class Memory:
@@ -152,8 +155,32 @@ class Memory:
         if self.is_store_instruction(opcode):
             store_variable = self.read_byte(current_byte)
             current_byte += 1
+            
+        # According to the specification, any instructions that test for a
+        # condition are "branch" instructions. The branch information is
+        # stored in one or two bytes, indicating what to do with the result
+        # of the test. If bit 7 of the first byte is 0, a branch occurs when
+        # the condition was false. If bit 7 is 1, then a branch takes place
+        # when the condition was true. If bit 6 is set, then the branch
+        # occupies one byte only. If bit 6 is clear, then the branch will
+        # occupy two bytes.
+        
+        branch_on_true = None
+        branch_offset = None
+        
+        if self.is_branch_instruction(opcode):
+            branch_byte = self.read_byte(current_byte)
+            branch_on_true = (branch_byte & 0b10000000) == 0b10000000
+            current_byte += 1
+            
+            if branch_byte & 0b01000000 == 0b01000000:
+                branch_offset = branch_byte & 0b00111111
+            else:
+                next_branch_byte = self.read_byte(current_byte)
+                branch_offset = ((branch_byte & 0b00011111) << 5) + next_branch_byte
+                current_byte += 1
 
-        return Instruction(opcode, operand_types, operands, store_variable)
+        return Instruction(opcode, operand_types, operands, store_variable, branch_on_true, branch_offset)
     
     def determine_opcode(self, byte, operand_count):
         if operand_count == OPERAND_COUNT.VAR and byte == 224:
@@ -475,6 +502,12 @@ class Memory:
         
     def is_store_instruction(self, opcode):
         if opcode in ["add", "call"]:
+            return True
+        
+        return False
+    
+    def is_branch_instruction(self, opcode):
+        if opcode == "je":
             return True
         
         return False
