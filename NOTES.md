@@ -50,3 +50,63 @@ The breakdown here is relatively easy:
 - A SHORT form instruction requires looking at bits 4 and 5
   - If bits 4 and 5 are 11, the operand count is 0OP.
   - If bits 4 and 5 are not 11, the operand count is 1OP.
+
+## Refined Understanding
+
+A zcode instruction is a sequence of bytes, describing an operation for the Z-Machine to perform.
+
+An instruction consists of two parts: the opcode and the operands. The first one to three bytes contain the opcode and the types of the operands. The following bytes contain the operands themselves. Here's is a schematic of an opcode in the Z-Machine:
+
+```
++---------------+---------------+
+|   Opcode      |   Operands    |
++---------------+---------------+
+|  n bits       |  0 to m bytes |
++---------------+---------------+
+```
+
+In this schematic, the opcode is represented by `n` bits, which specify the operation to be performed. The operands are represented by `m` bytes, which encode the data to be operated on by the instruction. The number and format of the operands is determined by the specific opcode and its format.
+
+The Z-Machine reads each byte of the program in turn, treating each byte as an opcode that specifies an operation to be performed. The Z-Machine uses the opcode to determine the format of the instruction, and then reads the appropriate number of bytes to get the operands. The Z-Machine uses the information encoded in the opcode and operands to perform the appropriate operation on the data.
+
+Each instruction has an operation byte, which is the byte that contains the opcode or, more specifically, the opcode number. This is how a particular opcode is identified. This is generally going to be the first byte. The only exception is for extended instructions, in which case this is the second byte.
+
+I'm going to come back to this operation byte momentarily, but let's consider some other aspects first.
+
+Consistent with the initial understanding, instructions come in different formats, depending on the number of operands they take: short (zero or one), long (two), variable (up to four), double variable (up to eight), and extended (up to four). Double variable instructions are available in versions 4 and up, and extended ones are available in versions 5 and up. It's worth noting that the extended instructions look a lot like variable instructions. This form was apparently created for the version 5 and greater Z-Machines because there were not enough instruction numbers left, given size constraints of the Z-Machine, to accommodate newer features.
+
+Opcodes consist of a kind and a number. Instructions of different formats contain different kinds of opcode, broken down like this:
+
+```
+short           | 0OP or 1OP
+long            | 2OP
+variable        | 2OP or VAR
+double variable | VAR
+extended        | EXT
+```
+
+What we end up with are a operation byte range:
+
+```
+00-1F            | 2OP:0-1F | Both operands are byte constants
+20-3F            | 2OP:0-1F | Operands are byte constant, variable number
+40-5F            | 2OP:0-1F | Operands are variable number, byte constant
+60-7F            | 2OP:0-1F | Both operands are variable numbers
+80-8F            | 1OP:0-F  | Operand is word constant
+90-9F            | 1OP:0-F  | Operand is byte constant
+A0-AF            | 1OP:0-F  | Operand is variable number
+B0-BF except BE  | 0OP:0-F  | BE indicates extended instruction
+C0-DF            | 2OP:0-1F | Variable instruction format
+E0-FF            | VAR:0-1F
+00-FF after BE   | EXT:0-FF
+```
+
+An interesting point, and one the specification does not make clear, is that the opcode number can be computed by subtracting the first number in the operation byte range from the operation byte.
+
+Let's do an example with the `add` opcode from the Z-Machine. The `add` opcode has an operation byte of 84 (0x54). This means that the `add` opcode fits in the range of 40-5F.
+
+Thus to compute the opcode number for `add`, you have to subtract the first number in the operation byte range from the operation byte. We know the operation byte is 84 (0x54). We know the first number in the range is (64) 0x40. So that would mean you perform the following 84 - 64. Subtracting 64 (0x40) from 84 (0x54) gives 20 (0x14), which is the opcode number for the add instruction.
+
+This is what you see in the Z-Machine specification which, for the `add` opcode, indicates that the opcode is 2OP:20 and the hex value is 14.
+
+Note that the Z-Machine only ever sees 0x14. But each opcode has a symbolic name &mdash; a mnemonic &mdash; that describes its effect. So when we say `add`, we're using that mnemonic. But that is not something the Z-Machine would be aware of. "Entharion" does use the mnemonic to make the code bit clearer to read.
