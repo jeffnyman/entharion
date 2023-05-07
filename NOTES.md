@@ -110,3 +110,115 @@ Thus to compute the opcode number for `add`, you have to subtract the first numb
 This is what you see in the Z-Machine specification which, for the `add` opcode, indicates that the opcode is 2OP:20 and the hex value is 14.
 
 Note that the Z-Machine only ever sees 0x14. But each opcode has a symbolic name &mdash; a mnemonic &mdash; that describes its effect. So when we say `add`, we're using that mnemonic. But that is not something the Z-Machine would be aware of. "Entharion" does use the mnemonic to make the code bit clearer to read.
+
+## Schematics of Opcodes
+
+Here's is a schematic of a short-form opcode in the Z-Machine, showing how the top two bits, operand type, and opcode number are situated:
+
+```
++---+---+---+---+---+---+---+---+
+| 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  <-- Short-form opcode
++---+---+---+---+---+---+---+---+
+| 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  <-- Operand type (bits 4-5)
++---+---+---+---+---+---+---+---+
+|         Opcode number         |  <-- Opcode number (bits 0-3)
++-------------------------------+
+```
+
+In this schematic, the top two bits of the opcode are 10 (binary), indicating that this is a short-form opcode. The next two bits (11) represent the operand type, indicating that this is a 0OP instruction. The remaining four bits represent the opcode number, which specifies the specific operation to be performed.
+
+Short-form opcodes have the operand type encoded in bits 4 and 5 of the opcode byte, and the opcode number encoded in bits 0-3. The operand type can be 11 (binary) for 0OP instructions, or any other value for 1OP instructions. The opcode number specifies the specific operation to be performed, and can range from 0 to 15 (decimal).
+
+Here's another way to frame it, showing a byte and how that byte is broken down.
+
+```
++---+---+---+---+---+---+---+---+
+| 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
++---+---+---+---+---+---+---+---+
+| 1 | 0 |  Type | Opcode Number |
++---+---+---+---+---+---+---+---+
+```
+
+This represents what the Z-Machine specification says.
+
+> In short form, bits 4 and 5 of the opcode byte give an operand type. If this is 11 then the operand count is 0OP; otherwise, 1OP. In either case the opcode number is given in the bottom 4 bits.
+
+Here's a schematic of a long-form opcode in the Z-Machine, showing how the top two bits, operand type, and opcode number are situated:
+
+```
++---+---+---+---+---+---+---+---+
+| 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  <-- Long-form opcode
++---+---+---+---+---+---+---+---+
+|         Opcode number         |  <-- Opcode number (bits 0-5)
++-------------------------------+
+|          Operand 1            |  <-- First operand (0 to 2 bytes)
++-------------------------------+
+|          Operand 2            |  <-- Second operand (0 to 2 bytes)
++-------------------------------+
+|             ...               |  <-- Additional operands (0 to 2 bytes each)
++-------------------------------+
+```
+
+In this schematic, the top two bits of the opcode are 11 (binary), indicating that this is a long-form opcode. The remaining six bits represent the opcode number, which specifies the specific operation to be performed.
+
+Long-form opcodes have one or more operands, which are encoded in one or more bytes following the opcode byte. The number and format of these operands is determined by the specific opcode being executed. In this schematic, I'm just showing one or more operands following the opcode byte, with each operand encoded in 0 to 2 bytes.
+
+The opcode number specifies the specific operation to be performed, and can range from 0 to 63 (decimal). Since long-form opcodes have more bits available for the opcode number than short-form opcodes, there are more possible operations that can be performed using a long-form opcode.
+
+Here's another way to frame it, showing a byte and how that byte is broken down.
+
+```
++---+---+---+---+---+---+---+---+
+| 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
++---+---+---+---+---+---+---+---+
+| 0 | F | S |   Opcode Number   |
++---+---+---+---+---+---+---+---+
+```
+
+Here "F" refers to "first type" and "S" refers to "second type." This represents what the Z-Machine specification says.
+
+> In long form the operand count is always 2OP. The opcode number is given in the bottom 5 bits.
+
+It's worth noting that since the long form is defined as "not a leading 11 or 10," this would imply that bit 7 must be zero. This further implies that bit 6 isn't needed to define the form. Since the opcode number occupies the low 5 bits, that would also seem to leave bit 5 itself unspecified here. The specification, however, does provide some details.
+
+> In long form, bit 6 of the opcode gives the type of the first operand, bit 5 of the second. A value of 0 means a small constant and 1 means a variable.
+
+Here's a schematic of a variable-form opcode in the Z-Machine, showing how the top two bits, operand types, and opcode number are situated:
+
+```
++---+---+---+---+---+---+---+---+
+| 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 |  <-- Variable-form opcode
++---+---+---+---+---+---+---+---+
+|        Opcode number          |  <-- Opcode number (bits 0-5)
++-------------------------------+
+|        Operand count          |  <-- Operand count (bits 6-7)
++-------------------------------+
+|          Operand 1            |  <-- First operand (0 to 2 bytes)
++-------------------------------+
+|          Operand 2            |  <-- Second operand (0 to 2 bytes)
++-------------------------------+
+|             ...               |  <-- Additional operands (0 to 2 bytes each)
++-------------------------------+
+```
+
+In this schematic, the top two bits of the opcode are 11 (binary), indicating that this is a variable-form opcode. The next six bits represent the opcode number, which specifies the specific operation to be performed.
+
+Variable-form opcodes have a variable number of operands, which are encoded in one or more bytes following the opcode byte. The number and format of these operands is determined by the specific opcode being executed. In this schematic, I'm showing one or more operands following the operand count byte, with each operand encoded in 0 to 2 bytes.
+
+The operand count is encoded in bits 6 and 7 of the opcode byte, and specifies the number of operands that follow the opcode byte. The operand count can range from 0 to 3, with a value of 0 indicating that there are no operands following the opcode byte.
+
+The opcode number specifies the specific operation to be performed, and can range from 0 to 63 (decimal). Similar to a long-form opcode, since variable-form opcodes have more bits available for the opcode number than short-form opcodes, there are more possible operations that can be performed using a variable-form opcode.
+
+Here's another way to frame it, showing a byte and how that byte is broken down.
+
+```
++---+---+---+---+---+---+---+---+
+| 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
++---+---+---+---+---+---+---+---+
+| 1 | 1 | C |   Opcode Number   |
++---+---+---+---+---+---+---+---+
+```
+
+Here the "C" refers to "operand count." This represents what the Z-Machine specification says.
+
+> In variable form, if bit 5 is 0 then the count is 2OP; if it is 1, then the count is VAR. The opcode number is given in the bottom 5 bits.
