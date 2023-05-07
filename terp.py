@@ -25,7 +25,15 @@ class Routine:
 
 
 class Instruction:
-    def __init__(self, opcode, operand_types, operands, store_variable, branch_on_true, branch_offset):
+    def __init__(
+        self,
+        opcode,
+        operand_types,
+        operands,
+        store_variable,
+        branch_on_true,
+        branch_offset,
+    ):
         self.opcode = opcode
         self.operand_types = operand_types
         self.operands = operands
@@ -44,7 +52,7 @@ class Instruction:
             memory.je(self)
         else:
             raise Exception("Not implemented")
-        
+
     def details(self):
         print("\n---------------------------------------")
         print("INSTRUCTION")
@@ -63,9 +71,9 @@ class Memory:
         self.data = bytearray(data)
         self.pc = 0
         self.version = self.data[0x00]
-        self.global_table_start = self.read_word(0x0c)
+        self.global_table_start = self.read_word(0x0C)
         self.routine_offset = self.read_word(0x28)
-        self.strings_offset = self.read_word(0x2a)
+        self.strings_offset = self.read_word(0x2A)
         self.routine_callstack = []
 
         self.read_starting_address()
@@ -82,7 +90,9 @@ class Memory:
         opcode_byte = self.data[current_byte]
 
         print("\n---------------------------------------")
-        print(f"Opcode Byte: {str(opcode_byte)} ({hex(opcode_byte)}) ({self.binary(opcode_byte)})")
+        print(
+            f"Opcode Byte: {str(opcode_byte)} ({hex(opcode_byte)}) ({self.binary(opcode_byte)})"
+        )
         print("---------------------------------------")
 
         current_byte += 1
@@ -97,7 +107,7 @@ class Memory:
         # If the top two bits of the opcode are b11 the form is variable.
         # If the top two bits of the opcode are b10 the form is short.
 
-        if self.version >= 5 and opcode_byte == 0xbe:
+        if self.version >= 5 and opcode_byte == 0xBE:
             form = OPCODE_FORM.EXTENDED
         elif opcode_byte & 0b11000000 == 0b11000000:
             form = OPCODE_FORM.VARIABLE
@@ -146,7 +156,7 @@ class Memory:
 
             if operand_type == OPERAND_TYPE.Variable:
                 operands.append(self.read_byte(current_byte))
-                current_byte +- 1
+                current_byte + -1
 
         # According to the specification, store instructions will return some
         # value so these instructions must be followed by a single byte that
@@ -155,7 +165,7 @@ class Memory:
         if self.is_store_instruction(opcode):
             store_variable = self.read_byte(current_byte)
             current_byte += 1
-            
+
         # According to the specification, any instructions that test for a
         # condition are "branch" instructions. The branch information is
         # stored in one or two bytes, indicating what to do with the result
@@ -164,15 +174,15 @@ class Memory:
         # when the condition was true. If bit 6 is set, then the branch
         # occupies one byte only. If bit 6 is clear, then the branch will
         # occupy two bytes.
-        
+
         branch_on_true = None
         branch_offset = None
-        
+
         if self.is_branch_instruction(opcode):
             branch_byte = self.read_byte(current_byte)
             branch_on_true = (branch_byte & 0b10000000) == 0b10000000
             current_byte += 1
-            
+
             if branch_byte & 0b01000000 == 0b01000000:
                 branch_offset = branch_byte & 0b00111111
             else:
@@ -180,21 +190,28 @@ class Memory:
                 branch_offset = ((branch_byte & 0b00011111) << 5) + next_branch_byte
                 current_byte += 1
 
-        return Instruction(opcode, operand_types, operands, store_variable, branch_on_true, branch_offset)
-    
+        return Instruction(
+            opcode,
+            operand_types,
+            operands,
+            store_variable,
+            branch_on_true,
+            branch_offset,
+        )
+
     def determine_opcode(self, byte, operand_count):
         if operand_count == OPERAND_COUNT.VAR and byte == 224:
             if self.version > 3:
                 return "call_vs"
             else:
                 return "call"
-            
+
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 20:
             return "add"
-        
+
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 1:
             return "je"
-       
+
     def read_operand_type(self, form, byte):
         """
         According to the specification, in a short form opcode, bits 4 and 5
@@ -227,7 +244,7 @@ class Memory:
                 operand_types.append(OPERAND_TYPE.Variable)
             else:
                 operand_types.append(OPERAND_TYPE.Small)
-            
+
             return operand_types
         else:
             operand_types = []
@@ -236,22 +253,28 @@ class Memory:
                 return operand_types
             else:
                 operand_types.append(self.read_operand_type_from_byte(byte >> 6))
-            
+
             if byte & 0b00110000 == 0b00110000:
                 return operand_types
             else:
-                operand_types.append(self.read_operand_type_from_byte((byte & 0b00110000) >> 4))
-            
+                operand_types.append(
+                    self.read_operand_type_from_byte((byte & 0b00110000) >> 4)
+                )
+
             if byte & 0b00001100 == 0b00001100:
                 return operand_types
             else:
-                operand_types.append(self.read_operand_type_from_byte((byte & 0b00001100) >> 2))
+                operand_types.append(
+                    self.read_operand_type_from_byte((byte & 0b00001100) >> 2)
+                )
 
             if byte & 0b00000011 == 0b00000011:
                 return operand_types
             else:
-                operand_types.append(self.read_operand_type_from_byte(byte & 0b00000011))
-            
+                operand_types.append(
+                    self.read_operand_type_from_byte(byte & 0b00000011)
+                )
+
             return operand_types
 
     def read_operand_type_from_byte(self, value):
@@ -305,30 +328,30 @@ class Memory:
 
     def read_byte(self, offset):
         return self.data[offset]
-    
+
     def read_word(self, offset):
         return (self.data[offset] << 8) + self.data[offset + 1]
-    
+
     def read_packed(self, offset, is_routine):
         if self.version < 4:
             return 2 * offset
-        
+
         if self.version < 6:
             return 4 * offset
-        
+
         if self.version < 8 and is_routine:
             return 4 * offset + (8 * self.routine_offset)
-        
+
         if self.version < 8:
             return 4 * offset + (8 * self.strings_offset)
-        
+
         return 8 * offset
-    
+
     def binary(self, value):
         binary_str = bin(value)[2:]
 
         return binary_str.zfill(8)
-    
+
     def call(self, operand_types, operands, store_variable):
         """
         According to the specification, this opcode calls a given routine with
@@ -414,45 +437,46 @@ class Memory:
         According ot the specification, this instruction simply does a signed
         16-bit addition.
         """
-        
+
         result = 0
-        
+
         operand_list = zip(instruction.operand_types, instruction.operands)
-        
+
         for operand_pair in operand_list:
             if operand_pair[0] == OPERAND_TYPE.Variable:
-                print(f"add: variable op val: {str(self.read_variable(operand_pair[1]))}")
+                print(
+                    f"add: variable op val: {str(self.read_variable(operand_pair[1]))}"
+                )
                 result += self.read_variable(operand_pair[1])
             else:
                 result += operand_pair[1]
-                
+
         print(f"add: sum: {str(result)}")
-        
+
         self.set_variable(instruction.store_variable, result)
 
         self.pc += 2 * len(instruction.operands)
-        
+
     def je(self, instruction):
         """
         According to the specifiction, this instruction causes a jump if the
         first operand, a, is equal to any of the subsequent operands. An
         example is that `je a b` will ump if it's true that a = b.
         """
-        
+
         operand_list = zip(instruction.operand_types, instruction.operands)
-        
+
         operand_values = []
-        
+
         for operand_pair in operand_list:
             if operand_pair[0] == OPERAND_TYPE.Variable:
                 operand_values.append(self.read_variable(operand_pair[1]))
             else:
                 operand_values.append(operand_pair[1])
-                
+
         # It's necessary to move past the instruction, whih can take
         # four possible operands.
         self.pc += 4
-                
 
     def read_variable(self, number):
         """
@@ -473,43 +497,43 @@ class Memory:
         top_routine = self.routine_callstack[-1]
 
         return top_routine.local_variables[number]
-    
+
     def read_global_variable_value(self, number):
         return self.data[self.read_global_variable_addr(number)]
-    
+
     def read_global_variable_addr(self, number):
         return self.global_table_start + (number * 2)
-    
+
     def set_variable(self, number, value):
         if number == 0x00:
             print("Push the stack")
-        
+
         if number > 0x00 and number < 0x10:
             print("SET LOCAL VARIABLE")
         else:
             self.set_global_variable(number - 0x10, value)
-            
+
     def set_global_variable(self, number, value):
         # It's necessary to split the value into two parts: the top four
         # bytes and the bottom four bytes.
         top_byte = (value & 0x1111111100000000) >> 8
         bottom_byte = value & 0x11111111
-        
+
         top_address = self.global_table_start + (number * 2)
-        
+
         self.data[top_address] = top_byte
         self.data[top_address + 1] = bottom_byte
-        
+
     def is_store_instruction(self, opcode):
         if opcode in ["add", "call"]:
             return True
-        
+
         return False
-    
+
     def is_branch_instruction(self, opcode):
         if opcode == "je":
             return True
-        
+
         return False
 
 
@@ -523,7 +547,7 @@ class Loader:
 
 def main():
     zcode = Loader.load(sys.argv[1])
-    
+
     assert isinstance(zcode.data, bytearray), "zcode must be of type bytearray"
 
     while True:
