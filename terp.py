@@ -206,6 +206,9 @@ class Memory:
         instruction_length = current_byte - offset
         
         log(f"Instruction Length: {instruction_length}")
+        
+        instruction_bytes = self.data[offset:offset+instruction_length]
+        print("Instruction bytes:", ' '.join([f"{byte:02X}" for byte in instruction_bytes]))
 
         return Instruction(
             opcode,
