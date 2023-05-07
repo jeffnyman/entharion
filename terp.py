@@ -80,8 +80,6 @@ class Memory:
         print(f"Opcode Byte: {str(opcode_byte)} ({hex(opcode_byte)}) ({self.binary(opcode_byte)})")
         print("---------------------------------------")
 
-        # NOTE: This line is crucial. I'm not quite clear why I have to
-        # immediately increment the current byte.
         current_byte += 1
 
         # According to the specification, each instruction has a form. The
@@ -92,7 +90,7 @@ class Memory:
         # is 5 or later, the form is extended.
 
         # If the top two bits of the opcode are b11 the form is variable.
-        # If the top two bits of the opcode are b19 the form is short.
+        # If the top two bits of the opcode are b10 the form is short.
 
         if self.version >= 5 and opcode_byte == 0xbe:
             form = OPCODE_FORM.EXTENDED
@@ -164,6 +162,9 @@ class Memory:
             
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 20:
             return "add"
+        
+        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 1:
+            return "je"
        
     def read_operand_type(self, form, byte):
         """
