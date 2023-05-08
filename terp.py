@@ -80,6 +80,8 @@ class Instruction:
             memory.je(self)
         elif self.opcode == "sub":
             memory.sub(self)
+        elif self.opcode == "jz":
+            memory.jz(self)
         else:
             raise Exception("Not implemented")
 
@@ -248,6 +250,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 1:
             return "je"
+        
+        if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 0:
+            return "jz"
 
     def read_operand_type(self, form, byte):
         """
@@ -512,8 +517,6 @@ class Memory:
         
         operand_values = self.determine_operand_value(instruction)
 
-        # It's necessary to move past the instruction, whih can take
-        # four possible operands.
         self.pc += instruction.length
         
         if operand_values[0] == operand_values[1] and instruction.branch_on_true:
@@ -523,6 +526,23 @@ class Memory:
             self.pc += instruction.branch_offset - 2
             log(f"je:branch_on_false:jumped to {hex(self.pc)}")
             
+    def jz(self, instruction):
+        """
+        According to the specification, this is a simple jump that only
+        jusmps if the first operand, a, is equal to 0.
+        """
+        
+        operand_values = self.determine_operand_value(instruction)
+        
+        self.pc += instruction.length
+        
+        if operand_values[0] == 0 and instruction.branch_on_true:
+            self.pc += instruction.branch_offset - 2
+            log(f"jz:branch_on_true:jumped to {hex(self.pc)}")
+        elif operand_values[0] != 0 and not instruction.branch_on_true:
+            self.pc += instruction.branch_offset - 2
+            log(f"jz:branch_on_false:jumped to {hex(self.pc)}")
+
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
         
@@ -534,6 +554,8 @@ class Memory:
             else:
                 operand_values.append(operand_pair[1])
             
+        log(f"Operand Values: {operand_values}")
+        
         return operand_values
 
     def read_variable(self, number):
@@ -601,7 +623,7 @@ class Memory:
         return False
 
     def is_branch_instruction(self, opcode):
-        if opcode == "je":
+        if opcode in ["je", "jz"]:
             return True
 
         return False
