@@ -84,6 +84,8 @@ class Instruction:
             memory.jz(self)
         elif self.opcode == "storew":
             memory.storew(self)
+        elif self.opcode == "ret":
+            memory.ret(self)
         else:
             raise Exception("Not implemented")
 
@@ -252,6 +254,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 20:
             return "add"
+
+        if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 11:
+            return "ret"
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 1:
             return "je"
@@ -573,6 +578,23 @@ class Memory:
         self.data[base_address + (2 * index) + 1] = bottom_byte
 
         self.pc += instruction.length
+
+    def ret(self, instruction):
+        """
+        According to the specification, this instruction returns from the
+        current routine with a specific value.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        # It's necessary to pop the current routine so that setting the
+        # variable will target the right set of locals.
+
+        current_routine = self.routine_callstack.pop()
+
+        self.set_variable(current_routine.store_variable, operand_values[0])
+
+        self.pc = current_routine.return_address
 
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
