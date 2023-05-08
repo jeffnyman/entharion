@@ -109,6 +109,7 @@ class Memory:
         self.routine_offset = self.read_word(0x28)
         self.strings_offset = self.read_word(0x2A)
         self.routine_callstack = []
+        self.stack = []
 
         self.read_starting_address()
 
@@ -619,8 +620,7 @@ class Memory:
         """
 
         if number == 0x00:
-            print("POP THE STACK")
-
+            return self.pop_stack()
         if number > 0x00 and number < 0x10:
             return self.read_local_variable(number - 0x01)
         else:
@@ -639,8 +639,7 @@ class Memory:
 
     def set_variable(self, number, value):
         if number == 0x00:
-            print("PUSH THE STACK")
-
+            return self.push_stack(value)
         if number > 0x00 and number < 0x10:
             return self.set_local_variable(number - 0x01, value)
         else:
@@ -680,6 +679,12 @@ class Memory:
             return True
 
         return False
+
+    def push_stack(self, value):
+        self.stack.append(value)
+
+    def pop_stack(self):
+        return self.stack.pop()
 
 
 class Loader:
