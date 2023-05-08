@@ -27,7 +27,7 @@ def get_signed_equivalent(num):
     positive 16-bit signed integer while 0x10000 is the smallest number
     that is greater than the largest 16-bit unsigned number.
     """
-    
+
     return -(0x10000 - num) if num > 0x7FFF else num
 
 
@@ -250,7 +250,7 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 1:
             return "je"
-        
+
         if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 0:
             return "jz"
 
@@ -471,7 +471,7 @@ class Memory:
         log(f"Routine callstack: {self.routine_callstack}")
 
         routine.details()
-        
+
     def add(self, instruction):
         """
         According ot the specification, this instruction simply does a signed
@@ -482,60 +482,60 @@ class Memory:
         operand_values = [get_signed_equivalent(x) for x in operand_values]
 
         log(f"Operand Values: {operand_values}")
-        
+
         result = operand_values[0] + operand_values[1]
         log(f"Add Result: {result}")
 
         self.set_variable(instruction.store_variable, result)
-        
+
         self.pc += instruction.length
-        
+
     def sub(self, instruction):
         """
         According ot the specification, this instruction simply does a signed
         16-bit subtraction.
         """
-        
+
         operand_values = self.determine_operand_value(instruction)
         operand_values = [get_signed_equivalent(x) for x in operand_values]
-        
+
         log(f"Operand Values: {operand_values}")
-        
+
         result = operand_values[0] - operand_values[1]
         log(f"Add Result: {result}")
-        
+
         self.set_variable(instruction.store_variable, result)
-        
+
         self.pc += instruction.length
-        
+
     def je(self, instruction):
         """
         According to the specifiction, this instruction causes a jump if the
         first operand, a, is equal to any of the subsequent operands. An
         example is that `je a b` will ump if it's true that a = b.
         """
-        
+
         operand_values = self.determine_operand_value(instruction)
 
         self.pc += instruction.length
-        
+
         if operand_values[0] == operand_values[1] and instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"je:branch_on_true:jumped to {hex(self.pc)}")
         elif operand_values[0] == operand_values[1] and not instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"je:branch_on_false:jumped to {hex(self.pc)}")
-            
+
     def jz(self, instruction):
         """
         According to the specification, this is a simple jump that only
         jusmps if the first operand, a, is equal to 0.
         """
-        
+
         operand_values = self.determine_operand_value(instruction)
-        
+
         self.pc += instruction.length
-        
+
         if operand_values[0] == 0 and instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"jz:branch_on_true:jumped to {hex(self.pc)}")
@@ -545,17 +545,17 @@ class Memory:
 
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
-        
+
         operand_values = []
-        
+
         for operand_pair in operand_list:
             if operand_pair[0] == OPERAND_TYPE.Variable:
                 operand_values.append(self.read_variable(operand_pair[1]))
             else:
                 operand_values.append(operand_pair[1])
-            
+
         log(f"Operand Values: {operand_values}")
-        
+
         return operand_values
 
     def read_variable(self, number):
@@ -605,14 +605,14 @@ class Memory:
         # right to obtain the top byte. It also extracts the bottom byte
         # by masking the lower 8 bits of the value.
 
-        top_byte = (value & 0xff00) >> 8
-        bottom_byte = value & 0x00ff
+        top_byte = (value & 0xFF00) >> 8
+        bottom_byte = value & 0x00FF
 
         top_address = self.global_table_start + (number * 2)
 
         self.data[top_address] = top_byte
         self.data[top_address + 1] = bottom_byte
-        
+
         log(f"Top Byte: {top_byte}")
         log(f"Bottom Byte: {bottom_byte}")
 
