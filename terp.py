@@ -82,6 +82,8 @@ class Instruction:
             memory.sub(self)
         elif self.opcode == "jz":
             memory.jz(self)
+        elif self.opcode == "storew":
+            memory.storew(self)
         else:
             raise Exception("Not implemented")
 
@@ -235,6 +237,9 @@ class Memory:
     def determine_opcode(self, byte, operand_count):
         log(f"Last five bits: {hex(byte & 0b00011111)}")
         log(f"Last four bits: {hex(byte & 0b00001111)}")
+
+        if operand_count == OPERAND_COUNT.VAR and byte == 225:
+            return "storew"
 
         if operand_count == OPERAND_COUNT.VAR and byte == 224:
             if self.version > 3:
@@ -542,6 +547,32 @@ class Memory:
         elif operand_values[0] != 0 and not instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"jz:branch_on_false:jumped to {hex(self.pc)}")
+
+    def storew(self, instruction):
+        """
+        According to the specification, this instruciton stores a given value
+        in the word at address `array + 2 * word-index`. The specification
+        notes that this address must lie in dynamic memory.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        base_address = operand_values[0]
+        index = operand_values[1]
+        value = operand_values[2]
+
+        log(f"Base Address: {hex(base_address)}")
+        log(f"Index: {hex(index)}")
+        log(f"Value to Store: {hex(value)}")
+
+        # Extract the top byte and bottom byte from the 2-byte value.
+        top_byte = (value & 0xFF00) >> 8
+        bottom_byte = value & 0x00FF
+
+        self.data[base_address + (2 * index)] = top_byte
+        self.data[base_address + (2 * index) + 1] = bottom_byte
+
+        self.pc += instruction.length
 
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
