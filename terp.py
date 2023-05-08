@@ -464,19 +464,6 @@ class Memory:
 
         routine.details()
         
-    def determine_operand_value(self, instruction):
-        operand_list = zip(instruction.operand_types, instruction.operands)
-        
-        operand_values = []
-        
-        for operand_pair in operand_list:
-            if operand_pair[0] == OPERAND_TYPE.Variable:
-                operand_values.append(self.read_variable(operand_pair[1]))
-            else:
-                operand_values.append(operand_pair[1])
-            
-        return operand_values
-        
     def add(self, instruction):
         """
         According ot the specification, this instruction simply does a signed
@@ -514,6 +501,19 @@ class Memory:
         elif operand_values[0] != operand_values[1] and not instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"je:branch_on_false:jumped to {hex(self.pc)}")
+            
+    def determine_operand_value(self, instruction):
+        operand_list = zip(instruction.operand_types, instruction.operands)
+        
+        operand_values = []
+        
+        for operand_pair in operand_list:
+            if operand_pair[0] == OPERAND_TYPE.Variable:
+                operand_values.append(self.read_variable(operand_pair[1]))
+            else:
+                operand_values.append(operand_pair[1])
+            
+        return operand_values
 
     def read_variable(self, number):
         """
