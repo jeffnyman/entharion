@@ -69,14 +69,12 @@ class Instruction:
             raise Exception("Not implemented")
 
     def details(self):
-        log("\n---------------------------------------")
-        log("INSTRUCTION")
-        log("---------------------------------------")
         log(f"Opcode Name: {self.opcode}")
         log(f"Operand Types: {self.operand_types}")
 
-        operands_formatted = [f"{op} (0x{op:x})" for op in self.operands]
-        log(f"Operands: {operands_formatted}")
+        operands_in_hex = [hex(num) for num in self.operands]
+        log(f"Operands: {operands_in_hex}")
+
         log(f"Store Variable: {self.store_variable}")
         log(f"Branch Offset: {self.branch_offset}")
 
@@ -94,7 +92,7 @@ class Memory:
         self.read_starting_address()
 
         log(f"Zcode version: {self.version}")
-        log(f"Starting address: {self.pc} ({hex(self.pc)})")
+        log(f"Starting address: {hex(self.pc)}\n")
 
     def read_instruction(self, offset):
         current_byte = offset
@@ -198,14 +196,13 @@ class Memory:
         instruction_length = current_byte - offset
 
         instruction_bytes = self.data[offset : offset + instruction_length]
+        instruction_bytes_hex = " ".join([f"{byte:02X}" for byte in instruction_bytes])
 
-        log("Instruction: " + " ".join([f"{byte:02X}" for byte in instruction_bytes]))
+        log(f"Instruction: {hex(self.pc)}: {instruction_bytes_hex}")
         log(f"Instruction Length: {instruction_length}")
         log(f"Opcode Byte: {opcode_byte} ({hex(opcode_byte)}) ({opcode_byte:08b})")
         log(f"Opcode Form: {form.name}")
         log(f"Operand Count: {operand_count.name}")
-
-        log("---------------------------------------")
 
         return Instruction(
             opcode,
