@@ -32,7 +32,9 @@ class Routine:
 
     def details(self):
         log("** Routine Call **")
-        log(f"Local variables: {self.local_variables}")
+
+        variable_hex_strings = [hex(num)[2:] for num in self.local_variables]
+        log(f"Local variables: {variable_hex_strings}")
 
 
 class Instruction:
@@ -218,7 +220,7 @@ class Memory:
     def determine_opcode(self, byte, operand_count):
         log(f"Last five bits: {hex(byte & 0b00011111)}")
         log(f"Last four bits: {hex(byte & 0b00001111)}")
-        
+
         if operand_count == OPERAND_COUNT.VAR and byte == 224:
             if self.version > 3:
                 return "call_vs"
@@ -379,6 +381,9 @@ class Memory:
         can be represented by a packed address.
         """
 
+        # NOTE: STORE VARIABLE?
+        # I'm passing in the store variable but I'm not actually using it.
+
         routine = Routine()
         routine.return_address = self.pc + instr_length
 
@@ -409,7 +414,6 @@ class Memory:
 
         log(f"Operand Values: {list(zip(operand_types, operands))}")
         operand_list = list(zip(operand_types, operands))
-        operand_list.pop(0)
 
         operand_values = []
 
@@ -424,10 +428,13 @@ class Memory:
             else:
                 operand_values.append(operand_pair[1])
 
+        operand_values.pop(0)
+
         for index, operand in enumerate(operand_values):
             routine.local_variables[index] = operand
 
-        log(f"Called with values: {routine.local_variables}")
+        variable_hex_strings = [hex(num)[2:] for num in routine.local_variables]
+        log(f"Called with values: {variable_hex_strings}")
 
         # It's necesary to set the pc to the instruction after the header.
         # Since versions 5 and up don't include the two byte portion that
