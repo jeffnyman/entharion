@@ -496,7 +496,7 @@ class Memory:
         if operand_values[0] == operand_values[1] and instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"je:branch_on_true:jumped to {hex(self.pc)}")
-        elif operand_values[0] != operand_values[1] and not instruction.branch_on_true:
+        elif operand_values[0] == operand_values[1] and not instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"je:branch_on_false:jumped to {hex(self.pc)}")
             
