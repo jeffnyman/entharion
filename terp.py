@@ -368,11 +368,6 @@ class Memory:
 
         return 8 * offset
 
-    def binary(self, value):
-        binary_str = bin(value)[2:]
-
-        return binary_str.zfill(8)
-
     def call(self, operand_types, operands, store_variable, instr_length):
         """
         According to the specification, this opcode calls a given routine with
