@@ -72,7 +72,7 @@ class Instruction:
         log(f"Opcode Name: {self.opcode}")
         log(f"Operand Types: {self.operand_types}")
 
-        operands_in_hex = [hex(num) for num in self.operands]
+        operands_in_hex = [hex(num)[2:] for num in self.operands]
         log(f"Operands: {operands_in_hex}")
 
         log(f"Store Variable: {self.store_variable}")
@@ -92,7 +92,7 @@ class Memory:
         self.read_starting_address()
 
         log(f"Zcode version: {self.version}")
-        log(f"Starting address: {hex(self.pc)}\n")
+        log(f"Starting address: {hex(self.pc)}")
 
     def read_instruction(self, offset):
         current_byte = offset
@@ -198,6 +198,7 @@ class Memory:
         instruction_bytes = self.data[offset : offset + instruction_length]
         instruction_bytes_hex = " ".join([f"{byte:02X}" for byte in instruction_bytes])
 
+        log("\n-------------------------------")
         log(f"Instruction: {hex(self.pc)}: {instruction_bytes_hex}")
         log(f"Instruction Length: {instruction_length}")
         log(f"Opcode Byte: {opcode_byte} ({hex(opcode_byte)}) ({opcode_byte:08b})")
@@ -215,6 +216,9 @@ class Memory:
         )
 
     def determine_opcode(self, byte, operand_count):
+        log(f"Last five bits: {hex(byte & 0b00011111)}")
+        log(f"Last four bits: {hex(byte & 0b00001111)}")
+        
         if operand_count == OPERAND_COUNT.VAR and byte == 224:
             if self.version > 3:
                 return "call_vs"
