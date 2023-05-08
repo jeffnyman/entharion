@@ -564,6 +564,9 @@ class Memory:
 
         self.data[top_address] = top_byte
         self.data[top_address + 1] = bottom_byte
+        
+        log(f"Top Byte: {top_byte}")
+        log(f"Bottom Byte: {bottom_byte}")
 
     def is_store_instruction(self, opcode):
         if opcode in ["add", "call"]:
