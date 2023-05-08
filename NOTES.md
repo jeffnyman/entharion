@@ -2,6 +2,24 @@ This document will contain some notes I'm putting together as I learn how to con
 
 ---
 
+A few starting points are crucial to understand:
+
+- The Z-Machine is a virtual computer.
+- The machine language of the Z-Machine is called zcode.
+- There are six Infocom versions of the Z-Machine.
+- There are two Inform versions of the Z-Machine.
+- The structure and operation of zcode can differ between the versions.
+
+The Z-Machine specification says:
+
+> The design's cardinal principle is that any game is 100% portable to different computers: that is, any legal program exactly determines its behaviour.
+
+In this context, a legal program refers to a program that adheres to the Z-Machine specification. The specification defines how the Z-Machine should behave, including how it should interpret and execute the instructions provided by the game.
+
+By stating that any legal program exactly determines its behavior, the specification is emphasizing that the behavior of a "game" (zcode program) running on the Z-Machine is entirely determined by the program itself, according to the rules defined in the Z-Machine specification. This means that a zcode program should behave the same way regardless of the computer or operating system it's running on, as long as the Z-Machine implementation is correct and adheres to the specification.
+
+## Getting Started
+
 In the case of "Entharion," loading up a zcode program instantiates a `Memory` instance. The zcode binary data is stored in a `data` variable that is a bytearray. (It needs to be bytearray rather than just a bytes variable because it will be necessary to write to the data.)
 
 When the `Memory` instance initializes, it reads the starting address. This refers to the byte address of the first instruction that should be executed. This address is then stored in the `pc` variable.
