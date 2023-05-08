@@ -78,6 +78,8 @@ class Instruction:
             memory.add(self)
         elif self.opcode == "je":
             memory.je(self)
+        elif self.opcode == "sub":
+            memory.sub(self)
         else:
             raise Exception("Not implemented")
 
@@ -237,6 +239,9 @@ class Memory:
                 return "call_vs"
             else:
                 return "call"
+
+        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 21:
+            return "sub"
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 20:
             return "add"
@@ -480,6 +485,24 @@ class Memory:
         
         self.pc += instruction.length
         
+    def sub(self, instruction):
+        """
+        According ot the specification, this instruction simply does a signed
+        16-bit subtraction.
+        """
+        
+        operand_values = self.determine_operand_value(instruction)
+        operand_values = [get_signed_equivalent(x) for x in operand_values]
+        
+        log(f"Operand Values: {operand_values}")
+        
+        result = operand_values[0] - operand_values[1]
+        log(f"Add Result: {result}")
+        
+        self.set_variable(instruction.store_variable, result)
+        
+        self.pc += instruction.length
+        
     def je(self, instruction):
         """
         According to the specifiction, this instruction causes a jump if the
@@ -567,7 +590,7 @@ class Memory:
         log(f"Bottom Byte: {bottom_byte}")
 
     def is_store_instruction(self, opcode):
-        if opcode in ["add", "call"]:
+        if opcode in ["add", "call", "sub"]:
             return True
 
         return False
