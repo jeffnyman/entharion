@@ -546,9 +546,13 @@ class Memory:
             print("PUSH THE STACK")
 
         if number > 0x00 and number < 0x10:
-            print("SET LOCAL VARIABLE")
+            return self.set_local_variable(number - 0x01, value)
         else:
             self.set_global_variable(number - 0x10, value)
+
+    def set_local_variable(self, number, value):
+        top_routine = self.routine_callstack[-1]
+        top_routine.local_variables[number] = value
 
     def set_global_variable(self, number, value):
         # It's necessary to split the value into two parts: the top four
