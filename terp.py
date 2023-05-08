@@ -27,11 +27,8 @@ def get_signed_equivalent(num):
     positive 16-bit signed integer while 0x10000 is the smallest number
     that is greater than the largest 16-bit unsigned number.
     """
-    if num > 0x7FFF:
-        num = 0x10000 - num
-        num = -num
-  
-    return num
+    
+    return -(0x10000 - num) if num > 0x7FFF else num
 
 
 class Routine:
