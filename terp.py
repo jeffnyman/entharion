@@ -265,6 +265,44 @@ class Memory:
         if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 0:
             return "jz"
 
+        # If the logic gets to here, that means an instruction has been
+        # encountered during decoding the bytes that hasn't been found
+        # up to now. What the following output should do is provide a
+        # way to better understand what the likely instruction being
+        # encountered is.
+        opcode_value = self.determine_opcode_value(byte)
+
+        print(f"\nNeed to support: {operand_count.name}:{byte} {opcode_value}\n")
+
+    def determine_opcode_value(self, byte):
+        """
+        This function is meant to help determine what opcode is being
+        dealt with when no current logic handles the opcode byte that
+        has been read in. This logic is predicated on the idea that the
+        opcode number can be computed by subtracting the first number in
+        the operation byte range from the operation byte.
+        """
+
+        opcode_ranges = [
+            (0x00, 0x1F),
+            (0x20, 0x3F),
+            (0x40, 0x5F),
+            (0x60, 0x7F),
+            (0x80, 0x8F),
+            (0x90, 0x9F),
+            (0xA0, 0xAF),
+            (0xB0, 0xBF),
+            (0xC0, 0xDF),
+            (0xE0, 0xFF),
+            (0x00, 0xFF),
+        ]
+
+        byte_hex = hex(byte)[2:].upper()
+
+        for range_start, range_end in opcode_ranges:
+            if int(byte_hex, 16) >= range_start and int(byte_hex, 16) <= range_end:
+                return int(byte_hex, 16) - range_start
+
     def read_operand_type(self, form, byte):
         """
         According to the specification, in a short form opcode, bits 4 and 5
