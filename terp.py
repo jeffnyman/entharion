@@ -175,7 +175,7 @@ class Memory:
 
             if operand_type == OPERAND_TYPE.Variable:
                 operands.append(self.read_byte(current_byte))
-                current_byte + -1
+                current_byte += 1
 
         # According to the specification, store instructions will return some
         # value so these instructions must be followed by a single byte that
@@ -496,7 +496,7 @@ class Memory:
 
         self.set_variable(instruction.store_variable, result)
         
-        self.pc += 2 * len(instruction.operands)
+        self.pc += instruction.length
         
     def je(self, instruction):
         """
@@ -509,7 +509,7 @@ class Memory:
 
         # It's necessary to move past the instruction, whih can take
         # four possible operands.
-        self.pc += 4
+        self.pc += instruction.length
         
         if operand_values[0] == operand_values[1] and instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
