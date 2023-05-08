@@ -577,9 +577,14 @@ class Memory:
 
     def set_global_variable(self, number, value):
         # It's necessary to split the value into two parts: the top four
-        # bytes and the bottom four bytes.
-        top_byte = (value & 0x1111111100000000) >> 8
-        bottom_byte = value & 0x11111111
+        # bytes and the bottom four bytes. This logic extracts the top
+        # byte by masking the upper 16 bits of the value (since 0xff00 in
+        # binary is 16 bits) and then shifting the result 8 bits to the
+        # right to obtain the top byte. It also extracts the bottom byte
+        # by masking the lower 8 bits of the value.
+
+        top_byte = (value & 0xff00) >> 8
+        bottom_byte = value & 0x00ff
 
         top_address = self.global_table_start + (number * 2)
 
