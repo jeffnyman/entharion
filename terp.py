@@ -20,6 +20,20 @@ def log(message):
         print(message, file=logfile)
 
 
+def get_signed_equivalent(num):
+    """
+    This function takes an unsigned 16-bit number as an input and returns
+    the equivalent signed 16-bit number. 0x7FFF refers to the largest
+    positive 16-bit signed integer while 0x10000 is the smallest number
+    that is greater than the largest 16-bit unsigned number.
+    """
+    if num > 0x7FFF:
+        num = 0x10000 - num
+        num = -num
+  
+    return num
+
+
 class Routine:
     """
     According to the specification, a routine begins with one byte indicating
@@ -452,30 +466,38 @@ class Memory:
         log(f"Routine callstack: {self.routine_callstack}")
 
         routine.details()
-
+        
+    def determine_operand_value(self, instruction):
+        operand_list = zip(instruction.operand_types, instruction.operands)
+        
+        operand_values = []
+        
+        for operand_pair in operand_list:
+            if operand_pair[0] == OPERAND_TYPE.Variable:
+                operand_values.append(self.read_variable(operand_pair[1]))
+            else:
+                operand_values.append(operand_pair[1])
+            
+        return operand_values
+        
     def add(self, instruction):
         """
         According ot the specification, this instruction simply does a signed
         16-bit addition.
         """
 
-        result = 0
+        operand_values = self.determine_operand_value(instruction)
+        operand_values = [get_signed_equivalent(x) for x in operand_values]
 
-        operand_list = zip(instruction.operand_types, instruction.operands)
-
-        for operand_pair in operand_list:
-            if operand_pair[0] == OPERAND_TYPE.Variable:
-                log(f"add: variable op val: {str(self.read_variable(operand_pair[1]))}")
-                result += self.read_variable(operand_pair[1])
-            else:
-                result += operand_pair[1]
-
-        log(f"add: sum: {str(result)}")
+        log(f"Operand Values: {operand_values}")
+        
+        result = operand_values[0] + operand_values[1]
+        log(f"Add Result: {result}")
 
         self.set_variable(instruction.store_variable, result)
-
+        
         self.pc += 2 * len(instruction.operands)
-
+        
     def je(self, instruction):
         """
         According to the specifiction, this instruction causes a jump if the
