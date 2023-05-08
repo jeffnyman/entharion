@@ -504,25 +504,17 @@ class Memory:
         first operand, a, is equal to any of the subsequent operands. An
         example is that `je a b` will ump if it's true that a = b.
         """
-
-        operand_list = zip(instruction.operand_types, instruction.operands)
-
-        operand_values = []
-
-        for operand_pair in operand_list:
-            if operand_pair[0] == OPERAND_TYPE.Variable:
-                operand_values.append(self.read_variable(operand_pair[1]))
-            else:
-                operand_values.append(operand_pair[1])
+        
+        operand_values = self.determine_operand_value(instruction)
 
         # It's necessary to move past the instruction, whih can take
         # four possible operands.
         self.pc += 4
-
+        
         if operand_values[0] == operand_values[1] and instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"je:branch_on_true:jumped to {hex(self.pc)}")
-        elif operand_values[0] == operand_values[1] and not instruction.branch_on_true:
+        elif operand_values[0] != operand_values[1] and not instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"je:branch_on_false:jumped to {hex(self.pc)}")
 
