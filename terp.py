@@ -387,11 +387,9 @@ class Memory:
         can be represented by a packed address.
         """
 
-        # NOTE: STORE VARIABLE?
-        # I'm passing in the store variable but I'm not actually using it.
-
         routine = Routine()
         routine.return_address = self.pc + instr_length
+        routine.store_variable = store_variable
 
         # The first operand is the address to call.
 
