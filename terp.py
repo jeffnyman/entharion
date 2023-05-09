@@ -768,6 +768,7 @@ class Memory:
         # versions 1 to 3) and 9 in versions 4 and up.
 
         object_address = self.get_object_address(object_number)
+        log(f"Object Address: {object_address}")
 
         property_table_offset = 7
 
@@ -782,6 +783,7 @@ class Memory:
         property_table_address = self.get_property_table_address(object_number)
         short_name_length = self.read_byte(property_table_address)
         property_list_start = property_table_address + (short_name_length * 2) + 1
+        log(f"Property list address for object: {object_number}")
 
         return property_list_start
 
@@ -790,6 +792,39 @@ class Memory:
         # and then versions 4 and up.
 
         property_list_address = self.get_property_list_address(object_number)
+
+        # According to the specification, in versions 1 to 3, a property entry
+        # contains one size byte. In versions 4 and up, a property entry
+        # contains one or two size bytes. So this logic might have to be
+        # conditionalized by the version.
+
+        size_byte_address = property_list_address
+        size_byte = self.read_byte(size_byte_address)
+
+        log(f"Prop address: size_byte: {size_byte}")
+
+        # According to the specification, in versions 1 to 3, the size byte
+        # holds the number of data bytes in the top 3 bits and the property
+        # number in the bottom 5 bits. The same applies to versions 4 and
+        # up but there are two bytes in this case. However, it's the first
+        # byte that acts as the size byte in all versions.
+
+        while size_byte != 0:
+            current_property_number = 0b00011111 & size_byte
+
+            if property_number == current_property_number - 1:
+                log(f"Prop address: found prop at: {size_byte_address}")
+                return size_byte_address
+
+            # It the property hasn't been found, the logic has to get the
+            # next property. Note that shifting the result to the right by
+            # 5 is effectively dividing by 32.
+
+            property_bytes = ((size_byte - (current_property_number - 1)) >> 5) + 1
+            size_byte_address += property_bytes
+            size_byte = self.read_byte(size_byte_address)
+
+        return 0
 
     def set_property(self, object_number, property_number, property_value):
         property_address = self.get_property_address(object_number, property_number)
