@@ -780,6 +780,10 @@ class Memory:
 
     def get_property_list_address(self, object_number):
         property_table_address = self.get_property_table_address(object_number)
+        short_name_length = self.read_byte(property_table_address)
+        property_list_start = property_table_address + (short_name_length * 2) + 1
+
+        return property_list_start
 
     def get_property_address(self, object_number, property_number):
         # NOTE: This will need to be broken out for versions 1 to 3
