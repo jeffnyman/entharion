@@ -110,6 +110,7 @@ class Memory:
         self.global_table_start = self.read_word(0x0C)
         self.routine_offset = self.read_word(0x28)
         self.strings_offset = self.read_word(0x2A)
+        self.object_table_start = self.read_word(0x0A)
         self.routine_callstack = []
         self.stack = []
 
@@ -727,8 +728,38 @@ class Memory:
         log(f"Top Byte: {top_byte}")
         log(f"Bottom Byte: {bottom_byte}")
 
+    def get_object_size(self):
+        # According to the specification, in versions 1 to 3, there are at
+        # most 255 objects, each having a 9-byte entry. In versions 4 and
+        # later, there are at moest 65534 objects, each having a 14-byte
+        # entry.
+
+        if self.version > 3:
+            return 14
+
+        return 9
+
     def get_object_address(self, object_number):
-        pass
+        # According to the specification, in versions 1 to 3, the property
+        # defaults table contains 31 words. In versions 4 and up, the
+        # property defaults table contains 63 words. The property defaults
+        # table is the first part of the object table so it's necessary to
+        # account for that.
+
+        property_defaults_number = 31
+
+        if self.version > 3:
+            property_defaults_number = 63
+
+        object_tree_starting_address = self.object_table_start + (
+            property_defaults_number * 2
+        )
+
+        object_address = object_tree_starting_address + (
+            object_number * self.get_object_size()
+        )
+
+        return object_address
 
     def get_property_table_address(self, object_number):
         object_address = self.get_object_address(object_number)
