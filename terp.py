@@ -652,7 +652,7 @@ class Memory:
         log(f"Property Number: {operand_values[1]}")
         log(f"Property Value: {operand_values[2]}")
 
-        # TODO: set a property
+        self.set_property(operand_values[0], operand_values[1], operand_values[2])
 
         self.pc += instruction.length
 
@@ -726,6 +726,24 @@ class Memory:
 
         log(f"Top Byte: {top_byte}")
         log(f"Bottom Byte: {bottom_byte}")
+
+    def get_object_address(self, object_number):
+        pass
+
+    def get_property_table_address(self, object_number):
+        object_address = self.get_object_address(object_number)
+
+    def get_property_list_address(self, object_number):
+        property_table_address = self.get_property_table_address(object_number)
+
+    def get_property_address(self, object_number, property_number):
+        # NOTE: This will need to be broken out for versions 1 to 3
+        # and then versions 4 and up.
+
+        property_list_address = self.get_property_list_address(object_number)
+
+    def set_property(self, object_number, property_number, property_value):
+        property_address = self.get_property_address(object_number, property_number)
 
     def is_store_instruction(self, opcode):
         if opcode in ["add", "call", "sub"]:
