@@ -101,10 +101,12 @@ class Instruction:
 
     def details(self):
         log(f"Opcode Name: {self.opcode}")
-        log(f"Operand Types: {self.operand_types}")
 
-        operands_in_hex = [hex(num)[2:] for num in self.operands]
-        log(f"Operands: {operands_in_hex}")
+        operand_types = [operand_type.name for operand_type in self.operand_types]
+        operands_in_hex = [hex(num)[2:].rjust(4, "0") for num in self.operands]
+
+        log(f"Operand Types:   {str(operand_types)}")
+        log(f"Operands:        {str(operands_in_hex)}")
 
         log(f"Store Variable: {self.store_variable}")
         log(f"Branch Offset: {self.branch_offset}")
@@ -553,7 +555,14 @@ class Memory:
         # The local variable values have to be set based on the values of
         # the operands.
 
-        log(f"Operand Values: {list(zip(operand_types, operands))}")
+        operands_formatted = [
+            f"({o_type.name}, {hex(operand)})"
+            for o_type, operand in zip(operand_types, operands)
+        ]
+        log(f"Operand Values: {', '.join(operands_formatted)}")
+
+        # log(f"Operand Values: {list(zip(operand_types, operands))}")
+
         operand_list = list(zip(operand_types, operands))
 
         operand_values = []
@@ -1017,7 +1026,7 @@ class Memory:
         return self.stack.pop()
 
     def details(self):
-        log("-------------------")
+        log("\n-------------------")
         log("STACK")
         log(self.stack)
 
