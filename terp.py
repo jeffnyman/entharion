@@ -90,6 +90,8 @@ class Instruction:
             memory.put_prop(self)
         elif self.opcode == "store":
             memory.store(self)
+        elif self.opcode == "test_attr":
+            memory.test_attr(self)
         else:
             raise Exception("Not implemented")
 
@@ -269,6 +271,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 11:
             return "ret"
+
+        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00001111 == 10:
+            return "test_attr"
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 1:
             return "je"
@@ -679,6 +684,22 @@ class Memory:
         self.set_variable(target_variable, value)
 
         self.pc += instruction.length
+
+    def test_attr(self, instruction):
+        """
+        According to the specification, this instruction will perform a jump
+        if if a given object has an attribute present on it.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        object_number = operand_values[0]
+        attribute_number = operand_values[1]
+
+        log(f"Object Number: {object_number}")
+        log(f"Attribute Number: {attribute_number}")
+        log(f"Jump OFfset: {hex(instruction.branch_offset)}")
+        log(f"Jump on True: {hex(instruction.branch_on_true)}")
 
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
