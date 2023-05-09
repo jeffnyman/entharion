@@ -280,9 +280,6 @@ class Memory:
         )
 
     def determine_opcode(self, byte, operand_count):
-        log(f"Last five bits: {hex(byte & 0b00011111)}")
-        log(f"Last four bits: {hex(byte & 0b00001111)}")
-
         if operand_count == OPERAND_COUNT.VAR and byte == 227:
             return "put_prop"
 
