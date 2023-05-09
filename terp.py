@@ -57,6 +57,7 @@ class Instruction:
         store_variable,
         branch_on_true,
         branch_offset,
+        text_literal,
         instruction_length,
     ):
         self.opcode = opcode
@@ -65,6 +66,7 @@ class Instruction:
         self.store_variable = store_variable
         self.branch_on_true = branch_on_true
         self.branch_offset = branch_offset
+        self.text_literal = text_literal
         self.length = instruction_length
 
     def execute(self, memory):
@@ -92,6 +94,8 @@ class Instruction:
             memory.store(self)
         elif self.opcode == "test_attr":
             memory.test_attr(self)
+        elif self.opcode == "print":
+            memory.print_literal(self)
         else:
             raise Exception("Not implemented")
 
@@ -129,6 +133,11 @@ class Memory:
         opcode = None
         store_variable = None
         operand_count = None
+        operand_types = []
+        operands = []
+        branch_on_true = None
+        branch_offset = None
+        text_literal = None
 
         opcode_byte = self.data[current_byte]
 
@@ -175,41 +184,42 @@ class Memory:
         if not opcode:
             opcode = self.determine_opcode(opcode_byte, operand_count)
 
-        # According to the specification, each operand has a type.
+        # According to the specification, each operand has a type. It's
+        # important to gate the logic for any OP0 instructions, which
+        # lack operands.
 
-        operand_types = []
-
-        if form == OPCODE_FORM.EXTENDED or form == OPCODE_FORM.VARIABLE:
-            operand_types = self.read_operand_type(form, self.data[current_byte])
-            current_byte += 1
-
-            # According to the specification, "call_vs2" and "call_vn2" are
-            # special opcodes called "double variables." For these, a second
-            # byte of types needs to be read because this second byte has the
-            # types for the next four operands.
-            if opcode in ["call_vs2", "call_vn2"]:
-                operand_types += self.read_operand_type(form, self.data[current_byte])
-                current_byte += 1
-        else:
-            operand_types = self.read_operand_type(form, opcode_byte)
-
-        # For each of the operand types that were found, the operand for
-        # each type must be determined.
-
-        operands = []
-
-        for operand_type in operand_types:
-            if operand_type == OPERAND_TYPE.Large:
-                operands.append(self.read_word(current_byte))
-                current_byte += 2
-
-            if operand_type == OPERAND_TYPE.Small:
-                operands.append(self.read_byte(current_byte))
+        if operand_count != OPERAND_COUNT.OP0:
+            if form == OPCODE_FORM.EXTENDED or form == OPCODE_FORM.VARIABLE:
+                operand_types = self.read_operand_type(form, self.data[current_byte])
                 current_byte += 1
 
-            if operand_type == OPERAND_TYPE.Variable:
-                operands.append(self.read_byte(current_byte))
-                current_byte += 1
+                # According to the specification, "call_vs2" and "call_vn2" are
+                # special opcodes called "double variables." For these, a second
+                # byte of types needs to be read because this second byte has the
+                # types for the next four operands.
+                if opcode in ["call_vs2", "call_vn2"]:
+                    operand_types += self.read_operand_type(
+                        form, self.data[current_byte]
+                    )
+                    current_byte += 1
+            else:
+                operand_types = self.read_operand_type(form, opcode_byte)
+
+            # For each of the operand types that were found, the operand for
+            # each type must be determined.
+
+            for operand_type in operand_types:
+                if operand_type == OPERAND_TYPE.Large:
+                    operands.append(self.read_word(current_byte))
+                    current_byte += 2
+
+                if operand_type == OPERAND_TYPE.Small:
+                    operands.append(self.read_byte(current_byte))
+                    current_byte += 1
+
+                if operand_type == OPERAND_TYPE.Variable:
+                    operands.append(self.read_byte(current_byte))
+                    current_byte += 1
 
         # According to the specification, store instructions will return some
         # value so these instructions must be followed by a single byte that
@@ -228,9 +238,6 @@ class Memory:
         # occupies one byte only. If bit 6 is clear, then the branch will
         # occupy two bytes.
 
-        branch_on_true = None
-        branch_offset = None
-
         if self.is_branch_instruction(opcode):
             branch_byte = self.read_byte(current_byte)
             branch_on_true = (branch_byte & 0b10000000) == 0b10000000
@@ -242,6 +249,12 @@ class Memory:
                 next_branch_byte = self.read_byte(current_byte)
                 branch_offset = ((branch_byte & 0b00011111) << 5) + next_branch_byte
                 current_byte += 1
+
+        # According to the specification, two opcodes are followed by a text
+        # string. That needs to be accounted for.
+
+        if self.provides_text_literal(opcode):
+            raise Exception
 
         instruction_length = current_byte - offset
 
@@ -262,6 +275,7 @@ class Memory:
             store_variable,
             branch_on_true,
             branch_offset,
+            text_literal,
             instruction_length,
         )
 
@@ -295,6 +309,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00001111 == 10:
             return "test_attr"
+
+        if operand_count == OPERAND_COUNT.OP0 and byte & 0b00001111 == 2:
+            return "print"
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 1:
             return "je"
@@ -946,6 +963,12 @@ class Memory:
 
     def is_branch_instruction(self, opcode):
         if opcode in ["je", "jz", "test_attr"]:
+            return True
+
+        return False
+
+    def provides_text_literal(self, opcode):
+        if opcode == "print":
             return True
 
         return False
