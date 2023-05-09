@@ -776,6 +776,22 @@ class Memory:
             log(f"test_attr:branch_on_false:jumped to {hex(self.pc)}")
             self.pc += instruction.branch_offset - 2
 
+    def print_literal(self, instruction):
+        self.print_string(instruction.text_literal)
+        self.pc += instruction.length
+
+    def print_string(self, text):
+        # This is basically extracting 5-bit characters from encoded text.
+        for characters in text:
+            first_charrcter = (characters & 0b0111110000000000) >> 10
+            second_character = (characters & 0b0000001111100000) >> 5
+            third_character = characters & 0b0000000000011111
+
+            # Versions below 3 apparently handled text differently
+            # than 3 and up.
+
+            raise Exception
+
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
 
