@@ -762,7 +762,21 @@ class Memory:
         return object_address
 
     def get_property_table_address(self, object_number):
+        # According to the specification, a property list has an initial
+        # part, which is the property header address. This will have an
+        # object property offset. The object property offset is 7 (for
+        # versions 1 to 3) and 9 in versions 4 and up.
+
         object_address = self.get_object_address(object_number)
+
+        property_table_offset = 7
+
+        if self.version > 3:
+            property_table_offset = 9
+
+        property_table_address = self.read_word(object_address + property_table_offset)
+
+        return property_table_address
 
     def get_property_list_address(self, object_number):
         property_table_address = self.get_property_table_address(object_number)
