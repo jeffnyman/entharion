@@ -701,6 +701,9 @@ class Memory:
         log(f"Jump OFfset: {hex(instruction.branch_offset)}")
         log(f"Jump on True: {hex(instruction.branch_on_true)}")
 
+        attribute_set = self.check_attribute_set(object_number, attribute_number)
+        self.pc += instruction.length
+
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
 
@@ -887,6 +890,22 @@ class Memory:
             self.data[property_address + 2] = bottom_byte
         elif property_bytes == 1:
             self.data[property_address + 1] = bottom_byte
+
+    def check_attribute_set(self, object_number, attribute_number):
+        # The focus here is calculating the bit position of the attribute
+        # within the object's attribute bytes. Then a check is made to
+        # determine if the attribute bit is set in the appropriate byte.
+        
+        object_address = self.get_object_address(object_number)
+        attribute_bit = 1 << (attribute_number % 16)
+
+        first_two_attribute_bytes = self.read_word(object_address)
+        last_two_attirbute_bytes = self.read_word(object_address + 2)
+
+        if attribute_number < 16:
+            return attribute_bit & first_two_attribute_bytes == attribute_bit
+        else:
+            return attribute_bit & last_two_attirbute_bytes == attribute_bit
 
     def is_store_instruction(self, opcode):
         if opcode in ["add", "call", "sub"]:
