@@ -829,6 +829,22 @@ class Memory:
     def set_property(self, object_number, property_number, property_value):
         property_address = self.get_property_address(object_number, property_number)
 
+        size_byte_address = property_address
+        size_byte = self.read_byte(size_byte_address)
+
+        current_property_number = 0b00011111 & size_byte
+
+        property_bytes = ((size_byte - current_property_number) / 32) + 1
+
+        top_byte = (property_value & 0xFF00) >> 8
+        bottom_byte = property_value & 0x00FF
+
+        if property_bytes == 2:
+            self.data[property_address + 1] = top_byte
+            self.data[property_address + 2] = bottom_byte
+        elif property_bytes == 1:
+            self.data[property_address + 1] = bottom_byte
+
     def is_store_instruction(self, opcode):
         if opcode in ["add", "call", "sub"]:
             return True
