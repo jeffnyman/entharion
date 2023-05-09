@@ -856,8 +856,7 @@ class Memory:
         size_byte = self.read_byte(size_byte_address)
 
         current_property_number = 0b00011111 & size_byte
-
-        property_bytes = ((size_byte - current_property_number) / 32) + 1
+        property_bytes = size_byte - (current_property_number >> 5) + 1
 
         top_byte = (property_value & 0xFF00) >> 8
         bottom_byte = property_value & 0x00FF
