@@ -254,7 +254,7 @@ class Memory:
         # string. That needs to be accounted for.
 
         if self.provides_text_literal(opcode):
-            raise Exception
+            text_literal, current_byte = self.read_encoded_text_literal(current_byte)
 
         instruction_length = current_byte - offset
 
@@ -359,6 +359,30 @@ class Memory:
         for range_start, range_end in opcode_ranges:
             if int(byte_hex, 16) >= range_start and int(byte_hex, 16) <= range_end:
                 return int(byte_hex, 16) - range_start
+
+    def read_encoded_text_literal(self, byte):
+        """
+        According to the specification, text is stored as a series of two
+        byte words, with each word encoding up to three characters. The high
+        bit of the first byte of each word is used as a flag to indicate
+        whether there are more words in the string or not. If the high bit
+        is set to 1, this means there are more words. If the high bit is set
+        to 0, this means the end of the string has been reached.
+        """
+
+        text_literal = []
+
+        characters = self.read_word(byte)
+
+        while (characters & 0x8000) != 0x8000:
+            text_literal.append(characters)
+            byte += 2
+            characters = self.read_word(byte)
+
+        text_literal.append(characters)
+        byte += 2
+
+        return text_literal, byte
 
     def read_operand_type(self, form, byte):
         """
