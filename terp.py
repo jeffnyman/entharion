@@ -179,9 +179,17 @@ class Memory:
 
         operand_types = []
 
-        if form == OPCODE_FORM.VARIABLE:
+        if form == OPCODE_FORM.EXTENDED or form == OPCODE_FORM.VARIABLE:
             operand_types = self.read_operand_type(form, self.data[current_byte])
             current_byte += 1
+
+            # According to the specification, "call_vs2" and "call_vn2" are
+            # special opcodes called "double variables." For these, a second
+            # byte of types needs to be read because this second byte has the
+            # types for the next four operands.
+            if opcode in ["call_vs2", "call_vn2"]:
+                operand_types += self.read_operand_type(form, self.data[current_byte])
+                current_byte += 1
         else:
             operand_types = self.read_operand_type(form, opcode_byte)
 
