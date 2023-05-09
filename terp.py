@@ -724,6 +724,17 @@ class Memory:
     def pop_stack(self):
         return self.stack.pop()
 
+    def details(self):
+        log("-------------------")
+        log("STACK")
+        log(self.stack)
+
+        if len(self.routine_callstack) > 0:
+            log("CURRENT ROUTINE STATE:")
+            log(self.routine_callstack[-1].details())
+
+        log("-------------------")
+
 
 class Loader:
     def load(filename):
@@ -739,6 +750,7 @@ def main():
     assert isinstance(zcode.data, bytearray), "zcode must be of type bytearray"
 
     while True:
+        zcode.details()
         instruction = zcode.read_instruction(zcode.pc)
         instruction.details()
         instruction.execute(zcode)
