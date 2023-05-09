@@ -88,6 +88,8 @@ class Instruction:
             memory.ret(self)
         elif self.opcode == "put_prop":
             memory.put_prop(self)
+        elif self.opcode == "store":
+            memory.store(self)
         else:
             raise Exception("Not implemented")
 
@@ -261,6 +263,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 20:
             return "add"
+
+        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 13:
+            return "store"
 
         if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 11:
             return "ret"
@@ -654,6 +659,24 @@ class Memory:
         log(f"Property Value: {operand_values[2]}")
 
         self.set_property(operand_values[0], operand_values[1], operand_values[2])
+
+        self.pc += instruction.length
+
+    def store(self, instruction):
+        """
+        According to the specification, this instruction sets a variable
+        referenced by the operand to a value.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        target_variable = operand_values[0]
+        value = operand_values[1]
+
+        log(f"Target Variable: {hex(target_variable)}")
+        log(f"Value: {value}")
+
+        self.set_variable(target_variable, value)
 
         self.pc += instruction.length
 
