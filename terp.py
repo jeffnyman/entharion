@@ -126,12 +126,24 @@ class Memory:
     def read_instruction(self, offset):
         current_byte = offset
 
+        opcode = None
         store_variable = None
         operand_count = None
 
         opcode_byte = self.data[current_byte]
 
         current_byte += 1
+
+        # According to the specification, in extended form, the opcode
+        # number is given in the second opcode byte. This method starts
+        # with the "first opcode byte" above but then immediately moves
+        # the pointer beyond that. So this next condition would now be
+        # reading the "second opcode byte," which is only applicable in
+        # the context of an extended instruction.
+
+        if self.version >= 5 and opcode_byte == 0xBE:
+            opcode = self.determine_extended_opcode(self.data[current_byte])
+            current_byte += 1
 
         # According to the specification, each instruction has a form. The
         # possible forms are: long, short, extended or variable. To check
@@ -160,7 +172,8 @@ class Memory:
         # According to the specification, a single Z-machine instruction
         # consists of an opcode, which is either 1 or 2 bytes.
 
-        opcode = self.determine_opcode(opcode_byte, operand_count)
+        if not opcode:
+            opcode = self.determine_opcode(opcode_byte, operand_count)
 
         # According to the specification, each operand has a type.
 
@@ -289,6 +302,9 @@ class Memory:
         opcode_value = self.determine_opcode_value(byte)
 
         print(f"\nNeed to support: {operand_count.name}:{byte} {opcode_value}\n")
+
+    def determine_extended_opcode(self, byte):
+        print("IMPLEMENT: DETERMINE EXTENDED OPCODE")
 
     def determine_opcode_value(self, byte):
         """
