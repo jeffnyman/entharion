@@ -86,6 +86,8 @@ class Instruction:
             memory.storew(self)
         elif self.opcode == "ret":
             memory.ret(self)
+        elif self.opcode == "put_prop":
+            memory.put_prop(self)
         else:
             raise Exception("Not implemented")
 
@@ -240,6 +242,9 @@ class Memory:
     def determine_opcode(self, byte, operand_count):
         log(f"Last five bits: {hex(byte & 0b00011111)}")
         log(f"Last four bits: {hex(byte & 0b00001111)}")
+
+        if operand_count == OPERAND_COUNT.VAR and byte == 227:
+            return "put_prop"
 
         if operand_count == OPERAND_COUNT.VAR and byte == 225:
             return "storew"
@@ -634,6 +639,22 @@ class Memory:
         self.set_variable(current_routine.store_variable, operand_values[0])
 
         self.pc = current_routine.return_address
+
+    def put_prop(self, instruction):
+        """
+        According to the specification, this instruction will write a given
+        value to a given object.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        log(f"Object Number: {operand_values[0]}")
+        log(f"Property Number: {operand_values[1]}")
+        log(f"Property Value: {operand_values[2]}")
+
+        # TODO: set a property
+
+        self.pc += instruction.length
 
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
