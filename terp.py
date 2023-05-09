@@ -698,11 +698,18 @@ class Memory:
 
         log(f"Object Number: {object_number}")
         log(f"Attribute Number: {attribute_number}")
-        log(f"Jump OFfset: {hex(instruction.branch_offset)}")
+        log(f"Jump Offset: {hex(instruction.branch_offset)}")
         log(f"Jump on True: {hex(instruction.branch_on_true)}")
 
         attribute_set = self.check_attribute_set(object_number, attribute_number)
         self.pc += instruction.length
+
+        if attribute_set and instruction.branch_on_true:
+            log(f"test_attr:branch_on_true:jumped to {hex(self.pc)}")
+            self.pc += instruction.branch_offset - 2
+        elif not attribute_set and not instruction.branch_on_true:
+            log(f"test_attr:branch_on_false:jumped to {hex(self.pc)}")
+            self.pc += instruction.branch_offset - 2
 
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
@@ -895,7 +902,7 @@ class Memory:
         # The focus here is calculating the bit position of the attribute
         # within the object's attribute bytes. Then a check is made to
         # determine if the attribute bit is set in the appropriate byte.
-        
+
         object_address = self.get_object_address(object_number)
         attribute_bit = 1 << (attribute_number % 16)
 
@@ -914,7 +921,7 @@ class Memory:
         return False
 
     def is_branch_instruction(self, opcode):
-        if opcode in ["je", "jz"]:
+        if opcode in ["je", "jz", "test_attr"]:
             return True
 
         return False
