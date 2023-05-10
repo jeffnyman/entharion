@@ -17,17 +17,12 @@ def create_file_if_not_exists(filename):
 
 
 create_file_if_not_exists("log.txt")
-create_file_if_not_exists("trace.txt")
 
 
 def log(message):
     with open("log.txt", "a") as logfile:
         print(message, file=logfile)
 
-
-def trace(message):
-    with open("trace.txt", "a") as tracefile:
-        print(message, file=tracefile)
 
 
 def get_signed_equivalent(num):
@@ -39,6 +34,26 @@ def get_signed_equivalent(num):
     """
 
     return -(0x10000 - num) if num > 0x7FFF else num
+
+
+class Trace:
+    """
+    This class creates an instance of trace log mechanism that will allow
+    decoding Z-Machine instructions to be periodically logged to a trace
+    file, allowing for output similar ot that of the TXD tool.
+    """
+
+    def __init__(self):
+        self.file = open("trace.txt", "w")
+        self.message = []
+
+    def add(self, text):
+        self.message.append(text)
+
+    def display(self):
+        composed_message = " ".join(self.message)
+        self.file.write(f"{composed_message}\n")
+        self.message = []
 
 
 class Routine:
@@ -64,6 +79,7 @@ class Routine:
 class Instruction:
     def __init__(
         self,
+        trace,
         opcode,
         operand_types,
         operands,
@@ -73,6 +89,7 @@ class Instruction:
         text_literal,
         instruction_length,
     ):
+        self.trace = trace
         self.opcode = opcode
         self.operand_types = operand_types
         self.operands = operands
@@ -89,32 +106,32 @@ class Instruction:
             memory.call(
                 self.operand_types, self.operands, self.store_variable, self.length
             )
-        elif self.opcode == "add":
-            memory.add(self)
-        elif self.opcode == "je":
-            memory.je(self)
-        elif self.opcode == "sub":
-            memory.sub(self)
-        elif self.opcode == "jz":
-            memory.jz(self)
-        elif self.opcode == "storew":
-            memory.storew(self)
-        elif self.opcode == "ret":
-            memory.ret(self)
-        elif self.opcode == "put_prop":
-            memory.put_prop(self)
-        elif self.opcode == "store":
-            memory.store(self)
-        elif self.opcode == "test_attr":
-            memory.test_attr(self)
-        elif self.opcode == "print":
-            memory.print_literal(self)
+        # elif self.opcode == "add":
+        #     memory.add(self)
+        # elif self.opcode == "je":
+        #     memory.je(self)
+        # elif self.opcode == "sub":
+        #     memory.sub(self)
+        # elif self.opcode == "jz":
+        #     memory.jz(self)
+        # elif self.opcode == "storew":
+        #     memory.storew(self)
+        # elif self.opcode == "ret":
+        #     memory.ret(self)
+        # elif self.opcode == "put_prop":
+        #     memory.put_prop(self)
+        # elif self.opcode == "store":
+        #     memory.store(self)
+        # elif self.opcode == "test_attr":
+        #     memory.test_attr(self)
+        # elif self.opcode == "print":
+        #     memory.print_literal(self)
         else:
             raise Exception("Not implemented")
 
     def details(self):
         log(f"Opcode Name: {self.opcode}")
-        trace(f"{self.opcode}")
+        self.trace.add(f"{self.opcode}")
 
         operand_types = [operand_type.name for operand_type in self.operand_types]
         operands_in_hex = [hex(num)[2:].rjust(4, "0") for num in self.operands]
@@ -127,8 +144,9 @@ class Instruction:
 
 
 class Memory:
-    def __init__(self, data):
+    def __init__(self, data, trace):
         self.data = bytearray(data)
+        self.trace = trace
         self.pc = 0
         self.version = self.data[0x00]
         self.global_table_start = self.read_word(0x0C)
@@ -279,13 +297,14 @@ class Memory:
 
         log("\n-------------------------------")
         log(f"Instruction: {hex(self.pc)[2:]}: {instruction_bytes_hex}")
-        trace(f"{hex(self.pc)[2:]}: {instruction_bytes_hex}")
+        self.trace.add(f"{hex(self.pc)[2:]}: {instruction_bytes_hex}")
         log(f"Instruction Length: {instruction_length}")
         log(f"Opcode Byte: {opcode_byte} ({hex(opcode_byte)}) ({opcode_byte:08b})")
         log(f"Opcode Form: {form.name}")
         log(f"Operand Count: {operand_count.name}")
 
         return Instruction(
+            self.trace,
             opcode,
             operand_types,
             operands,
@@ -549,7 +568,7 @@ class Memory:
 
         routine_address = self.read_packed(operands[0], True)
         log(f"Routine address: {hex(routine_address)[2:]}")
-        trace(f"{hex(routine_address)[2:]}")
+        self.trace.add(f"{hex(routine_address)[2:]}")
 
         # Determine the number of local variables in the routine.
 
@@ -577,8 +596,6 @@ class Memory:
         ]
         log(f"Operand Values: {', '.join(operands_formatted)}")
 
-        # log(f"Operand Values: {list(zip(operand_types, operands))}")
-
         operand_list = list(zip(operand_types, operands))
 
         operand_values = []
@@ -601,7 +618,7 @@ class Memory:
 
         variable_hex_strings = [hex(num)[2:] for num in routine.local_variables]
         log(f"Called with values: {variable_hex_strings}")
-        trace(f"{variable_hex_strings}")
+        self.trace.add(f"{variable_hex_strings}")
 
         # It's necesary to set the pc to the instruction after the header.
         # Since versions 5 and up don't include the two byte portion that
@@ -1057,15 +1074,16 @@ class Memory:
 
 
 class Loader:
-    def load(filename):
+    def load(filename, trace):
         f = open(filename, "rb")
         memory = f.read()
 
-        return Memory(memory)
+        return Memory(memory, trace)
 
 
 def main():
-    zcode = Loader.load(sys.argv[1])
+    trace = Trace()
+    zcode = Loader.load(sys.argv[1], trace)
 
     assert isinstance(zcode.data, bytearray), "zcode must be of type bytearray"
 
@@ -1074,6 +1092,7 @@ def main():
         instruction = zcode.read_instruction(zcode.pc)
         instruction.details()
         instruction.execute(zcode)
+        trace.display()
 
 
 if __name__ == "__main__":
