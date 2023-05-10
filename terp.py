@@ -135,6 +135,8 @@ class Instruction:
             memory.test_attr(self)
         elif self.opcode == "print":
             memory.print_literal(self)
+        elif self.opcode == "new_line":
+            memory.new_line(self)
         else:
             raise Exception("Not implemented")
 
@@ -352,7 +354,10 @@ class Memory:
         if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 11:
             return "ret"
 
-        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00001111 == 10:
+        if operand_count == OPERAND_COUNT.OP0 and byte & 0b00001111 == 0xB:
+            return "new_line"
+
+        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00001111 == 0xA:
             return "test_attr"
 
         if operand_count == OPERAND_COUNT.OP0 and byte & 0b00001111 == 2:
@@ -831,6 +836,15 @@ class Memory:
             log(f"test_attr:branch_on_false:jumped to {hex(self.pc)}")
             self.pc += instruction.branch_offset - 2
 
+    def new_line(self, instruction):
+        """
+        According to the specification, this does exactly what it sounds
+        like: prints a carriage return.
+        """
+
+        print("")
+        self.pc += instruction.length
+
     def print_literal(self, instruction):
         self.print_string(instruction.text_literal)
         self.pc += instruction.length
@@ -908,7 +922,7 @@ class Memory:
         # represented by shorter codes to save space. This method retrieves
         # and expands these codes as needed in the text output that comes
         # from the zcode text literals.
-        
+
         abbreviation_address = self.abbreviation_table_start + (index * 2)
         abbreviation_address = self.read_word(abbreviation_address) * 2
         return self.read_encoded_text_literal(abbreviation_address)[0]
