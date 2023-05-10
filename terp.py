@@ -41,6 +41,9 @@ class Routine:
         self.local_variables = []
         self.return_address = 0x0000
 
+    def __str__(self):
+        return f"Routine: {hex(id(self))}"
+
     def details(self):
         log("** Routine Call **")
 
@@ -101,6 +104,7 @@ class Instruction:
 
     def details(self):
         log(f"Opcode Name: {self.opcode}")
+        #! PUT A TRACE HERE
 
         operand_types = [operand_type.name for operand_type in self.operand_types]
         operands_in_hex = [hex(num)[2:].rjust(4, "0") for num in self.operands]
@@ -264,7 +268,8 @@ class Memory:
         instruction_bytes_hex = " ".join([f"{byte:02X}" for byte in instruction_bytes])
 
         log("\n-------------------------------")
-        log(f"Instruction: {hex(self.pc)}: {instruction_bytes_hex}")
+        log(f"Instruction: {hex(self.pc)[2:]}: {instruction_bytes_hex}")
+        #! PUT A TRACE HERE
         log(f"Instruction Length: {instruction_length}")
         log(f"Opcode Byte: {opcode_byte} ({hex(opcode_byte)}) ({opcode_byte:08b})")
         log(f"Opcode Form: {form.name}")
@@ -533,7 +538,8 @@ class Memory:
         # The first operand is the address to call.
 
         routine_address = self.read_packed(operands[0], True)
-        log(f"Routine address: {hex(routine_address)}")
+        log(f"Routine address: {hex(routine_address)[2:]}")
+        #! PUT A TRACE HERE
 
         # Determine the number of local variables in the routine.
 
@@ -556,7 +562,7 @@ class Memory:
         # the operands.
 
         operands_formatted = [
-            f"({o_type.name}, {hex(operand)})"
+            f"({o_type.name}, {hex(operand)[2:]})"
             for o_type, operand in zip(operand_types, operands)
         ]
         log(f"Operand Values: {', '.join(operands_formatted)}")
@@ -585,6 +591,7 @@ class Memory:
 
         variable_hex_strings = [hex(num)[2:] for num in routine.local_variables]
         log(f"Called with values: {variable_hex_strings}")
+        #! PUT A TRACE HERE
 
         # It's necesary to set the pc to the instruction after the header.
         # Since versions 5 and up don't include the two byte portion that
@@ -595,7 +602,7 @@ class Memory:
         if self.version < 5:
             updated_pc += 2 * variable_count
 
-        log(f"Next instruction: {hex(updated_pc)}")
+        log(f"Next instruction: {hex(updated_pc)[2:]}")
 
         self.pc = updated_pc
 
@@ -604,7 +611,9 @@ class Memory:
         # track of calls.
 
         self.routine_callstack.append(routine)
-        log(f"Routine callstack: {self.routine_callstack}")
+        log(
+            f"Routine callstack: {[str(routine) for routine in self.routine_callstack]}"
+        )
 
         routine.details()
 
