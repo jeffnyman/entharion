@@ -141,6 +141,8 @@ class Instruction:
             memory.loadb(self)
         elif self.opcode == "and":
             memory.bitwise_and(self)
+        elif self.opcode == "loadw":
+            memory.loadw(self)
         else:
             raise Exception("Not implemented")
 
@@ -351,6 +353,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 20:
             return "add"
+
+        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 15:
+            return "loadw"
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 13:
             return "store"
@@ -886,6 +891,24 @@ class Memory:
         )
         self.pc += instruction.length
 
+    def loadw(self, instruction):
+        """
+        According to the specification, this instruction loads a word-sized
+        value from memory and store it in a variable.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        base_address = operand_values[0]
+        index = operand_values[1]
+
+        log(f"Base Address: {hex(base_address)}")
+        log(f"Index: {hex(index)}")
+        log(f"Store Target: {instruction.store_variable}")
+        
+        self.set_variable(instruction.store_variable, self.data[base_address + (2 * index)])
+        self.pc += instruction.length
+
     def print_literal(self, instruction):
         self.print_string(instruction.text_literal)
         self.pc += instruction.length
@@ -1172,7 +1195,7 @@ class Memory:
             return attribute_bit & last_two_attirbute_bytes == attribute_bit
 
     def is_store_instruction(self, opcode):
-        if opcode in ["add", "and", "call", "loadb", "sub"]:
+        if opcode in ["add", "and", "call", "loadb", "loadw", "sub"]:
             return True
 
         return False
