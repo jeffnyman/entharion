@@ -8,6 +8,16 @@ from enum import Enum
 OPCODE_FORM = Enum("OpcodeForm", "SHORT LONG VARIABLE EXTENDED")
 OPERAND_COUNT = Enum("OperandCount", "OP0 OP1 OP2 VAR")
 OPERAND_TYPE = Enum("OperandType", "Small Large Variable")
+ALPHABET = Enum("Alphabet", "A0 A1 A2")
+
+# fmt: off
+a0 = dict(zip([6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
+              ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y', 'z']))
+a1 = dict(zip([6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
+              ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y', 'Z']))
+a2 = dict(zip([6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
+              [' ','\n','0','1','2','3','4','5','6','7','8','9','.',',','!','?','_','#','\'','"','/','\\','-',':','(', ')']))
+# fmt: on
 
 
 def create_file_if_not_exists(filename):
@@ -22,7 +32,6 @@ create_file_if_not_exists("log.txt")
 def log(message):
     with open("log.txt", "a") as logfile:
         print(message, file=logfile)
-
 
 
 def get_signed_equivalent(num):
@@ -106,26 +115,26 @@ class Instruction:
             memory.call(
                 self.operand_types, self.operands, self.store_variable, self.length
             )
-        # elif self.opcode == "add":
-        #     memory.add(self)
-        # elif self.opcode == "je":
-        #     memory.je(self)
-        # elif self.opcode == "sub":
-        #     memory.sub(self)
-        # elif self.opcode == "jz":
-        #     memory.jz(self)
-        # elif self.opcode == "storew":
-        #     memory.storew(self)
-        # elif self.opcode == "ret":
-        #     memory.ret(self)
-        # elif self.opcode == "put_prop":
-        #     memory.put_prop(self)
-        # elif self.opcode == "store":
-        #     memory.store(self)
-        # elif self.opcode == "test_attr":
-        #     memory.test_attr(self)
-        # elif self.opcode == "print":
-        #     memory.print_literal(self)
+        elif self.opcode == "add":
+            memory.add(self)
+        elif self.opcode == "je":
+            memory.je(self)
+        elif self.opcode == "sub":
+            memory.sub(self)
+        elif self.opcode == "jz":
+            memory.jz(self)
+        elif self.opcode == "storew":
+            memory.storew(self)
+        elif self.opcode == "ret":
+            memory.ret(self)
+        elif self.opcode == "put_prop":
+            memory.put_prop(self)
+        elif self.opcode == "store":
+            memory.store(self)
+        elif self.opcode == "test_attr":
+            memory.test_attr(self)
+        elif self.opcode == "print":
+            memory.print_literal(self)
         else:
             raise Exception("Not implemented")
 
@@ -153,8 +162,11 @@ class Memory:
         self.routine_offset = self.read_word(0x28)
         self.strings_offset = self.read_word(0x2A)
         self.object_table_start = self.read_word(0x0A)
+        self.abbreviation_table_start = self.read_word(0x18)
         self.routine_callstack = []
         self.stack = []
+        self.current_abbreviation = None
+        self.current_alphabet = ALPHABET.A0
 
         self.read_starting_address()
 
@@ -826,14 +838,80 @@ class Memory:
     def print_string(self, text):
         # This is basically extracting 5-bit characters from encoded text.
         for characters in text:
-            first_charrcter = (characters & 0b0111110000000000) >> 10
+            first_character = (characters & 0b0111110000000000) >> 10
             second_character = (characters & 0b0000001111100000) >> 5
             third_character = characters & 0b0000000000011111
 
             # Versions below 3 apparently handled text differently
-            # than 3 and up.
+            # than 3 and up. For now only version 3 is being handled.
 
-            raise Exception
+            self.print_zcharacter(first_character)
+            self.print_zcharacter(second_character)
+            self.print_zcharacter(third_character)
+
+    def print_zcharacter(self, key):
+        # A check is made as to whether there is a current abbreviation
+        # being processed. If so, the code looks up the abbreviation string
+        # for the current abbreviation and prints it out, clearing the
+        # current abbreviation in the process. If key is 1, 2, or 3, then
+        # the code sets current_abbreviation to key and returns without
+        # printing anything, since abbreviations that begin with these
+        # codes will be processed later.
+        if self.current_abbreviation != None:
+            abbreviation_index = (32 * (self.current_abbreviation - 1)) + key
+            self.current_abbreviation = None
+            self.print_string(self.read_encoded_abbreviation_string(abbreviation_index))
+            return
+        elif key in [1, 2, 3]:
+            self.current_abbreviation = key
+            return
+
+        # A check is made to see whether key is one of the shift characters,
+        # which are codes 4 and 5. If key is 4, it sets the current alphabet
+        # to A1 (which contains upper case letters), and if key is 5, it sets
+        # the current alphabet to A2 (which contains various punctuation
+        # characters).
+
+        if key == 4:
+            self.current_alphabet = ALPHABET.A1
+            return
+        if key == 5:
+            self.current_alphabet = ALPHABET.A2
+            return
+
+        # If key is not a special code, the code prints out the character
+        # corresponding to key in the current alphabet. The a0, a1, and a2
+        # dictionaries map ZSCII character codes to ASCII character
+        # representations for the three different alphabets, and the current
+        # alphabet is determined by the shift characters.
+
+        if key == 0:
+            print(" ", end="")
+
+        if self.current_alphabet == ALPHABET.A0:
+            if key in a0:
+                print(a0[key], end="")
+
+        if self.current_alphabet == ALPHABET.A1:
+            if key in a1:
+                print(a1[key], end="")
+
+        if self.current_alphabet == ALPHABET.A2:
+            if key in a2:
+                print(a2[key], end="")
+
+        self.current_alphabet = ALPHABET.A0
+
+    def read_encoded_abbreviation_string(self, index):
+        # This method is mainly used as a useful helper for abbreviations,
+        # which are frequently used words or phrases in the zcode that are
+        # represented by shorter codes to save space. This method retrieves
+        # and expands these codes as needed in the text output that comes
+        # from the zcode text literals.
+        
+        abbreviation_address = self.abbreviation_table_start + (index * 2)
+        abbreviation_address = self.read_word(abbreviation_address) * 2
+        return self.read_encoded_text_literal(abbreviation_address)[0]
 
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
