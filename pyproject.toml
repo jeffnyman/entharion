@@ -1,8 +1,24 @@
 [tool.poetry]
 name = "entharion"
 version = "0.1.0"
-description = ""
+description = "A Minimal Z-Machine Emulator and Interpreter"
 authors = ["Jeff Nyman <quendor.app@gmail.com>"]
+readme = "README.md"
+repository = "https://github.com/jeffnyman/entharion"
+keywords = [
+    "z-machine",
+    "interpreter",
+    "emulator"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: End Users/Desktop",
+    "Topic :: Games/Entertainment"]
 
 [tool.poetry.scripts]
 terp = "terp:main"
