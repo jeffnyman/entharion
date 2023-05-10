@@ -10,14 +10,24 @@ OPERAND_COUNT = Enum("OperandCount", "OP0 OP1 OP2 VAR")
 OPERAND_TYPE = Enum("OperandType", "Small Large Variable")
 
 
-if os.path.exists("log.txt"):
-    with open("log.txt", "w"):
-        pass
+def create_file_if_not_exists(filename):
+    if os.path.exists(filename):
+        with open(filename, "w"):
+            pass
+
+
+create_file_if_not_exists("log.txt")
+create_file_if_not_exists("trace.txt")
 
 
 def log(message):
     with open("log.txt", "a") as logfile:
         print(message, file=logfile)
+
+
+def trace(message):
+    with open("trace.txt", "a") as tracefile:
+        print(message, file=tracefile)
 
 
 def get_signed_equivalent(num):
@@ -104,7 +114,7 @@ class Instruction:
 
     def details(self):
         log(f"Opcode Name: {self.opcode}")
-        #! PUT A TRACE HERE
+        trace(f"{self.opcode}")
 
         operand_types = [operand_type.name for operand_type in self.operand_types]
         operands_in_hex = [hex(num)[2:].rjust(4, "0") for num in self.operands]
@@ -269,7 +279,7 @@ class Memory:
 
         log("\n-------------------------------")
         log(f"Instruction: {hex(self.pc)[2:]}: {instruction_bytes_hex}")
-        #! PUT A TRACE HERE
+        trace(f"{hex(self.pc)[2:]}: {instruction_bytes_hex}")
         log(f"Instruction Length: {instruction_length}")
         log(f"Opcode Byte: {opcode_byte} ({hex(opcode_byte)}) ({opcode_byte:08b})")
         log(f"Opcode Form: {form.name}")
@@ -539,7 +549,7 @@ class Memory:
 
         routine_address = self.read_packed(operands[0], True)
         log(f"Routine address: {hex(routine_address)[2:]}")
-        #! PUT A TRACE HERE
+        trace(f"{hex(routine_address)[2:]}")
 
         # Determine the number of local variables in the routine.
 
@@ -591,7 +601,7 @@ class Memory:
 
         variable_hex_strings = [hex(num)[2:] for num in routine.local_variables]
         log(f"Called with values: {variable_hex_strings}")
-        #! PUT A TRACE HERE
+        trace(f"{variable_hex_strings}")
 
         # It's necesary to set the pc to the instruction after the header.
         # Since versions 5 and up don't include the two byte portion that

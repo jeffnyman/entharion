@@ -1,5 +1,6 @@
 /zcode
 log.txt
+trace.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
