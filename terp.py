@@ -137,6 +137,8 @@ class Instruction:
             memory.print_literal(self)
         elif self.opcode == "new_line":
             memory.new_line(self)
+        elif self.opcode == "loadb":
+            memory.loadb(self)
         else:
             raise Exception("Not implemented")
 
@@ -353,6 +355,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 11:
             return "ret"
+
+        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 0x10:
+            return "loadb"
 
         if operand_count == OPERAND_COUNT.OP0 and byte & 0b00001111 == 0xB:
             return "new_line"
@@ -845,6 +850,24 @@ class Memory:
         print("")
         self.pc += instruction.length
 
+    def loadb(self, instruction):
+        """
+        According to the specification, this instruction loads a byte
+        from a memory address and stores it in a variable.
+        """
+        
+        operand_values = self.determine_operand_value(instruction)
+    
+        base_address = operand_values[0]
+        index = operand_values[1]
+    
+        log(f"Base Address: {hex(base_address)}")
+        log(f"Index: {hex(index)}")
+        log(f"Store Target: {instruction.store_variable}")
+        
+        self.set_variable(instruction.store_variable, self.data[base_address + (index)])
+        self.pc += instruction.length
+
     def print_literal(self, instruction):
         self.print_string(instruction.text_literal)
         self.pc += instruction.length
@@ -1131,7 +1154,7 @@ class Memory:
             return attribute_bit & last_two_attirbute_bytes == attribute_bit
 
     def is_store_instruction(self, opcode):
-        if opcode in ["add", "call", "sub"]:
+        if opcode in ["add", "call", "loadb", "sub"]:
             return True
 
         return False
