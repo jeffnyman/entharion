@@ -643,6 +643,7 @@ class Memory:
         )
 
         routine.details()
+        self.trace.add("-> sp")
 
     def add(self, instruction):
         """
