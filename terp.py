@@ -147,6 +147,8 @@ class Instruction:
             memory.print_num(self)
         elif self.opcode == "inc_chk":
             memory.inc_chk(self)
+        elif self.opcode == "print_char":
+            memory.print_char(self)
         else:
             raise Exception("Not implemented")
 
@@ -342,6 +344,9 @@ class Memory:
     def determine_opcode(self, byte, operand_count):
         if operand_count == OPERAND_COUNT.VAR and byte == 230:
             return "print_num"
+
+        if operand_count == OPERAND_COUNT.VAR and byte == 229:
+            return "print_char"
 
         if operand_count == OPERAND_COUNT.VAR and byte == 227:
             return "put_prop"
@@ -931,27 +936,40 @@ class Memory:
 
         self.print_number(get_signed_equivalent(operand_values[0]))
         self.pc += instruction.length
-        
+
+    def print_char(self, instruction):
+        """
+        According to the specification, this instructoin prints a ZSCII
+        character. The operand must be a character code defined in ZSCII
+        in order to be output. A constraint is that the value must not be
+        negative or larger than 1023.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        self.print_zscii_character(operand_values[0])
+        self.pc += instruction.length
+
     def inc_chk(self, instruction):
         """
         According to the specification, this instruction is used to
         increment a variable by a given value and branch if the result
         is less than or equal to a given value.
         """
-        
+
         operand_values = self.determine_operand_value(instruction)
-        
+
         variable_number = operand_values[0]
         chk_value = operand_values[1]
         value = self.read_variable(variable_number)
         log(f"inc_chk:value_in_var: {hex(variable_number)}, {value}")
-        
+
         value += 1
         self.set_variable(variable_number, value)
-        
+
         self.pc += instruction.length
         value_is_bigger = value > chk_value
-        
+
         if value_is_bigger and instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"inc_chk:branch_on_true:jumped to {hex(self.pc)}")
@@ -979,6 +997,21 @@ class Memory:
             self.print_zcharacter(first_character)
             self.print_zcharacter(second_character)
             self.print_zcharacter(third_character)
+
+    def print_zscii_character(self, character):
+        # This handles printing a character represented by a ZSCII code.
+        # The ZSCII character set contains 96 printable characters. This
+        # code takes a ZSCII code as input and uses the mapping table from
+        # the specification to find the corresponding printable character.
+        
+        table = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_'abcdefghijklmnopqrstuvwxyz{|}~"
+        
+        # It's necessary to subtract the ZSCII encoding offset of 0x21 from
+        # the input code to get the zero-based index of the character in the
+        # mapping table. 
+        target_character = table[character - 0x21]
+        
+        print(target_character, end="")
 
     def print_zcharacter(self, key):
         # A check is made as to whether there is a current abbreviation
