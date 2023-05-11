@@ -151,6 +151,8 @@ class Instruction:
             memory.jump(self)
         elif self.opcode == "rtrue":
             memory.rtrue(self)
+        elif self.opcode == "insert_obj":
+            memory.insert_obj(self)
         else:
             raise Exception("Not implemented")
 
@@ -388,6 +390,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 0x5:
             return "inc_chk"
+
+        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 0xE:
+            return "insert_obj"
 
         if operand_count == OPERAND_COUNT.OP0 and byte & 0b00001111 == 0xB:
             return "new_line"
@@ -1008,6 +1013,140 @@ class Memory:
             self.pc += instruction.branch_offset - 2
             log(f"inc_chk:branch_on_false:jumped to {hex(self.pc)}")
 
+    def insert_obj(self, instruction):
+        """
+        According to the specification, this instruction moves object O to
+        become the first child of the destination object D. After this
+        operation is performed, it means the child of D is O and the sibling
+        of O is whatever was previously the child of D. It's important to
+        note that All children of O move with it.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        inserted_object_number = operand_values[0]
+        destination_object = operand_values[1]
+
+        # Remove the original parent relationship.
+
+        original_parent = self.get_object_parent(inserted_object_number)
+
+        if original_parent > 0:
+            self.set_object_child(original_parent, 0)
+
+        # If there is an existing child for the destination object, then
+        # it's necessary to make the objects siblings of each other.
+
+        original_child = self.get_object_child(destination_object)
+
+        if original_child > 0:
+            self.set_object_sibling(inserted_object_number, original_child)
+
+        # Establish the new parent-child relationship.
+
+        self.set_object_parent(inserted_object_number, destination_object)
+        self.set_object_child(destination_object, inserted_object_number)
+
+        self.pc += instruction.length
+
+    def set_object_parent(self, number, parent):
+        parent_address = self.get_object_parent_address(number)
+
+        if self.version > 3:
+            high_byte, low_byte = self.break_word(parent)
+            self.data[parent_address] = high_byte
+            self.data[parent_address + 1] = low_byte
+        else:
+            self.data[parent_address] = parent
+
+    def set_object_sibling(self, number, sibling):
+        sibling_address = self.get_object_sibling_address(number)
+
+        if self.version > 3:
+            high_byte, low_byte = self.break_word(sibling)
+            self.data[sibling_address] = high_byte
+            self.data[sibling_address + 1] = low_byte
+        else:
+            self.data[sibling_address] = sibling
+
+    def set_object_child(self, number, child):
+        # This method determine the correct way to store the child object's
+        # number in memory, which depends on the Z-Machine version. For
+        # versions 4 and later, the child object number is stored as a
+        # two-byte word, which is done by splitting the number into its
+        # two bytes, while for versions 3 and earlier, the child object
+        # number is stored as a single byte.
+        child_address = self.get_object_child_address(number)
+
+        if self.version > 3:
+            high_byte, low_byte = self.break_word(child)
+            self.data[child_address] = high_byte
+            self.data[child_address + 1] = low_byte
+        else:
+            self.data[child_address] = child
+
+    def get_object_sibling_address(self, number):
+        sibling_address = self.get_object_parent_address(number)
+
+        if self.version > 3:
+            sibling_address += 2
+        else:
+            sibling_address += 1
+
+        return sibling_address
+
+    def get_object_child_address(self, number):
+        child_address = self.get_object_sibling_address(number)
+
+        if self.version > 3:
+            child_address += 2
+        else:
+            child_address += 1
+
+        return child_address
+
+    def get_object_sibling_address(self, number):
+        sibling_address = self.get_object_parent_address(number)
+
+        if self.version > 3:
+            sibling_address += 2
+        else:
+            sibling_address += 1
+
+        return sibling_address
+
+    def get_object_child(self, number):
+        child_address = self.get_object_child_address(number)
+
+        if self.version > 3:
+            return self.read_word(child_address)
+
+        return self.read_byte(child_address)
+
+    def get_object_parent(self, number):
+        parent_address = self.get_object_parent_address(number)
+
+        if self.version > 3:
+            return self.read_word(parent_address)
+
+        return self.read_byte(parent_address)
+
+    def get_object_parent_address(self, number):
+        return self.get_object_relationships_address(number)
+
+    def get_object_relationships_address(self, number):
+        # This method calculates the memory address where the parent object
+        # relationship is stored for the given object number in the object
+        # tree data structure. The code then adds a fixed offset value to
+        # this address to obtain the address of the property holding the
+        # parent object number for the given object.
+        object_address = self.get_object_address(number)
+
+        if self.version > 3:
+            return object_address + 4
+
+        return object_address + 3
+
     def print_number(self, number):
         print(number, end="")
 
@@ -1363,6 +1502,15 @@ class Memory:
 
     def pop_stack(self):
         return self.stack.pop()
+
+    def breakWord(word):
+        # This method takes a 16-bit word value as input and returns a
+        # tuple containing two 8-bit values.
+
+        byte_1 = (0xFF00 & word) >> 8
+        byte_2 = 0x00FF & word
+
+        return (byte_1, byte_2)
 
     def details(self):
         log("\n-------------------")
