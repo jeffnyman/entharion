@@ -153,6 +153,8 @@ class Instruction:
             memory.rtrue(self)
         elif self.opcode == "insert_obj":
             memory.insert_obj(self)
+        elif self.opcode == "push":
+            memory.push(self)
         else:
             raise Exception("Not implemented")
 
@@ -346,6 +348,9 @@ class Memory:
         )
 
     def determine_opcode(self, byte, operand_count):
+        if operand_count == OPERAND_COUNT.VAR and byte == 232:
+            return "push"
+
         if operand_count == OPERAND_COUNT.VAR and byte == 230:
             return "print_num"
 
@@ -1012,6 +1017,19 @@ class Memory:
         elif not value_is_bigger and not instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"inc_chk:branch_on_false:jumped to {hex(self.pc)}")
+
+    def push(self, instruction):
+        """
+        According to the specification, this just pushes a value onto
+        the stack.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        value_to_push = operand_values[0]
+        self.set_variable(0, value_to_push)
+
+        self.pc += instruction.length
 
     def insert_obj(self, instruction):
         """
