@@ -735,6 +735,11 @@ class Memory:
 
         self.pc += instruction.length
 
+        # TODO: THIS IS NOT WORKING. REVISIT
+        # self.determine_jump_destination(
+        #     operand_values[0] == operand_values[1], instruction
+        # )
+
         if operand_values[0] == operand_values[1] and instruction.branch_on_true:
             self.pc += instruction.branch_offset - 2
             log(f"je:branch_on_true:jumped to {hex(self.pc)}")
