@@ -922,7 +922,7 @@ class Memory:
         log(f"Store Target: {instruction.store_variable}")
 
         self.set_variable(
-            instruction.store_variable, self.data[base_address + (2 * index)]
+            instruction.store_variable, self.read_word(base_address + (2 * index))
         )
         self.pc += instruction.length
 
@@ -1003,14 +1003,14 @@ class Memory:
         # The ZSCII character set contains 96 printable characters. This
         # code takes a ZSCII code as input and uses the mapping table from
         # the specification to find the corresponding printable character.
-        
+
         table = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_'abcdefghijklmnopqrstuvwxyz{|}~"
-        
+
         # It's necessary to subtract the ZSCII encoding offset of 0x21 from
         # the input code to get the zero-based index of the character in the
-        # mapping table. 
+        # mapping table.
         target_character = table[character - 0x21]
-        
+
         print(target_character, end="")
 
     def print_zcharacter(self, key):
