@@ -14,4 +14,6 @@ In the end, I found nothing out there really useful to help construct a Z-Machin
 
 This particular project, like Quendor, will be in Python. Unlike Quendor, however, this project is aiming to be nothing more than a playground to attempt a very streamlined approach to building the emulator and interpreter. This will be the "no-frills" version and, perhaps arguably, should have been my starting point.
 
-Incidentally, the name "Entharion" refers to [Entharion the Wise](https://zork.fandom.com/wiki/Entharion_the_Wise), just to keep up the general theme.
+The initial attempt at a basic script is contained in `terp.py` while a package within this project, called _grueslayer_, will be a slightly more formal attempt.
+
+Incidentally, the name "Entharion" refers to [Entharion the Wise](https://zork.fandom.com/wiki/Entharion_the_Wise), just to keep up the general theme. The reference to [Grueslayer](https://zork.fandom.com/wiki/Grueslayer) is done in a similar spirit.
