@@ -1103,6 +1103,28 @@ class Memory:
         abbreviation_address = self.read_word(abbreviation_address) * 2
         return self.read_encoded_text_literal(abbreviation_address)[0]
 
+    def determine_jump_destination(self, condition, instruction):
+        if condition and instruction.branch_on_true:
+            if instruction.branch_offset == 0:
+                log(f"jump op:branch_on_true:ret false {hex(self.pc)}")
+                print("NEED AN RFALSE?")
+            elif instruction.branch_offset == 1:
+                log(f"jump op:branch_on_true:ret true {hex(self.pc)}")
+                self.rtrue(None)
+            else:
+                log(f"jump op:branch_on_true:jumped to {hex(self.pc)}")
+                self.pc += instruction.branch_offset - 2
+        elif not condition and not instruction.branch_on_true:
+            if instruction.branch_offset == 0:
+                log(f"jump op:branch_on_false:ret false {hex(self.pc)}")
+                print("NEED AN RFALSE?")
+            elif instruction.branch_offset == 1:
+                log(f"jump op:branch_on_false:ret true {hex(self.pc)}")
+                self.rtrue(None)
+            else:
+                log(f"jump op:branch_on_false:jumped to {hex(self.pc)}")
+                self.pc += instruction.branch_offset - 2
+
     def determine_operand_value(self, instruction):
         operand_list = zip(instruction.operand_types, instruction.operands)
 
