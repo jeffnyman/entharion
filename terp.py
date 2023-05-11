@@ -151,6 +151,8 @@ class Instruction:
             memory.print_char(self)
         elif self.opcode == "jump":
             memory.jump(self)
+        elif self.opcode == "rtrue":
+            memory.rtrue(self)
         else:
             raise Exception("Not implemented")
 
@@ -403,6 +405,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 0:
             return "jz"
+
+        if operand_count == OPERAND_COUNT.OP0 and byte & 0b00001111 == 0:
+            return "rtrue"
 
         # If the logic gets to here, that means an instruction has been
         # encountered during decoding the bytes that hasn't been found
@@ -946,6 +951,16 @@ class Memory:
         log(f"Jump to: {get_signed_equivalent(operand_values[0])}")
 
         self.pc += instruction.length + get_signed_equivalent(operand_values[0]) - 2
+
+    def rtrue(self, instruction):
+        """
+        According to the specification, this instruction is very simple in
+        that it just returns true from the current routine.
+        """
+
+        current_routine = self.routine_callstack.pop()
+        self.set_variable(current_routine.store_variable, 1)
+        self.pc = current_routine.return_address
 
     def print_num(self, instruction):
         """
