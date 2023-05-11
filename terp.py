@@ -149,6 +149,8 @@ class Instruction:
             memory.inc_chk(self)
         elif self.opcode == "print_char":
             memory.print_char(self)
+        elif self.opcode == "jump":
+            memory.jump(self)
         else:
             raise Exception("Not implemented")
 
@@ -371,6 +373,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 13:
             return "store"
+
+        if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 12:
+            return "jump"
 
         if operand_count == OPERAND_COUNT.OP1 and byte & 0b00001111 == 11:
             return "ret"
@@ -925,6 +930,22 @@ class Memory:
             instruction.store_variable, self.read_word(base_address + (2 * index))
         )
         self.pc += instruction.length
+
+    def jump(self, instruction):
+        """
+        According ot the specification, this instruction will perform an
+        unconditional jump to a given label. It's specifically called out
+        that this is not a branch instruction and the operand is a 2-byte
+        signed offset to apply to the program counter. Apparently it is
+        is legal for this instruction to jump into a different routine and,
+        if that's the case, this should not change the routine call state.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        log(f"Jump to: {get_signed_equivalent(operand_values[0])}")
+
+        self.pc += instruction.length + get_signed_equivalent(operand_values[0]) - 2
 
     def print_num(self, instruction):
         """
