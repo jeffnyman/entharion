@@ -145,6 +145,8 @@ class Instruction:
             memory.loadw(self)
         elif self.opcode == "print_num":
             memory.print_num(self)
+        elif self.opcode == "inc_chk":
+            memory.inc_chk(self)
         else:
             raise Exception("Not implemented")
 
@@ -373,6 +375,9 @@ class Memory:
 
         if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 0x9:
             return "and"
+
+        if operand_count == OPERAND_COUNT.OP2 and byte & 0b00011111 == 0x5:
+            return "inc_chk"
 
         if operand_count == OPERAND_COUNT.OP0 and byte & 0b00001111 == 0xB:
             return "new_line"
@@ -926,6 +931,33 @@ class Memory:
 
         self.print_number(get_signed_equivalent(operand_values[0]))
         self.pc += instruction.length
+        
+    def inc_chk(self, instruction):
+        """
+        According to the specification, this instruction is used to
+        increment a variable by a given value and branch if the result
+        is less than or equal to a given value.
+        """
+        
+        operand_values = self.determine_operand_value(instruction)
+        
+        variable_number = operand_values[0]
+        chk_value = operand_values[1]
+        value = self.read_variable(variable_number)
+        log(f"inc_chk:value_in_var: {hex(variable_number)}, {value}")
+        
+        value += 1
+        self.set_variable(variable_number, value)
+        
+        self.pc += instruction.length
+        value_is_bigger = value > chk_value
+        
+        if value_is_bigger and instruction.branch_on_true:
+            self.pc += instruction.branch_offset - 2
+            log(f"inc_chk:branch_on_true:jumped to {hex(self.pc)}")
+        elif not value_is_bigger and not instruction.branch_on_true:
+            self.pc += instruction.branch_offset - 2
+            log(f"inc_chk:branch_on_false:jumped to {hex(self.pc)}")
 
     def print_number(self, number):
         print(number, end="")
@@ -1222,7 +1254,7 @@ class Memory:
         return False
 
     def is_branch_instruction(self, opcode):
-        if opcode in ["je", "jz", "test_attr"]:
+        if opcode in ["inc_chk", "je", "jz", "test_attr"]:
             return True
 
         return False
