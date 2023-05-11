@@ -824,11 +824,15 @@ class Memory:
 
         operand_values = self.determine_operand_value(instruction)
 
-        log(f"Object Number: {operand_values[0]}")
-        log(f"Property Number: {operand_values[1]}")
-        log(f"Property Value: {operand_values[2]}")
+        object_number = operand_values[0]
+        property_number = operand_values[1]
+        property_value = operand_values[2]
 
-        self.set_property(operand_values[0], operand_values[1], operand_values[2])
+        log(f"Object Number: {object_number}")
+        log(f"Property Number: {property_number}")
+        log(f"Property Value: {property_value}")
+
+        self.set_property(object_number, property_number, property_value)
 
         self.pc += instruction.length
 
