@@ -1109,6 +1109,13 @@ class Memory:
         return self.read_encoded_text_literal(abbreviation_address)[0]
 
     def determine_jump_destination(self, condition, instruction):
+        # NOTE:
+        # The goal is to replace the similar logic that currently exists
+        # in the je, jz, test_attr and inc_chk methods. However, in
+        # breaking out the logic it looks like I'm missing a condition
+        # in all of those methods. Or, alternatively, I shouldn't be
+        # considering that condition at all. This needs to be looked at
+        # more closely.
         if condition and instruction.branch_on_true:
             if instruction.branch_offset == 0:
                 log(f"jump op:branch_on_true:ret false {hex(self.pc)}")
