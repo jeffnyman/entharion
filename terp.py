@@ -112,9 +112,7 @@ class Instruction:
         log("\nEXECUTING: " + str(self.opcode))
 
         if self.opcode in ["call", "call_vs"]:
-            memory.call(
-                self.operand_types, self.operands, self.store_variable, self.length
-            )
+            memory.call(self)
         elif self.opcode == "add":
             memory.add(self)
         elif self.opcode == "je":
@@ -609,7 +607,7 @@ class Memory:
 
         return 8 * offset
 
-    def call(self, operand_types, operands, store_variable, instr_length):
+    def call(self, instruction):
         """
         According to the specification, this opcode calls a given routine with
         0, 1, 2 or 3 arguments as supplied and stores any return value from
@@ -617,13 +615,16 @@ class Memory:
         can be represented by a packed address.
         """
 
+        operand_values = self.determine_operand_value(instruction)
+
         routine = Routine()
-        routine.return_address = self.pc + instr_length
-        routine.store_variable = store_variable
+        routine.return_address = self.pc + instruction.length
+        routine.store_variable = instruction.store_variable
 
         # The first operand is the address to call.
 
-        routine_address = self.read_packed(operands[0], True)
+        calling_address = operand_values[0]
+        routine_address = self.read_packed(calling_address, True)
         log(f"Routine address: {hex(routine_address)[2:]}")
         self.trace.add(f"{hex(routine_address)[2:]}")
 
@@ -649,24 +650,9 @@ class Memory:
 
         operands_formatted = [
             f"({o_type.name}, {hex(operand)[2:]})"
-            for o_type, operand in zip(operand_types, operands)
+            for o_type, operand in zip(instruction.operand_types, instruction.operands)
         ]
         log(f"Operand Values: {', '.join(operands_formatted)}")
-
-        operand_list = list(zip(operand_types, operands))
-
-        operand_values = []
-
-        # The operands can be word constants (00), byte constants (01), or
-        # a variable number (10), which would be a byte. It's necessary to
-        # set the value of the local variable appropriately based on the
-        # operand type.
-
-        for operand_pair in operand_list:
-            if operand_pair[0] == OPERAND_TYPE.Variable:
-                operand_values.append(self.read_variable(operand_pair[1]))
-            else:
-                operand_values.append(operand_pair[1])
 
         operand_values.pop(0)
 
