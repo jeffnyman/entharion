@@ -143,6 +143,8 @@ class Instruction:
             memory.bitwise_and(self)
         elif self.opcode == "loadw":
             memory.loadw(self)
+        elif self.opcode == "print_num":
+            memory.print_num(self)
         else:
             raise Exception("Not implemented")
 
@@ -336,6 +338,9 @@ class Memory:
         )
 
     def determine_opcode(self, byte, operand_count):
+        if operand_count == OPERAND_COUNT.VAR and byte == 230:
+            return "print_num"
+
         if operand_count == OPERAND_COUNT.VAR and byte == 227:
             return "put_prop"
 
@@ -905,9 +910,25 @@ class Memory:
         log(f"Base Address: {hex(base_address)}")
         log(f"Index: {hex(index)}")
         log(f"Store Target: {instruction.store_variable}")
-        
-        self.set_variable(instruction.store_variable, self.data[base_address + (2 * index)])
+
+        self.set_variable(
+            instruction.store_variable, self.data[base_address + (2 * index)]
+        )
         self.pc += instruction.length
+
+    def print_num(self, instruction):
+        """
+        According to the specification, this instruction prints a (signed)
+        number in decimal.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        self.print_number(get_signed_equivalent(operand_values[0]))
+        self.pc += instruction.length
+
+    def print_number(self, number):
+        print(number, end="")
 
     def print_literal(self, instruction):
         self.print_string(instruction.text_literal)
