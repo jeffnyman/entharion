@@ -155,6 +155,8 @@ class Instruction:
             memory.insert_obj(self)
         elif self.opcode == "push":
             memory.push(self)
+        elif self.opcode == "pull":
+            memory.pull(self)
         else:
             raise Exception("Not implemented")
 
@@ -348,6 +350,9 @@ class Memory:
         )
 
     def determine_opcode(self, byte, operand_count):
+        if operand_count == OPERAND_COUNT.VAR and byte == 233:
+            return "pull"
+
         if operand_count == OPERAND_COUNT.VAR and byte == 232:
             return "push"
 
@@ -1028,6 +1033,20 @@ class Memory:
 
         value_to_push = operand_values[0]
         self.set_variable(0, value_to_push)
+
+        self.pc += instruction.length
+
+    def pull(self, instruction):
+        """
+        According to the specification, this just pulls a value off
+        the stack.
+        """
+
+        operand_values = self.determine_operand_value(instruction)
+
+        variable_to_pull_to = operand_values[0]
+        stack_value = self.read_variable(0)
+        self.set_variable(variable_to_pull_to, stack_value)
 
         self.pc += instruction.length
 
