@@ -27,8 +27,11 @@ class Memory:
 
         print(f"Starting address: {hex(self.pc)}")
 
-    def read_instruction(self, address) -> Instruction:
+    def read_instruction(self, address: int) -> Instruction:
         print(f"Reading instruction at {hex(address)}")
+
+        opcode_byte = self.read_byte(address)
+        print(f"Opcode byte: {opcode_byte} ({hex(opcode_byte)})")
 
         return Instruction()
 
