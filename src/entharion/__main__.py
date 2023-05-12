@@ -16,6 +16,7 @@ def main() -> int:
             raise TypeError("zcode data must be of type bytes")
 
         instruction: Instruction = zcode.read_instruction(zcode.pc)
+        instruction.details()
 
         if not isinstance(instruction, Instruction):
             raise TypeError("instruction must be instance of Instruction")

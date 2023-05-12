@@ -25,6 +25,7 @@ class Instruction:
         self._determine_operand_count()
         self._determine_opcode_number()
 
+    def details(self) -> None:
         print(
             f"{self.operand_count.name:<3} | "
             f"{self.opcode_number:>2} | "
