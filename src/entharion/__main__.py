@@ -6,16 +6,22 @@ from entharion.memory import Memory
 
 
 def main() -> int:
-    zcode: Memory = Loader.load(sys.argv[1])
+    try:
+        zcode: Memory = Loader.load(sys.argv[1])
 
-    assert isinstance(zcode, Memory), "zcode must be instance of Memory"
-    assert isinstance(zcode.data, bytes), "zcode data must be of type bytes"
+        if not isinstance(zcode, Memory):
+            raise TypeError("zcode must be instance of Memory")
 
-    instruction: Instruction = zcode.read_instruction(zcode.pc)
+        if not isinstance(zcode.data, bytes):
+            raise TypeError("zcode data must be of type bytes")
 
-    assert isinstance(
-        instruction, Instruction
-    ), "instruction must be instance of Instruction"
+        instruction: Instruction = zcode.read_instruction(zcode.pc)
+
+        if not isinstance(instruction, Instruction):
+            raise TypeError("instruction must be instance of Instruction")
+    except (TypeError, FileNotFoundError) as e:
+        print(f"Error: {e}")
+        return 1
 
     return 0
 
