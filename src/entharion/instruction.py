@@ -19,11 +19,19 @@ class Instruction:
         self.opcode_number: int
 
     def decode(self) -> None:
+        current_byte: int = self.address
+
         self.opcode_byte = self.memory.read_byte(self.address)
+
+        current_byte += 1
 
         self._determine_form()
         self._determine_operand_count()
         self._determine_opcode_number()
+
+        if self.memory.version >= 5 and self.opcode_byte == 0xBE:
+            self.opcode_number = self.memory.read_byte(current_byte)
+            current_byte += 1
 
     def details(self) -> None:
         print(
