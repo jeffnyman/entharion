@@ -1,3 +1,6 @@
+from entharion.instruction import Instruction
+
+
 class Memory:
     def __init__(self, data: bytes) -> None:
         self.data: bytes = data
@@ -23,6 +26,11 @@ class Memory:
         self._read_starting_address()
 
         print(f"Starting address: {hex(self.pc)}")
+
+    def read_instruction(self, address) -> Instruction:
+        print(f"Reading instruction at {hex(address)}")
+
+        return Instruction()
 
     def read_byte(self, address: int) -> int:
         return self.data[address]
