@@ -16,6 +16,7 @@ class Instruction:
         self.opcode_byte: int
         self.form: Form
         self.operand_count: Operand_Count
+        self.opcode_number: int
 
     def decode(self) -> None:
         self.opcode_byte = self.memory.read_byte(self.address)
@@ -26,6 +27,9 @@ class Instruction:
 
         self._determine_operand_count()
         print(f"Opearand count: {self.operand_count.name}")
+
+        self._determine_opcode_number()
+        print(f"Opcode number: {self.opcode_number}")
 
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
@@ -55,3 +59,12 @@ class Instruction:
 
         if self.form == Form.EXTENDED:
             self.operand_count = Operand_Count.VAR
+
+    def _determine_opcode_number(self) -> None:
+        if self.form in (Form.LONG, Form.VARIABLE):
+            # get bottom five bits
+            self.opcode_number = self.opcode_byte & 0b00011111
+
+        if self.form == Form.SHORT:
+            # get bottom four bits
+            self.opcode_number = self.opcode_byte & 0b00001111
