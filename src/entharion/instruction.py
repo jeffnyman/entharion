@@ -20,16 +20,18 @@ class Instruction:
 
     def decode(self) -> None:
         self.opcode_byte = self.memory.read_byte(self.address)
-        print(f"Opcode byte: {self.opcode_byte} ({hex(self.opcode_byte)})")
 
         self._determine_form()
-        print(f"Instruction form: {self.form.name}")
-
         self._determine_operand_count()
-        print(f"Opearand count: {self.operand_count.name}")
-
         self._determine_opcode_number()
-        print(f"Opcode number: {self.opcode_number}")
+
+        print(
+            f"{self.operand_count.name:<3} | "
+            f"{self.opcode_number:>2} | "
+            f"{self.opcode_byte:<3} | "
+            f"{hex(self.opcode_byte)[2:]:2} | "
+            f"{bin(self.opcode_byte)[2:]}"
+        )
 
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
