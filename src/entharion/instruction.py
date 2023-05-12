@@ -10,10 +10,12 @@ Operand_Count = Enum("Operand Count", "OP0 OP1 OP2 VAR")
 
 
 mnemonic_map = {
-    (1, 2, 3): {
-        (224, 0): "call",
+    "VAR": {
+        (1, 2, 3): {
+            (224, 0): "call",
+        },
+        (4, 5, 6, 7, 8): {(224, 0): "call_vs"},
     },
-    (4, 5, 6, 7, 8): {(224, 0): "call_vs"},
 }
 
 
@@ -94,12 +96,15 @@ class Instruction:
             self.opcode_number = self.opcode_byte & 0b00001111
 
     def _determine_opcode_name(self) -> None:
-        for key in mnemonic_map.keys():
-            if self.memory.version in key:
-                version_map = mnemonic_map[key]
-                break
+        operand_count_map = mnemonic_map.get(self.operand_count.name)
 
-        if version_map:
-            self.opcode_name = version_map.get(
-                (self.opcode_byte, self.opcode_number), "UNKNOWN"
-            )
+        if operand_count_map:
+            for key in operand_count_map.keys():
+                if self.memory.version in key:
+                    version_map = operand_count_map[key]
+                    break
+
+            if version_map:
+                self.opcode_name = version_map.get(
+                    (self.opcode_byte, self.opcode_number), "UNKNOWN"
+                )
