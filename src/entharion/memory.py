@@ -1,15 +1,15 @@
 class Memory:
-    def __init__(self, data) -> None:
-        self.data = data
+    def __init__(self, data: bytes) -> None:
+        self.data: bytes = data
 
-        self.version = self.read_byte(0x00)
+        self.version: int = self.read_byte(0x00)
 
-        self.dynamic = 0
-        self.static = self.read_word(0x0E)
-        self.high = self.read_word(0x04)
+        self.dynamic: int = 0
+        self.static: int = self.read_word(0x0E)
+        self.high: int = self.read_word(0x04)
 
-        self.routine_offset = self.read_word(0x28)
-        self.strings_offset = self.read_word(0x2A)
+        self.routine_offset: int = self.read_word(0x28)
+        self.strings_offset: int = self.read_word(0x2A)
 
         print(f"Zcode version: {self.version}")
         print(f"Static memory start: {hex(self.static)}")
@@ -19,13 +19,13 @@ class Memory:
 
         self._memory_checks()
 
-    def read_byte(self, address) -> int:
+    def read_byte(self, address: int) -> int:
         return self.data[address]
 
-    def read_word(self, address) -> int:
+    def read_word(self, address: int) -> int:
         return (self.data[address] << 8) | self.data[address + 1]
 
-    def read_packed(self, address, is_routine) -> int:
+    def read_packed(self, address: int, is_routine: bool) -> int:
         if self.version < 4:
             return 2 * address
 
@@ -58,7 +58,7 @@ class Memory:
         # The specification indicates that the total of dynamic plus static
         # memory must not exceed 64K minus 2 bytes.
 
-        dynamic_size = self.static - 1 - self.dynamic + 1
+        dynamic_size: int = self.static - 1 - self.dynamic + 1
 
         if (dynamic_size + self.static) > 65534:
             raise RuntimeError("memory exceeds addressable memory space")
