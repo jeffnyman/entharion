@@ -9,6 +9,14 @@ Form = Enum("Form", "SHORT LONG VARIABLE EXTENDED")
 Operand_Count = Enum("Operand Count", "OP0 OP1 OP2 VAR")
 
 
+mnemonic_map = {
+    (1, 2, 3): {
+        (224, 0): "call",
+    },
+    (4, 5, 6, 7, 8): {(224, 0): "call_vs"},
+}
+
+
 class Instruction:
     def __init__(self, memory: "Memory", address: int) -> None:
         self.memory: "Memory" = memory
@@ -17,6 +25,7 @@ class Instruction:
         self.form: Form
         self.operand_count: Operand_Count
         self.opcode_number: int
+        self.opcode_name: str
 
     def decode(self) -> None:
         current_byte: int = self.address
@@ -33,6 +42,8 @@ class Instruction:
             self.opcode_number = self.memory.read_byte(current_byte)
             current_byte += 1
 
+        self._determine_opcode_name()
+
     def details(self) -> None:
         print(
             f"{self.operand_count.name:<3} | "
@@ -41,6 +52,8 @@ class Instruction:
             f"{hex(self.opcode_byte)[2:]:2} | "
             f"{bin(self.opcode_byte)[2:]}"
         )
+
+        print(f"Instruction: {self.opcode_name}")
 
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
@@ -79,3 +92,14 @@ class Instruction:
         if self.form == Form.SHORT:
             # get bottom four bits
             self.opcode_number = self.opcode_byte & 0b00001111
+
+    def _determine_opcode_name(self) -> None:
+        for key in mnemonic_map.keys():
+            if self.memory.version in key:
+                version_map = mnemonic_map[key]
+                break
+
+        if version_map:
+            self.opcode_name = version_map.get(
+                (self.opcode_byte, self.opcode_number), "UNKNOWN"
+            )
