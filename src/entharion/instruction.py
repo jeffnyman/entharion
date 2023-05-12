@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from enum import Enum
 
 Form = Enum("Form", "SHORT LONG VARIABLE EXTENDED")
+Operand_Count = Enum("Operand Count", "OP0 OP1 OP2 VAR")
 
 
 class Instruction:
@@ -14,6 +15,7 @@ class Instruction:
         self.address: int = address
         self.opcode_byte: int
         self.form: Form
+        self.operand_count: Operand_Count
 
     def decode(self) -> None:
         self.opcode_byte = self.memory.read_byte(self.address)
@@ -21,6 +23,9 @@ class Instruction:
 
         self._determine_form()
         print(f"Instruction form: {self.form.name}")
+
+        self._determine_operand_count()
+        print(f"Opearand count: {self.operand_count.name}")
 
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
@@ -31,3 +36,22 @@ class Instruction:
             self.form = Form.SHORT
         else:
             self.form = Form.LONG
+
+    def _determine_operand_count(self) -> None:
+        if self.form == Form.SHORT:
+            if self.opcode_byte & 0b00110000 == 0b00110000:
+                self.operand_count = Operand_Count.OP0
+            else:
+                self.operand_count = Operand_Count.OP1
+
+        if self.form == Form.LONG:
+            self.operand_count = Operand_Count.OP2
+
+        if self.form == Form.VARIABLE:
+            if self.opcode_byte & 0b00100000 == 0b00100000:
+                self.operand_count = Operand_Count.VAR
+            else:
+                self.operand_count = Operand_Count.OP2
+
+        if self.form == Form.EXTENDED:
+            self.operand_count = Operand_Count.VAR
