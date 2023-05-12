@@ -24,6 +24,14 @@ class Memory:
         if (dynamic_size + self.static) > 65534:
             raise RuntimeError("memory exceeds addressable memory space")
 
+        # The specification indicates that dynamic memory must contain at
+        # least 64 bytes to accommodate the header.
+        if self.static < 64:
+            raise RuntimeError("static memory begins before byte 64")
+
+        if len(self.data) < 64:
+            raise RuntimeError("dynamic memory is below required 64 bytes")
+
     def read_byte(self, address) -> int:
         return self.data[address]
 
