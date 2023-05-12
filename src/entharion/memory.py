@@ -30,10 +30,10 @@ class Memory:
     def read_instruction(self, address: int) -> Instruction:
         print(f"Reading instruction at {hex(address)}")
 
-        opcode_byte = self.read_byte(address)
-        print(f"Opcode byte: {opcode_byte} ({hex(opcode_byte)})")
+        instruction = Instruction(self, address)
+        instruction.decode()
 
-        return Instruction()
+        return instruction
 
     def read_byte(self, address: int) -> int:
         return self.data[address]
