@@ -1,18 +1,7 @@
 import sys
 
-
-class Memory:
-    def __init__(self, data) -> None:
-        self.data = data
-
-
-class Loader:
-    @staticmethod
-    def load(filename) -> Memory:
-        f = open(filename, "rb")
-        data = f.read()
-
-        return Memory(data)
+from entharion.loader import Loader
+from entharion.memory import Memory
 
 
 def main() -> int:
