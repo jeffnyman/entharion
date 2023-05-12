@@ -17,6 +17,13 @@ class Memory:
         print(f"Routine offset: {self.routine_offset}")
         print(f"Strings offset: {self.strings_offset}")
 
+        dynamic_size = self.static - 1 - self.dynamic + 1
+
+        # The specification indicates that the total of dynamic plus static
+        # memory must not exceed 64K minus 2 bytes.
+        if (dynamic_size + self.static) > 65534:
+            raise RuntimeError("memory exceeds addressable memory space")
+
     def read_byte(self, address) -> int:
         return self.data[address]
 
