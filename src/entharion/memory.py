@@ -22,3 +22,18 @@ class Memory:
 
     def read_word(self, address) -> int:
         return (self.data[address] << 8) | self.data[address + 1]
+
+    def read_packed(self, address, is_routine) -> int:
+        if self.version < 4:
+            return 2 * address
+
+        if self.version < 6:
+            return 4 * address
+
+        if self.version < 8 and is_routine:
+            return 4 * address + (8 * self.routine_offset)
+
+        if self.version < 8:
+            return 4 * address + (8 * self.strings_offset)
+
+        return 8 * address
