@@ -17,7 +17,12 @@ class Memory:
         print(f"Routine offset: {self.routine_offset}")
         print(f"Strings offset: {self.strings_offset}")
 
+        self.pc: int
+
         self._memory_checks()
+        self._read_starting_address()
+
+        print(f"Starting address: {hex(self.pc)}")
 
     def read_byte(self, address: int) -> int:
         return self.data[address]
@@ -39,6 +44,12 @@ class Memory:
             return 4 * address + (8 * self.strings_offset)
 
         return 8 * address
+
+    def _read_starting_address(self) -> None:
+        if self.version != 6:
+            self.pc = self.read_word(0x06)
+        else:
+            self.pc = self.read_packed(self.read_word(0x06), True)
 
     def _memory_checks(self) -> None:
         header_size: int = 64
