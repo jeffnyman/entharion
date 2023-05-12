@@ -17,20 +17,7 @@ class Memory:
         print(f"Routine offset: {self.routine_offset}")
         print(f"Strings offset: {self.strings_offset}")
 
-        dynamic_size = self.static - 1 - self.dynamic + 1
-
-        # The specification indicates that the total of dynamic plus static
-        # memory must not exceed 64K minus 2 bytes.
-        if (dynamic_size + self.static) > 65534:
-            raise RuntimeError("memory exceeds addressable memory space")
-
-        # The specification indicates that dynamic memory must contain at
-        # least 64 bytes to accommodate the header.
-        if self.static < 64:
-            raise RuntimeError("static memory begins before byte 64")
-
-        if len(self.data) < 64:
-            raise RuntimeError("dynamic memory is below required 64 bytes")
+        self._memory_checks()
 
     def read_byte(self, address) -> int:
         return self.data[address]
@@ -52,3 +39,26 @@ class Memory:
             return 4 * address + (8 * self.strings_offset)
 
         return 8 * address
+
+    def _memory_checks(self) -> None:
+        header_size: int = 64
+
+        # There is a minimum size to a zcode program in that it must be able
+        # to accommodate a 64 byte header.
+
+        if len(self.data) < header_size:
+            raise RuntimeError("dynamic memory is below required 64 bytes")
+
+        # The specification indicates that dynamic memory must contain at
+        # least 64 bytes to accommodate the header.
+
+        if self.static < header_size:
+            raise RuntimeError("static memory begins before byte 64")
+
+        # The specification indicates that the total of dynamic plus static
+        # memory must not exceed 64K minus 2 bytes.
+
+        dynamic_size = self.static - 1 - self.dynamic + 1
+
+        if (dynamic_size + self.static) > 65534:
+            raise RuntimeError("memory exceeds addressable memory space")
