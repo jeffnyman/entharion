@@ -42,6 +42,12 @@ class Instruction:
 
         if self.form in (Form.VARIABLE, Form.EXTENDED):
             self._determine_operand_types(self.memory.read_byte(current_byte))
+            current_byte += 1
+
+            if self.opcode_name in ("call_vs2", "call_vn2"):
+                self._determine_operand_types(self.memory.read_byte(current_byte))
+                current_byte += 1
+
         else:
             self._determine_operand_types()
 
