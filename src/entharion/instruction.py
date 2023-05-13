@@ -67,7 +67,10 @@ class Instruction:
         print(f"Instruction: {self.opcode_name}")
 
         operand_types = [operand_type.name for operand_type in self.operand_types]
+        operand_values = [hex(num)[2:].rjust(4, "0") for num in self.operand_values]
+
         print(f"Operand type: {operand_types}")
+        print(f"Operand values: {operand_values}")
 
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
@@ -181,12 +184,12 @@ class Instruction:
         for operand_type in self.operand_types:
             if operand_type == Operand_Type.Large:
                 self.operand_values.append(self.memory.read_word(self.current_byte))
-                # Requires incrementing current_byte; need to make it an instance variable.
+                self.current_byte += 2
 
             if operand_type == Operand_Type.Small:
                 self.operand_values.append(self.memory.read_byte(self.current_byte))
-                # Requires incrementing current_byte; need to make it an instance variable.
+                self.current_byte += 1
 
             if operand_type == Operand_Type.Variable:
                 self.operand_values.append(self.memory.read_byte(self.current_byte))
-                # Requires incrementing current_byte; need to make it an instance variable.
+                self.current_byte += 1
