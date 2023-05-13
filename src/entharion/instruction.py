@@ -16,6 +16,7 @@ class Instruction:
     def __init__(self, memory: "Memory", address: int) -> None:
         self.memory: "Memory" = memory
         self.address: int = address
+        self.current_byte: int
         self.opcode_byte: int
         self.form: Form
         self.operand_count: Operand_Count
@@ -25,7 +26,7 @@ class Instruction:
         self.operand_values: list = []
 
     def decode(self) -> None:
-        current_byte: int = self.address
+        self.current_byte: int = self.address
 
         self.opcode_byte = self.memory.read_byte(self.address)
 
@@ -33,26 +34,26 @@ class Instruction:
         self._determine_operand_count()
         self._determine_opcode_number()
 
-        current_byte += 1
+        self.current_byte += 1
 
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
-            self.opcode_number = self.memory.read_byte(current_byte)
-            current_byte += 1
+            self.opcode_number = self.memory.read_byte(self.current_byte)
+            self.current_byte += 1
 
         self._determine_opcode_name()
 
         if self.operand_count != Operand_Count.OP0:
             if self.form in (Form.VARIABLE, Form.EXTENDED):
-                self._determine_operand_types(self.memory.read_byte(current_byte))
-                current_byte += 1
+                self._determine_operand_types()
+                self.current_byte += 1
 
                 if self.opcode_name in ("call_vs2", "call_vn2"):
-                    self._determine_operand_types(self.memory.read_byte(current_byte))
-                    current_byte += 1
+                    self._determine_operand_types()
+                    self.current_byte += 1
             else:
                 self._determine_operand_types()
 
-            self._read_operand_values(current_byte)
+            self._read_operand_values()
 
     def details(self) -> None:
         print(
@@ -113,7 +114,9 @@ class Instruction:
             ):
                 self.opcode_name = opcode.name
 
-    def _determine_operand_types(self, current_byte: int = None) -> None:
+    def _determine_operand_types(self) -> None:
+        current_byte = self.memory.read_byte(self.current_byte)
+
         if self.form == Form.SHORT:
             if self.opcode_byte & 0b00100000 == 0b00100000:
                 self.operand_types = [Operand_Type.Variable]
@@ -174,16 +177,16 @@ class Instruction:
         else:
             return Operand_Type.Variable
 
-    def _read_operand_values(self, current_byte: int) -> None:
+    def _read_operand_values(self) -> None:
         for operand_type in self.operand_types:
             if operand_type == Operand_Type.Large:
-                self.operand_values.append(self.memory.read_word(current_byte))
+                self.operand_values.append(self.memory.read_word(self.current_byte))
                 # Requires incrementing current_byte; need to make it an instance variable.
 
             if operand_type == Operand_Type.Small:
-                self.operand_values.append(self.memory.read_byte(current_byte))
+                self.operand_values.append(self.memory.read_byte(self.current_byte))
                 # Requires incrementing current_byte; need to make it an instance variable.
 
             if operand_type == Operand_Type.Variable:
-                self.operand_values.append(self.memory.read_byte(current_byte))
+                self.operand_values.append(self.memory.read_byte(self.current_byte))
                 # Requires incrementing current_byte; need to make it an instance variable.
