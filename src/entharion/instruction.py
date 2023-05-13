@@ -40,16 +40,16 @@ class Instruction:
 
         self._determine_opcode_name()
 
-        if self.form in (Form.VARIABLE, Form.EXTENDED):
-            self._determine_operand_types(self.memory.read_byte(current_byte))
-            current_byte += 1
-
-            if self.opcode_name in ("call_vs2", "call_vn2"):
+        if self.operand_count != Operand_Count.OP0:
+            if self.form in (Form.VARIABLE, Form.EXTENDED):
                 self._determine_operand_types(self.memory.read_byte(current_byte))
                 current_byte += 1
 
-        else:
-            self._determine_operand_types()
+                if self.opcode_name in ("call_vs2", "call_vn2"):
+                    self._determine_operand_types(self.memory.read_byte(current_byte))
+                    current_byte += 1
+            else:
+                self._determine_operand_types()
 
     def details(self) -> None:
         print(
