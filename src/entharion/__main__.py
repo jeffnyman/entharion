@@ -1,11 +1,14 @@
 import sys
 
 from entharion.loader import Loader
+from entharion.logging import setup_logging
 from entharion.instruction import Instruction
 from entharion.memory import Memory
 
 
 def main() -> int:
+    setup_logging("log.txt")
+
     try:
         zcode: Memory = Loader.load(sys.argv[1])
 
