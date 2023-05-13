@@ -5,6 +5,8 @@ if TYPE_CHECKING:
 
 from enum import Enum
 
+from entharion.opcode import opcodes
+
 Form = Enum("Form", "SHORT LONG VARIABLE EXTENDED")
 Operand_Count = Enum("Operand Count", "OP0 OP1 OP2 VAR")
 
@@ -86,8 +88,6 @@ class Instruction:
             self.opcode_number = self.opcode_byte & 0b00001111
 
     def _determine_opcode_name(self) -> None:
-        from entharion.opcode import opcodes
-
         for opcode in opcodes:
             if opcode.matches(
                 self.memory.version, self.opcode_byte, self.opcode_number
