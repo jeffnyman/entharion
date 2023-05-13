@@ -9,44 +9,6 @@ Form = Enum("Form", "SHORT LONG VARIABLE EXTENDED")
 Operand_Count = Enum("Operand Count", "OP0 OP1 OP2 VAR")
 
 
-mnemonic_map = {
-    "call": [((1, 2, 3), (224, 0))],
-    "call_vs": [((4, 5, 6, 7, 8), (224, 0))],
-    "storew": [((1, 2, 3, 4, 5, 6, 7, 8), (225, 1))],
-    "storeb": [((1, 2, 3, 4, 5, 6, 7, 8), (226, 2))],
-    "put_prop": [((1, 2, 3, 4, 5, 6, 7, 8), (227, 3))],
-    "sread": [((1, 2, 3, 4), (228, 4))],
-    "aread": [((5, 6, 7, 8), (228, 4))],
-    "print_char": [((1, 2, 3, 4, 5, 6, 7, 8), (229, 5))],
-    "print_num": [((1, 2, 3, 4, 5, 6, 7, 8), (230, 6))],
-    "random": [((1, 2, 3, 4, 5, 6, 7, 8), (231, 7))],
-    "push": [((1, 2, 3, 4, 5, 6, 7, 8), (232, 8))],
-    "pull": [((1, 2, 3, 4, 5, 6, 7, 8), (233, 9))],
-    "split_window": [((3, 4, 5, 6, 7, 8), (234, 10))],
-    "set_window": [((3, 4, 5, 6, 7, 8), (235, 11))],
-    "call_vs2": [((4, 5, 6, 7, 8), (236, 12))],
-    "erase_window": [((4, 5, 6, 7, 8), (237, 13))],
-    "erase_line": [((4, 5, 6, 7, 8), (238, 14))],
-    "set_cursor": [((4, 5, 6, 7, 8), (239, 15))],
-    "get_cursor": [((4, 5, 6, 7, 8), (240, 16))],
-    "set_text_style": [((4, 5, 6, 7, 8), (241, 17))],
-    "buffer_mode": [((4, 5, 6, 7, 8), (242, 18))],
-    "output_stream": [((3, 4, 5, 6, 7, 8), (243, 19))],
-    "input_stream": [((3, 4, 5, 6, 7, 8), (244, 20))],
-    "sound_effect": [((3, 4, 5, 6, 7, 8), (245, 21))],
-    "read_char": [((4, 5, 6, 7, 8), (246, 22))],
-    "scan_table": [((4, 5, 6, 7, 8), (247, 23))],
-    "not": [((5, 6, 7, 8), (248, 24))],
-    "call_vn": [((5, 6, 7, 8), (249, 25))],
-    "call_vn2": [((5, 6, 7, 8), (250, 26))],
-    "tokenize": [((5, 6, 7, 8), (251, 27))],
-    "encode_text": [((5, 6, 7, 8), (252, 28))],
-    "copy_table": [((5, 6, 7, 8), (253, 29))],
-    "print_table": [((5, 6, 7, 8), (254, 30))],
-    "check_arg_count": [((5, 6, 7, 8), (255, 31))],
-}
-
-
 class Instruction:
     def __init__(self, memory: "Memory", address: int) -> None:
         self.memory: "Memory" = memory
@@ -124,13 +86,10 @@ class Instruction:
             self.opcode_number = self.opcode_byte & 0b00001111
 
     def _determine_opcode_name(self) -> None:
-        for opcode_name, opcode_data in mnemonic_map.items():
-            for version_tuple, opcode_tuple in opcode_data:
-                if (
-                    self.memory.version in version_tuple
-                    and (self.opcode_byte, self.opcode_number) == opcode_tuple
-                ):
-                    self.opcode_name = opcode_name
-                    return
+        from entharion.opcode import opcodes
 
-        self.opcode_name = "UNKNOWN"
+        for opcode in opcodes:
+            if opcode.matches(
+                self.memory.version, self.opcode_byte, self.opcode_number
+            ):
+                self.opcode_name = opcode.name
