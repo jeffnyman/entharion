@@ -9,6 +9,7 @@ from entharion.opcode import opcodes
 
 Form = Enum("Form", "SHORT LONG VARIABLE EXTENDED")
 Operand_Count = Enum("Operand Count", "OP0 OP1 OP2 VAR")
+Operand_Type = Enum("Operand Type", "Small, Large, Variable")
 
 
 class Instruction:
@@ -20,6 +21,7 @@ class Instruction:
         self.operand_count: Operand_Count
         self.opcode_number: int
         self.opcode_name: str
+        self.operand_types: list = []
 
     def decode(self) -> None:
         current_byte: int = self.address
@@ -38,6 +40,11 @@ class Instruction:
 
         self._determine_opcode_name()
 
+        if self.form in (Form.VARIABLE, Form.EXTENDED):
+            self._determine_operand_types(self.memory.read_byte(current_byte))
+        else:
+            self._determine_operand_types()
+
     def details(self) -> None:
         print(
             f"{self.operand_count.name:<3} | "
@@ -48,6 +55,9 @@ class Instruction:
         )
 
         print(f"Instruction: {self.opcode_name}")
+
+        operand_types = [operand_type.name for operand_type in self.operand_types]
+        print(f"Operand type: {operand_types}")
 
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
@@ -93,3 +103,64 @@ class Instruction:
                 self.memory.version, self.opcode_byte, self.opcode_number
             ):
                 self.opcode_name = opcode.name
+
+    def _determine_operand_types(self, current_byte: int = None) -> None:
+        if self.form == Form.SHORT:
+            if self.opcode_byte & 0b00100000 == 0b00100000:
+                self.operand_types = [Operand_Type.Variable]
+            elif self.opcode_byte & 0b00010000 == 0b00010000:
+                self.operand_types = [Operand_Type.Small]
+            elif self.opcode_byte & 0b00000000 == 0b00000000:
+                self.opcode_byte = [Operand_Type.Large]
+
+        if self.form == Form.LONG:
+            # Check first operand
+            if self.opcode_byte & 0b01000000 == 0b01000000:
+                self.operand_types.append(Operand_Type.Variable)
+            else:
+                self.operand_types.append(Operand_Type.Small)
+
+            # Check second operand
+            if self.opcode_byte & 0b00100000 == 0b00100000:
+                self.operand_types.append(Operand_Type.Variable)
+            else:
+                self.operand_types.append(Operand_Type.Small)
+
+        if self.form in (Form.VARIABLE, Form.EXTENDED):
+            # First field
+            if current_byte & 0b11000000 == 0b11000000:
+                return
+            else:
+                self.operand_types.append(self._type_from_bits(current_byte >> 6))
+
+            # Second field
+            if current_byte & 0b00110000 == 0b00110000:
+                return
+            else:
+                self.operand_types.append(
+                    self._type_from_bits((current_byte & 0b00110000) >> 4)
+                )
+
+            # Third field
+            if current_byte & 0b00001100 == 0b00001100:
+                return
+            else:
+                self.operand_types.append(
+                    self._type_from_bits((current_byte & 0b00001100) >> 2)
+                )
+
+            # Fourth field
+            if current_byte & 0b00000011 == 0b00000011:
+                return
+            else:
+                self.operand_types.append(
+                    self._type_from_bits(current_byte & 0b00000011)
+                )
+
+    def _type_from_bits(self, value: int) -> Operand_Type:
+        if value == 0:
+            return Operand_Type.Large
+        elif value == 1:
+            return Operand_Type.Small
+        else:
+            return Operand_Type.Variable
