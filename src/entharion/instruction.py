@@ -22,6 +22,7 @@ class Instruction:
         self.opcode_number: int
         self.opcode_name: str
         self.operand_types: list = []
+        self.operand_values: list = []
 
     def decode(self) -> None:
         current_byte: int = self.address
@@ -50,6 +51,8 @@ class Instruction:
                     current_byte += 1
             else:
                 self._determine_operand_types()
+
+            self._read_operand_values(current_byte)
 
     def details(self) -> None:
         print(
@@ -170,3 +173,17 @@ class Instruction:
             return Operand_Type.Small
         else:
             return Operand_Type.Variable
+
+    def _read_operand_values(self, current_byte: int) -> None:
+        for operand_type in self.operand_types:
+            if operand_type == Operand_Type.Large:
+                self.operand_values.append(self.memory.read_word(current_byte))
+                # Requires incrementing current_byte; need to make it an instance variable.
+
+            if operand_type == Operand_Type.Small:
+                self.operand_values.append(self.memory.read_byte(current_byte))
+                # Requires incrementing current_byte; need to make it an instance variable.
+
+            if operand_type == Operand_Type.Variable:
+                self.operand_values.append(self.memory.read_byte(current_byte))
+                # Requires incrementing current_byte; need to make it an instance variable.
