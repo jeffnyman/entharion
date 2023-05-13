@@ -1,4 +1,5 @@
 from entharion.instruction import Instruction
+from entharion.logging import log
 
 
 class Memory:
@@ -14,21 +15,21 @@ class Memory:
         self.routine_offset: int = self.read_word(0x28)
         self.strings_offset: int = self.read_word(0x2A)
 
-        print(f"Zcode version: {self.version}")
-        print(f"Static memory start: {hex(self.static)}")
-        print(f"High memory start: {hex(self.high)}")
-        print(f"Routine offset: {self.routine_offset}")
-        print(f"Strings offset: {self.strings_offset}")
+        log(f"Zcode version: {self.version}")
+        log(f"Static memory start: {hex(self.static)}")
+        log(f"High memory start: {hex(self.high)}")
+        log(f"Routine offset: {self.routine_offset}")
+        log(f"Strings offset: {self.strings_offset}")
 
         self.pc: int
 
         self._memory_checks()
         self._read_starting_address()
 
-        print(f"Starting address: {hex(self.pc)}")
+        log(f"Starting address: {hex(self.pc)}")
 
     def read_instruction(self, address: int) -> Instruction:
-        print(f"Reading instruction at {hex(address)}")
+        log(f"Reading instruction at {hex(address)}")
 
         instruction = Instruction(self, address)
         instruction.decode()

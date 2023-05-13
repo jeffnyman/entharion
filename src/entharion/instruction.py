@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 
 from enum import Enum
 
+from entharion.logging import log
 from entharion.opcode import opcodes
 
 Form = Enum("Form", "SHORT LONG VARIABLE EXTENDED")
@@ -56,7 +57,7 @@ class Instruction:
             self._read_operand_values()
 
     def details(self) -> None:
-        print(
+        log(
             f"{self.operand_count.name:<3} | "
             f"{self.opcode_number:>2} | "
             f"{self.opcode_byte:<3} | "
@@ -64,13 +65,13 @@ class Instruction:
             f"{bin(self.opcode_byte)[2:]}"
         )
 
-        print(f"Instruction: {self.opcode_name}")
+        log(f"Instruction: {self.opcode_name}")
 
         operand_types = [operand_type.name for operand_type in self.operand_types]
         operand_values = [hex(num)[2:].rjust(4, "0") for num in self.operand_values]
 
-        print(f"Operand type: {operand_types}")
-        print(f"Operand values: {operand_values}")
+        log(f"Operand type: {operand_types}")
+        log(f"Operand values: {operand_values}")
 
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
