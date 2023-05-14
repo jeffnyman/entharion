@@ -198,6 +198,14 @@
         <p>
           After all of that, the operands are provided next or, rather, their values. The number of operands that the instruction contains depends on the count: no operands for 0OP, one operand for 1OP, and two operands for 2OP. A VAR operand count means there are as many operands as there were non-omitted types.
         </p>
+
+        <p>
+          Some instructions return a result. These instructions are followed by a single byte called a result argument. The specifications calls these "store instructions." This byte is the number of the variable where the result should be stored and what this means is that it looks like an additional operand of type 0b10. But what does that mean?
+        </p>
+
+        <p>
+          This goes back to those types of operands, where the values could be 00 (large constant), 01 (small constant), and 10 (variable). Here the "variable" doesn't mean "variable" in the context of the form or operand type (like VAR) but rather literally refers to a type of variable.
+        </p>
       </section>
     </article>
   </main>
