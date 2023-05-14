@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 from enum import Enum
 
 from entharion.logging import log
-from entharion.opcode import opcodes
+from entharion.opcodes import opcodes
 
 Form = Enum("Form", "SHORT LONG VARIABLE EXTENDED")
 Operand_Count = Enum("Operand Count", "OP0 OP1 OP2 VAR")
