@@ -28,6 +28,23 @@ class Instruction:
         self.store_variable: int
         self.length: int
 
+    def execute(self) -> None:
+        # NOTE: Some of this logic is the same as that provided in
+        # the _is_store_instruction(). Maybe this can be modularized.
+        zversion = self.memory.version
+        byte = self.opcode_byte
+        number = self.opcode_number
+
+        for opcode in opcodes:
+            if opcode.matches(version=zversion, opcode_byte=byte, opcode_number=number):
+                opcode_match = opcode
+                break
+
+        if opcode_match is not None and opcode_match.store:
+            print(f"The opcode {opcode_match.name} needs to be executed.")
+        else:
+            print("No opcode was found to execute.")
+
     def decode(self) -> None:
         self.current_byte: int = self.address
 
