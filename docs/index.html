@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <main>
+    <article>
+      <section>
+        <p>
+          A zcode instruction is a sequence of bytes, describing an operation for the Z-Machine to perform. An instruction consists of two parts: the opcode and the operands. Each instruction has an operation byte, which is the byte containing the opcode.
+        </p>
+
+        <p>
+          I handle this via a <code>decode()</code> method on an <code>Instruction</code> instance. An instance of this class is created every time an instruction is read from memory. The instruction instance is always passed a reference to wherever the program counter is pointing. Each instruction will be responsible for updating the program counter.
+        </p>
+
+        <p>
+          The first thing <code>decode()</code> does is the following:
+        </p>
+
+        <pre>
+          self.opcode_byte = self.memory_byte(self.address)
+        </pre>
+
+        <p>
+          The operation byte is needed to understand how to determine the instruction form. Instructions come in different formats and this depends on the number of operands they take. The different forms are SHORT (zero or one operands), LONG (two operands), VARIABLE (up to four operands) or EXTENDED (up to four operands). There is a special form known as a DOUBLE VARIABLE (up to eight operands). It's worth noting that double variable forms are only available in Z-Machine version 4 and up. Extended forms are only available in Z-Machine version 5 and up.
+        </p>
+
+        <p>
+          Everything is going to be writing some byte of data, schematically represented like this.
+        </p>
+
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="265" height="116" viewBox="0 0 265 116"><text x="16" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">7</text><text x="46" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">6</text><text x="76" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">5</text><text x="106" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">4</text><text x="136" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">3</text><text x="166" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">2</text><text x="196" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">1</text><text x="226" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">0</text><path stroke="#000" d="M1 15h30M1 115h30"/><path stroke-dasharray="1,3" stroke="#000" d="M31 15v100"/><path stroke="#000" d="M1 15v100"/><text font-size="18" font-family="Courier New, monospace" x="16" y="66" text-anchor="middle" dominant-baseline="middle">1</text><path stroke="#000" d="M31 15h30M31 115h30"/><path stroke-dasharray="1,3" stroke="#000" d="M61 15v100M31 15v100"/><text font-size="18" font-family="Courier New, monospace" x="46" y="66" text-anchor="middle" dominant-baseline="middle">0</text><path stroke="#000" d="M61 15h30M61 115h30"/><path stroke-dasharray="1,3" stroke="#000" d="M91 15v100M61 15v100"/><text font-size="18" font-family="Courier New, monospace" x="76" y="66" text-anchor="middle" dominant-baseline="middle">1</text><path stroke="#000" d="M91 15h30M91 115h30"/><path stroke-dasharray="1,3" stroke="#000" d="M121 15v100M91 15v100"/><text font-size="18" font-family="Courier New, monospace" x="106" y="66" text-anchor="middle" dominant-baseline="middle">1</text><path stroke="#000" d="M121 15h30m-30 100h30"/><path stroke-dasharray="1,3" stroke="#000" d="M151 15v100M121 15v100"/><text font-size="18" font-family="Courier New, monospace" x="136" y="66" text-anchor="middle" dominant-baseline="middle">1</text><path stroke="#000" d="M151 15h30m-30 100h30"/><path stroke-dasharray="1,3" stroke="#000" d="M181 15v100M151 15v100"/><text font-size="18" font-family="Courier New, monospace" x="166" y="66" text-anchor="middle" dominant-baseline="middle">1</text><path stroke="#000" d="M181 15h30m-30 100h30"/><path stroke-dasharray="1,3" stroke="#000" d="M211 15v100M181 15v100"/><text font-size="18" font-family="Courier New, monospace" x="196" y="66" text-anchor="middle" dominant-baseline="middle">1</text><path stroke="#000" d="M211 15h30m-30 100h30m0-100v100"/><path stroke-dasharray="1,3" stroke="#000" d="M211 15v100"/><text font-size="18" font-family="Courier New, monospace" x="226" y="66" text-anchor="middle" dominant-baseline="middle">0</text></svg>
+
+        <p>
+          At this point, the operation byte has been read which gives us the opcode. If the opcode is 190 (0xBE in hexadecimal) and the version of the zcode porgram is 5 or later, the form is EXTENDED. If the top two bits of the opcode are <code>0b11</code> the form is VARIABLE. If the top two bits are <code>0b10</code>, the form is SHORT. If none of these conditions hold, the form is LONG. This is implemented in the <code>_determine_form()</code> method.
+        </p>
+
+        <pre>
+          def _determine_form(self) -> None:
+            if self.memory.version >= 5 and self.opcode_byte == 0xBE:
+              self.form = Form.EXTENDED
+            elif self.opcode_byte & 0b11000000 == 0b11000000:
+              self.form = Form.VARIABLE
+            elif self.opcode_byte & 0b10000000 == 0b10000000:
+              self.form = Form.SHORT
+            else:
+              self.form = Form.LONG
+        </pre>
+
+        <p>
+          With the form understood, it's now possible to get the exact operand count for the instruction. The operand count can be one of 0OP, 1OP, 2OP or VAR. So let's consider how this works for each of the forms.
+        </p>
+
+        <p>
+          A SHORT form will either be 0OP or 1OP. In SHORT form, bits 4 and 5 of the opcode byte give the specific operand count. (The specification confusingly refers to this as the "operand type.") If bits 4 and 5 are 0b11 then the operand count is 0OP, otherwise the operand count is 1OP. What this means is that the opcode number is given in the bottom 4 bits.
+        </p>
+
+        <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="242" height="116" viewBox="0 0 242 116"><text x="16" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">7</text><text x="46" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">6</text><text x="76" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">5</text><text x="106" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">4</text><text x="136" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">3</text><text x="166" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">2</text><text x="196" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">1</text><text x="226" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">0</text><line x1="1" y1="15" x2="31" y2="15" stroke="#000000" stroke-width="1"></line><line x1="1" y1="115" x2="31" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="31" y1="15" x2="31" y2="115" stroke="#000000" stroke-width="1"></line><line x1="1" y1="15" x2="1" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="18" font-family="Courier New, monospace" x="16" y="66" text-anchor="middle" dominant-baseline="middle">1</text><line x1="31" y1="15" x2="61" y2="15" stroke="#000000" stroke-width="1"></line><line x1="31" y1="115" x2="61" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="61" y1="15" x2="61" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="31" y1="15" x2="31" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="18" font-family="Courier New, monospace" x="46" y="66" text-anchor="middle" dominant-baseline="middle">0</text><line x1="61" y1="15" x2="121" y2="15" stroke="#000000" stroke-width="1"></line><line x1="61" y1="115" x2="121" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="121" y1="15" x2="121" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="61" y1="15" x2="61" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="14" font-family="inherit" writing-mode="vertical-rl" x="91" y="66" text-anchor="middle" dominant-baseline="middle">operand type</text><line x1="121" y1="15" x2="241" y2="15" stroke="#000000" stroke-width="1"></line><line x1="121" y1="115" x2="241" y2="115" stroke="#000000" stroke-width="1"></line><line x1="241" y1="15" x2="241" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="121" y1="15" x2="121" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="14" font-family="inherit" x="181" y="66" text-anchor="middle" dominant-baseline="middle">opcode number</text></svg>
+
+        <p>
+          The LONG form is easy since the operand count is always 2OP. This means the opcode number is given in the bottom 5 bits.
+        </p>
+
+        <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="242" height="116" viewBox="0 0 242 116"><text x="16" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">7</text><text x="46" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">6</text><text x="76" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">5</text><text x="106" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">4</text><text x="136" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">3</text><text x="166" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">2</text><text x="196" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">1</text><text x="226" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">0</text><line x1="1" y1="15" x2="31" y2="15" stroke="#000000" stroke-width="1"></line><line x1="1" y1="115" x2="31" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="31" y1="15" x2="31" y2="115" stroke="#000000" stroke-width="1"></line><line x1="1" y1="15" x2="1" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="18" font-family="Courier New, monospace" x="16" y="66" text-anchor="middle" dominant-baseline="middle">0</text><line x1="31" y1="15" x2="61" y2="15" stroke="#000000" stroke-width="1"></line><line x1="31" y1="115" x2="61" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="61" y1="15" x2="61" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="31" y1="15" x2="31" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="14" font-family="inherit" writing-mode="vertical-rl" x="46" y="66" text-anchor="middle" dominant-baseline="middle">first type</text><line x1="61" y1="15" x2="91" y2="15" stroke="#000000" stroke-width="1"></line><line x1="61" y1="115" x2="91" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="91" y1="15" x2="91" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="61" y1="15" x2="61" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="14" font-family="inherit" writing-mode="vertical-rl" x="76" y="66" text-anchor="middle" dominant-baseline="middle">second type</text><line x1="91" y1="15" x2="241" y2="15" stroke="#000000" stroke-width="1"></line><line x1="91" y1="115" x2="241" y2="115" stroke="#000000" stroke-width="1"></line><line x1="241" y1="15" x2="241" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="91" y1="15" x2="91" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="14" font-family="inherit" x="166" y="66" text-anchor="middle" dominant-baseline="middle">opcode number</text></svg>
+
+        <p>
+          What the above shows is that the LONG form is implicitly defined as "not a leading 0b11 or 0b10." That implies that the bit 7 <em>must</em> be zero. That also implies that bit 6 isn't needed to define the form. Yet the opcode number occupies the low five bits. So what does that mean for bit 5? Bits 5 and 6 have to do with the <em>actual</em> operand types, which gets confusing since the specification seems to conflate "operand count" and "operand types" sometimes.
+        </p>
+
+        <p>
+          In VARIABLE form, if bit 5 is 0 then the count is 2OP. If bit 5 is 1, then the count is VAR. The opcode number is given in the bottom 5 bits.
+        </p>
+
+        <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="242" height="116" viewBox="0 0 242 116"><text x="16" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">7</text><text x="46" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">6</text><text x="76" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">5</text><text x="106" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">4</text><text x="136" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">3</text><text x="166" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">2</text><text x="196" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">1</text><text x="226" y="8" font-family="Courier New, monospace" font-size="11" dominant-baseline="middle" text-anchor="middle">0</text><line x1="1" y1="15" x2="31" y2="15" stroke="#000000" stroke-width="1"></line><line x1="1" y1="115" x2="31" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="31" y1="15" x2="31" y2="115" stroke="#000000" stroke-width="1"></line><line x1="1" y1="15" x2="1" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="18" font-family="Courier New, monospace" x="16" y="66" text-anchor="middle" dominant-baseline="middle">1</text><line x1="31" y1="15" x2="61" y2="15" stroke="#000000" stroke-width="1"></line><line x1="31" y1="115" x2="61" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="61" y1="15" x2="61" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="31" y1="15" x2="31" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="18" font-family="Courier New, monospace" x="46" y="66" text-anchor="middle" dominant-baseline="middle">1</text><line x1="61" y1="15" x2="91" y2="15" stroke="#000000" stroke-width="1"></line><line x1="61" y1="115" x2="91" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="91" y1="15" x2="91" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="61" y1="15" x2="61" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="14" font-family="inherit" writing-mode="vertical-rl" x="76" y="66" text-anchor="middle" dominant-baseline="middle">operand count</text><line x1="91" y1="15" x2="241" y2="15" stroke="#000000" stroke-width="1"></line><line x1="91" y1="115" x2="241" y2="115" stroke="#000000" stroke-width="1"></line><line x1="241" y1="15" x2="241" y2="115" stroke="#000000" stroke-width="1"></line><line stroke-dasharray="1,3" x1="91" y1="15" x2="91" y2="115" stroke="#000000" stroke-width="1"></line><text font-size="14" font-family="inherit" x="166" y="66" text-anchor="middle" dominant-baseline="middle">opcode number</text></svg>
+
+        <p>
+          In EXTENDED form, the operand count is always VAR. The opcode number is given in a second opcode byte. I'll come back to that. First let's consider the logic that implements what I just talked about. I use the <code>_determine_operand_count()</code> and <code>_determine_opcode_number()</code> methods.
+        </p>
+
+        <pre>
+          def _determine_operand_count(self) -> None:
+            if self.form == Form.SHORT:
+              if self.opcode_byte & 0b00110000 == 0b00110000:
+                self.operand_count = Operand_Count.OP0
+              else:
+                self.operand_count = Operand_Count.OP1
+
+            if self.form == Form.LONG:
+              self.operand_count = Operand_Count.OP2
+
+            if self.form == Form.VARIABLE:
+              if self.opcode_byte & 0b00100000 == 0b00100000:
+                self.operand_count = Operand_Count.VAR
+              else:
+                self.operand_count = Operand_Count.OP2
+
+            if self.form == Form.EXTENDED:
+              self.operand_count = Operand_Count.VAR
+        </pre>
+
+        <pre>
+          def _determine_opcode_number(self) -> None:
+            if self.form in (Form.LONG, Form.VARIABLE):
+              self.opcode_number = self.opcode_byte & 0b00011111
+
+            if self.form == Form.SHORT:
+              self.opcode_number = self.opcode_byte & 0b00001111
+        </pre>
+
+        <p>
+          All of the above is called like this:
+        </p>
+
+        <pre>
+          self.opcode_byte = self.memory.read_byte(self.address)
+
+          self._determine_form()
+          self._determine_operand_count()
+          self._determine_opcode_number()
+        
+          current_byte += 1
+        </pre>
+
+        <p>
+          Crucial here is that the current byte being read is moved forward at this point. This will let us get to the actual operands and their types. But in the case of an extended instruction, we have to, as stated above, read the second byte.
+        </p>
+
+        <pre>
+          if self.memory.version >= 5 and self.opcode_byte == 0xBE:
+            self.opcode_number = self.memory.read_byte(current_byte)
+            current_byte += 1
+        </pre>
+
+        <p>
+          Notice here that the current byte has to be moved forward again. But this is crucial to note. The current byte must be moved forward consistently so that the appropriate next bytes can be read. In the case of an extended instruction, we've had to move past two bytes. In the case of non-extended instructions, we've had to move past one byte.
+        </p>
+
+        <p>
+          Each opcode has a symbolic name -- a mnemonic -- that describes its effect. With the information gathered so far, it's possible to get the opcode name, as used in the specification, that is associated with the instruction. This is handled by the <code>_determine_opcode_name()</code> method.
+        </p>
+
+        <pre>
+          def _determine_opcode_name(self) -> None:
+            for opcode in opcodes:
+              if opcode.matches(
+                self.memory.version, self.opcode_byte, self.opcode_number
+              ):
+                self.opcode_name = opcode.name
+        </pre>
+
+        <p>
+          Now that we have a count of the operands for a given instructions, we can get the types of however many operands there are. What's crucial here is that we're still reading the opcode byte for SHORT and LONG instructions. Let's consider SHORT form first.
+        </p>
+
+        <p>
+          Rememmber that in SHORT form, bits 4 and 5 of the opcode byte give the specific operand count: 0b11 means 0OP, 0b10 means 1OP. What can be confusing is that, according to the specification, in SHORT form, bits 4 and 5 of the opcode also give the type.
+        </p>
+
+        <p>
+          There are four "types" of operand that are possible and these are specified by a number stored in two binary digits. 0b00 refers to a large (word) constant whose values run from 0 to 65535, thus taking up two bytes. 0b01 refers to a small (byte) constant whose values run from 0 to 255, thus taking up one byte. 0b10 refers to a variable number, taking up one byte. 0b11 means that the operand has been omitted and thus it takes up no bytes.
+        </p>
+
+        <p>
+          Earlier it was shown that, with LONG form, bits 5 and 6 seemed a bit unused. Now we can get into what those <em>are</em> used for. In LONG form, bit 6 of the opcode gives the type of the first operand and bit 5 gives the type of the second operand. The specification says that "a value of 0 means a small constant and 1 means a variable." Which is interesting because that contradicts what the operand types are given as, where 0b00 refers to a large constant and 0b01 refers to a small constant.
+        </p>
+
+        <p>
+          It <em>does</em>, however, make sense when you consider the possible variations. Here's how the byte can look. The first bit will always be 0. That's what makes it a LONG. The next two bits are the ones in question and then I use x's to indicate the bottom bits.
+        </p>
+
+        <ul>
+          <li>0 10 xxxxx (variable)</li>
+          <li>0 00 xxxxx (large; not handled)</li>
+          <li>0 01 xxxxx (small)</li>
+          <li>0 11 xxxxx (omitted)</li>
+        </ul>
+
+        <p>
+          There you can see how this matches up with the operand types. The specification makes none of this very clear. Why is the large not handled? The specification says: "If a 2OP instruction needs a large constant as operand, then it should be assembled in variable rather than long form."
+        </p>
+
+        <p>
+          In VARIABLE or EXTENDED forms, a byte of four operand types is provided next. What's crucial here from the implementation standpoint is that the SHORT and LONG forms are using the opcode byte for the instruction to get the operand types. But the VARIABLE and EXTENDED forms require the next byte.
+        </p>
+
+        <p>
+          For the VARIABLE and EXTENDED forms, the next byte that contains four operand types is made up of four 2-bit fields: bits 6 and 7 are the first field, bits 0 and 1 the fourth. The values are the same operand types discussed earlier: 00 (large), 01 (small), 10 (variable), 11 (omitted). If any operand is markeda s omitted, then no other operands can follow.
+        </p>
+
+        <p>
+          All of the above logic is handled in the <code>_determine_operand_types()</code> method.
+        </p>
+
+        <p>
+          After all of that, the operands are provided next or, rather, their values. The number of operands that the instruction contains depends on the count: no operands for 0OP, one operand for 1OP, and two operands for 2OP. A VAR operand count means there are as many operands as there were non-omitted types.
+        </p>
+      </section>
+    </article>
+  </main>
+</body>
+</html>
