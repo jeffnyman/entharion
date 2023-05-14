@@ -25,6 +25,7 @@ class Instruction:
         self.opcode_name: str
         self.operand_types: list = []
         self.operand_values: list = []
+        self.store_variable: int
 
     def decode(self) -> None:
         self.current_byte: int = self.address
@@ -56,6 +57,10 @@ class Instruction:
 
             self._read_operand_values()
 
+        if self._is_store_instruction():
+            self.store_variable = self.memory.read_byte(self.current_byte)
+            self.current_byte += 1
+
     def details(self) -> None:
         log(
             f"{self.operand_count.name:<3} | "
@@ -72,6 +77,8 @@ class Instruction:
 
         log(f"Operand type: {operand_types}")
         log(f"Operand values: {operand_values}")
+
+        log(f"Store variable: {self.store_variable}")
 
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
@@ -194,3 +201,20 @@ class Instruction:
             if operand_type == Operand_Type.Variable:
                 self.operand_values.append(self.memory.read_byte(self.current_byte))
                 self.current_byte += 1
+
+    def _is_store_instruction(self) -> bool:
+        zversion = self.memory.version
+        byte = self.opcode_byte
+        number = self.opcode_number
+
+        for opcode in opcodes:
+            if opcode.matches(version=zversion, opcode_byte=byte, opcode_number=number):
+                opcode_match = opcode
+                break
+
+        if opcode_match is not None and opcode_match.store:
+            log(f"The opcode {opcode_match.name} stores a value.")
+            return True
+        else:
+            log("No matching opcode or matching opcode does not store a value.")
+            return False
