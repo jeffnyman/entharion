@@ -11,7 +11,7 @@ from entharion.opcodes import opcodes
 
 Form = Enum("Form", "SHORT LONG VARIABLE EXTENDED")
 Operand_Count = Enum("Operand Count", "OP0 OP1 OP2 VAR")
-Operand_Type = Enum("Operand Type", "Small, Large, Variable")
+Operand_Type = Enum("Operand Type", "Small Large Variable")
 
 
 class Instruction:
