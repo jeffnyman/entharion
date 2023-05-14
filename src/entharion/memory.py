@@ -1,10 +1,16 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from entharion.trace import Trace
+
 from entharion.instruction import Instruction
 from entharion.logging import log
 
 
 class Memory:
-    def __init__(self, data: bytes) -> None:
+    def __init__(self, data: bytes, trace: "Trace") -> None:
         self.data: bytes = data
+        self.trace: "Trace" = trace
 
         self.version: int = self.read_byte(0x00)
 

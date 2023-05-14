@@ -4,13 +4,15 @@ from entharion.loader import Loader
 from entharion.logging import setup_logging
 from entharion.instruction import Instruction
 from entharion.memory import Memory
+from entharion.trace import Trace
 
 
 def main() -> int:
+    trace = Trace()
     setup_logging("log.txt")
 
     try:
-        zcode: Memory = Loader.load(sys.argv[1])
+        zcode: Memory = Loader.load(sys.argv[1], trace)
 
         if not isinstance(zcode, Memory):
             raise TypeError("zcode must be instance of Memory")

@@ -1,5 +1,6 @@
 /zcode
 log.txt
+log_trace.txt
 trace.txt
 
 # Byte-compiled / optimized / DLL files
