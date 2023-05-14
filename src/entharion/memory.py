@@ -21,18 +21,21 @@ class Memory:
         self.routine_offset: int = self.read_word(0x28)
         self.strings_offset: int = self.read_word(0x2A)
 
-        log(f"Zcode version: {self.version}")
-        log(f"Static memory start: {hex(self.static)}")
-        log(f"High memory start: {hex(self.high)}")
-        log(f"Routine offset: {self.routine_offset}")
-        log(f"Strings offset: {self.strings_offset}")
-
         self.pc: int
 
         self._memory_checks()
         self._read_starting_address()
 
+        self.details()
+
+    def details(self) -> None:
+        log(f"Zcode version: {self.version}")
+        log(f"Static memory start: {hex(self.static)}")
+        log(f"High memory start: {hex(self.high)}")
+        log(f"Routine offset: {self.routine_offset}")
+        log(f"Strings offset: {self.strings_offset}")
         log(f"Starting address: {hex(self.pc)}")
+        log("----------------------------------------------\n")
 
     def read_instruction(self, address: int) -> Instruction:
         log(f"Reading instruction at {hex(address)}")
