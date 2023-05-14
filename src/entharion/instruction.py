@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from enum import Enum
 
 from entharion.logging import log
+from entharion.opcode import Opcode
 from entharion.opcodes import opcodes
 
 Form = Enum("Form", "SHORT LONG VARIABLE EXTENDED")
@@ -29,6 +30,8 @@ class Instruction:
         self.length: int
 
     def execute(self) -> None:
+        opcode = Opcode()
+
         # NOTE: Some of this logic is the same as that provided in
         # the _is_store_instruction(). Maybe this can be modularized.
         zversion = self.memory.version
@@ -42,6 +45,12 @@ class Instruction:
 
         if opcode_match is not None and opcode_match.store:
             print(f"The opcode {opcode_match.name} needs to be executed.")
+            method_name = opcode_match.name
+            method_to_call = getattr(Opcode, method_name, None)
+            if callable(method_to_call):
+                print(f"Method found for opcode {method_name}.")
+            else:
+                print(f"No method found for opcode {method_name}.")
         else:
             print("No opcode was found to execute.")
 
