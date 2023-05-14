@@ -26,6 +26,7 @@ class Instruction:
         self.operand_types: list = []
         self.operand_values: list = []
         self.store_variable: int
+        self.length: int
 
     def decode(self) -> None:
         self.current_byte: int = self.address
@@ -61,6 +62,8 @@ class Instruction:
             self.store_variable = self.memory.read_byte(self.current_byte)
             self.current_byte += 1
 
+        self.length = self.current_byte - self.address
+
     def details(self) -> None:
         log(
             f"{self.operand_count.name:<3} | "
@@ -79,6 +82,8 @@ class Instruction:
         log(f"Operand values: {operand_values}")
 
         log(f"Store variable: {self.store_variable}")
+
+        log(f"Instruction Length: {self.length}")
 
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
