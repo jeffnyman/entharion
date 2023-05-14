@@ -49,6 +49,7 @@ class Instruction:
             method_to_call = getattr(Opcode, method_name, None)
             if callable(method_to_call):
                 print(f"Method found for opcode {method_name}.")
+                method_to_call(self)
             else:
                 print(f"No method found for opcode {method_name}.")
         else:
