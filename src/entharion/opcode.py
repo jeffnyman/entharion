@@ -7,9 +7,14 @@ class Opcode:
     name: str
     versions: Union[str, List[int]]
     opcode_bytes: Tuple[int, int]
+    store: bool = False
 
     def __init__(
-        self, name: str, versions: Union[str, List[int]], opcode_bytes: Tuple[int, int]
+        self,
+        name: str,
+        versions: Union[str, List[int]],
+        opcode_bytes: Tuple[int, int],
+        store: bool = False,
     ):
         if versions == "all":
             self.versions = [1, 2, 3, 4, 5, 6, 7, 8]
@@ -17,6 +22,7 @@ class Opcode:
             self.versions = versions
         self.name = name
         self.opcode_bytes = opcode_bytes
+        self.store = store
 
     def matches(self, version: int, opcode_byte: int, opcode_number: int) -> bool:
         return (
@@ -235,7 +241,7 @@ opcodes = [
     Opcode(name="throw", versions="all", opcode_bytes=(124, 28)),
     Opcode(name="throw", versions="all", opcode_bytes=(220, 28)),
     # VAR
-    Opcode(name="call", versions=[1, 2, 3], opcode_bytes=(224, 0)),
+    Opcode(name="call", versions=[1, 2, 3], opcode_bytes=(224, 0), store=True),
     Opcode(name="call_vs", versions=[4, 5, 6, 7, 8], opcode_bytes=(224, 0)),
     Opcode(name="storew", versions="all", opcode_bytes=(225, 1)),
     Opcode(name="storeb", versions="all", opcode_bytes=(226, 2)),
