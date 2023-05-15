@@ -10,7 +10,7 @@ from entharion.stack import Stack
 
 class Memory:
     def __init__(self, data: bytes, trace: "Trace") -> None:
-        stack = Stack()
+        self.stack = Stack()
 
         self.data: bytes = data
         self.trace: "Trace" = trace

@@ -10,7 +10,7 @@ from entharion.routine import Routine
 class Opcode:
     def call(self: "Instruction") -> None:
         log("\nExecuting call ...")
-        instruction_length = self.length
+        instruction_length: int = self.length
 
         routine = Routine()
 
@@ -117,3 +117,12 @@ class Opcode:
         log(f"Next instruction at: {hex(updated_pc)[2:]}")
 
         self.memory.pc = updated_pc
+
+        self.memory.stack.routine_stack.append(routine)
+
+        log(
+            f"Routine stack: {[str(routine) for routine in self.memory.stack.routine_stack]}"
+        )
+
+        routine.details()
+        self.memory.trace.add("-> sp")

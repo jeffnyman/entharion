@@ -1,2 +1,3 @@
 class Stack:
-    pass
+    def __init__(self) -> None:
+        self.routine_stack = []
