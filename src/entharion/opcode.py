@@ -90,6 +90,13 @@ class Opcode:
         # called.
         operand_values.pop(0)
 
+        for index, value in enumerate(operand_values):
+            routine.local_variables[index] = value
+
+        variable_values = [hex(num)[2:] for num in routine.local_variables]
+        log(f"Called with values: {variable_values}")
+        self.trace.add(f"{variable_values}")
+
         # The program counter is being set to one past the routine address,
         # which is the address of the first instruction of the routine,
         # directly after the routine header. Then, if the version is less
@@ -107,6 +114,6 @@ class Opcode:
         if self.memory.version < 5:
             updated_pc += 2 * local_variable_count
 
-        print(f"Next instruction at: {hex(updated_pc)[2:]}")
+        log(f"Next instruction at: {hex(updated_pc)[2:]}")
 
         self.memory.pc = updated_pc
