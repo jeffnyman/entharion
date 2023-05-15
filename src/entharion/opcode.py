@@ -9,7 +9,7 @@ from entharion.routine import Routine
 
 class Opcode:
     def call(self: "Instruction") -> None:
-        print("Executing call")
+        log("\nExecuting call ...")
         instruction_length = self.length
 
         routine = Routine()
@@ -18,7 +18,7 @@ class Opcode:
         # instruction following the call instruction.
 
         routine.return_address = self.memory.pc + instruction_length
-        print(f"Return address: {hex(routine.return_address)[2:]}")
+        log(f"Return address: {hex(routine.return_address)[2:]}")
 
         # The store variable is associated with the execution of the
         # routine so it makes sense to store that value as part of
@@ -28,12 +28,12 @@ class Opcode:
         # The first operand will be the calling address.
         calling_address = self.operand_values[0]
         routine_address = self.memory.read_packed(calling_address, True)
-        print(f"Routine address: {hex(routine_address)[2:]}")
+        log(f"Routine address: {hex(routine_address)[2:]}")
         self.memory.trace.add(f"{hex(routine_address)[2:]}")
 
         # Get the number of local variables of the called routine.
         local_variable_count = self.memory.read_byte(routine_address)
-        print(f"Total local variables: {local_variable_count}")
+        log(f"Total local variables: {local_variable_count}")
 
         # Populate the local variables with values. These values will either
         # be what was passed in or default values.
@@ -69,13 +69,26 @@ class Opcode:
         # Using the term "operands" helps clarify that these values are being
         # used as inputs in operation performed by the routine.
 
-        operand_list = zip(self.operand_types, self.operand_values)
+        operand_list = list(zip(self.operand_types, self.operand_values))
 
         operands_formatted = [
             f"({o_type.name}, {hex(operand)[2:]})" for o_type, operand in operand_list
         ]
 
-        print(f"Operand Values: {', '.join(operands_formatted)}")
+        log(f"Operand Values: {', '.join(operands_formatted)}")
+
+        operand_values = []
+
+        # NOTE: This may need to go somewhere else, along with getting the
+        # above list.
+
+        for operand_pair in operand_list:
+            operand_values.append(operand_pair[1])
+
+        # There is no need to pass the first operand to the routine because
+        # that operand contains the memory address of the routine to be
+        # called.
+        operand_values.pop(0)
 
         # The program counter is being set to one past the routine address,
         # which is the address of the first instruction of the routine,
