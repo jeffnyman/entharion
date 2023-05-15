@@ -31,8 +31,6 @@ class Instruction:
         self.length: int
 
     def execute(self) -> None:
-        opcode = Opcode()
-
         opcode_match = self._find_matching_opcode()
 
         if opcode_match is not None and opcode_match.store:
