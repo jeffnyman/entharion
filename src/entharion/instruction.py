@@ -86,6 +86,8 @@ class Instruction:
             self._read_operand_values()
 
         if self._is_store_instruction():
+            # A store variable refers to a variable that is designated
+            # to receive the result of an operation.
             self.store_variable = self.memory.read_byte(self.current_byte)
             self.current_byte += 1
 

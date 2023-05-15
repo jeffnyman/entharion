@@ -19,6 +19,11 @@ class Opcode:
         routine.return_address = self.memory.pc + instruction_length
         print(f"Return address: {hex(routine.return_address)[2:]}")
 
+        # The store variable is associated with the execution of the
+        # routine so it makes sense to store that value as part of
+        # the routine context.
+        routine.store_variable = self.store_variable
+
         # The first operand will be the calling address.
         calling_address = self.operand_values[0]
         routine_address = self.memory.read_packed(calling_address, True)
