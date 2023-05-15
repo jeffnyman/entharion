@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from entharion.memory import Memory
+    from entharion.opcodes import Opcodes
 
 from enum import Enum
 
@@ -32,16 +33,7 @@ class Instruction:
     def execute(self) -> None:
         opcode = Opcode()
 
-        # NOTE: Some of this logic is the same as that provided in
-        # the _is_store_instruction(). Maybe this can be modularized.
-        zversion = self.memory.version
-        byte = self.opcode_byte
-        number = self.opcode_number
-
-        for opcode in opcodes:
-            if opcode.matches(version=zversion, opcode_byte=byte, opcode_number=number):
-                opcode_match = opcode
-                break
+        opcode_match = self._find_matching_opcode()
 
         if opcode_match is not None and opcode_match.store:
             print(f"The opcode {opcode_match.name} needs to be executed.")
@@ -246,14 +238,7 @@ class Instruction:
                 self.current_byte += 1
 
     def _is_store_instruction(self) -> bool:
-        zversion = self.memory.version
-        byte = self.opcode_byte
-        number = self.opcode_number
-
-        for opcode in opcodes:
-            if opcode.matches(version=zversion, opcode_byte=byte, opcode_number=number):
-                opcode_match = opcode
-                break
+        opcode_match = self._find_matching_opcode()
 
         if opcode_match is not None and opcode_match.store:
             log(f"The opcode {opcode_match.name} stores a value.")
@@ -261,3 +246,14 @@ class Instruction:
         else:
             log("No matching opcode or matching opcode does not store a value.")
             return False
+
+    def _find_matching_opcode(self) -> "Opcodes":
+        zversion = self.memory.version
+        byte = self.opcode_byte
+        number = self.opcode_number
+
+        for opcode in opcodes:
+            if opcode.matches(version=zversion, opcode_byte=byte, opcode_number=number):
+                return opcode
+
+        return None
