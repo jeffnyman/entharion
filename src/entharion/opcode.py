@@ -95,7 +95,7 @@ class Opcode:
 
         variable_values = [hex(num)[2:] for num in routine.local_variables]
         log(f"Called with values: {variable_values}")
-        self.trace.add(f"{variable_values}")
+        self.memory.trace.add(f"{variable_values}")
 
         # The program counter is being set to one past the routine address,
         # which is the address of the first instruction of the routine,
