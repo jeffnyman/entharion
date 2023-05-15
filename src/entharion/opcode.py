@@ -3,19 +3,21 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from entharion.instruction import Instruction
 
+from entharion.routine import Routine
+
 
 class Opcode:
     def call(self: "Instruction") -> None:
         print("Executing call")
         instruction_length = self.length
 
-        local_variables = []
+        routine = Routine()
 
         # Get the return address. This would be the address of the
         # instruction following the call instruction.
 
-        return_address = self.memory.pc + instruction_length
-        print(f"Return address: {hex(return_address)[2:]}")
+        routine.return_address = self.memory.pc + instruction_length
+        print(f"Return address: {hex(routine.return_address)[2:]}")
 
         # The first operand will be the calling address.
         calling_address = self.operand_values[0]
@@ -52,9 +54,9 @@ class Opcode:
                 variable_value = self.memory.read_word(
                     routine_address + 1 + (2 * variable)
                 )
-                local_variables.append(variable_value)
+                routine.local_variables.append(variable_value)
             else:
-                local_variables.append(0)
+                routine.local_variables.append(0)
 
         # The program counter is being set to one past the routine address,
         # which is the address of the first instruction of the routine,
