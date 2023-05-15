@@ -23,6 +23,7 @@ def main() -> int:
         instruction: Instruction = zcode.read_instruction(zcode.pc)
         instruction.details()
         instruction.execute()
+        zcode.trace.generate()
 
         if not isinstance(instruction, Instruction):
             raise TypeError("instruction must be instance of Instruction")

@@ -104,7 +104,12 @@ class Instruction:
         instruction_bytes_hex = " ".join([f"{byte:02X}" for byte in instruction_bytes])
 
         log(f"Instruction: {self.opcode_name}")
+        log(f"Instruction form: {self.form.name}")
         log(f"Instruction: {hex(self.memory.pc)[2:]}: {instruction_bytes_hex}")
+
+        self.memory.trace.add(
+            f"{hex(self.memory.pc)[2:]}: {instruction_bytes_hex} {self.opcode_name}"
+        )
 
         operand_types = [operand_type.name for operand_type in self.operand_types]
         operand_values = [hex(num)[2:].rjust(4, "0") for num in self.operand_values]
