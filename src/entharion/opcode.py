@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from entharion.instruction import Instruction
 
+from entharion.logging import log
 from entharion.routine import Routine
 
 
@@ -62,6 +63,19 @@ class Opcode:
                 routine.local_variables.append(variable_value)
             else:
                 routine.local_variables.append(0)
+
+        # In the case of a routine call, the local values passed in can be
+        # considered as operands because they serve as inputs to the routine.
+        # Using the term "operands" helps clarify that these values are being
+        # used as inputs in operation performed by the routine.
+
+        operand_list = zip(self.operand_types, self.operand_values)
+
+        operands_formatted = [
+            f"({o_type.name}, {hex(operand)[2:]})" for o_type, operand in operand_list
+        ]
+
+        print(f"Operand Values: {', '.join(operands_formatted)}")
 
         # The program counter is being set to one past the routine address,
         # which is the address of the first instruction of the routine,
