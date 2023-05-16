@@ -8,9 +8,10 @@ from entharion.trace import Trace
 
 
 class Cpu:
-    def run(self) -> None:
+    def __init__(self) -> None:
         self.zcode: Memory
 
+    def run(self) -> None:
         trace = Trace()
         setup_logging("log.txt")
 
