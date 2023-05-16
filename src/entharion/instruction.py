@@ -113,6 +113,32 @@ class Instruction:
 
         log(f"Instruction Length: {self.length}")
 
+    def get_variable(self, number: int) -> int:
+        # A variable number is a byte that indicates a certain variable. The
+        # meaning of a variable depends on the number. A number of 00 means
+        # the top of the routine stack. In the case of getting a variable,
+        # a value is pulled off the top off the top of the stack. A number
+        # from 01 (1) to 0F (15) refers to the local variable of the current
+        # routine with that number. A number from 0x10 (16) to FF (255) will
+        # refer to a global variable with that number minus 16. The reason
+        # for substracting 16 is to accommodate the design of the Z-Machine
+        # memory map, where the first sixteen global variables are reserved
+        # for special purposes. This is not made very clear in the actual
+        # specification at all.
+
+        if number == 0x00:
+            raise RuntimeError("IMPLEMENT: get_variable, pop the stack")
+
+        if number > 0x00 and number < 0x10:
+            top_routine = self.memory.stack.routine_stack[-1]
+            # The adjustment accounts for the fact that local variables are
+            # typically accessed using zero-based indexing, where the first
+            # local variable corresponds to index 0, the second local
+            # variable corresponds to index 1, and so on.
+            return top_routine.local_variables[number - 0x01]
+        else:
+            raise RuntimeError("IMPLEMENT: get_variable, global value")
+
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
             self.form = Form.EXTENDED

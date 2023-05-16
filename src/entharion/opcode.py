@@ -83,7 +83,10 @@ class Opcode:
         # above list.
 
         for operand_pair in operand_list:
-            operand_values.append(operand_pair[1])
+            if operand_pair[0].name == "Variable":
+                operand_values.append(self.get_variable(operand_pair[1]))
+            else:
+                operand_values.append(operand_pair[1])
 
         # There is no need to pass the first operand to the routine because
         # that operand contains the memory address of the routine to be
