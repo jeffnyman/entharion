@@ -11,9 +11,9 @@ def log_context() -> None:
     import inspect
 
     caller_name = inspect.currentframe().f_back.f_code.co_name
-    log("\n----------------------------------------------")
+    log("\n+--------------------------------+")
     log(f"Executing {caller_name} opcode")
-    log("----------------------------------------------\n")
+    log("+--------------------------------+\n")
 
 
 class Opcode:
