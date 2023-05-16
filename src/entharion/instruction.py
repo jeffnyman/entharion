@@ -27,7 +27,7 @@ class Instruction:
         self.opcode_name: str
         self.operand_types: list = []
         self.operand_values: list = []
-        self.store_variable: int
+        self.store_variable: int = None
         self.length: int
 
     def execute(self) -> None:
@@ -113,7 +113,11 @@ class Instruction:
         log(f"Operand type: {operand_types}")
         log(f"Operand values: {operand_values}")
 
-        log(f"Store variable: {self.store_variable}")
+        if self.store_variable:
+            log("The opcode stores a value.")
+            log(f"Store variable: {self.store_variable}")
+        else:
+            log("The opcode does not store a value.")
 
         log(f"Instruction Length: {self.length}")
 
@@ -292,10 +296,8 @@ class Instruction:
         opcode_match = self._find_matching_opcode()
 
         if opcode_match is not None and opcode_match.store:
-            log(f"The opcode {opcode_match.name} stores a value.")
             return True
         else:
-            log("No matching opcode or matching opcode does not store a value.")
             return False
 
     def _find_matching_opcode(self) -> "Opcodes":
