@@ -189,9 +189,76 @@
         <p>
           The high memory is essentially a contiguous block of memory that is a subset of the static memory, and its start is indicated by the high memory mark. It is a special part of the static memory because it can only be accessed using 17-bit pointers due to its location beyond the 64K address range that can be addressed with 16-bit pointers.
         </p>
+
+        <p>
+          One other thing that's interesting is that the specification says "note that the total of dynamic plus static memory must not exceed 64K. (In fact, 64K minus 2 bytes.) This is the most serious limitation on the Z-machine."
+        </p>
+
+        <p>
+          The reason for subtracting 2 bytes from the maximum memory size is because of the way that memory addressing works in the Z-Machine. The Z-Machine uses 16-bit addresses to refer to memory locations, which means that the maximum addressable memory space is 2^16 = 64K. However, the Z-Machine also uses the top bit of each address to indicate whether the address refers to static or dynamic memory. This means that the actual maximum addressable space for static and dynamic memory separately is 2^15 = 32K. To ensure that the total memory size does not exceed the 64K limit, the Z-Machine subtracts 2 bytes from the maximum size. This leaves a total of 64K - 2 = 65534 bytes of addressable memory space.
+        </p>
+
+        <p>
+          But you also read that the maximum permitted length of a story file for versions 1 to 3 is 128K. So is the above saying that 64K (or 64K minus 2) is the only addressable space. The remaining 64K, if it's used, would be paged in and out of memory? The answer is yes.  The maximum permitted size of a story file for versions 1 to 3 is indeed 128K. However, due to the addressing limitations of these versions of the Z-Machine, only 64K (or 64K minus 2) of memory can be directly addressed at any given time. If more than 64K of memory is needed, the story file can be paged in and out of memory, typically by using special instructions provided by the interpreter. This allows the program to use more than 64K of memory, but requires additional overhead to manage the paging of data in and out of memory.
+        </p>
       </section>
 
       <section>
+        <h2>Routines and String Offsets</h2>
+
+        <p>
+          After setting up the memory regions, the Memory instance gets some offsets:
+        </p>
+
+        <pre>
+          self.routine_offset: int = self.read_word(0x28)
+          self.strings_offset: int = self.read_word(0x2A)
+        </pre>
+
+        <p>
+          A routine is a block of code that can be executed by a game or program. A routine offset refers to the location of a routine within the Z-Machine's memory. In the Z-Machine's memory, a routine is preceded by a packed address that specifies its starting location. The packed address is a compressed form of a 17-bit pointer that allows the routine to be located anywhere in memory. The routine offset is the number of bytes from the start of the Z-Machine memory to the packed address that precedes the routine.
+        </p>
+
+        <p>
+          For example, suppose we have a routine that starts at address 0x3A7C in the Z-Machine's memory. If the packed address for this routine is stored at address 0x7F8A, then the routine offset would be 0x7F8A - 2 (since the packed address is two bytes long) - 0x3A7C = 0x4412.
+        </p>
+
+        <p>
+          The routine offset is useful for interpreters and compilers that need to generate or modify Z-Machine code. By calculating the routine offset, an interpreter can easily find the packed address for a routine, and a compiler can easily update the packed address after generating or modifying a routine.
+        </p>
+
+        <p>
+          All routines in the Z-Machine require a packed address, regardless of whether they are stored in the lower 64K or beyond. The packed address is used to encode the address of the routine in the game file, and the routine offset is used to look up the actual address of the routine in memory at runtime.
+        </p>
+
+        <p>
+          The Z-Machine specification says this: "A packed address specifies where a routine or string begins in high memory." So it sounds like routines can be stored in static memory but where all the routines begin is stored in high memory. And that's correct. While the routines themselves may be stored in the static memory, the starting addresses of all routines are stored in high memory. This allows the interpreter to easily locate the entry point of any routine.
+        </p>
+
+        <p>
+          In the Z-Machine, a "strings offset" is an index into the high memory where the start of the table of strings is located. The Z-Machine specification defines a table of strings that is stored in high memory and is used by the program to store textual data, such as game messages, prompts, and other user interface text.
+        </p>
+
+        <p>
+          Like the routine offset, the strings offset is also expressed as a packed address. The packed address for the strings offset is stored at byte offset 28 in the Z-Machine header, and it follows the same encoding scheme as other packed addresses.
+        </p>
+
+        <p>
+          When a Z-Machine program needs to display a string, it typically reads the packed address for the strings offset from the header, unpacks it into a 16-bit address, and then uses that address to locate the start of the table of strings in high memory. From there, it can read the appropriate string based on the index into the table specified by the program.
+        </p>
+
+        <p>
+          If the routine offset and the strings offset are both 0, then it means that the zcode program does not use packed addresses for routines or strings, and that all routines and strings are located at their absolute addresses in memory. But even in that case, it's still the case that all routines use a packed address to say where they begin. Even if a game's Z-code does not use the routine offset and strings offset fields, packed addresses can still be used to refer to routines and strings in high memory.
+        </p>
+
+        <p>
+          One thing to note in my <code>read_packed()</code> implementation is that in the case where the version is less than 4, the method returns a value that is twice the input address. This is because packed addresses were not introduced until version 4, so in earlier versions, addresses were not packed and were simply stored as 16-bit values. So the method returns the "unpacked" address multiplied by 2, which effectively "unpacks" it to the actual address.
+        </p>
+      </section>
+
+      <section>
+        <h2>Decoding Instructions</h2>
+
         <p>
           A zcode instruction is a sequence of bytes, describing an operation for the Z-Machine to perform. An instruction consists of two parts: the opcode and the operands. Each instruction has an operation byte, which is the byte containing the opcode.
         </p>
@@ -388,6 +455,246 @@
 
         <p>
           This goes back to those types of operands, where the values could be 00 (large constant), 01 (small constant), and 10 (variable). Here the "variable" doesn't mean "variable" in the context of the form or operand type (like VAR) but rather literally refers to a type of variable.
+        </p>
+      </section>
+
+      <section>
+        <h2>Routines and Call Stacks</h2>
+
+        <p>
+          A call stack is a critical component of a Z-Machine interpreter, as it is responsible for keeping track of the current execution context of the program. As the program executes, it creates a series of nested function calls, each of which creates a new execution context. The call stack allows the interpreter to keep track of these nested contexts and return to the appropriate context when a function call completes.
+        </p>
+
+        <p>
+          In the case of a Z-Machine interpreter, the call stack is particularly important because the Z-Machine bytecode is designed to be executed on a stack-based architecture. As the program executes, it pushes and pops values onto and off of the stack to perform operations. The call stack is responsible for managing the stack frame for each function call, ensuring that the correct values are pushed and popped in the correct order, and that the stack is properly balanced at all times.
+        </p>
+
+        <p>
+          In the context of a call stack, a "stack frame" refers to the portion of the stack that is allocated to store the local variables, function arguments, and return address of a single function call.
+        </p>
+
+        <p>
+          When a function is called, a new stack frame is created on top of the current call stack. This stack frame contains a fixed amount of memory that is divided into several regions, including space for function arguments, local variables, and the return address. The function arguments are typically pushed onto the stack before the function is called, and the function itself can access these arguments by referencing their offset from the stack pointer.
+        </p>
+
+        <p>
+          As the function executes, it may create additional local variables and push them onto the stack frame. These variables can be accessed in a similar way, by referencing their offset from the stack pointer. When the function completes, its return address is popped off the stack and used to resume execution at the point where the function was called.
+        </p>
+
+        <p>
+          A stack frame is a key data structure that allows a program to maintain separate execution contexts for each function call. By creating a new stack frame for each function call, the program can isolate the state of each function and ensure that local variables and function arguments do not interfere with the execution of other functions.
+        </p>
+
+        <p>
+          In the Z-Machine there is a call stack that contains all the routines that are called, and each frame on the call stack can be considered a separate "routine stack" that stores the local variables, arguments, and return address for a specific routine.
+        </p>
+
+        <p>
+          The call stack is a stack of frames, which is technically unlimited in size although realistically an unlimited stack chain would be impossible. Each frame contains a program counter (PC), up to 15 local variables and a routine stack.
+        </p>
+
+        <p>
+          The call stack is a stack data structure that consists of multiple frames. Each frame represents the execution context of a routine or function call. Each frame typically contains the following components:
+        </p>
+
+        <p>
+          (1) Program Counter (PC): The PC is a register or variable that keeps track of the current instruction being executed within the routine. It points to the memory address of the next instruction to be executed.
+        </p>
+
+        <p>
+          (2) Local Variables: Each frame has a fixed number of local variables, which are specific to the routine associated with that frame. These variables store temporary data used during the execution of the routine.
+        </p>
+
+        <p>
+          (3) Routine Stack: The routine stack is a separate stack associated with each frame, used for storing intermediate data and return addresses when nested routine calls occur.
+        </p>
+
+        <p>
+          On start-up a single frame is put on the call stack, which is the "Main" or starting routine. When a routine is called a newly created frame is pushed on top, passing control to the called routine. On a return instruction, the top frame is removed and the previous frame comes on top again.
+        </p>
+
+        <p>
+          Let's say Main starts at memory address 00. The next instruction is at memory address 01. But Main() makes a call to Routine1() which is at memory address 60. And that Routine1() goes up to address 62. Now, at address 62, Routine1() calls Routine2() at address 90. Here is a schematic of how I think this looks.
+        </p>
+
+        <pre>
+          Top of call stack
+          +-----------------+
+          | 90 |  Routine2  |
+          +-----------------+
+          | 60 |  Routine1  | [Routine2]
+          | 61 |            |
+          | 62 |            |
+          +-----------------+
+          | 00 |    Main    | [Routine1]
+          | 01 |            |
+          |-----------------|
+        </pre>
+
+        <p>
+          The part in the square brackets indicates what I believe the routine stack would be for each routine.
+        </p>
+
+        <p>
+          The top frame gives the current state of the Z-Machine. Can only the top frame can be accessed and modified? Some say yes. In fact, the Z-Machine allows for accessing and modifying data within any active frame on the call stack. During the execution of a routine, you can access and modify variables within the current frame, as well as variables in any parent frames higher up the call stack. This is possible through various instructions and mechanisms provided by the Z-Machine's instruction set.
+        </p>
+
+        <p>
+          But this requires nuance.
+        </p>
+
+        <p>
+          In the Z-Machine instruction set, there are no specific instructions designed to directly modify parent frames on the call stack. The call stack is primarily used for managing the execution flow and maintaining the context of routine calls. However, there are instructions that allow you to manipulate and access data within the current frame and interact with the stack. Some of these instructions include:
+        </p>
+
+        <ul>
+          <li>store: This instruction stores a value in a variable within the current frame.</li>
+          <li>load: This instruction loads a value from a variable within the current frame.</li>
+          <li>push: This instruction pushes a value onto the stack.</li>
+          <li>pull: This instruction pops a value from the stack.</li>
+        </ul>
+
+        <p>
+          By using these instructions in combination with other control flow instructions, you can indirectly affect the state of variables in the parent frames. For example, you can store a value in a variable within the current frame and then use that value in subsequent routine calls.
+        </p>
+
+        <p>
+          So it's accurate to say that the current frame (top of the call stack) is the only frame that can be directly accessed and modified. But other frames could potentially be indirectly accessed or modified through appropriate data manipulation and routine interactions.
+        </p>
+
+        <p>
+          Going back to my previous visual, the program counter is required. The program counter always points to the next instruction to execute. So in my following diagram, I've labeled the program counter "pc" and I've used a number after it to indicate the order where it points.
+        </p>
+
+        <pre>
+                Top of call stack
+                +-----------------+
+          pc5   | 90 |  Routine2  |
+                +-----------------+
+          pc2   | 60 |  Routine1  |
+          pc3   | 61 |            |
+          pc4   | 62 |            | [Routine2]
+                +-----------------+
+          pc1   | 00 |    Main    | [Routine1]
+                | 01 |            |
+                |-----------------|
+        </pre>
+
+        <p>
+          So at the start it points the first instruction, which is Main() routines staring point. Since Main calls Routine1, the program counter moves to that and then keeps moving through instructions in Routine1(). Then let's say at address 62, Routine2() is called from Routine1(). Then the program counter is pointing there appropriately.
+        </p>
+
+        <p>
+          The Z-Machine also includes a stack pointer in addition to the program counter. While the program counter (PC) keeps track of the address of the next instruction to be executed, the stack pointer (SP) keeps track of the top of the stack within the call stack.
+        </p>
+
+        <p>
+          The stack pointer points to the memory location where the topmost stack frame starts. As routines are called and return, the stack pointer moves up and down accordingly, reflecting the current position in the call stack. It is used to manage the dynamic allocation and deallocation of stack frames.
+        </p>
+
+        <p>
+          When a routine is called, a new stack frame is created, and the stack pointer is updated to point to the start of this new frame. As routines return, the stack pointer moves back to the previous frame, effectively deallocating the stack frame.
+        </p>
+
+        <p>
+          So with my above representation, I've added an "sp" to indicate where the stack pointer is pointing and a numeral to indicate how it changes.
+        </p>
+
+        <pre>
+                Top of call stack
+                +-----------------+
+          pc5   | 90 |  Routine2  |
+                +-----------------+
+          pc2   | 60 |  Routine1  |
+          pc3   | 61 |            |
+          pc4   | 62 |            | [Routine2] sp2
+                +-----------------+
+          pc1   | 00 |    Main    | [Routine1] sp1
+                | 01 |            |
+                |-----------------|
+        </pre>
+
+        <p>
+          I put the stack pointer reference next to the call stack in brackets just to make it clear when the stack pointer updates.
+        </p>
+
+        <p>
+          When Routine1() is called and executing, the stack pointer (SP) will initially point to the top of the Routine1() frame. It remains constant at that position until Routine1() either returns or calls another routine. While Routine1() is executing, any operations that involve accessing or modifying local variables or parameters within Routine1() will use the stack pointer to reference the appropriate memory locations within the Routine1() frame.
+        </p>
+
+        <p>
+          However, if Routine1() makes a call to another routine, such as Routine2() in the above example, the stack pointer will be updated to point to the top of the newly created Routine2() frame. At that point, Routine2() becomes the active routine, and the stack pointer reflects the new top of the call stack. Once Routine2() completes execution and returns, the stack pointer will be adjusted back to the top of the Routine1() frame, resuming execution in Routine1().
+        </p>
+
+        <p>
+          So, in summary, the stack pointer remains constant within a routine's execution context, pointing to the top of the respective routine's frame, until there is a return or a call to another routine, at which point it will be updated to reflect the new top of the call stack.
+        </p>
+
+        <p>
+          In versions 3 and up, each frame typically includes information about how the routine was called, whether it was called as a function, procedure, or interrupt. This information is often referred to as the "call type" or "call flag" and is stored as part of the frame data. The call type indicates the purpose or behavior of the routine and helps determine how the return value (if any) is handled. Here's a brief explanation of the different call types in the Z-Machine:
+        </p>
+
+        <p>
+          1. Function call: When a routine is called as a function, it is expected to return a value. The caller typically provides storage space to hold the return value, and the called routine is responsible for storing the result in that location.
+        </p>
+
+        <p>
+          2. Procedure call: A procedure call is similar to a function call but does not have a return value. The called routine performs some operations or actions but does not return a specific result to the caller.
+        </p>
+
+        <p>
+          3. Interrupt call: An interrupt call is used for special cases where the routine is invoked to handle specific events or interrupt-driven operations. Interrupt routines often have their own context and may interrupt the normal flow of execution.
+        </p>
+
+        <p>
+          By storing the call type within each frame, the interpreter can appropriately handle the return value and manage the behavior of the called routine based on how it was invoked.
+        </p>
+
+        <p>
+          A routine is nothing more than a very simple header that is put before Z-code instructions, and always begins at a packed routine address. The first (unsigned) byte of a routine indicates the number of local variables the routine has. Schematically:
+        </p>
+
+        <pre>
+          ROUTINE
+          +-----------------------+
+          | Number of Local Vars  |
+          +-----------------------+
+          |     Instructions      |
+          |        ...            |
+          +-----------------------+
+        </pre>
+
+        <p>
+          The routine header consists of a single byte that represents the number of local variables the routine has. Following the header, the instructions for the routine are stored.
+        </p>
+
+        <p>
+          In versions 1 to 4, this number of initial variables is followed by the same number of words, giving the default initial values for the local variables.
+        </p>
+
+        <pre>
+          +-----------------------+
+          | Number of Local Vars  |
+          +-----------------------+
+          |   Initial Variable 1  |
+          +-----------------------+
+          |   Initial Variable 2  |
+          +-----------------------+
+          |   Initial Variable 3  |
+          +-----------------------+
+          |          ...          |
+          +-----------------------+
+          |      Instructions     |
+          |          ...          |
+          +-----------------------+
+        </pre>
+
+        <p>
+          Here after the number of local variables, each subsequent word represents the default initial value for each local variable. The Z-code instructions follow these initial values. Note that in versions 5 and up a default initial value of zero is assumed.
+        </p>
+
+        <p>
+          After the routine header, which includes the number of local variables and their initial values, the execution of the routine begins at the address immediately following the routine header. Both the number of local variables and the initial values are considered part of the routine header.
         </p>
       </section>
     </article>
