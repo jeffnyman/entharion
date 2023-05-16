@@ -101,7 +101,7 @@ class Instruction:
 
         log(f"Instruction: {self.opcode_name}")
         log(f"Instruction form: {self.form.name}")
-        log(f"Instruction: {hex(self.memory.pc)[2:]}: {instruction_bytes_hex}")
+        log(f"Instruction bytes: {instruction_bytes_hex}")
 
         self.memory.trace.add(
             f"{hex(self.memory.pc)[2:]}: {instruction_bytes_hex} {self.opcode_name}"
@@ -110,7 +110,7 @@ class Instruction:
         operand_types = [operand_type.name for operand_type in self.operand_types]
         operand_values = [hex(num)[2:].rjust(4, "0") for num in self.operand_values]
 
-        log(f"Operand type: {operand_types}")
+        log(f"Operand types: {operand_types}")
         log(f"Operand values: {operand_values}")
 
         if self.store_variable:
