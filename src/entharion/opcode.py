@@ -7,9 +7,19 @@ from entharion.logging import log
 from entharion.routine import Routine
 
 
+def log_context() -> None:
+    import inspect
+
+    caller_name = inspect.currentframe().f_back.f_code.co_name
+    log("\n----------------------------------------------")
+    log(f"Executing {caller_name} opcode")
+    log("----------------------------------------------\n")
+
+
 class Opcode:
     def call(self: "Instruction") -> None:
-        log("\nExecuting call ...")
+        log_context()
+
         instruction_length: int = self.length
 
         routine = Routine()
