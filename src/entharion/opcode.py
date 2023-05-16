@@ -69,24 +69,7 @@ class Opcode:
         # Using the term "operands" helps clarify that these values are being
         # used as inputs in operation performed by the routine.
 
-        operand_list = list(zip(self.operand_types, self.operand_values))
-
-        operands_formatted = [
-            f"({o_type.name}, {hex(operand)[2:]})" for o_type, operand in operand_list
-        ]
-
-        log(f"Operand Values: {', '.join(operands_formatted)}")
-
-        operand_values = []
-
-        # NOTE: This may need to go somewhere else, along with getting the
-        # above list.
-
-        for operand_pair in operand_list:
-            if operand_pair[0].name == "Variable":
-                operand_values.append(self.get_variable(operand_pair[1]))
-            else:
-                operand_values.append(operand_pair[1])
+        operand_values = self.read_operands()
 
         # There is no need to pass the first operand to the routine because
         # that operand contains the memory address of the routine to be

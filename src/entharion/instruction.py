@@ -113,6 +113,27 @@ class Instruction:
 
         log(f"Instruction Length: {self.length}")
 
+    # NOTE: This method name is potentially confusing given there is a
+    # private method named _read_operand_values().
+    def read_operands(self) -> list:
+        operand_list = list(zip(self.operand_types, self.operand_values))
+
+        operands_formatted = [
+            f"({o_type.name}, {hex(operand)[2:]})" for o_type, operand in operand_list
+        ]
+
+        log(f"Operand Values: {', '.join(operands_formatted)}")
+
+        operand_values = []
+
+        for operand_pair in operand_list:
+            if operand_pair[0] == Operand_Type.Variable:
+                operand_values.append(self.get_variable(operand_pair[1]))
+            else:
+                operand_values.append(operand_pair[1])
+
+        return operand_values
+
     def get_variable(self, number: int) -> int:
         # A variable number is a byte that indicates a certain variable. The
         # meaning of a variable depends on the number. A number of 00 means
