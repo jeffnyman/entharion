@@ -10,6 +10,132 @@
   <main>
     <article>
       <section>
+        <h2>Starting Up</h2>
+
+        <p>
+          When grueslayer (the execution mechanism of Entharion) starts up, it creates a <code>Cpu()</code> instance. The CPU abstraction loads a passed in zcode program and creates a bytes representation of that program. That bytes representation is wrapped in a <code>Memory()</code> instance.
+        </p>
+
+        <p>
+          When the Memory instance is started, it creates a <code>Stack()</code> instance as well as establishes a variable for the program counter. I'll note here that in the specification it says: "The two important pieces of information not stored in memory are the program counter (PC) and the stack." Later on the specification says: "The stack is a second bank of memory, quite separate from the main one."
+        </p>
+
+        <p>
+          In my case, I don't see a reason to have the stack be a "second bank of memory." So I just combine them. Similarly I don't see any logic to having the program counter not be a part of memory since, utlimately, the program counter is pointing to addresses in memory.
+        </p>
+
+        <p>
+          Upon starting, the Memory instance also establishes the Z-Machine version of the program.
+        </p>
+
+        <pre>
+          self.version: int = self.read_byte(0x00)
+        </pre>
+
+        <p>
+          The specification says: "The first byte of any story file, and so the byte at memory address 0, always contains the version number of the Z-machine to be used." Note that this is not version of the program itself but, rather, the version of the Z-Machine that the program was designed to run with. That's important because different versions of the Z-Machine implemented different instruction sets and thus how processing of a zcode program took place could differ between the versions.
+        </p>
+
+        <p>
+          Memory regions are also established.
+        </p>
+
+        <pre>
+          self.dynamic: int = 0
+          self.static: int = self.read_word(0x0E)
+          self.high: int = self.read_word(0x04)
+        </pre>
+
+        <p>
+          Let's talk about the memory for a second.
+        </p>
+      </section>
+
+      <section>
+        <h2>Memory</h2>
+
+        <p>
+          The memory is really a representation of the state of the zcode program at any given time. Consider the "state" you will be dealing with in two categories.
+        </p>
+
+        <p>
+          The first category is a large array of bytes that is logically the memory of the virtual machine. This memory contains all the code, all the strings, and all the data structures representing every object in the zcode program. This memory also includes all the global variables. This first category is the "story state" or "game state" or "program state."
+        </p>
+
+        <p>
+          The second category is consists of local variables for routines, a call stack that indicates what routines have been called, and temporary storage for handling the results of calculations in routines. This second category is the "interpreter state."
+        </p>
+
+        <p>
+          An interpreter implementation takes as its input a file which is just a straight up serialization of the story state. When you're writing something like Entharion, you will spend a whole lot a lot of time figuring out how to decode that state.
+        </p>
+
+        <p>
+          An interesting thing to consider is that in the Z-Machine, almost all of the memory stays the same all the time. All the code, all the strings: they don't ever change. In <em>Zork</em>, for example, there are apparently only a few thousand bytes that change through the course of any given playthrough of the game. And of those, very few of those bytes change with most instructions that are executed.
+        </p>
+
+        <p>
+          The Z-Machine could address up to 64K of memory at any given time, but the total memory required by a given program might be much larger than this. In fact, the memory state of a zcode program was typically more than would fit into an 8-bit machine like the TRS-80, Commodore 64 or the Apple II. To accommodate this, the Z-Machine implemented a system of "memory windows", which were essentially smaller sections of memory that could be swapped in and out of the 64K address space as needed. The memory windows were typically used to hold the program's code, data, and stack, as well as any additional data structures required by the program.
+        </p>
+
+        <p>
+          Thus Z-Machine interpreters typically used a technique called "bank switching." When the Z-Machine needed to access a part of memory that was not currently in the active bank, it would "switch" to the appropriate bank by copying the contents of the current bank's memory window to disk, loading the new bank's memory window from disk, and then continuing execution.
+        </p>
+
+        <p>
+          In the context of the Z-Machine, a 16-bit pointer is used to address memory locations in a program's virtual memory space. This particular size of the pointer used in the Z-Machine was a design choice made by the machine's creators. They chose to use a 16-bit pointer because it was sufficient to address the memory space of the Z-Machine and more efficient than using a larger pointer size. Using a larger pointer size would have required more memory to store the same amount of information, and also would have increased the computational overhead needed to manipulate the pointers.
+        </p>
+
+        <p>
+          But, given the above discussion of memory, the Z-Machine's memory state size can be larger than can be addressed with a 16-bit pointer. To address this, the Z-Machine uses a segmented memory model, in which memory is divided into smaller chunks called "pages." The interpreter keeps track of which page a particular memory address belongs to, and uses a separate pointer to index into the current page. This allows the interpreter to access a much larger memory space than would be possible with a single 16-bit pointer.
+        </p>
+
+        <p>
+          The concepts of "pages" and "banks" are related to the memory regions of the Z-Machine, such as "dynamic" and "static." In particular, the memory management scheme of the Z-Machine involves dividing the memory into different regions, each with its own characteristics and limitations.
+        </p>
+
+        <p>
+          The "static" memory region is where the read-only data of the program file is stored, including the program's text strings, and other data. The "dynamic" memory region, on the other hand, is used for the runtime state of the program, essentially involving mutable data. In the context of a game, this would be things like the player's current location, inventory items, and so on.
+        </p>
+
+        <p>
+          Dynamic memory is allocated using 16-bit pointers and can be accessed directly. However, certain parts of static memory may require 17-bit pointers to address all the necessary data. To access these parts of memory, the Z-Machine uses indirect addressing, where a 16-bit pointer points to a table that contains 17-bit pointers to the actual data. The Z-Machine interpreter then uses bank switching to manage the different regions of memory and handle that indirect addressing.
+        </p>
+
+        <p>
+          It's worth noting that the least significant bit of a 17-bit pointer is always 0 in this context. This is because the Z-Machine memory is divided into 2-byte units, which means that every address in memory is an even number. By setting the least significant bit of a 17-bit pointer to 0, the Z-Machine ensures that all addresses accessed with 17-bit pointers are aligned to these 2-byte units. This alignment was very important for efficient memory access, as unaligned memory accesses could be slower and less efficient and that meant quite a bit when dealing with the 8-bit machines of the time.
+        </p>
+
+        <p>
+          Because the Z-Machine used 2-byte units for addressing memory, every address had to be divisible by 2. So to access anything beyond the first 64K of memory, the Z-Machine used 17-bit addresses with the bottom bit set to 0, allowing for the address to be represented as a 2-byte value. This means that all memory addresses beyond 64K had to start on an even boundary.
+        </p>
+
+        <p>
+          The term "packed address" in the context of the Z-Machine refers to the fact that addresses in memory are stored using a variable-length encoding scheme that packs multiple address bits into a single byte or word. This was done in order to save memory space. The packed address encoding scheme allowed the Z-Machine to use a smaller memory footprint without sacrificing addressability.
+        </p>
+
+        <p>
+          That term of "packed address" refers specifically to the 17-bit addresses used for accessing memory beyond 64K, and the fact that they are stored as 2-byte units with the bottom bit of the first byte always set to 0. Packed addresses are not relevant to the 16-bit addresses used for memory within the first 64K of the Z-Machine memory.
+        </p>
+
+        <p>
+          Also, I should that earlier when I said that certain addresses above 64K are stored using "a variable-length encoding scheme," what I mean is that the actual number of bytes used to store the address may vary depending on the value of the address being stored. In other words, some addresses may require more bytes to be stored than others. For example, if the address being stored is less than 0x10000 (i.e., less than 64K), it can be stored in 2 bytes using a standard 16-bit pointer. However, if the address is greater than or equal to 0x10000, it can't be stored in 2 bytes and a variable-length encoding scheme must be used.
+        </p>
+
+        <p>
+          So, going with what I've already described, one common encoding scheme is to use a 17-bit value with the low bit set to 0 to indicate that it is a packed address. If the 17-bit value is less than 0x1F000, then the packed address is just the 17-bit value shifted left by 1 bit. However, if the 17-bit value is greater than or equal to 0x1F000, then it's necessary to use more than 1 byte to store the packed address. In this case, the packed address consists of the high 5 bits of the 17-bit value in the first byte, and the low 8 bits of the 17-bit value in the second byte. And thus a variable-length encoding scheme is used to store addresses that are greater than or equal to 0x10000 and the encoding scheme used depends on the value of the address being stored.
+        </p>
+
+        <p>
+          I used the value 0x1F000 as my example specifically to illustrate how an address above 64K can be stored using a variable-length encoding scheme. In this scheme, the high-order bit of the 16-bit address field is set to 1 to indicate that the address is encoded using two bytes. The remaining 15 bits of the address field are used to store the 15 least significant bits of the actual address. The remaining 2 bits of the actual address are stored in the next byte, which is referred to as the "packed address byte."
+        </p>
+
+        <p>
+          So for the example of 0x1F000, the high-order bit of the 16-bit address field would be set to 1 to indicate that the address is encoded using two bytes. The remaining 15 bits would store the 15 least significant bits of the actual address, which in this case is 0x0F000. The remaining 2 bits (0x10) would be stored in the packed address byte, resulting in a packed address of 0x1F080.
+        </p>
+      </section>
+
+      <section>
         <p>
           A zcode instruction is a sequence of bytes, describing an operation for the Z-Machine to perform. An instruction consists of two parts: the opcode and the operands. Each instruction has an operation byte, which is the byte containing the opcode.
         </p>
