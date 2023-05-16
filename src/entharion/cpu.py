@@ -9,13 +9,18 @@ from entharion.trace import Trace
 
 class Cpu:
     def run(self) -> None:
+        self.zcode: Memory
+
         trace = Trace()
         setup_logging("log.txt")
 
-        zcode: Memory = Loader.load(sys.argv[1], trace)
+        self.zcode = Loader.load(sys.argv[1], trace)
 
-        instruction: Instruction = zcode.read_instruction(zcode.pc)
+        self.loop()
+
+    def loop(self) -> None:
+        instruction: Instruction = self.zcode.read_instruction(self.zcode.pc)
 
         instruction.details()
         instruction.execute()
-        zcode.trace.generate()
+        self.zcode.trace.generate()
