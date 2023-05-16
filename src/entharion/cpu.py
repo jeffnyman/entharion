@@ -16,7 +16,8 @@ class Cpu:
 
         self.zcode = Loader.load(sys.argv[1], trace)
 
-        self.loop()
+        while True:
+            self.loop()
 
     def loop(self) -> None:
         instruction: Instruction = self.zcode.read_instruction(self.zcode.pc)
