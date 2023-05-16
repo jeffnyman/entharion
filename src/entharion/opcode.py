@@ -37,9 +37,11 @@ class Opcode:
 
         # The first operand will be the calling address.
         calling_address = self.operand_values[0]
+
         routine_address = self.memory.read_packed(calling_address, True)
         log(f"Routine address: {hex(routine_address)[2:]}")
         self.memory.trace.add(f"{hex(routine_address)[2:]}")
+        routine.routine_address = routine_address
 
         # Get the number of local variables of the called routine.
         local_variable_count = self.memory.read_byte(routine_address)
