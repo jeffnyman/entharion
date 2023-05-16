@@ -21,12 +21,13 @@ def main() -> int:
             raise TypeError("zcode data must be of type bytes")
 
         instruction: Instruction = zcode.read_instruction(zcode.pc)
-        instruction.details()
-        instruction.execute()
-        zcode.trace.generate()
 
         if not isinstance(instruction, Instruction):
             raise TypeError("instruction must be instance of Instruction")
+
+        instruction.details()
+        instruction.execute()
+        zcode.trace.generate()
     except (TypeError, FileNotFoundError) as e:
         print(f"Error: {e}")
         return 1
