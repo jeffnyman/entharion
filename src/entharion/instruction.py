@@ -41,9 +41,9 @@ class Instruction:
                 print(f"Method found for opcode {method_name}.")
                 method_to_call(self)
             else:
-                print(f"No method found for opcode {method_name}.")
+                raise RuntimeError(f"No method found for opcode {method_name}.")
         else:
-            print("No opcode was found to execute.")
+            raise RuntimeError("No opcode was found to execute.")
 
     def decode(self) -> None:
         self.current_byte: int = self.address
