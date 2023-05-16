@@ -118,7 +118,9 @@ class Instruction:
         log(f"Instruction Length: {self.length}")
 
     # NOTE: This method name is potentially confusing given there is a
-    # private method named _read_operand_values().
+    # private method named _read_operand_values(). The difference is that
+    # this method reads routine operand values. Should this method be
+    # called that?
     def read_operands(self) -> list:
         operand_list = list(zip(self.operand_types, self.operand_values))
 
