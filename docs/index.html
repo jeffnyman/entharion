@@ -133,6 +133,62 @@
         <p>
           So for the example of 0x1F000, the high-order bit of the 16-bit address field would be set to 1 to indicate that the address is encoded using two bytes. The remaining 15 bits would store the 15 least significant bits of the actual address, which in this case is 0x0F000. The remaining 2 bits (0x10) would be stored in the packed address byte, resulting in a packed address of 0x1F080.
         </p>
+
+        <p>
+          The dynamic memory of a Z-Machine program would be kept in physical memory, while the static memory was paged in and out as needed. The static memory was divided into "pages," and each page was loaded from the game file into memory when it was needed. When the Z-Machine needed to access data on a page that wasn't currently loaded, it would trigger a page fault, which would cause the interpreter to load the necessary page from the game file into memory, and then continue execution of the program.
+        </p>
+
+        <p>
+          The Z-Machine stores all data, including instructions, strings, numbers, and addresses, as 2-byte units or "words". In cases where only one byte is needed to store data, a whole 2-byte word would still be used to store that data, with the other byte left unused. However, when accessing the memory, the Z-Machine would only need to reference the single byte that contains the actual data, and ignore the other byte. This can result in some memory wastage if there are many instances where only one byte is needed but two bytes are used. This is especially true if the program requires a lot of memory for its data. However, using a uniform word size simplifies memory management and access, which can be a trade-off worth making in some cases. Additionally, some Z-Machine story files use compression techniques to reduce the size of the file, which can help mitigate the memory usage impact of using 2-byte words.
+        </p>
+
+        <p>
+          In the Z-Machine, a word is stored as two bytes in big-endian byte order, meaning the most significant byte (MSB) is stored first, followed by the least significant byte (LSB). For example, if the word 0xABCD is stored in memory, it would be stored as two bytes 0xAB followed by 0xCD. When we read a word from memory, we need to combine these two bytes to form the original word.
+        </p>
+
+        <p>
+          So consider this to read a byte and a word:
+        </p>
+
+        <pre>
+          return data[address]
+          return (data[address] << 8) | data[address+1]
+        </pre>
+
+        <p>
+          Here <code>data[addr]</code> and <code>data[addr + 1]</code> read the two bytes of the word from memory. We shift the MSB 8 bits to the left (&lt;&lt; 8) so that it occupies the upper 8 bits of the 16-bit integer, and then add the LSB to the lower 8 bits with a bitwise OR (|). The + 1 is included to handle the case where the word is a packed address. When the bottom bit of a packed address is 0, it means the address is relative to the start of the static memory area, which is at address 0. So we add 1 to the resulting value to convert it to an absolute address.
+        </p>
+
+        <p>
+          Here's a schematic to help illustrate this:
+        </p>
+
+        <pre>
+          Data in memory         MSB   LSB
+          --------------         ---   ---
+          Byte at addr           0xAB  0xCD
+          Byte at addr + 1       0xCD  0xEF
+          
+          Value of (data[addr] << 8) 0xAB00
+          Value of data[addr + 1]     0xCD
+          Result of OR operation     0xABCD
+          
+          Packed address 0x3E    MSB   LSB
+          -------------------    ---   ---
+          Byte at 0x3E           0x1F  0x23
+          
+          Value of (data[0x3E] << 8) 0x1F00
+          Value of data[0x3F]         0x23
+          Result of OR operation      0x1F23 + 1 = 0x1F24
+        </pre>
+
+        <p>
+          The first 64KB of static memory can be accessed using 16-bit pointers, just like the dynamic memory.
+        </p>
+
+        <p>
+          The high memory is essentially a contiguous block of memory that is a subset of the static memory, and its start is indicated by the high memory mark. It is a special part of the static memory because it can only be accessed using 17-bit pointers due to its location beyond the 64K address range that can be addressed with 16-bit pointers.
+        </p>
       </section>
 
       <section>
