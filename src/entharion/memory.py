@@ -41,10 +41,6 @@ class Memory:
         log("----------------------------------------------\n")
 
     def read_instruction(self, address: int) -> Instruction:
-        log("\n----------------------------------------------")
-        log(f"Reading instruction at {hex(address)}")
-        log("----------------------------------------------\n")
-
         instruction = Instruction(self, address)
         instruction.decode()
 

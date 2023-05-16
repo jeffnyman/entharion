@@ -46,6 +46,10 @@ class Instruction:
             raise RuntimeError("No opcode was found to execute.")
 
     def decode(self) -> None:
+        log("\n----------------------------------------------")
+        log(f"Reading instruction at {hex(self.address)}")
+        log("----------------------------------------------\n")
+
         self.current_byte: int = self.address
 
         self.opcode_byte = self.memory.read_byte(self.address)
