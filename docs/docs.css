@@ -1,0 +1,37 @@
+*,
+::after,
+::before {
+  -webkit-box-sizing: inherit;
+  box-sizing: inherit;
+}
+
+html {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 1.2625em;
+  height: 100%;
+  scroll-behavior: smooth;
+}
+
+@media screen and (min-width: 1024px) {
+  html {
+    font-size: 1.225em;
+  }
+}
+
+body {
+  background: #fff;
+  color: #222;
+  line-height: 1.15;
+  margin: 0;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  word-wrap: anywhere;
+}
+
+object[type="image/svg+xml"]:not([width]) {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
