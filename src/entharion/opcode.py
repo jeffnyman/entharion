@@ -4,6 +4,7 @@ if TYPE_CHECKING:
     from entharion.instruction import Instruction
 
 from entharion.logging import log
+from entharion.numbers import get_signed_equivalent
 from entharion.routine import Routine
 
 
@@ -17,6 +18,23 @@ def log_context() -> None:
 
 
 class Opcode:
+    def add(self: "Instruction") -> None:
+        # 2OP:20 14 add a b → (result)
+        # Performs a signed 16-bit addition operation. The result is given as
+        # a + b modulo $10000 (65536). This ensures that the result stays
+        # within the range of a 16-bit signed value. If the sum exceeds the
+        # maximum positive value (32767) or goes below the minimum negative
+        # value (-32768), the modulo operation wraps the value around within
+        # the range of a signed 16-bit representation.
+
+        operand_values = self.read_operands()
+        operand_values = [get_signed_equivalent(x) for x in operand_values]
+
+        log(f"Operand Values: {operand_values}")
+
+        result = operand_values[0] + operand_values[1]
+        log(f"Add Result: {result}")
+
     def call(self: "Instruction") -> None:
         log_context()
 
