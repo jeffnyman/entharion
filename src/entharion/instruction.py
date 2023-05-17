@@ -176,6 +176,16 @@ class Instruction:
             variable_address = self.memory.global_table_start + ((number - 0x10) * 2)
             return self.memory.data[variable_address]
 
+    def set_variable(self, number: int, value: int) -> None:
+        if number == 0x00:
+            raise RuntimeError("IMPLEMENT: set_variable, push to stack")
+
+        if number > 0x00 and number < 0x10:
+            top_routine = self.memory.stack.routine_stack[-1]
+            top_routine.local_variables[number - 0x01] = value
+        else:
+            raise RuntimeError("IMPLEMENT: set a global variable")
+
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
             self.form = Form.EXTENDED

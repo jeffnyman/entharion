@@ -35,6 +35,10 @@ class Opcode:
         result = operand_values[0] + operand_values[1]
         log(f"Add Result: {result}")
 
+        self.set_variable(self.store_variable, result)
+
+        self.memory.pc += self.length
+
     def call(self: "Instruction") -> None:
         log_context()
 
