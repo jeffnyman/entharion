@@ -168,7 +168,13 @@ class Instruction:
             # variable corresponds to index 1, and so on.
             return top_routine.local_variables[number - 0x01]
         else:
-            raise RuntimeError("IMPLEMENT: get_variable, global value")
+            # Since each global variable occupies two bytes, multiplying the
+            # variable_number by 2 calculates the offset in bytes from the
+            # start of the global variable table for the desired variable.
+            # It's also necessary to account for the offset or displacement
+            # in the global variable table.
+            variable_address = self.memory.global_table_start + ((number - 0x10) * 2)
+            return self.memory.data[variable_address]
 
     def _determine_form(self) -> None:
         if self.memory.version >= 5 and self.opcode_byte == 0xBE:
