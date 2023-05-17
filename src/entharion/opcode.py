@@ -27,6 +27,8 @@ class Opcode:
         # value (-32768), the modulo operation wraps the value around within
         # the range of a signed 16-bit representation.
 
+        log_context()
+
         operand_values = self.read_operands()
         operand_values = [get_signed_equivalent(x) for x in operand_values]
 
