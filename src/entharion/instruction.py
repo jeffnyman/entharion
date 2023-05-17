@@ -33,7 +33,7 @@ class Instruction:
     def execute(self) -> None:
         opcode_match = self._find_matching_opcode()
 
-        if opcode_match is not None and opcode_match.store:
+        if opcode_match is not None:
             print(f"The opcode {opcode_match.name} needs to be executed.")
             method_name = opcode_match.name
             method_to_call = getattr(Opcode, method_name, None)
