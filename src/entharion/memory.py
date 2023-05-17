@@ -24,6 +24,8 @@ class Memory:
         self.routine_offset: int = self.read_word(0x28)
         self.strings_offset: int = self.read_word(0x2A)
 
+        self.global_table_start: int = self.read_word(0x0C)
+
         self.pc: int
 
         self._memory_checks()
@@ -37,6 +39,7 @@ class Memory:
         log(f"High memory start: {hex(self.high)}")
         log(f"Routine offset: {self.routine_offset}")
         log(f"Strings offset: {self.strings_offset}")
+        log(f"Global table start: {hex(self.global_table_start)}")
         log(f"Starting address: {hex(self.pc)}")
         log("----------------------------------------------\n")
 
