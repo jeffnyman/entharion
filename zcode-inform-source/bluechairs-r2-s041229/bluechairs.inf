@@ -1,0 +1,1207 @@
+!
+! Blue Chairs
+! begun 29 Feb 2004
+!
+
+Ifndef VN_1630;
+Message warning
+    "This probably won't compile correctly under anything but Inform 6.30";
+Endif;
+
+Constant Story = "Blue Chairs";
+Constant Headline = " by Chris Klimas^";
+Release 1;
+Constant DIALECT_US;
+Constant NO_PLACES;
+Constant NO_SCORE;
+
+! These constants tell the AfterLife() entry point what to do -- take
+! the player to the cubicle or just print the restart, restore, quit
+! prompt.
+
+Constant DEAD_CUBICLE = 1;
+Constant DEAD_JUSTPRINT = 3;
+
+Replace DrawStatusLine;
+
+Include "Parser";
+
+Object LibraryMessages
+ with	before
+	[;
+	 Examine:
+	    ! Kill "The blah is currently on" messages
+	    
+	    if (lm_n == 3)
+		rtrue;
+
+	 Attack:
+	    "You've never been a very violent kind of guy.";
+
+	 Burn:
+	    "You don't have a match or anything.";
+
+	 Buy:
+	    "Nobody's selling anything, as far as you can see.";
+
+	 Climb:
+	    "That wouldn't really help.";
+
+	 Consult:
+	    print_ret "There's nothing cool in ", (the) noun, ".";
+
+	 Cut:
+	    <<Climb>>;
+
+	 Dig:
+	    <<Cut>>;
+
+	 Drink:
+	    "There's nothing around worth drinking, as far as you 
+	    can tell.";
+
+	 Eat:
+	    if (lm_n == 1)
+		print_ret (The) noun, " doesn't look too tasty.";
+
+	 Fill:
+	    <<Climb>>;
+	    
+	 Jump:
+	    "You hop a little, just because.";
+
+	 JumpOver:
+	    <<Climb>>;
+
+	 Kiss:
+	    "No thanks.";
+
+	 Listen:
+	    "You don't hear anything weird.";
+
+	 Mild:
+	    "Yup.";
+
+	 Miscellany:
+	    switch (lm_n)
+	    {
+	     10:
+		"Hunh?";
+
+	     23:
+		"It seems like you want to talk to someone, but it's 
+		unclear who you're referring to.";
+
+	     28:
+		print "Sorry, I only understood you as far as ";
+
+	     30:
+		"You don't see anything like that around.";
+	    };
+
+	 Pray:
+	    "You've never been really religious.";
+
+	 Search:
+	    if (lm_n == 4)
+		"You don't see anything unusual.";
+	    
+	 Sing:
+	    "You're not very good at singing.";
+
+	 Sleep:
+	    "You don't feel sleepy.";
+
+	 Smell:
+	    "You don't smell anything interesting.";
+	    
+	 Sorry:
+	    "No worries.";
+
+	 Squeeze:
+	    if (lm_n == 1)
+		"That'd be kind of rude.";
+
+	 Strong:
+	    "Fuckin' A.";
+
+	 Take:
+	    if (lm_n == 2)
+		"Dude, that's kind of metaphysical.";
+
+	 Touch:
+	    switch (lm_n)
+	    {
+	     1:
+		"That would be kind of rude.";
+
+	     2:
+		"It doesn't feel out of the ordinary.";
+	    };
+	    
+	 VagueGo:
+	    "Which way do you want to go?";
+
+	 Wake:
+	    "You don't know how.";
+
+	 WaveHands:
+	    "You wave, feeling kind of dumb.";
+
+	 Yes:
+	    "If you say so.";
+	];
+
+Include "Verblib";
+Include "menus.h";
+Include "abbrevs.inf";
+Include "help.inf";
+Include "cubicle.inf";
+
+!
+! Global functions and variables
+!
+
+! Set to hide status bar display
+Global hide_status = false;
+
+[ Initialise;
+    clr_on = true;  ! use color
+    lookmode = 2;   ! verbose
+    move dante to pre_attic;
+    ChangePlayer(dante);
+    location = pre_attic;
+
+    print "^~Twenty-three dollars,~ he's saying. ~Twenty-three 
+	dollars for the best dream of your life.~^^You don't know 
+	his name or anything -- he's just the guy you always meet at 
+	parties thrown by people you've never met. He's nobody's 
+	friend, exactly, but everyone knows who he is when it's 
+	time. Probably doesn't even have a name, probably has bagged 
+	groceries at some godforsaken Shopper's Food Warehouse since 
+	high school, but who cares? He's here to help you in your 
+	hour of need.^^~What do you say?~ he asks, holding up a 
+	repurposed cough syrup bottle with something green inside. 
+	Green like candy almost never is.^";
+    return 2;
+];
+
+[ ParserError;
+    ! See driving.inf or work.inf for info on why this part is
+    ! here. I'm using provides here instead of ofclass || for
+    ! simplicity. goto_next_room probably is a poorly-chosen name, but
+    ! what are you gonna do?
+    
+    if (location provides goto_next_room)
+    {
+	location.goto_next_room();
+	rtrue;
+    };
+    
+    rfalse;
+];
+
+[ AfterLife i;
+    switch (deadflag)
+    {
+     DEAD_CUBICLE:
+	print "[...]";
+	@read_char 1 -> i;
+	@erase_window -1;
+	deadflag = 0;
+	ChangePlayer(cubicle_dante);
+	print "^^It's hard to explain how you found your way back to 
+	    your apartment and slept until your mind ran out of 
+	    dreams -- hard to say how you are here again, where 
+	    everything is safe and temperate. The office has a way 
+	    of making memory slip from your fingers, of erasing 
+	    everything but a present that plods forward.^";
+	PlayerTo(death_cubicle);
+
+     DEAD_JUSTPRINT:
+	! I had to go looking through parser.h to find the right
+	! routine to call
+	
+	print "^^";
+	AfterGameOver();
+
+     default:
+	"*** AfterLife(): weird deadflag value";
+    };
+];
+
+[ abs i;
+    if (i < 0)
+	return -i;
+    else
+	return i;
+];
+
+[ isodd i;
+    return (i % 2);
+];
+
+[ iseven i;
+    return (~~ isodd(i));
+];
+
+[ ContainsLight obj i;
+    ! This is sort of like ProvidesLight(), but only checks what is
+    ! inside the object, not the object itself. It returns a light
+    ! source, and false if it nothing gives off light.
+
+    objectloop (i in obj)
+	if (HasLightSource(i))
+	    return i;
+
+    rfalse;
+];
+
+!
+! Global objects
+!
+
+Class 	FarScenery
+ with	before
+	[;
+	    if (action ~= ##Examine)
+		"That's too far away.";
+	],
+ has 	scenery;
+
+Class 	BlueCard
+ with	text,
+	sub_text,
+	display
+	[ i y;
+
+	    if ((ScreenWidth() < 40) || (ScreenHeight() < 10))
+	    {
+		ClearScreen();
+		for (i = 0 : i < (self.#text / 2) : i++)
+		    print (string) self.&text-->i, "^";
+		print "[...]";
+		KeyCharPrimitive();
+	       	rtrue;
+	    };
+	    
+	    SetColour(CLR_BLACK, CLR_BLACK, WIN_STATUS);
+	    SetColour(CLR_BLACK, CLR_BLACK, WIN_MAIN);
+	    ClearScreen();
+	    SetColour(CLR_BLUE, CLR_BLACK, WIN_STATUS);
+	    ClearScreen(WIN_STATUS);
+	    StatusLineHeight(ScreenHeight());
+	    self.dots();
+
+	    SetColour(CLR_BLUE, CLR_BLACK, WIN_STATUS);
+	    y = ScreenHeight() - ((self.#text) / 2) - 2;
+	    MoveCursor(y, 1);
+	    spaces(ScreenWidth());
+	    new_line;
+	    
+	    for (i = 0 : i < (self.#text) / 2 : i++)
+	    {
+		if (i == 0)
+		    style bold;
+		
+		spaces((ScreenWidth() - Length(self.&text-->i)) - 1);
+		print " ", (string) self.&text-->i, "^";
+
+		style roman;
+	    };
+	    self.pause();
+	    SetColour(CLR_DEFAULT, CLR_DEFAULT, WIN_ALL);
+	    StatusLineHeight(0);
+	    ClearScreen();
+	    MainWindow();
+	],
+	dots
+	[ i j density x y;
+	    SetColour(CLR_WHITE, CLR_BLACK, WIN_STATUS);
+
+    	    density = (ScreenWidth() * ScreenHeight()) / 50;
+
+    	    for (i = 0: i < density: i++)
+    	    {
+		x = random(ScreenWidth());
+		y = random(Screenheight());
+
+		MoveCursor(y, x);
+
+		if (random(2) == 1)
+	    	    style bold;
+		print ".";
+		style roman;
+    	    };
+
+    	    for (i = 0: i < density: i++)
+    	    {
+		x = random(ScreenWidth() - 10);
+		y = random(ScreenHeight());
+		MoveCursor(y, x);
+	
+		if (random(2) == 1)
+	    	    style bold;
+
+	      	j = random((self.#sub_text) / 2) - 1;
+		print (string) self.&sub_text-->j;
+		style roman;
+	    };	    
+	],
+	pause
+	[;
+	    MoveCursor(ScreenHeight() - 1, 1);
+	    spaces(ScreenWidth());
+	    new_line;
+	    spaces(ScreenWidth() - 26);
+    	    print "Press any key to continue.";
+	    MoveCursor(0, 0);
+	    KeyCharPrimitive();
+	];
+
+Class 	Protagonist
+ with	orders
+	[ i should_print;
+	 Inv:
+	    ! it is currently beyond my comprehension why this is
+	    ! necessary, but it's releasin' time
+
+	    if (dante_shirt hasnt concealed)
+	    	give dante_shirt concealed;
+
+	    should_print = false;
+	    
+	    objectloop (i in player)
+ 		if (i hasnt concealed)
+		    should_print = true;
+
+	    if (should_print)
+	    {
+	    	L__M(##Inv, 2);
+		print " ";
+	    	WriteListFrom(child(self), ENGLISH_BIT + CONCEAL_BIT);
+	    	".";
+	    }
+	    else
+	    {
+		L__M(##Inv, 1);
+		rtrue;
+	    };
+	],
+	before
+	[;
+	 Play:
+	    "Now's not the time.";
+	],
+	number 0,
+ has 	light;
+
+Protagonist dante "Dante"
+ with	description
+	[;
+	    if (darkened_entrance hasnt visited)
+	    {
+	    	if (self hasnt general)
+	    	{
+		    give self general;
+		    print "You're Dante Hicks. No, not the main 
+			character from ";
+		    style underline;
+		    print "Clerks";
+		    style roman;
+		    print ". You're at least ten times too smart to 
+			be working a convenience store. Instead 
+			you're maxing it as a sysadmin for this 
+			local real-estate company. This will 
+			probably be important to remember at some 
+			point in the future, but until then:^^";
+	    	};
+		
+    	    	"You're in full party dress uniform: black jeans and 
+		neo-geek T-shirt (tonight, ~THERE'S NO PLACE LIKE 
+		127.0.0.1~) which is admittedly Not Cool At All, but 
+		you've always held out hope that the shirt will 
+		someday flag down some amazingly hot chick who also 
+		happens to be a closet Unix freak. It could happen. 
+		Until then, it at least confuses people into 
+		thinking you might be cool.";
+	    }
+	    else
+		"Dante is lost. He has a collection of belongings, a 
+		place to live, a job, even a retirement plan. But 
+		he's never tasted hardship -- the real kind, that 
+		leaves scars -- and never really tasted happiness 
+		either -- the real kind, that lasts forever.^^He 
+		wants to have a story. So badly. He tries not to 
+		think of himself as a princess trapped in a tower, 
+		though he surely is trapped. Maybe he can be a 
+		pilgrim lost in the dark, or an antihero waiting for 
+		the right moment to stage his return. These are all 
+		fictions -- not stories. They are comfortable.^^He 
+		reads so many books now. He watches so many people.";
+	],
+	beers 0,
+	drank_wine false;
+
+Object 	-> wallet "wallet"
+ with	article "your",
+	name
+	    'wallet',
+	description
+	[;
+	    if (money in wallet)
+	    	"You've got exactly twenty-three dollars. How 
+		convenient and weird.";
+	    else
+		if (chris_money in wallet)
+		    print_ret "Right now, you've got Chris' money in 
+			", (the) self, ". You sly dog, you.";
+	    	else
+		    print_ret "Right now, ", (the) self, " is empty.";
+	],
+	before
+	[;
+	 Open:
+	    <<Examine self>>;
+
+	 Close:
+	    print_ret "With a quick flourish, you close ", (the) self,
+		".";
+	    
+	 Drop, Insert, ThrowAt:
+	    print_ret "You'd better hold onto it -- it's got, you
+		know, important things in it.";
+
+	 Receive:
+	    if (noun == photograph)
+		"You think about it for a moment, then decide not to.";
+	    
+	    if (noun ~= money or chris_money)
+		"Come on, man, wallets are for storing money. Why are
+		you trying to get all complicated about things?";
+
+	 Search:
+	    <<Examine self>>;
+	],
+	after
+	[;
+	 Receive:
+	    switch (noun)
+	    {
+	     money:
+		print_ret "You slide your money back into ", (the)
+		 self, ", apparently reconsidering the state of the 
+			financial union.";
+		
+	     chris_money:
+		print_ret "You cram Chris' money into your wallet.";
+	    };
+	],
+ has 	container open;
+
+Object 	-> -> money "twenty-three dollars"
+ with 	name
+	    'dollars' 'money' 'cash' 'twenty' 'three' 'dollar' '23',
+	description
+	    "Ben Franklin grins at you, that lecherous bastard.",
+	before
+	[;
+	 Insert:
+	    if (second == wallet)
+		rfalse;
+	    else
+		<<Drop self>>;
+	    
+	 Drop, ThrowAt:
+	    "You're a little too poor to be leaving cash around for 
+	    no reason.";
+	];
+
+Object 	-> keys "keys"
+ with	article "your",
+	parse_name
+	[ i definite_match;
+	    while (true)
+	    	switch (NextWord())
+	   	{
+	    	 'key':
+	       	    i++;
+		    
+	    	 'keys':
+	       	    definite_match = true;
+	       	    i++;
+	       	    
+	    	 default:
+	       	    if (definite_match)
+		   	return i;
+	       	    else
+		   	return 0;
+	   	};
+	],
+	description
+	    "You've got five useful keys and twenty you've only used 
+	    once in the course of your life, and as such, their 
+	    purpose has been lost entirely.",
+	before
+	[;
+	 Drop, Insert, ThrowAt:
+	    print_ret "You'd better hold onto your ", (name) self, ".";
+	]; 
+
+Object 	-> pager "pager"
+ with	name
+	    'pager' 'beeper' 'bleeper',
+	description
+	[;
+	    if (epilogue_in_chair has visited)
+		"The pager is dead, inert.";
+	    
+	    if ((fuckfuckfuck has visited) &&
+		(station_revisited hasnt visited))
+	    {
+		"For the first time ever, the little fucker is 
+		actually doing something. ~narcissus is lonely,~ it 
+		says -- narcissus being the mail server at work. You 
+		got bored one day and programmed the machines to 
+		send you cute messages instead of actual error 
+		messages -- you think this means its network card is 
+		fucked, only you have no idea how it could page you 
+		if it can't even find the LAN.";
+	    };
+		
+	    	if (self hasnt general)
+	    	{
+		    give self general;
+		    print "You're fundamentally opposed to cell 
+			phones, Palm Pilots, and even those 
+			Blackberries you've seen a couple jackasses 
+			at work using. But you're willing to make an 
+			exception for this beauty of a pager. All it 
+			ever does is tell you if any of the servers 
+			at work go down, which they never do. The 
+			upside of all this being that this little 
+			device has enabled you to spend countless 
+			hours ~telecommuting~... what a dumb word.^^";
+	    	};
+	    
+	    print_ret (The) self, "'s screen is blank right now.";
+	],
+	before
+	[;
+	 Drop, Insert, ThrowAt:
+	    if ((fuckfuckfuck has visited) && (station_revisited hasnt
+					       visited))
+		"If only it was that easy -- problems don't get fixed
+		just because you want to forget them...";
+	    else
+	    	print_ret (The) self, " technically belongs to your 
+		    company, so probably you ought to not lose it if 
+		    at all possible.";
+
+	 SwitchOff, SwitchOn:
+	    "Dude, you have no idea how to do anything with this 
+	    thing.";
+	];
+
+Object 	-> dante_shirt "shirt"
+ with 	article "your",
+	name
+	    'shirt' 't-shirt' 't//' 'black',
+	description
+	    "~There's no place like 127.0.0.1,~ it says.",
+	before
+	[;
+	 Disrobe:
+	    "You've always been kind of self-conscious about your 
+	    pale chest.";
+	],
+ has 	worn clothing concealed;
+
+Class 	CarRoom;
+
+Class 	CarObject
+ with 	found_in
+	[;
+	    return (location ofclass CarRoom);
+	];
+
+CarObject car_car "car"
+ with	name
+	    'car' 'vehicle' 'interior',
+	before
+	[;
+	 Examine:
+	    <<Look>>;
+
+	 Take:
+	    "That's kind of a weird concept.";
+	],
+ has	scenery;
+
+! aliced is a small object that keeps track of what Alice's name is
+! (currently), and what the player thinks it is. Instances of the
+! class Alice and a couple other objects refer to it.
+!
+! Though I'm calling it a daemon, it only does anything when a request
+! is made. It looks at the turns global variable.
+
+Object 	aliced
+ with	short_name
+	[;
+	    self.check_time();
+	    
+	    if (self.state == 1)
+		return "Alice";
+	    else
+		return "Alicia";
+	],
+	wrong_name
+	[;
+	    self.check_time();
+
+	    if (self.state == 1)
+		return "Alicia";
+	    else
+		return "Alice";
+	],
+	grammar_name
+	[;
+	    self.check_time();
+
+	    if (self.state == 1)
+		return 'alice';
+	    else
+		return 'alicia';
+	],    
+	wrong_grammar_name
+	[;
+	    self.check_time();
+
+	    if (self.state == 1)
+		return 'alicia';
+	    else
+		return 'alice';
+	],
+	capped_name
+	[;
+	    self.check_time();
+	    
+	    if (self.state == self.ALICE_STATE)
+		return "ALICE";
+	    else
+		return "ALICIA";
+	],
+	believed_name
+	[ capped;
+	    if (self.believed_state == self.ALICE_STATE)
+		return "Alice";
+		
+	    if (self.believed_state == self.ALICIA_STATE)
+		return "Alicia";
+
+	    if (capped)
+	    	return "The girl";
+	    else
+		return "the girl";
+	],
+	check_time
+	[;
+	    ! We freeze things for one turn after syncing belief --
+	    ! this is so the player can look at the key and then refer
+	    ! to Alice correctly, even if she should have changed
+	    ! names immediately after he looked at the key.
+
+	    if (turns == self.synced_turn + 1)
+		rtrue;
+	    
+	    if ((self.state == self.ALICE_STATE) &&
+		(isodd(turns / self.period)))
+		self.state = self.ALICIA_STATE;
+	    else
+		if (iseven(turns / self.period))
+		    self.state = self.ALICE_STATE;
+	],
+	sync_belief
+	[;
+	    self.check_time();
+	    self.synced_turn = turns;
+	    self.believed_state = self.state;
+	],
+	set_period
+	[ i;
+	    self.period = i;
+	],
+	set_believed_state
+	[ i;
+	    self.believed_state = i;
+	],
+	period 3,
+	state 1,
+	believed_state 0,
+	synced_turn 0,
+
+	! These are faked constants
+
+	ALICE_STATE 1,
+	ALICIA_STATE -1,
+	UNKNOWN_STATE 0;
+
+Include "epilogue.inf";
+Include "beatrice.inf";
+Include "work.inf";
+Include "gas-station.inf";
+Include "inaugural.inf";
+Include "driving.inf";
+Include "party.inf";
+
+!
+! Library replacements and other hooks
+!
+
+! This centers the location on the status line.
+
+[ DrawStatusLine;
+    if (hide_status)
+    {
+	ClearScreen(WIN_STATUS);
+	StatusLineHeight(0);
+	rtrue;
+    };
+
+    StatusLineHeight(1);
+    MoveCursor(1, 1);
+    style reverse;
+    spaces(ScreenWidth());
+    MoveCursor(1, 1);
+    Centre(location);
+    style roman;
+    MainWindow();
+];
+
+! This makes 'take' prefer objects not in hand
+! (this crops up with identical objects, some held, some not)
+! It also penalizes anything with a dont_take attribute set to true
+!
+! Also, drink prefers objects without the general attribute
+! (which I'm using to correspond to 'empty')
+
+[ ChooseObjects obj code;
+    switch (code)
+    {
+     true, false:
+	! whether to include stuff in 'all'
+
+	if (action_to_be == ##Take)
+	    if ((IndirectlyContains(player, obj)) ||
+		(obj has scenery) || (obj has concealed))
+		return 0;
+	
+     2:
+	! choosing between many objects
+
+	if (action_to_be == ##Take)
+	    if ((IndirectlyContains(player, obj))
+		|| (obj has scenery) || (obj has concealed))
+		return 0;
+	    else
+	    	if ((obj provides dont_take) && (obj.dont_take))
+		    return 1;
+	    	else
+	    	    return 2;
+
+	if (action_to_be == ##Drink)
+	    if (obj has general)
+		return 0;
+	    else
+		return 1;
+    };
+];
+
+!
+! Grammar
+!
+
+Include "Grammar";
+
+! Meta verbs
+
+Verb meta 'help' 'info' 'about'
+    *					-> Help;
+
+[ HelpSub;
+    hint_menu.sync();
+    help_menu.select();
+];
+
+Verb meta 'hint' 'hints'
+    *					-> Hint;
+
+[ HintSub;
+    hint_menu.sync();
+    hint_menu.select();
+];
+
+Verb meta 'monochrome' 'mono'
+    *					-> Monochrome
+    * 'on'				-> Monochrome
+    * 'off'				-> Color;
+
+[ MonochromeSub;
+    clr_on = false;
+    "Color display has been disabled.";
+];
+
+verb meta 'color'
+    * 					-> Color
+    * 'on'				-> Color
+    * 'off'				-> Monochrome;
+
+[ ColorSub;
+    clr_on = true;
+    "Color display has been enabled.";
+];
+
+! Generally useful verbs
+
+Verb 'xyzzy'
+    *					-> Xyzzy;
+
+[ XyzzySub;
+    "You used to play text adventures, used to remember words like 
+    that. But the appeal fell away from them at some point, some 
+    night you no longer recall...";
+];
+
+Verb 'yell' = 'shout';
+
+Verb 'talk'
+    * 'to' creature			-> Talk;
+
+[ TalkSub;
+    if (noun == player)
+	"~So, how's it going?~ you ask yourself.";
+
+    print "Try asking or telling ";
+
+    if (noun has pluralname)
+	print "them";
+    else
+    	if (noun has male)
+	    print "him";
+    	else
+	    if (noun has female)
+	    	print "her";
+    	    else
+	    	print  "it";
+    " about a particular subject.";
+];
+
+Verb 'haggle' 'negotiate'
+    * 'with' creature			-> Haggle;
+
+[ HaggleSub;
+    "Enh... you've never been the haggling type, honestly.";
+];
+
+Verb 'knock'
+    * 'on' noun				-> Attack
+    * noun				-> Attack;
+
+Verb 'play'
+    * noun				-> Play
+    * 'with' noun			-> Play;
+
+[ PlaySub;
+    "How do you want to play with that?";
+];
+
+Extend 'read' replace
+    * noun				-> Read;
+
+[ ReadSub;
+    <<Examine noun>>;
+];
+
+Extend 'look'
+    * 'out' noun			-> Examine;
+
+Extend 'climb'
+    * 'on'/'in'/'into'/'through'  noun	-> Enter;
+
+Verb 'extinguish'
+    * noun				-> Extinguish;
+
+Extend 'blow'
+    * 'out'/'on' noun			-> Extinguish
+    * noun 'out'			-> Extinguish;
+
+[ ExtinguishSub;
+    "Yeah, okay, that sounds like fun.";
+];
+
+Verb 'count'
+    * noun				-> Count;
+
+[ CountSub;
+    "So the question is: are you borderline obsessive compulsive, or 
+    just bored?";
+];
+
+Extend 'clean'
+    * 'up' noun				-> Rub
+    * noun 'up'				-> Rub;
+
+Verb 'arrange'
+    * noun				-> Rub;
+
+Verb 'organize'
+    * noun				-> Rub;
+
+Verb 'straighten'
+    * 'up' noun				-> Rub
+    * noun 'up'				-> Rub;
+
+Extend 'attack'
+    * noun 'with'/'using' noun		-> Attack;
+
+Verb 'kick' = 'attack';
+
+Extend 'jump'
+    * 'in'/'into' noun			-> Enter
+    * 'off' noun			-> Exit
+    * 'off' 'of' noun			-> Exit
+    * 'to'/'toward'/'towards'  noun	-> JumpTo;
+
+[ JumpToSub;
+    "You don't see the point in it.";
+];
+
+Verb 'leap' = 'jump';
+
+Verb 'step'
+    * 'off' noun			-> Exit
+    * 'off' 'of' noun			-> Exit;
+
+Verb 'let'
+    * 'go' 'of' creature		-> LetGoAnimate
+    * creature 'go'			-> LetGoAnimate
+    * 'go' 'of' noun			-> Drop;
+
+
+[ LetGoAnimateSub;
+    print_ret "But you aren't holding ", (the) noun, ".";
+];
+
+Verb 'fly'
+    * 					-> Fly;
+
+[ FlySub;
+    "Sorry, you left your wings at home.";
+];
+
+Extend 'pay' first
+    * animate				-> Pay;
+
+[ PaySub;
+    if (IndirectlyContains(player, money))
+    {
+	move money to player;
+	<<Give money noun>>;
+    }
+    else
+	if (IndirectlyContains(player, chris_money))
+	{
+	    move chris_money to player;
+	    <<Give money noun>>;
+	}
+    	else
+	    "But you don't have any money on you.";
+];
+
+Extend 'examine'
+    * 'the' 'bottom' 'of' noun		-> LookUnder
+    * 'at'/'on' 'the' 'bottom' 'of' noun -> LookUnder
+    * 'at'/'on' 'bottom' 'of' noun	-> LookUnder
+    * 'at'/'on' noun 'bottom'		-> LookUnder
+    * 'bottom' 'of' noun		-> LookUnder
+    * noun 'bottom'			-> LookUnder
+    * 'inside' 'of' noun		-> Search
+    * 'inside' noun			-> Search;
+
+Extend 'look'
+    * 'at'/'on' 'the' 'bottom' 'of' noun -> LookUnder
+    * 'at'/'on' 'bottom' 'of' noun	-> LookUnder
+    * 'at'/'on'  noun 'bottom'		-> LookUnder
+    * 'bottom' 'of' noun		-> LookUnder
+    * noun 'bottom'			-> LookUnder
+    * 'behind' noun			-> Search;
+
+Extend 'get'
+    * 'off'/'out' 'of' noun		-> Exit
+    * 'off' noun			-> Exit;
+
+Extend 'put' first
+    * noun 'near'/'beside'/'by' noun	-> PutNear
+    * noun 'next'/'near' 'to' noun	-> PutNear;
+
+[ PutNearSub old_keep_silent receiver;
+    if (noun notin player)
+    	return L__M(##Drop, 2, noun);
+
+    old_keep_silent = keep_silent;
+    receiver = parent(second);
+    
+    if (noun has worn)
+    {
+	L__M(##Drop, 3, noun);
+	keep_silent = true;
+	<Disrobe noun>;
+	keep_silent = old_keep_silent;
+    };
+    
+    if (receiver has container)
+    {
+	keep_silent = true;
+	<PutOn noun second>;
+	keep_silent = old_keep_silent;
+
+	! did it actually make it inside?
+	
+	if (noun notin receiver)
+	    rtrue;
+    }
+    else
+	if (receiver has supporter)
+	{
+	    keep_silent = true;
+	    <Insert noun second>;
+	    keep_silent = old_keep_silent;
+
+	    if (noun notin receiver)
+		rtrue;
+	}
+    	else
+	    ! if it isn't a container or a supporter, then it has to
+	    ! be a room -- otherwise we're trying to put something in
+	    ! a transparent object
+	    
+       	    if (~~ parent(receiver))
+	    	move noun to receiver;
+	    else
+		"You don't see how you could do that.";
+    
+    print_ret "You put ", (the) noun, " next to ", (the) second, ".";
+];
+
+Extend 'take'
+    * noun 'out' 'of' noun		-> Remove
+    * noun 'from' noun			-> Remove;
+
+Extend 'take'
+    * 'off' noun			-> Disrobe
+    * noun 'off'			-> Disrobe;
+
+Verb 'roll'
+    * noun 'up'				-> Close
+    * 'up' noun				-> Close
+    * noun 'down'			-> Open
+    * 'down' noun			-> Open
+    * noun				-> Open;
+
+! Dance-related verbs
+
+Verb 'dance'
+    * 					-> Dance
+    * 'with' creature			-> Dance
+    * noun=aDirection			-> Go;
+
+Verb 'start'
+    * 'dancing'				-> Dance
+    * 'to' 'dance'			-> Dance;
+
+[ DanceSub;
+    "You do a half-hearted little bop.";
+];
+
+Verb 'stop'
+    * 'dancing'				-> StopDancing
+    * noun				-> Stop;
+
+
+Extend 'stand'
+    * 'still'				-> StopDancing;
+
+[ StopSub;
+    "How would you do that?";
+];
+
+[ StopDancingSub;
+    "Except you aren't dancing right now, dude.";
+];
+
+Extend 'ask'
+    * creature 'for' 'a//' 'ride'	-> AskForRide
+    * creature 'for' 'ride'		-> AskForRide
+    * creature 'for' 'help'		-> AskforRide;
+
+[ AskForRideSub;
+    "You don't need a ride right now.";
+];
+
+! Car-oriented verbs
+
+Extend 'run'
+    * 'over' noun			-> Attack;
+
+Verb 'slam'
+    * noun				-> Attack
+    * 'on' noun				-> Attack;
+
+Extend 'turn'
+    * noun 'left'			-> TurnLeft
+    * noun 'to' 'the' 'left'		-> TurnLeft
+    * noun 'to' 'left'			-> TurnLeft
+    * noun 'right'			-> TurnRight
+    * noun 'to' 'the' 'right'		-> TurnRight
+    * noun 'to' 'right'			-> TurnRight
+    * noun 'to' number			-> SetTo
+    * noun 'left' 'to' number		-> SetTo
+    * noun 'left' number		-> SetTo
+    * noun 'right' 'to' number		-> SetTo
+    * noun 'right' number		-> SetTo
+    * noun number			-> SetTo;
+
+[ TurnLeftSub;
+    "It isn't clear what you'd accomplish by doing that.";
+];
+
+[ TurnRightSub;
+    TurnLeftSub();
+];
+
+Extend 'straighten'
+    * noun				-> Straighten;
+
+[ StraightenSub;
+    "Any particular reason why?";
+];
+
+Verb 'swerve'
+    * 'left'				-> SwerveLeft
+    * 'right'				-> SwerveRight;
+
+[ SwerveLeftSub;
+    "You dodge something imaginary -- you've always been good at 
+    that`.";
+];
+
+[ SwerveRightSub;
+    SwerveLeftSub();
+];
+
+Verb 'honk'
+    * noun				-> Honk;
+
+[ HonkSub;
+    "That doesn't really make sense.";
+];

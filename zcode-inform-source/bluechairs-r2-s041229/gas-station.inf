@@ -1,0 +1,3703 @@
+!
+! Blue Chairs
+! the gas station
+!
+
+Class 	DarkenedRoom
+ with	short_name
+	    "A Darkened Passage",
+	each_turn
+	[;
+	    if (random(4) == 1)
+	    {
+		print "^";
+		
+		if (random(2) == 1)
+		    print_ret (string) self.ambient1;
+	    	else
+		    print_ret (string) self.ambient2;
+	    };
+	],
+	cant_go
+	[;
+	    if (~~ ContainsLight(player))
+		"You manage to catch yourself right before you smack
+		into a wall. Have to be careful -- it's so dark.";
+	    else
+		L__M(##Go, 2);
+	];
+
+Class 	FrozenPerson
+ with	life
+	[;
+	 Ask, Tell, Answer, WakeOther, Show, Give:
+	    if (self has male)
+		print "He";
+	    else
+		print "She";
+
+	    " doesn't react.";
+	    
+	 Kiss, Attack:
+	    "It seems wrong somehow.";
+	],
+	before
+	[;
+	 Push, Pull:
+	    <<Kiss self>>;
+	],
+	orders
+	[;
+	    <<Ask self 'uh'>>;
+	],
+ has 	animate proper;
+
+Class 	SupermarketRoom;
+
+Class 	SupermarketObject
+ with	found_in
+	[;
+	    return (location ofclass SupermarketRoom);
+	],
+ has 	scenery;
+
+Class 	BlueDoor
+ with	short_name
+	    "blue door",
+	name
+	    'blue' 'door',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "The door is plain midnight blue, with a brass knob.",
+	before
+	[;
+	 Attack:
+	    "There's no response from whatever's on the other side.";
+	],
+	after
+	[;
+	 Open:
+	    "The door opens silently.";
+	],
+	door_dir s_to,
+	door_to nothing,
+ has	static door openable locked lockable;
+
+SupermarketObject supermarket_floor "floor"
+ with	name
+    	    'slick' 'off-white' 'off' 'white' 'tile' 'tiled' 'floor',
+    	description
+    	    "You can just barely see your own reflection in it.";
+
+SupermarketObject supermarket_melody "melody"
+ with	name
+    	    'faint' 'forgotten' 'melody' 'song' 'tune',
+    	description
+    	    "Melodies are not really thing you can see...",
+    	before
+	[;
+	 Listen:
+	    "You can't place it -- maybe something you heard once on
+	    the oldies station your mom used to play in the car back
+	    in middle school?";
+	];
+
+SupermarketObject supermarket_shelves "shelves"
+ with	name
+    	    'shelf' 'shelves',
+	description
+	    "Clean, white metal.",
+    	before
+	[;
+	 Receive:
+	    "You don't see any point in that.";
+	],
+ has 	pluralname;
+
+SupermarketObject supermarket_sign "sign"
+ with	name
+    	    'sign' 'soup' 'pasta' 'sauce' 'sauces' 'overhead' 'snacks',
+    	description
+    	    "It's nondescript -- no logo or anything to tell you what
+    	    exact supermarket you're in.",
+    	before
+	[;
+	 Take:
+	    "It's too high.";
+	],
+ has 	scenery;
+
+Object 	chris_money "money that Chris gave you"
+ with	article
+	    "some",
+	name
+	    'three' '3//' 'dollars' 'dollar' 'cash' 'money' 'wrinkled'
+	    'bills' 'bill',
+	description
+	    "He handed you three bucks, it looks like.",
+	before
+	[;
+	 Drop:
+	    "That seems like poor doughnut-purchasing strategy.";
+
+	 Count:
+	    <<Examine self>>;
+	];
+
+Object 	doughnut_sign "roadside sign"
+ with	name
+	    'doughnut' 'donut' 'doughnuts' 'donuts' 'roadside' 'sign',
+	description
+	    "In block letters, the kind that can be easily changed 
+	    as sales and seasons come and go, it reads: ~CHECK OUT 
+	    OUR HOMEMADE LUCKEY DONUTS.~",
+ has 	scenery;
+
+!
+! The gas station, before the labyrinth
+!
+
+Object 	outside_station "A Gas Station in the Middle of Nowhere"
+ with	description
+	    "Everything's so fucking yellow, like you're a zombie 
+	    now and your optic nerves have fermented or something. 
+	    It's because of those stupid low-energy lights overhead. 
+	    Saving the planet by turning it ugly. Goddammit -- your 
+	    eyes hurt now.^^No one else is here, but that kind of 
+	    makes sense. You're not sure what time it is, but it 
+	    must be late. The gas station's off some two-lane 
+	    highway, but there aren't any road signs, so you have no 
+	    idea where you are, either. But it doesn't really 
+	    matter, you guess. Chris knows where to go -- you told 
+	    him, after all.^^There's a mini-mart to the east that 
+	    looks open. Above it is a sign that reads LUCKY'S in 
+	    kind-of shoddy painter's script.",
+	cant_go
+	    "There's nothing but highway and empty trees that way.",
+	e_to inside_mini,
+	in_to inside_mini;
+
+Object 	-> outside_station_chris "Chris"
+ with	name
+	    'chris' 'christopher' 'klimas' 'dude' 'guy' 'man',
+	initial
+	[;
+	    ! See each_turn to see what's going on
+	    
+	    print "Chris ";
+	    
+	    if ((self.number == 0) || (turns - self.number < 11))
+		"is occupied pumping gas -- he's humming this random 
+		sort of song to himself that you don't recognize.";
+	    else
+		"sits on the hood of his car, waiting kind of 
+		pointedly for some doughnut action to arrive.";
+	],
+	description
+	    "If you had to choose a word to describe him right now, 
+	    it would be untroubled. But then that would more or less 
+	    describe him ever since you left the party. Right now? 
+	    Let's refine it to content. Which is kind of weird, if 
+	    you think about it. Why is he giving you a ride, really? 
+	    What's the story on that?",
+	before
+	[;
+	 Listen:
+	    if (turns - self.number < 11)
+	    	"You can't quite place the tune he's humming, no
+		matter how long you listen to it.";
+	],
+	life
+	[;
+	 Kiss:
+	    "Geez, what's your problem?";
+	    
+	 Attack, ThrowAt:
+	    "Seems kind of mean to do to a guy who's giving you a
+	    ride.";
+	    
+	 Show:
+	    if (noun == chris_money)
+		"~Yeah, that's the money I gave you,~ he says.";
+	    else
+		print_ret "~That's... nice,~ ", (name) self, " says.";
+	    
+	 Give:
+	    if (noun == chris_money)
+		"~Here, man, forget the doughnut,~ you say.^^~No
+		way... you're telling me you can't get me a frickin'
+		doughnut from a convenience store? How hard is it?~ He
+		won't take his money back.";
+	    else
+		"~No thanks,~ he says.";
+	    
+	 Answer:
+	    print_ret "~Uh... okay...~ ", (name) self, " replies.";
+	    
+	 Ask:
+	    switch (second)
+	    {
+	     'why', 'ride':
+		print_ret "~Why are you giving me a ride?~ you ask. 
+		    ~Not that I'm not grateful or anything.~^^He 
+		    looks up at you. ~Funny thing -- you're the 
+		    first stranger I've ever given a ride to. I 
+		    guess I've seen too many movies to ever pick up 
+		    a hitchhiker or something. You look 
+		    trustworthy.^^~Yeah?~^^~And you look like 
+		    something interesting's going to happen to you, 
+		    too,~ ", (name) self, " adds.^^You give him a 
+		    weird look and mutter a thanks.";
+		
+	     'blue', 'book', 'notebook':
+		"~What was that book you had at the party, by the 
+		way?~ you ask.^^~Oh, that's my notebook,~ he says. 
+		~I just scribble things down sometimes.~";
+		
+	     'location', 'gas', 'station', 'highway', 'road':
+		"~Where are we, man?~ you ask.^^~Dunno, exactly,~ he 
+		says. ~I'm pretty sketchy on geography once I'm 
+		north of Cockeysville. I just saw a sign on 83.~";
+		
+	     'time', 'clock', 'watch':
+		"~What time is it?~ you ask.^^~It's a little past 
+		midnight, I think,~ he says.";
+		
+	     'sleep', 'sleeping', 'dream', 'dreaming', 'nap',
+	     'napping', 'asleep', 'inaugural', 'january', '20',
+	     'white', 'house', 'desert', 'bush', 'sand', 'limo',
+	     'limosine':
+		"~I had this really fucked-up dream on the way over 
+		here,~ you say.^^~Yeah? I didn't notice that you 
+		fell asleep,~ he says. ~You kept tapping your arm 
+		against the side of the car. I figured you were 
+		getting bored or something.~ ^^~Bored's not really 
+		the word for it.~";
+
+	     'drug', 'drugs', 'pholcodine', 'tripping', 'trip':
+		print_ret "~Dude, I really think I'm on drugs right 
+		    now,~ you say. ~Any advice you would give at 
+		    this point?~^^~I don't know,~ ", (name) self, " 
+		    says. ~Try to ride it out?~";
+
+	     'party', 'house', 'tonight':
+		print_ret "~You planning to get back to the party 
+		    tonight?~ you ask.^^", (name) self, " kind of 
+		    shrugs, like he's already given up on that one. 
+		    ~It wasn't really that exciting. Just another 
+		    party, you know? They're all sort of the same 
+		    when you think about them the next morning.~";
+		
+	     'money', 'dollar', 'dollars', 'bill', 'bills', '3//',
+	     'three', 'cash':
+		print_ret "~I'm assuming you want change from the 
+		    doughnut,~ you say.^^~Yeah,~ ", (name) self, " 
+		    says. ~That would be kind of nice -- no 
+		    offense.~";
+		
+	     'song', 'tune', 'humming', 'hum':
+		"~What's that song you're humming?~ you ask.^^~Oh, 
+		this TMBG song I just downloaded,~ he says. ~You 
+		know them?~^^~No,~ you say.^^~You should listen to 
+		them sometime,~ he says. ~They're great because all 
+		their songs sound incredibly happy if you just 
+		listen to the tune, but the lyrics are almost always 
+		horribly depressing.~^^~What's good about that?~ you 
+		ask.^^~Just the idea of sticking two things together 
+		that don't make sense, I guess,~ he says.";
+		
+	     'tmbg', 'they', 'might', 'be', 'giants':
+		print_ret "~How long have you been a TMBG fan?~ you 
+		    ask.^^~I guess freshman year of college,~ ",
+		    (name) self, " says. ~My roommate used to wake 
+		    up to them.~";
+		
+	     'college':
+		print_ret "~Where'd you go to college?~^^~Washington 
+		    College -- it's this small college on the 
+		    Eastern Shore,~ ", (name) self, " says.";
+		
+	     'doughnut', 'doughnuts', 'donut', 'donuts':
+		if (inside_mini hasnt visited)
+		    print_ret "~Have a preference about doughnut 
+			flavor?~^^~Enh, the plainer you can get, the 
+			better,~ ", (name) self, " says.";
+		else
+		    if (doughnut_sign notin outside_station)
+		    {
+		    	move doughnut_sign to outside_station;
+		    	print_ret "~They don't have any doughnuts,~ 
+			    you say. ~Can I get you something else 
+			    instead?~^^~They don't have doughnuts?~ ",
+		     	    	(name) self, " 
+				asks.^^~Yeah.~^^~That's not what the 
+				sign says,~ he says, pointing to a 
+				roadside sign you hadn't noticed 
+				before.";
+		    }
+		    else
+			print_ret "~I'm telling you, there's no doughnuts,~ 
+			you say. ~I just checked again.~^^~Dude,~ ",
+			(name) self, " says. ~Display some 
+			adaptability. Complain or something.~";
+		
+	     default:
+		print_ret (name) self, " kind of shrugs 
+		    noncomittally.";
+	    };
+	    
+	 Tell:
+	    switch (second)
+	    {
+	     'beatrice':
+		print_ret "~Did I tell you what Beatrice's last name 
+		    is?~ you ask.^^", (name) self, " looks at you 
+		    for a second, shakes his head.^^~You know... I 
+		    think I forgot it,~ you say. ~How stupid am I?~";
+		
+	     default:
+		<<Ask self second>>;
+	    };
+	],
+	orders
+	    "He gives you a funny look, like he doesn't understand 
+	    what you just said.",
+	each_turn
+	[;
+	    ! We use self.number as a stopwatch -- i.e. it corresponds
+	    ! to the turn in which we first see Chris. This way, we
+	    ! don't have to run a daemon when Chris isn't actually
+	    ! present, but we get daemon-like behavior.
+	    
+	    if (self.number == 0)
+		self.number = turns;
+	    
+	    switch (turns - self.number)
+	    {
+	     1:
+		print_ret "^", (name) self, " reaches for the nozzle 
+		    of the gas pump and puts it in his car's gas 
+		    tank.^^~You okay?~ he asks over his shoulder. 
+		    ~You look a little dazed.~^^~Doing alright now,~ 
+		    you say. ~I think.~";
+		
+	     2:
+		print_ret "^", (name) self, " swipes the pump handle 
+		    open and starts filling the tank.";
+		
+	     6:
+		"^With a clunk, the gas pump stops.";
+		
+	     7:
+		print_ret "^", (name) self, " pulls the nozzle out 
+		    of his car and starts punching buttons on the 
+		    gas pump.";
+		
+	     9:
+		print_ret "^The gas pump beeps for a little, then 
+		    prints a receipt that ", (name) self, " grabs.";
+		
+	     11:
+		print_ret "^", (name) self, " sits on the hood of 
+		    his car, looking at you expectantly.";
+	    };
+	],
+	number
+	    0,
+ has 	animate proper male transparent;
+
+Object 	-> -> outside_station_chris_song "song"
+ with	name
+	    'random' 'song' 'music' 'melody',
+	before
+	[;
+	    if (action == ##Listen)
+		<<Listen outside_station_chris>>;
+	    else
+		"It's kind of too insubstantial.";
+	];
+
+Object	-> outside_station_car "car"
+ with	name
+	    'car' 'vehicle' 'corolla' 'toyota',
+	description
+	    "It's a reliable-looking kind of car: a burgandy 
+	    Corolla, sort of nice and sleek but not quite sleek 
+	    enough to count as sporty.",
+	before
+	[;
+	 Enter:
+	    "~Hey, what are you doing?~ Chris asks. ~Where's my 
+	    doughnut?~";
+	],
+ has 	scenery;
+
+Object 	-> outside_station_mart "mini-mart"
+ with	article
+	    "the",
+	name
+	    'mini' 'mart' 'mini-mart' 'market' 'convenience' 'store',
+	description
+	    "The mini-mart's one of those buildings that looks like 
+	    it once was something else... maybe a Pizza Hut? It's 
+	    hard to say. Just that it doesn't look exactly like what 
+	    it is -- or maybe it looks like it's something it isn't 
+	    or... what the fuck, it's a building.",
+	before
+	[;
+	 Enter:
+	    <<Go in_obj>>;
+	],
+ has 	scenery;
+
+Object 	-> outside_station_luckys "sign"
+ with 	name
+	    'sign' 'lucky' 'lucky^s',
+	description
+	    "The sign is ugly, but that's kind of like saying that 
+	    your life sucks... no shit, what else can you tell me 
+	    about it? The paint is red, for one. And the the paint 
+	    beneath the apostrophe is a little brighter, as if the 
+	    guy in charge of the sign wasn't sure whether he should 
+	    throw in an E between the K and the Y.",
+ has 	scenery;
+
+Object 	-> outside_station_lights "lights"
+ with	name
+	    'yellow' 'light' 'low' 'energy' 'low-energy' 'lights',
+	description
+	    "Nothing really out of the ordinary, honestly.",
+	before
+	[;
+	 Take:
+	    "The lights are far above you.";
+	    
+	 SwitchOn, SwitchOff:
+	    "You don't see any way to do that.";
+	],
+ has 	scenery;
+
+Object 	-> outside_station_highway "highway"
+ with	name
+	    'road' 'street' 'highway' 'two' 'lane' 'two-lane',
+	description
+	    "The highway disappears behind some trees a long way in
+	    the distance.",
+	before
+	[;
+	 Enter:
+	    "You won't be able to get anywhere on foot.";
+	],
+ has 	scenery;
+
+Object 	-> outside_station_trees "trees"
+ with	name
+	    'tree' 'wood' 'trees' 'woods',
+	description
+	    "The trees are just barely visible. Leafs waving in a 
+	    breeze you can't perceive.",
+	before
+	[;
+	 Enter:
+	    "Wandering off seems like a bad idea.";
+	],
+ has 	scenery;
+
+Object -> outside_station_pump "gas gump"
+ with 	name
+	    'gas' 'fuel' 'pump' 'nozzle',
+	description
+	    "It's just your typical, slightly obselete gas pump 
+	    setup -- the kind all over America.",
+	before
+	[;
+	    if (action ~= ##Examine)
+		"Ah, why bother. Chris seems to have it under 
+		control.";
+	],
+ has 	scenery;
+
+Object 	inside_mini "Mini-Mart"
+ with	description
+	    "It's a classic three-aisle setup: chips, nuts, and 
+	    sunflower seeds down one aisle; chewing gum, cookies, 
+	    and down another; and canned meat and other 
+	    miscellaneous survivalist/maniac stuff down the third. 
+	    No slurpee machine, which for some reason is kind of a 
+	    bummer. You've always been a fan, though you're not 
+	    really thirsty at the moment or anything.^^In clear 
+	    violation of child labor laws, there's a Chinese kid 
+	    (we're talking middle school here) at the counter, 
+	    thumbing through an anime comic book.^^The store 
+	    continues to the east, and you can head out to the west.",
+	w_to outside_station,
+	e_to back_mini,
+	out_to outside_station;
+
+Object 	inside_mini_kid "Chinese kid"
+ with 	name
+	    'chinese' 'kid' 'boy' 'guy' 'dude',
+	description
+	    "He's got on a faded yellow t-shirt that maybe at one 
+	    point had a cartoon character on it -- maybe. You can 
+	    see the outlines of a face on it. He's pretty engrossed 
+	    in his comic book, or at least unconcerned you're going 
+	    to steal some Slim Jims or something equally critical to 
+	    this little convenience store microcosm.",
+	found_in
+	[;
+	    return (location == inside_mini or back_mini);
+	],
+	life
+	[;
+	 Attack, Kiss:
+	    "Come on, he's just a kid.";
+	    
+	 Give, Show:
+	    if (noun == chris_money)
+		"The kid looks at you like you're crazy. ~What you
+		want to buy?~ he asks.";
+	    else
+		"The kid is pretty unimpressed, as things go.";
+	    
+	 Ask:
+	    switch (second)
+	    {
+	     'doughnut', 'doughnuts', 'donut', 'donuts':
+		if (~~ self.talked_donuts)
+		{
+		    self.talked_donuts = true;
+    		    "~Excuse me, could you tell me where the 
+		    doughnuts are?~ you say.^^The kid grins, like 
+		    you've just made his day, and says, ~Back 
+		    corner! Open door.~";
+		}
+		else
+		    "~Hey, could you be more specific on this whole
+		    doughnut issue?~ you ask.^^~Back corner,~ the kid
+		    says, enunciating the words like they might be new
+		    vocabulary for you. ~Open door.~";
+		
+		
+	     'himself', 'self', 'chinese', 'kid':
+		"~Hey, what's your name?~ you ask.^^~Name?~ the kid 
+		says.^^~You know, what people call you,~ you 
+		say.^^He just looks at you, totally puzzled.";
+		
+	     'comic', 'comics', 'book', 'anime', 'japanese':
+		"~Is your comic book cool?~ you say.^^~Yes,~ he says 
+		with a strange mania. ~Tennis my favorite sport.~";
+
+	     'tennis', 'sports', 'sport':
+		"~So you're a tennis fan?~ you ask.^^~Yes, great,~ the
+		kid says.";
+
+	     'restroom', 'bathroom':
+		"~You have a restroom?~ you ask.^^~No,~ the kid
+		says. ~Design mistake.~";
+		
+	     'store', 'mini-mart', 'mini', 'mart', 'here':
+		"~You work here a lot?~ you ask.^^~Yeah, ~ he says. 
+		~Great money. You have good job?~^^~Probably not as 
+		good as yours,~ you say.";
+		
+	     'child', 'labor', 'law', 'laws':
+		"~This is just a random question... but isn't it 
+		illegal for you to work here?~ you ask.^^~Ha,~ he 
+		says -- literally, ha, not a laugh. ~Don't worry, be 
+		happy.~^^Good advice, you guess, though perhaps not
+		directly applicable...";
+
+	     'location', 'gas', 'station', 'highway', 'road':
+		"~Hey, can you tell me where I am?~ you ask.^^~In gas
+		station,~ the kid says, helpfully.";
+		
+	     default:
+		"~What?~ the kid asks.";
+	    };
+	    
+	 Tell:
+	    if ((second == 'doughnut' or 'doughnuts' or 'donut' or
+		 'donuts') && (back_mini has visited))
+		"~Dude, there's no doughnuts back there,~ you
+		say.^^~Look hard,~ the kid advises. ~Open door?~";
+	    else
+		<<Ask self second>>;    
+	],
+	each_turn
+	[;	    
+	    if ((location == inside_mini) && (random(3) == 1))
+		print_ret (string) random("^The kid laughs at
+					  something he's reading and
+					  turns the page.", "^The 
+					  kid turns a page, looks at 
+					  you briefly.", "^The kid yawns.");
+	],
+	talked_donuts false,
+ has 	animate concealed male transparent;
+
+Object	-> inside_mini_kid_comic "comic book"
+ with	name
+	    'anime' 'comic' 'comics' 'book' 'japanese',
+	description
+	    "The cover's got two big-eyed dweebs fighting it out on 
+	    a tennis court -- who knows why. All the writing's in 
+	    Japanese, so you have no idea what it's really about.",
+	before
+	[;
+	 Take:
+	    "~Hey!~ the kid says, and pulls it away from you.";
+	];
+
+Object 	-> inside_mini_chip_aisle "chips, nuts, and sunflower seeds
+	    aisle"
+ with  	name
+	    'chips' 'potato' 'corn' 'chip' 'nuts' 'nut' 'cashew'
+	    'cashews' 'sunflower' 'seeds' 'seed' 'aisle' 'first'
+	    'one' '1//',
+	description
+	    "Hmm... you give the aisle a walkthrough, but can't find any
+	    doughnuts. Then again, they don't usually put the
+	    doughnuts next to the cashews.",
+	before
+	[;
+	 Take, Buy:
+	    "Somehow you don't think Chris would be into it. He was
+	    pretty specific about the mission objectives.";
+	],
+ has 	scenery;
+
+Object 	-> inside_mini_gum_aisle "chewing gum, candy, and cookie aisle"
+ with	name
+	    'chewing' 'gum' 'bubble' 'candy' 'cookie' 'cookies'
+	    'aisle' 'second' 'two' '2//', 
+	description
+	    "Well, this sucks. This is definitely where the doughnuts
+	    ought to be, but there's nothing that comes even close --
+	    not even those stupid Hostess chocolate mini-donuts.",
+	before
+	[;
+	 Take, Buy:
+	    "It might be a nice gesture if you had the money to
+	    spare. But who knows what the price of doughnuts in this
+	    place is?";
+	],
+ has 	scenery;
+
+Object -> inside_mini_survivalist_aisle "canned meat and survivalist
+	    junk aisle"
+ with	name
+	    'canned' 'meat' 'spam' 'vienna' 'sausage' 'sausages'
+	    'slim' 'jim' 'jims' 'survivalist/maniac' 'survivalist'
+	    'maniac' 'stuff' 'junk' 'aisle' 'third' 'three' '3//',
+	description
+	    "You scan over it quickly -- nothing doing here. 
+	    Everything looks so menacing, like it's warning you the 
+	    Vienna sausages are made from babies or something.",
+	before
+	[;
+	 Take, Buy:
+	    "Ew... you've never been a fan.";
+	],
+ has 	scenery;
+
+Object 	back_mini "Back of the Mini-Mart"
+ with	description
+	    "Rows and rows of milk peer at you through the doors of 
+	    the refrigerated case. Well, except one door that's 
+	    completely empty. Not even a display rack inside. Kind 
+	    of weird, you guess -- maybe it wasn't economically 
+	    feasible or something? To the west is the front of the 
+	    store.",
+	e_to
+	[;
+	    <<Go in_obj>>;
+	],
+	in_to
+	[;
+	    if (back_mini_empty_door has open)
+		<<Enter back_mini_empty_door>>;
+	],
+	w_to inside_mini;
+
+Object 	-> back_mini_empty_door "door to the empty part of the
+	    refrigerated case"
+ with 	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'refrigerator', 'refrigerated', 'case':
+		    i++;
+		    
+		 'door', 'empty', 'part':
+		    definite_match = true;
+		    i++;
+		    
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	description
+	    "You can't see anything inside -- it's just black. 
+	    Though perhaps it's relevant that you can't see a wall, 
+	    either...",
+	before
+	[;
+	 Enter:
+	    if (self hasnt open)
+		"The refrigerated case's door is closed.";
+	    
+	    print "There is no back to the case -- it just keeps going
+		until you've almost forgotten what you're after,
+		what your goal is, who you are --^";
+	    PlayerTo(darkened_entrance);
+	    rtrue;	    
+	],
+	after
+	[;
+	 Open:
+	    "A blast of cold air hits your face.";
+	    
+	 Close:
+	    "The door makes a satisfying sort of sound as you close 
+	    it.";
+	],
+ has 	scenery openable enterable;
+
+Object 	-> back_mini_fridge_doors "other refrigerated case doors"
+ with	parse_name
+	[ i definite_match;
+	    while (true)
+	    	switch (NextWord())
+	   	{
+	    	 'refrigerator', 'refrigerated', 'case':
+	       	    i++;
+		    
+	    	 'doors', 'other':
+	       	    definite_match = true;
+	       	    i++;
+	       	    
+	    	 default:
+	       	    if (definite_match)
+		   	return i;
+	       	    else
+		   	return 0;
+	   	};
+	],
+	description
+	    "The doors are simple, glass, forgettable.",
+	before
+	[;
+	 Open:
+	    "True story: you're lactose-intolerant.";
+	    
+	 Close:
+	    "They're already shut, kiddo.";
+	],
+ has	scenery pluralname;
+
+Object 	-> back_mini_case "refrigerated case"
+ with	name
+	    'refrigerated' 'refrigerator' 'case' 'milk' 'rows' 'of',
+	description
+	    "The milk looks almost tombstone-like.",
+	before
+	[;
+	    ! The following inferences are just stabs in the dark, and
+	    ! probably will produce several bugs
+	    
+	 Search:
+	    <<Examine self>>;
+	    
+	 Take:
+	    <<Open back_mini_fridge_doors>>;
+	    
+	 Open:
+	    <<Open back_mini_empty_door>>;
+	    
+	 Enter:
+	    <<Enter back_mini_empty_door>>;
+	],
+ has 	scenery;
+
+!
+! Here the labyrinth starts
+! God, I hope this is the part that takes the most work
+!
+
+DarkenedRoom darkened_entrance
+ with	description
+	[;
+	    if (self.entered_turn == 0)
+		self.entered_turn = turns;
+	    
+	    print "It's cool, almost close to what the first day of fall 
+	    	feels like. This is a narrow passage -- ";
+	    
+	    if ((flashlight in player) && (flashlight has on))
+		print "your flashlight reveals that the walls look 
+		    something close to clay, with kind of a deep 
+		    reddish tint";
+	    else
+		print "hard to say much more because the light is so 
+		    dim here";
+	    
+	    print " -- without twist or turning.^^Things get 
+		brighter to the east, and ";
+	    
+	    if (aisle4 hasnt visited)
+		"assuming the laws of physics are still in effect 
+		and the universe is internally consistent, the mini 
+		mart is west.";
+	    else
+		"the tunnel continues to the west.";
+	],
+    	before
+	[;
+	 Listen:
+	    "No matter how long you listen, you can't tell what
+	    direction anything is coming from.";
+	    
+	 Go:
+	    if ((noun == w_obj) && (aisle4 hasnt visited))
+		print "The tunnel feels unfamiliar, like it turns a 
+		    different way now than you remember it, but the 
+		    light grows and grows, a familiar friend, a sign 
+		    that you aren't lost, not really this time, just 
+		    maybe a little misplaced, and then you emerge 
+		    in:^";
+	],
+    	ambient1
+    	    "You hear someone laughing in the distance.",
+    	ambient2
+    	    "Far off, a single note on a harp sounds.",
+	entered_turn 0,
+    	w_to aisle4,
+    	e_to aisle8;
+
+SupermarketRoom aisle4 "Aisle 4"
+ with	description
+    	    "The sign overhead reads SOUP, PASTA, SAUCES, but the 
+	    aisle is bare. You seem to be in a supermarket of some 
+	    kind -- slick off-white tile floor and a faint forgotten 
+	    melody -- but it's only one aisle; drab walls rise above 
+	    the shelves. Rough holes in the walls lead east and 
+	    south.",
+    	e_to darkened_entrance,
+    	s_to darkened_curve;
+
+FrozenPerson -> aisle4_jeff "Jeff"
+ with	name
+    	    'man' 'guy' 'dude' 'jeff',
+    	initial
+	[;
+	    print "There's a man gazing intently at ";
+
+	    if (tunafish_can in self)
+		print "a solitary can of tunafish";
+	    else
+		print "nothing";
+	    
+	    " here. He doesn't seem to notice your presence.";
+	],
+    	description
+    	    "Jeff is twenty-six now; married for four years now. It 
+	    was so sudden, the way it happened, but it also felt 
+	    inescapably right. He is in love, maybe always will be. 
+	    He has a graveyard shift job, but it's not important. 
+	    It's enough right now to be able to come home to a home 
+	    whose every corner he knows, and Amanda asleep for so 
+	    long already.^^His father leaves messages for him at 
+	    work -- somehow he found him. Jeff deletes them all 
+	    without listening to them. Some things can't be 
+	    forgiven.^^One night after work, he notices a light on 
+	    in his house. He doesn't know what to think -- the front 
+	    door is still locked. The stairs in his house creak so 
+	    loudly. He doesn't hear anything happening. He opens the 
+	    bedroom door.^^This is how it happens. This is how his 
+	    life changes.",
+	react_before
+	[;
+	 Take:
+	    if ((tunafish_can in self) && (noun == tunafish_can))
+	    {
+	        move tunafish_can to player;
+		"You carefully pry the can from his hand.";
+	    };
+	],
+ has 	male transparent proper;
+
+Object 	-> -> tunafish_can "can of tunafish"
+ with	name
+	    'can' 'canned' 'tuna' 'fish' 'tunafish',
+	description
+	    "The label on the side reads: PHLOCODINE.",
+	before
+	[;
+	 Open:
+	    "You don't see how to do it without a can opener.";
+	],
+	after
+	[;
+	 Take:
+	    if (parent(self) == aisle4_jeff)
+	    	"With some effort, you pry the can out of the man's 
+		hands.";
+	];
+
+DarkenedRoom darkened_curve "A Darkened Passage"
+ with 	description
+	[;
+	    if (ContainsLight(player))
+		"The moist clay walls of this tunnel curve from 
+		north to west, maybe twenty feet long. The ceiling's 
+		so low -- not quite short enough you have to stoop 
+		to walk, but low enough to feel weird, like this was 
+		designed for someone else.";
+	    else
+		"The passage curves -- you can tell that much at 
+		least by trailing a hand against the wall -- but 
+		it's hard to say how much, or even how far the 
+		passage goes. There is light to the north and west. 
+		The supermarket?";
+	],
+    	ambient1
+    	    "A drop of water lands on your head.",
+    	ambient2
+    	    "Someone whispers something a little bit away -- at 
+    	    least you think you heard someone whispering...",
+    	n_to aisle4,
+    	w_to birthday;
+
+Object 	birthday
+ with 	short_name
+	[;
+	    if (self hasnt general)
+	       	print "A Blue Chair in the Dark";
+	    else
+	       	print "Bare Light, Empty";
+	    
+	    rtrue;
+	],
+	description
+	[;
+	    move aisle10_gap to aisle10;
+	    aisle10.n_to = aisle10_gap;
+	    
+	    if (self hasnt general)
+	    {
+		print "You can see nothing but a single blue chair 
+		    in the center of the room. A spotlight whose... 
+		    this seems familiar? But you can't remember why. 
+		    There's nothing else here to fix your eye on. 
+		    Everything is darkness; everything else is gone 
+		    and forgotten.";
+		
+		if ((flashlight in player) && (flashlight has on))
+		{
+		    remove flashlight;
+		    print "^^(Didn't you have your flashlight on or 
+			something? Didn't you have a flashlight?)";
+		};
+	    }
+	    else
+	    {
+	       	if (self.just_clicked)
+		{
+		    self.just_clicked = false;
+		    print "Lights click on above you; t";
+		}
+		else
+		    print "T";
+		
+		print "he room is superordinary. The walls are 
+		    blank, formless, pale green. Someday this could 
+		    be a bustling office or a hospital room or even 
+		    a bedroom -- but that would take furniture and 
+		    care. Until then, it's the kind of room you 
+		    spend too much time in, the kind of room you 
+		    wish you could forget entirely.";
+	    };
+	    
+	    print "^^";
+	    
+	    if (self.n_to == darkened_deadend)
+	       	"Darkened passages lead north and east.";
+	    else
+	       	"A darkened passage leads east.";
+	],
+	just_clicked false,
+	n_to nothing,
+	e_to darkened_curve;
+
+Object 	-> birthday_chair "blue chair"
+ with	name
+	    'blue' 'chair',
+	description
+	    "It's identical to the one you found in the White House.",
+	react_before
+	[;
+	    ! This seems odd to me, but it seems to be the only way to
+	    ! trap this action.
+	    
+	 Go:
+	    if (player in self)
+	       	if (noun == e_obj)
+	       	    <<Exit>>;
+	       	else
+		{
+	       	    L__M(##Go, 2);
+	    	    rtrue;
+		};
+	    
+	 Exit:
+	    if (player notin self)
+		rfalse;
+	    
+	    print "You bolt out of the chair, startled shitless.^";
+	    birthday_parents.deactivate();
+	    PlayerTo(darkened_curve);
+	    rtrue;	    
+	],
+	before
+	[;
+	 Take:
+	    "It seems rooted to the floor for some reason.";
+	],
+	after
+	[;
+	 Enter:
+	    birthday_parents.activate();
+	    "The chair feels nice. The chair feels calm. Same as it 
+	    always does.";
+	],
+ has 	supporter enterable open scenery;
+
+Object 	birthday_parents
+ with	short_name
+	[;
+	    if (self.number < 3)
+		return "parents";
+	    else
+		return "monsters";
+	],
+	article
+	[;
+	    if (self.number < 3)
+		return "your";
+	    else
+		return "the";
+	],
+	name
+	    'people' 'person' 'face' 'faces' 'voice' 'voices' 'mother'
+	    'mom' 'father' 'dad' 'monster' 'monsters' 'eye' 'eyes',
+	description
+	[;
+	    switch (self.number)
+	    {
+	     1:
+		"You can't see them clearly enough -- just barely
+		outlines.";
+		
+	     2:  
+	    	"Are these really your parents? They certainly look 
+		like it. Your father's nose, your mother's eyes.";
+		
+	     3:
+		"Their eyes are different. That's what makes them 
+		monsters. They're black, solid black -- all pupil, 
+		all reflections of your own face.";
+	    };
+	],
+	before
+	[;
+	 Listen:
+	    "Their voices are almost icy, almost upset.";
+	],
+	life
+	[;
+	 Wake:
+	    print_ret "Oh, ", (the) self, " look awake.";
+	    
+	 Attack:
+	    "You swipe at them from where you're sitting, but you
+	    can't reach either of them. They don't react, don't even
+	    seem to see.";
+	    
+	 Kiss:
+	    "The idea scares you.";
+	    
+	 Ask, Tell, Answer, Show, Give:
+	    "They both laugh.";
+	],
+	orders
+	[;
+	    <<Ask self 'uh'>>;
+	],
+	each_turn
+	[;
+	    switch (++self.number)
+	    {
+	     1:
+		"^~Happy birthday to you...~ voices sing. You can't 
+		see where they're coming from, but they are familiar 
+		and scary for a reason you don't understand...";
+		
+	     2:
+		"^~Happy birthday to you...~ Faces becomes just 
+		barely apparent-- your mother, your father. But 
+		different somehow. One on the left, one on the 
+		right. Both singing. Their voices are odd, like you 
+		are underwater, maybe drowning... maybe still 
+		asleep...";
+		
+	     3:
+		"^Wait, no, these aren't your parents at all... 
+		something about their eyes... ^^~Don't worry,~ the 
+		one you thought was your mother says. ~We're 
+		monsters. We're here to help you...~";
+		
+	     4:
+		give self transparent;
+		"^~Happy birthday, dear Dante...~ they sing. What 
+		you thought was your mother is carrying a cake in 
+		front of her. Twenty-three candles. Simultaneously 
+		they smile. Pointed teeth.";
+		
+	     5:
+		"^~Happy birthday to you...~ the monsters sing. 
+		Their breath is awful, like a July afternoon 
+		dumpster...";
+		
+	     6:
+		"^The monster who you thought was your mother brings 
+		the cake right to your face. The candles are so hot, 
+		so unfriendly...";
+		
+	     7:
+		"^~Blow out the candles,~ what was once your father 
+		says. ~You've always liked the dark. We do too.~";
+		
+	     8:
+		"^~Don't worry,~ the monster that looks like your 
+		mother says. ~Nothing can hurt you now. Not even 
+		us.~";
+		
+	     default:
+		if (random(2) == 1)
+		    print (string) random("^~Come on now,~ the 
+					  monster that was your 
+					  father says.",
+					  "^~We're waiting,~ the 
+					  monster that was your 
+					  mother says.");
+	    };
+	],
+	activate
+	[;
+	    move self to location;
+	],
+	deactivate
+	[;
+	    remove self;
+	    self.number = 0;
+	],
+	number 0,
+ has	animate pluralname neuter concealed;
+
+Object 	-> birthday_parents_cake "birthday cake"
+ with   name
+	    'birthday' 'cake' 'chocolate' 'piece',
+	description
+	    "They got you chocolate this year -- you never figured 
+	    out why. You hate chocolate cake, always have, and your 
+	    parents know it.^^There are twenty-three candles on the 
+	    cake, of course.",
+	before
+	[;
+	 Take, Eat:
+	    print_ret "~No, honey,~ one of ", (the) birthday_parents,
+		" chides. ~You're getting it all backwards.~";
+	    
+	 Extinguish:
+	    <<Extinguish birthday_parents_cake_candles>>;
+	],
+ has 	transparent scenery;
+
+Object 	-> -> birthday_parents_cake_candles "candles"
+ with	name
+	    'candle' 'candles' 'flame' 'flames' 'fire' 'fires'
+	    'twenty-three' 'twenty' 'three' '23',
+	description
+	    "The candles glow like newborn candy.",
+	before
+	[;
+	 Extinguish:
+	    give birthday general;
+	    birthday.n_to = darkened_deadend;
+	    birthday_parents.deactivate();
+	    remove birthday_chair;
+	    print "A quick puff of air and they're all 
+		gone.^^Congratulations.^^You've just turned 
+		twenty-three. This is the year where things stop 
+		feeling fun, where you no longer look forward to 
+		summer. You still nurse crushes in a distant kind of 
+		way, but you don't bother anymore to daydream of 
+		leaving those girls a note (they always look just 
+		barely like Beatrice, like you are doomed to one 
+		true love), finding the right words, kissing them... 
+		You worry about the future, but only in a logistical 
+		sense. Where will you live? How will you pay the 
+		rent? What to eat on a Tuesday night? How to spend 
+		Friday?^^The question of who you will be no longer 
+		seems relevant. Because you aren't growing anymore 
+		-- this is the year you finish all that.^^This year 
+		is when things end.^";
+	    move birthday_envelope to birthday;
+	    PlayerTo(birthday);
+	    rtrue;
+	    
+	 Count:
+	    "There are twenty-three of them -- it is your birthday,
+	    you know.";
+	    
+	 Take:
+	    <<Take birthday_parents_cake>>;
+	],
+ has 	transparent scenery;
+
+Object birthday_envelope
+ with 	short_name
+	    [;
+		if (self hasnt open)
+		    print "tiny yellow envelope";
+		else
+		    print "ripped yellow envelope";
+
+		rtrue;
+	    ],
+ 	parse_name
+	[ i;
+	    while (true)
+		switch (NextWord())
+		{
+		 'closed':
+		    if (self hasnt open)
+			i++;
+		    else
+			return 0;
+
+		 'ripped', 'open', 'opened':
+		    if (self has open)
+			i++;
+		    else
+			return 0;
+
+		 'tiny', 'yellow', 'envelope', 'stamp' :
+		    i++;
+		    
+		 default:
+		    return i;
+		};
+	],
+	initial
+	    "A tiny yellow envelope lies where the blue chair was 
+	    before.",
+	description
+	[;
+	    if (self hasnt open)
+	    	"It's just barely as wide as your thumb is long, and 
+		sealed tight. Your mother's handwriting on the front 
+		lists the address of your apartment over in Dundalk 
+		-- it even has a stamp in the upper-right corner.";
+	    else
+	    {
+		if (child(self))
+		    "There's a greeting card inside the remains of 
+		    the envelope.";
+		else
+		    "The envelope is empty.";
+	    };
+	],
+	before
+	[;
+	 Receive:
+	    if (noun ~= combo_card)
+		print "There's just no room -- ", (the) self, "'s just
+		    too small.";
+
+	 Close:
+	    if (self has open)
+	    	"There's no way to close the envelope again -- you've
+		ripped it too much.";
+	    else
+		"The envelope's already closed.";
+	],
+	after
+	[;
+	 Open:
+    	    "You have to rip the envelope apart to open it, it's 
+	    sealed so tight. There's a birthday card inside.";
+	],
+ has 	openable container;
+
+Object 	-> combo_card "birthday card"
+ with	name
+	    'greeting' 'birthday' 'card',
+	description
+	    "A cartoon bear waves at you from the front of the card. 
+	    ~A Special Message For Our Special Son,~ it says in 
+	    cute, cartoony writing.",
+	before
+	[;
+	 Search, Open:
+	    print "The inside of the card is nearly blank. Where a 
+		message would be, there's only a typewritten number: 
+		";
+	    bank_lobby_vault_door_knob.print_combo();
+	    ".";
+	];
+
+DarkenedRoom darkened_deadend "A Darkened Passage"
+ with	description
+    	    "The passage ends abruptly to the north at a plain gray 
+	    wall. It doesn't look like the wall has been painted 
+	    gray, though its surface is smooth, almost like 
+	    drywall.^^Seems like your only option is to return 
+	    south.",
+	ambient1
+	    "Applause rings out in the distance.",
+	ambient2
+	    "You lose your balance for a second.",
+    	s_to birthday;
+
+Object 	-> darkened_deadend_wall "gray wall"
+ with	name
+	    'north' 'wall' 'gray' 'grey' 'painted' 'smooth' 'drywall'
+	    'surface',
+	description
+	    "You stare at it for a little, trying to see if there's 
+	    a hidden entrance or something like that, but you come 
+	    up empty.",
+	before
+	[;
+	 Attack:
+	    "You don't even put a dent into the wall.";
+	    
+	 Push:
+	    "Nothing happens -- the wall is solid.";
+	],
+ has   	scenery;
+
+SupermarketRoom aisle8 "Aisle 8"
+ with	description
+	[;
+	    if (aisle4 hasnt visited)
+	    	print "This is a supermarket aisle -- you're sure of 
+		    it though it doesn't make sense -- but t";
+	    else
+		print "T";
+	    
+	    print "he shelves here are completely empty. A sign 
+		indicates this would be the snacks aisle (Doritos, 
+		pretzels, chewing gum -- all the food you wished you 
+		could eat as a meal all by themselves) if there were 
+		anything to buy. Overhead lights at regular 
+		intervals and an odd melody too soft to be 
+		understood...^^The north ";
+
+	    if (self.s_to == darkened_southcurve)
+		print "and south ends";
+	    else
+		print "end";
+	    
+	    print " of the aisle ";
+
+	    if (self.s_to == darkened_southcurve)
+		print "become entrances";
+	    else
+		print "becomes an entrance";
+
+	    print " to what appear";
+
+	    if (self.s_to == darkened_southcurve)
+		print " to be tunnels";
+	    else
+		print "s to be a tunnel";
+	    
+	    ", and a gash in the aisle leads west.";
+	],
+    	w_to darkened_entrance,
+    	n_to darkened_slope,
+    	s_to nothing;
+
+Object 	-> aisle8_gash "gash"
+ with	name
+	    'gash' 'west' 'wood' 'bit' 'ragged',
+	description
+	    "It's strange -- the shelves just sort of end around the 
+	    edges of the gash, as if they had been engineered 
+	    precisely to fit it. The wall behind it wasn't, though. 
+	    Ragged bits of wood hang from the edges of the hole.",
+	before
+	[;
+	 Take:
+	    "The splinters are kind of nasty.";
+	    
+	 Enter:
+	    PlayerTo(darkened_entrance);
+	    rtrue;
+	],
+ has 	scenery;
+
+Object 	-> aisle8_cart "shopping cart"
+ with	name
+	    'shopping' 'cart' 'supermarket' 'metal' 'silver',
+	description
+	    "It's old, kind of dingy.",
+	before
+	[;
+	 Push, Pull:
+	    print_ret (The) self, " is rooted to the spot.";
+	    
+	 Enter:
+	    print_ret "There isn't enough room for two in ", (the) self;
+	],
+ has 	transparent container open scenery;
+
+FrozenPerson -> -> lisa "Lisa"
+ with	name
+    	    'lisa' 'girl' 'woman' 'lady',
+    	initial
+    	    "A young woman sits in a shopping cart, staring at a 
+	    point just slightly above your head. She doesn't seem to 
+	    notice you're here, though.",
+    	description
+    	    "Lisa has been evicted from his apartment today. She's 
+	    been unemployed for six months now; every day, she sends 
+	    out resumes but nothing happens -- too many people out 
+	    there looking, and though she is desperate, there are no 
+	    doubt people more desperate. She has no family of her 
+	    own to feed.^^Her parents are dead. Her father by a 
+	    heart attack, her mother in her sleep. It's alright. 
+	    They lived long lives. Her only relatives are an aunt 
+	    and uncle in New Mexico, all the way across the country. 
+	    She decides to make a long-distance, last-ditch 
+	    trip.^^She discovers that her aunt and uncle are dead, 
+	    too. They were on flight 175 on September 11. How could 
+	    she have not been told? She spends three days just 
+	    talking to people, finding out what happened.^^Just to 
+	    make some conversation, one of the neighbors asks how 
+	    long she's planning to stay here.^^This is how it 
+	    happens. This is how her life changes.",
+ has 	female proper;
+
+DarkenedRoom darkened_southcurve "A Darkened Passage"
+ with	description
+       	[;
+      	    if (ContainsLight(player))
+		print "This tunnel turns from north to east. The 
+		    walls here are almost perfectly smooth, maybe 
+		    worn down with age -- it's just a guess, though.";
+	    else
+		print "It's hard to see anything at all in this 
+		    passage, beyond the fact that it turns from 
+		    north to east -- it's just too dark.";
+	    
+	    " There's a small breeze, though it's hard to say where 
+	    it's coming from.";
+	],
+    	ambient1
+    	    "The breeze picks up, then dies almost immediately.",
+    	ambient2
+    	    "You hear a far-off rumbling.",
+    	n_to aisle8,
+    	e_to waiting_room;
+
+Object 	waiting_room
+ with 	short_name
+	[;
+	    if (waiting_room_light in self)
+		print "Waiting Room, Empty";
+	    else
+		print "Waiting Room, Dark";
+	    
+	    rtrue;
+	],
+ 	description
+	[ i;
+	    ! Have to stuff this in here because it's guaranteed to
+	    ! run at the right time
+
+	    if ((blue_key in self) && ~~ ContainsLight(player))
+		give blue_key concealed;
+	    else
+		give blue_key ~concealed;
+	    
+	    if (waiting_room_light in self)
+		print "The furniture lies on its side, near the 
+		    corners. Someone threw it there -- who knows 
+		    why. A single light bulb hangs at the center of 
+		    the room, casting odd shadows over everything. 
+		    The receptionist's desk is empty.";
+	    else
+		if (i = ContainsLight(player))
+		    print "Your ", (name) i, " casts shadows over the 
+			furniture discarded into the corners of the 
+			room. The reception desk looks spooky in the 
+			dark; it should have a sign-in sheet, a 
+			nametag... something.";
+	    	else
+		    "It's pitch dark in here -- can't see anything 
+		    at all, nothing, nothing, and what's worse is 
+		    you can no longer remember what the room once 
+		    contained, what it once was.^^The dim light of 
+		    the darkened passage is to the west.";
+	    
+	    "^^A blue door leads south, and the darkened passage is 
+	    back to the west.";
+	],
+	w_to darkened_southcurve,
+	s_to waiting_room_door;
+
+Object 	-> waiting_room_light "light"
+ with	name
+	    'light' 'bulb' 'single',
+	description
+	    "The bulb looks sort of strange, like there's something
+	    wrong with it -- but you aren't sure how.",
+	before
+	[;
+	 SwitchOn, SwitchOff:
+	    "There doesn't seem to be a knob to twist or a switch to 
+	    switch.";
+	    
+	 ThrownAt:
+	    if (noun ofclass FridgeBeer)
+	    {
+		remove second;
+		<<Attack self second>>;
+	    }
+	    else
+		print_ret (The) second, " dings off the light bulb 
+		    harmlessly.";
+	    
+	 Attack:
+	    remove self;
+	    remove waiting_room_shadows;
+	    move blue_key_debris to location;
+	    move blue_key to location;
+	    
+	    if (~~ second)
+		print "You stare at the light for a moment, just 
+		    thinking -- then you punch it, an awkward, 
+		    angry, sort of punch. The bulb cracks, not all 
+		    the way, but that's enough to send the whole 
+		    room into darkness.";
+	    else
+		print "The light bulb shatters in an instant -- the 
+		    sound of a single egg cracked over a hot 
+		    griddle.";
+	    
+	    if (ContainsLight(player))
+		" As the light evaporates, you catch sight of 
+		something metallic falling from the bulb. It falls 
+		too fast for you to be sure what it was -- but you 
+		know it's important, and what's weirder is that you 
+		knew it would be there, too...";
+	    else
+		" The room plunges into darkness and there's a brief 
+		tinkling sound, maybe like a dime dropping on the 
+		floor.";
+	],
+	each_turn
+	[;
+	    if (random(4) == 1)
+		print_ret (string) random("^The light buzzes for a 
+					  moment.", "^The light 
+					  shifts to a red hue for a 
+					  second -- you look up at 
+					  it, confused -- and then 
+					  jumps back to white.");
+	],
+ has 	scenery;
+
+BlueDoor -> waiting_room_door
+ with	before
+	[;
+    	    ! Have to handle unlocking/locking manually, since the
+	    ! player can use two different keys here
+	    !
+	    ! I bet you could do something fiendish here and handle
+	    ! both actions together, but I don't feel it's worth the
+	    ! time
+	    
+	 Unlock:
+	    if (self hasnt locked)
+		"But the door's already unlocked.";
+	    
+	    if (second == blue_key or ornate_key)
+	    {
+		give self ~locked;
+		"The door unlocks without complaint.";
+	    }
+	    else
+		print_ret (The) second, " doesn't seem to fit, no 
+		    matter how hard you try.";
+	    
+	 Lock:
+	    if (self has locked)
+		"But the door's already locked.";
+	    
+	    if (second == blue_key or ornate_key)
+	    {
+		give self locked;
+		"You lock the door again, just for safekeeping.";
+	    }
+	    else
+		print (The) second, " doesn't seem to fit, no matter
+		    how hard you try.";
+	],
+    	after
+	[;
+	 Open:
+	    map_room.connect_to(self, location);
+	    "The door opens smoothly.";
+	];
+
+Object 	-> waiting_room_furniture "furniture"
+ with 	name
+	    'furniture' 'chairs' 'chair',
+	description
+	    "Chairs, just chairs: upturned, sideways, legs cracked 
+	    and upholstery torn. Designed to make you comfortable 
+	    while you wait for the dentist, to make you forget you 
+	    are an animal that is afraid of sharp things, to make 
+	    you forget that there are sharp things in the world, 
+	    that things can be broken... especially you.",
+	before
+	[;
+	    ! oddly, verbs realting to cleaning up things are tied to
+	    ! the Rub action
+	    
+	 Take, Push, Pull:
+	    "Oddly, the chairs seem rooted to where they lie. You
+	    can't move them an inch.";
+	    
+	 Rub, Straighten:
+	    "It seems like a waste of time. You check them once again,
+	    just to make sure that there isn't anything hidden in
+	    there -- nope.";
+	    
+	 Enter:
+	    "It's not like this would accomplish anything -- these 
+	    chairs aren't blue.";
+	],
+	react_before
+	[;
+	    ! I'm stuffing the darkness react_before into this object
+	    ! since it's around all the time, and apparently the
+	    ! library doesn't ask the room if it wants to
+	    ! react_before.
+	    
+	    if ((waiting_room_light notin waiting_room) &&
+		(~~ ContainsLight(player)) && noun && (noun in location))
+		"It's too dark.";
+	],
+ has 	scenery;
+
+Object 	-> waiting_room_shadows "shadows"
+ with	name
+	    'shadow' 'shadows' 'odd',
+	description
+	    "The shadows are odd and pointed, like what a mechanical 
+	    object might cast.",
+ has 	scenery;
+
+Object 	-> waiting_room_desk "receptionist's desk"
+ with	name
+	    'receptionist^s' 'receptionist' 'reception' 'desk'
+	    'empty',
+	description
+	[;
+	    if (~~ child(self))
+	    	"You scan over the desk quickly, just to make sure it's 
+	    	empty.";
+	    else
+	    {
+		print "You've placed ";
+		WriteListFrom(child(self), ENGLISH_BIT);
+ 		"on the desk.";;
+	    };
+	],
+ has 	scenery supporter open;
+
+Object 	blue_key "blue key"
+ with	name
+	    'blue' 'key',
+	initial
+	    "A blue key lies in the middle of the floor, surrounded 
+	    by broken glass and debris.",
+	description
+	    "The key is simple, small even. It looks sort of similar
+	    to the key to your apartment.";
+
+Object 	blue_key_debris "debris"
+ with 	name
+	    'broken' 'glass' 'debris' 'pile' 'sharp' 'simple',
+	description
+	    "The glass lies in a simple, sharp pile.",
+	before
+	[;
+	 Take:
+	    "It's just a bunch of sharp glass. Not really worth it 
+	    -- you'd cut yourself trying to pick any of it up.";
+	],
+ has 	scenery;
+
+DarkenedRoom darkened_slope
+ with 	description
+	[;
+	    if (ContainsLight(player))
+		"The passage is subtly graded, sloping downward and 
+		widening as it heads north. The air grows colder and 
+		thinner -- there was a humidity you hadn't noticed 
+		before -- the further down you go. Upward, to the 
+		south, is the light of the supermarket.";
+	    else
+		"You can see very little beyond the light of the 
+		supermarket to the south. You think that perhaps the 
+		passage is sloped, but you can't say for sure how 
+		much or for how long. The passage continues to the 
+		north as well, further into darkness.";
+	],
+    	ambient1
+    	    "A bird flutters its wings somewhere you can't see.",
+    	ambient2
+    	    "~Dante,~ a voice says... but you're just imagining 
+	    things...",
+    	s_to aisle8,
+	u_to aisle8,
+	d_to darkened_t,
+    	n_to darkened_t;
+
+DarkenedRoom darkened_t
+ with	description
+	[;
+	    if (ContainsLight(player))
+		"The passage branches here east and west, and returns
+		upward to the south. The east passage is a little
+		narrower, the clay a bit more moist.";
+	    else
+		"You're in almost complete darkness here; it's only 
+		by groping around with your hands that you can tell 
+		how the passage runs. East, west, and south. It's 
+		impossible to tell anything further... how far 
+		things continue... whether the sensation of going 
+		deeper and deeper into the earth is really true...";
+	],
+    	ambient1
+    	    "The ground shifts beneath your feet.",
+    	ambient2
+    	    "Your hear... footsteps?",
+    	s_to darkened_slope,
+    	e_to fake_mart,
+	w_to aisle2;
+
+SupermarketRoom aisle2 "Aisle 2"
+ with	description
+	    "COOKIES, CRACKERS, SNACKS, a sign above you reads. But 
+	    here the shelves are as empty as before -- dusty, even. 
+	    It's been a long time since anyone has been here, it 
+	    seems. Darkened passages lead north and east.",
+	e_to darkened_t,
+	n_to darkened_steps;
+
+FrozenPerson -> aisle2_erin "Erin"
+ with	name
+	    'erin' 'little' 'girl',
+	initial
+	    "A little girl lies on the floor, staring at something 
+	    in the ceiling you can't see.",
+	description
+	    "Erin turns nine years old in a few days. It will be the 
+	    happiest day of her life, she knows. All the birthdays 
+	    before this one don't count. They came before she had a 
+	    daddy.^^Her life before her daddy was weird, but she 
+	    doesn't know it. Maybe if she knew the word, she'd call 
+	    it exciting. There were nighttime escapes and lots of 
+	    hotel rooms. There were bad people everywhere. Her 
+	    mother told her so and Erin believes everything her mom 
+	    tells her. She was the only good person she knew before 
+	    her daddy became her daddy.^^He wakes her up early the 
+	    morning of her ninth birthday. He whispers something to 
+	    her but she can't hear what he's saying.^^This is how it 
+	    happens. This is how her life changes.",
+	before
+	[;
+	 Take:
+	    "She seems too heavy to pick up, which is strange...";
+	],
+ has 	female;
+
+Object 	-> aisle2_ceiling "ceiling"
+ with	name
+	    'ceiling' 'up' 'upward' 'upwards' 'faces' 'smiling',
+	description
+	    "There are faces painted on the ceiling -- faces you don't
+	    recognize, faces smiling.",
+ has 	scenery;
+
+DarkenedRoom darkened_steps
+ with	description
+	[;
+	    if (ContainsLight(player))
+		"How strange -- there are steps cut into the surface 
+		of this passage, though the slope downward is very 
+		gentle. The passage itself turns a tight curve from 
+		south to west, widening slightly as it moves west.";
+	    else
+		"You have to step carefully here; the ground is uneven
+		though you aren't sure how, exactly, beyond the fact
+		that you keep almost losing your balance. Making
+		things more complicated is the fact that the passage
+		itself turns from south to west.";
+	],
+	ambient1
+	    "~I'm lost,~ a voice says in the distance.",
+	ambient2
+	    "~I hope I'm dreaming,~ a voice says in the distance.",
+	s_to aisle2,
+	w_to post_office;
+
+Object -> darkened_steps_steps "steps"
+ with	name
+	    'rough' 'step' 'steps',
+	description
+	    "The steps look hastily-constructed. They're rough cut,
+	    maybe with a shovel edge or something similiar, and some
+	    are taller than others.",
+ has 	scenery;
+
+Object 	post_office "Post Office, Hopeless"
+ with	description
+	[;
+	    if (post_office_door in self)
+	    {
+		print "Where there was once were mailboxes, there is 
+		    now a single blue door leading south. The rest 
+		    of the wall is simple clay, the kind you've seen 
+		    in the tunnels and passages you've passed 
+		    through before.";
+	    }
+	    else
+	    {
+	    	print "Here in the anteroom of the PO is a wall of 
+		    mailboxes -- more than you've ever seen before, 
+		    and all in an intense shade of blue, too. ";
+	    
+	    	if (post_office_mailbox has open)
+		    print "One of them is open. ";
+	    
+	    	print "A mail slot beside them barely registers in your 
+		mind. The floor is dingy; the air's stale.";
+	    };
+	    
+	    "^^To the east is a darkened passage.";
+	],
+	e_to darkened_steps,
+	s_to nothing;
+
+Object 	-> post_office_mailbox
+ with	short_name
+	[;
+	    if (self has open)
+		print "opened mailbox";
+	    else
+		print "closed mailbox";
+	    rtrue;
+	],
+	parse_name
+	[ i;
+	    while (true)
+	    	switch (NextWord())
+	   	{
+	    	 'open', 'opened':
+	       	    if (self has open)
+		   	i++;
+	       	    else
+		   	return 0;
+		    
+	    	 'closed':
+	       	    if (self hasnt open)
+		   	i++;
+	       	    else
+		   	return 0;
+		    
+	    	 'blue', 'intense', 'mailbox', 'box':
+	       	    i++;
+		    
+	    	 default:
+	       	    return i;
+	   	};
+	],
+	description
+	[;
+	    if (child(self))
+	    {
+	    	print "Inside the mailbox is ";
+	    	WriteListFrom(child(self), ENGLISH_BIT);
+		".";
+	    }
+	    else
+		"The mailbox is empty.";
+	],
+	capacity 1,
+ has 	scenery openable container open;
+
+Object 	-> -> beatrice_letter "folded piece of notebook paper"
+ with	name
+	    'letter' 'folded' 'piece' 'notebook' 'paper' 'beatrice'
+	    'beatrice^s',
+	description
+	[;
+	    print "It's a page torn from a spiral 
+		notebook.^^Dante,^^Today a bird landed at my feet 
+		while I was eating lunch outside. It looked sort of 
+		like a pigeon but it wasn't one. I thought it just 
+		wanted some of my peanut-butter-and-jelly sandwich 
+		but I was wrong. I threw a little piece on the 
+		ground but the bird kept staring at me. I didn't 
+		know what to do. I felt like there was something I 
+		could do for it, but I wasn't smart enough to know 
+		what it was. I keep thinking about it but I don't 
+		know why.^^";
+	    
+	    if (reporter.answer3)
+		print "Toronto is beautiful. It's kind of warm this 
+		    time of year, not anything like Maryland, but 
+		    still warm. There's so many people here... I 
+		    wish you would have come with me. It would have 
+		    been a good adventure. But then I guess you 
+		    always thought my adventures were stupid. It's 
+		    okay. Maybe you're right.";
+	    else
+		print "What is it like to live a big and exciting 
+		    life up in Philadelphia? Is it fun all the time? 
+		    Or just most of the time? I think sometimes I 
+		    should get a real job and a real career like 
+		    you... but I don't think I could do it. You're 
+		    stronger than I am... but you don't need me to 
+		    tell you that.";
+	    
+	   "^^I still love you. But don't tell anybody I said 
+	    that... it's a secret.^^Beatrice";
+	],
+	before
+	[;
+	 Open:
+	    <<Examine self>>;
+	];
+
+Object -> post_office_slot "mail slot"
+ with	name
+	    'mail' 'slot',
+	description
+	    "A label above the slot reads, FOR LOCAL DELIVERIES ONLY.",
+	before
+	[;
+	 Receive:
+	    switch (noun)
+	    {
+	     birthday_envelope:
+		if (birthday_envelope hasnt open)
+		{
+		    remove post_office_mailbox;
+		    remove self;
+		    move post_office_door to post_office;
+		    give post_office_door ~locked;
+		    post_office.s_to = post_office_door;
+		    map_room.connect_to(post_office_door, location);
+		    "It lands with a clank inside the mail slot. A 
+		    clank? No time to think about why or how -- the 
+		    entire matrix of mailboxes rolls upwards (how 
+		    insubstantial they all must have been -- 
+		    right?), revealing a simple, ordinary, blue door 
+		    to the south. It remains there no matter how 
+		    long you stare at it.";
+		}
+		else
+		{
+		    remove birthday_envelope;
+		    "It feels a little odd to try to mail a ripped-up
+		    envelope, but you toss it into the slot. Nothing
+		    happens; no sound or movement or anything. But
+		    what were you expecting to happen, anyway?";
+		};
+
+	     blue_key, ornate_key, silver_key:
+		print_ret (The) noun, " seems too valuable.";
+		
+	     beatrice_letter, combo_card, photograph:
+		remove noun;
+		print_ret (The) noun, " disappears into the slot
+		    without a sound.";
+
+	     default:
+		print_ret (The) noun, " is too big to fit in the 
+		    slot.";
+	    };
+	],
+ has 	scenery container;
+
+Object 	-> post_office_mailboxes "unmarked mailboxes"
+ with	name
+	    'mailboxes' 'wall' 'other' 'intense' 'blue',
+	description
+	    "They aren't numbered, or named, or even locked, as far 
+	    as you can tell. There are no keyholes, no combination 
+	    locks, nothing -- you have no idea how to open them at 
+	    all.",
+	before
+	[;
+	 Open, Unlock, Search:
+	    "You paw at one, but you still draw a blank on how to get
+	    them opened.";
+	],
+ has 	scenery pluralname;
+
+BlueDoor post_office_door
+ with	before
+	[;
+	 Lock:
+	    "No sense in that, as far as you can see.";
+
+	 Unlock:
+	    "It's already unlocked.";
+	];
+
+Object 	fake_mart "Mini-Mart"
+ with	description
+	    "It's the same one you were just in... isn't it? Except 
+	    everything isn't as it was. Where there were aisles, now 
+	    there are torn-up bits of plywood, as if someone had 
+	    only five minutes to construct the scene. Sawdust all 
+	    over the floor and windows made of Saran Wrap.^^The 
+	    Chinese kid is still at the counter (its left side 
+	    crashing to the floor -- the thing was built all wrong), 
+	    but everything is different about him, and what's more, 
+	    there's a display beside him. A sign reads: USEFUL ITEMS 
+	    FOR YOUR LIFE. PLEASE TRADES ONLY.^^A blue door lies 
+	    behind him to the south; passages lead east and west.",
+	w_to darkened_t,
+	e_to darkened_weave,
+	s_to fake_mart_door;
+
+Object	-> fake_mart_display "display"
+ with	name
+	    'display' 'clear' 'plastic' 'case' 'sign' 'useful' 'items'
+	    'life',
+	description
+	[;
+	    if (ornate_key in self)
+	    	"Inside a clear plastic case, the kind you might 
+		keep doughnuts or maybe birthday cakes, there is a 
+		single ornate blue key.";
+	    else
+		"There's nothing in the display case anymore.";
+	],
+	before
+	[;
+	 Receive:
+	    "The display's locked and closed.";
+	],
+ has	scenery transparent;
+
+Object 	-> -> ornate_key "ornate blue key"
+ with	name
+	    'ornate' 'blue' 'key' 'curve' 'curved' 'curves' 'swirl'
+	    'swirls' 'swirled',
+	description
+	    "There are curves and swirls carved into the surface of 
+	    the key.";
+
+Object 	-> fake_mart_kid "Chinese kid"
+ with	name
+	    'chinese' 'kid' 'boy' 'guy' 'dude',
+	description
+	    "His face is painted obsidian -- you can tell it's just 
+	    paint because in parts it's faded to a sort of charcoal. 
+	    He grimaces, though you aren't sure whether it's in pain 
+	    or some long-standing, hard-to-contain mirth. The comic 
+	    book he's reading is completely blank.",
+	life
+	[ i j;
+	    
+	 Show:
+	    if (ornate_key notin fake_mart_display)
+		"~Whatever,~ the kid says.";
+	    else
+	    	switch (noun)
+	    	{
+	     	 keys, wallet, pager:
+		    "~No,~ the kid says. ~Is useful only to you.~";
+		    
+	     	 chris_money:
+		    "~No money,~ the kid says.";
+		    
+	     	 blue_key:
+		    "~Hmm,~ the Chinese kid says, thinking it
+		    over. ~Already have too many of those.~";
+		    
+	     	 silver_key:
+		    "~Wow. Is pretty,~ the kid says. For a moment, 
+		    he's spellbound -- this is the most amazing 
+		    thing he's seen in a long time. ~Trade?~";
+
+		 ornate_key:
+		    "~Is useful?~ the kid asks, sort of 
+		    rhetorically.";
+		    
+	     	 default:
+		    if ((noun ofclass FridgeBeer) || (noun == wine_bottle))
+		    	"~No,~ the kid says. ~Drink only show dreams.~";
+		    else
+		    	"The kid just shakes his head: ~No trade.~";
+	    	};
+	    
+	 Give:
+	    if (ornate_key notin fake_mart_display)
+		"~No more trades,~ the kid says.";
+	    
+	    if (noun == silver_key)
+	    {
+		remove silver_key;
+		move ornate_key to player;
+		
+		"~Good trade,~ the kid says and bangs his fist on 
+		the top of the display case. The back opens in a 
+		weird, surprising sort of way and he hands over the 
+		key inside. With a private sort of smile, he tucks 
+		the key you give him inside a shirt pocket.^^~Good 
+		trade,~ the kid repeats, looking at you with what 
+		might be pity.";
+	    }
+	    else
+		<<Show noun self>>;
+	    
+	 Ask, Tell, Answer:
+	    if ((second == 'deal' or 'key' or 'useful' or 'display' or
+		 'trade') && (ornate_key in fake_mart_display))
+		"~Is trade,~ the kid says, like he's telling you 
+		a secret. ~Trade useful thing for key.~";
+	    
+	    ! fall-through if key has already been traded
+	    
+	    print "~";
+	    j = random(4);
+	    
+	    for (i = 1 : i <= j : i++)
+	    {
+		print "Ha!";
+		if (i < j)
+		    print " ";
+	    };
+	    
+	    print "~ the kid says";
+	    
+	    if (random(2) == 1)
+		print ", giving you a disconcertingly serious look";
+	    
+	    ".";
+	],
+	react_before
+	[;
+	 Attack:
+	    if (noun == fake_mart_display)
+		"~No!~ the kid snaps. He's pretty protective of it.";
+	    
+	 Buy:
+	    if (noun == ornate_key)
+		"~Trades only,~ the kid says.";
+	    
+	    "~Is not for sale, smart guy,~ the kid says."; 
+	    
+	 Take:
+	    if (noun == ornate_key or fake_mart_display)
+	    	<<Attack fake_mart_display>>;
+	    
+	 Unlock, Open:
+	    if (noun == fake_mart_display)
+		<<Attack fake_mart_display>>;
+	    
+	    if (noun == fake_mart_door)
+		print "~Employees only,~ the kid says by way of 
+		    warning.^^";
+	],
+	orders
+	    "The kid grins at you.",
+ has 	animate male concealed transparent;
+
+Object	-> -> fake_mart_kid_comic_book "comic book"
+ with	name
+	    'comic' 'book' 'blank',
+	description
+	    "The paper is blank white.",
+	before
+	[;
+	 Take:
+	    "~No!~ the kid shouts.";
+	];
+
+BlueDoor -> fake_mart_door
+ with	with_key nothing,
+	before
+	[;
+	 Unlock:
+	    if (second == blue_key or ornate_key)
+		"Odd... the key feels wrong in the lock.";
+	];
+
+Object -> fake_mart_counter "counter"
+ with	name
+	    'counter',
+	description
+	    "The counter's falling apart in places.",
+	before
+	[;
+	 Receive:
+	    <<Give noun fake_mart_kid>>;
+	],
+ has 	scenery supporter;
+
+Object 	-> fake_mart_random "random things around the store"
+ with	name
+	    'random' 'things' 'windows' 'saran' 'wrap' 'plywood'
+	    'bit' 'bits' 'sawdust' 'counter',
+	description
+	    "It all seems so... fake.",
+	before
+	[;
+	    if (action ~= ##Examine)
+		"It isn't worth it.";
+	],
+ has 	scenery;
+
+DarkenedRoom darkened_weave
+ with	description
+	[;
+	    if (ContainsLight(player))
+		"The passage undulates as it moves west to east, 
+		curving back and forth with a kind of reassuring 
+		regularity. The walls are rough here, as if the 
+		passage had just been carved hours ago.";
+	    else
+		"The passage runs at odd angles -- you keep one hand 
+		on a wall to keep from getting confused. To the 
+		west, things grow lighter; to the east, darker.";
+	],
+	ambient1
+	    "A faint voice in the distance asks, ~Please come here.~ 
+	    But you can't tell whether it came from ahead or behind 
+	    you.",
+	ambient2
+	    "You hear a pigeon chirp far away.",
+    w_to fake_mart,
+    e_to aisle10;
+
+SupermarketRoom aisle10 "Aisle 10"
+ with	description
+	[;
+	    print "You never spend any time in this aisle: the sign 
+		above you indicates dog food, cat food, baby food. 
+		Not that it really counts or anything -- the shelves 
+		are empty here as well. ";
+
+	    if (self.n_to == aisle10_gap)
+	       "There are passages west and east, and a gap in the 
+		shelves leads north.";
+	    else
+		"Passages lead west and east.";
+	],
+	n_to nothing,
+	w_to darkened_weave,
+	e_to darkened_cliff;
+
+FrozenPerson -> aisle10_michael "Michael"
+ with	name
+	    'michael' 'guy' 'man' 'dude' 'elderly' 'man',
+	initial
+	    "An elderly man stands frozen in the middle of mopping 
+	    the floor.",
+	description
+	    "Michael has worked at the supermarket coming up on 
+	    three years. He doesn't need the money -- he's long been 
+	    retired. He just likes feeling useful.^^On a Tuesday 
+	    afternoon, 2:13 pm precisely, he falls to the floor of 
+	    aisle 10, his heart stopped. His life is saved, but the 
+	    doctors tell him it will happen again someday soon, and 
+	    when it does, there will be no coming back. There is no 
+	    way to fix anything permanently, but there are ways to 
+	    mitigate the risk. That what the doctor says: mitigate. 
+	    When he really should say postpone.^^This is how it 
+	    happens. This is how his life changes.",
+ has 	male proper;
+
+Object 	aisle10_gap "gap"
+ with 	name
+	    'gap' 'aisle',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "The gap leads into darkness.",
+	door_to darkened_claustrophobic,
+	door_dir n_to,
+ has 	open static door;
+
+DarkenedRoom darkened_cliff
+ with	description
+	[;
+	    ! I have to handle this differently than the waiting room,
+	    ! since players are guaranteed to have seen the room lit
+	    ! and so ought to be able to at least refer to objects out
+	    ! of view. Potential bug: an item that provides light but
+	    ! doesn't do a <<Look>> when turned on in a DarkenedRoom. 
+	    
+	    if (ContainsLight(player))
+	    {
+		move darkened_cliff_pool to self;
+		"The path turns from west to south, high above a 
+		vast, still pool of water. You can just barely see 
+		it from here -- it must be hundreds of feet below 
+		you. The water goes on as far as you can see, though 
+		that not may be saying much, and the roof above you 
+		becomes cavernous, with thin stalactites.";
+	    }
+	    else
+	    {
+		remove darkened_cliff_pool;
+		"The passage here is airy, though you aren't sure 
+		why. There's no wall along the outside part of the 
+		curve -- the path seems to curve from west to south 
+		-- and you can hear a faint wind, and maybe... 
+		water?";
+	    };
+	],
+	before
+	[;
+	 Swim:
+	    <<Enter darkened_cliff_pool>>;
+	],
+	ambient1
+	    "~Hello?~ a voice calls in the distance.",
+	ambient2
+	    "A fluttering of wings in the distance.",
+	w_to aisle10,
+	s_to bank_lobby;
+
+Object -> darkened_cliff_pool "pool"
+ with	name
+	    'pool' 'vast' 'still' 'water' 'blue' 'light',
+	description
+	    "Is that a flash of... blue light? Just below the
+	    surface. You can't make anything out.",
+	react_before
+	[;
+	 Swim:
+	    <<Enter self>>;
+	],
+	before
+	[;
+	 Receive:
+	    remove noun;
+	    "It lands with a splash, and sinks.";
+	    
+	 Enter:
+	    if (self hasnt general)
+	    {
+		give self general;
+		"It seems too dangerous. Who knows how deep that water
+		is, and the fall would be tremendous...";
+	    }
+	    else
+	    {
+		deadflag = DEAD_CUBICLE;
+		"You don't remember how it feels to hit the water, 
+		nor do you remember what it feels like to fall much 
+		too fast through it, nor hit the bottom (only five 
+		feet deep! five whole feet!) and feel your whole 
+		body compress, crack, crumble. All of it is erased, 
+		and maybe you are thankful for that...";
+	    };
+	],
+ has 	scenery;
+
+FarScenery -> darkened_cliff_stalacs "stalactites"
+ with	name
+	    'stalactites' 'stalactite' 'roof',
+	description
+	    "The stalactites point like fingers downward.";
+
+Object 	bank_lobby "Bank Lobby, Bottomless"
+ with	description
+	[;
+	    aisle8.s_to = darkened_southcurve;
+	    "There is a hole -- maybe better described as a pit -- 
+	    about fifteen feet wide, right in the middle of the 
+	    lobby. It looks as though no one has been here in a long 
+	    time: the glass separating tellers from people is 
+	    cracked in several places, and a desk (the kind new 
+	    accounts, loans, and foreclosures are negotiated over) 
+	    teeters halfway into the pit, rocking gently in a breeze 
+	    you can't feel.^^To the north is the darkened passage 
+	    you entered from, and south is the safe deposit vault. 
+	    For some reason, the metal of the vault door is painted 
+	    blue. ";
+	],
+	n_to darkened_cliff,
+	s_to bank_lobby_vault_door;
+
+Object -> bank_lobby_desk "desk"
+ with 	name
+	    'desk' 'teetering' 'rocking' 'manager' 'asst' 'bank'
+	    'assistant' 'assistant^s' 'rotting' 'corner',
+	description
+	    "The desk is rotting away at one corner, and its surface 
+	    is covered in useless papers. It doesn't even have 
+	    drawers -- but the customer would never know that. So 
+	    many things you aren't allowed to see. A placard on one 
+	    corner reads: ASST BANK MANAGER.",
+	before
+	[;
+	 LookUnder:
+	    if (post_it hasnt moved)
+	    {
+		move post_it to player;
+		"It never fails. There's a Post-It stuck on the 
+		underside of the desk, which you take.";
+	    };
+
+	 Open:
+	    "There aren't any drawers or anything -- just empty 
+	    frames.";
+	],
+ has 	scenery transparent;
+
+Object -> -> bank_lobby_desk_papers "useless papers"
+ with	name
+	    'useless' 'paper' 'papers',
+	description
+	    "You give them a quick look -- nothing really sticks out
+	    as important.",
+	before
+	[;
+	 Take:
+	    "They're meaningless to you.";
+	],
+ has 	scenery pluralname;
+
+Object -> -> bank_lobby_desk_placard "placard"
+ with	name
+	    'placard',
+	description
+	    "It's the kind of thing you see everywhere.",
+	before
+	[;
+	 Take:
+	    "It doesn't seem worth it, honestly.";
+	],
+ has 	scenery;
+
+Object 	-> bank_lobby_pit "pit"
+ with	name
+	    'pit' 'hole' 'bottomless' 'construction' 'wiring'
+	    'concrete' 'rebar',
+	description
+	[ i;
+	    if (i = ContainsLight(player))
+		print_ret "The light of your ", (name) i, " ends 
+		    sometime before the pit itself does, though you 
+		    can see odd bits of construction -- wiring, 
+		    concrete, rebar -- embedded along the sides of 
+		    the pit.";
+	    else
+		"You stoop at the edge of the pit for a moment, but
+		it's impossible to tell how far it goes down -- it's
+		just too dark.";
+	],
+	before
+	[;
+	 Enter:
+	    if (self hasnt general)
+	    {
+		give self general;
+		"For a second, you really consider doing it. But you
+		stop yourself -- this is insanity...";
+	    }
+	    else
+	    {
+		deadflag = DEAD_CUBICLE;
+		"The feeling of nothingness is... comfortable? It
+		doesn't feel like falling, doesn't feel like you may
+		die at any moment --";
+	    };
+
+	 Search:
+	    <<Examine self>>;
+	],
+	after
+	[;
+	 Receive:
+	    remove noun;
+	    print_ret (The) noun, " disappears into the darkness of
+		the pit. There is no sound of impact.";
+	],
+ has 	scenery container open;
+
+BlueDoor -> bank_lobby_vault_door
+ with	short_name
+	    "safe deposit vault door",
+	name
+	    'door' 'blue' 'metal' 'safe' 'deposit' 'vault',
+	description
+	    "In the center of the door is a simple combination lock, 
+	    the kind you remember from middle school. It's marked 
+	    with numbers from 0 to 36.",
+	before
+	[;
+	 Open:
+	    if (self has locked)
+		"The vault door doesn't budge.";
+
+	 Unlock:
+	    if (self has locked)
+ 		if (second)
+		    "It's a combination lock.";
+	    	else
+	    	    "But how?";
+	],
+	after
+	[;
+	 Close:
+	    "It takes some effort to close the door completely.";
+	],
+ has	transparent;
+
+Object 	-> -> bank_lobby_vault_door_knob "combination lock"
+ with	name
+	    'combination' 'combo' 'lock' 'dial' 'knob',
+	description
+	    "Numbers from 0 to 36 run along the circumference of the 
+	    combination lock's knob.",
+	before
+	[;
+	 Open:
+	    "You'll probably need the right combination to pull that 
+	    off.";
+
+	 Turn, TurnLeft, TurnRight:
+	    self.&entered-->0 = 0;
+	    self.&entered-->1 = 0;
+	    self.&entered-->2 = 0;
+	    "You spin the combination lock's knob a little, still
+	    trying to figure things out.";
+	    
+	 SetTo:
+	    if (second > 36)
+		"The dial only goes to 36.";
+	    
+	    self.&entered-->(self.current) = second;
+	    self.current = (self.current + 1) % 3;
+	    print "You turn the dial to ", second;
+
+	    if ((bank_lobby_vault_door has locked) &&
+ 		(self.check_entered()))
+	    {
+		give bank_lobby_vault_door ~locked;
+		map_room.connect_to(bank_lobby_vault_door, location);
+		print ", and the vault door clicks satisfyingly";
+	    };
+	  
+	    ".";
+	    
+	 Unlock:
+	    <<Unlock bank_lobby_vault_door>>;
+
+	 Lock:
+	    <<Lock bank_lobby_vault_door>>;
+	],
+	create_combo
+	[;
+	    ! First number must be a single digit > 3
+	    ! Second and third are a combination of a single digit and
+	    ! a two-digit number <= 36
+	    !
+	    ! This is so it can be guessed at when given all stuck
+	    ! together
+
+	    self.&correct-->0 = random(6) + 3;
+
+	    if (random(2) == 1)
+	    {
+		self.&correct-->1 = random(9);
+		self.&correct-->2 = random(25) + 10;
+	    }
+	    else
+	    {
+		self.&correct-->1 = random(25) + 10;
+		self.&correct-->2 = random(9);
+	    };
+	],
+	check_entered
+	[ i j got_match;
+	    ! I've decided to be nice and not be so strict about how
+	    ! the combo is opened... i.e. in real life you have to
+	    ! spin the dial and then enter three numbers.
+
+	    if ((self.&correct-->1 == 0) && (self.&correct-->2 == 0))
+ 		self.create_combo();
+
+	    for (i = 0 : i < 3 : i++)
+	    {
+		got_match = true;
+		
+		for (j = 0 : j < 3: j++)
+		    if (self.&entered-->((i + j) % 3) ~=
+			self.&correct-->j)
+		    {
+			got_match = false;
+			break;
+		    };
+		
+		if (got_match)
+		    rtrue;
+	    };
+
+	    ! fall-through means we didn't get a match anywhere
+	    
+	    rfalse;
+	],
+	print_combo
+	[;
+	    if ((self.&correct-->1 == 0) && (self.&correct-->2 == 0))
+ 		self.create_combo();
+	    
+	    print self.&correct-->0, self.&correct-->1, self.&correct-->2;
+	],
+	print_easy_combo
+	[;
+	    if ((self.&correct-->1 == 0) && (self.&correct-->2 == 0))
+ 		self.create_combo();
+	    
+	    print self.&correct-->0, "-", self.&correct-->1, "-",
+	       self.&correct-->2;
+	],
+	correct
+	    0 0 0,
+	entered
+	    0 0 0,
+	current 0,
+ has 	static;
+
+Object 	-> bank_lobby_tellers "teller booths"
+ with 	name
+	    'teller' 'tellers' 'booth' 'booths' 'glass' 'cracked',
+	description
+	    "A row of signs reading: NEXT TELLER PLEASE.",
+ has 	scenery;
+
+Object post_it "Post-It"
+ with	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+	    	 'post-it', 'post', 'sticky':
+		    definite_match = true;
+		    i++;
+
+		 'it':
+		    i++;
+
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	description
+	[;
+	    print "Scrawled nearly illegibly: ~";
+	    bank_lobby_vault_door_knob.print_easy_combo();
+	    " -- don't forget.~ You smile, but only a little.";
+	];
+
+
+DarkenedRoom darkened_claustrophobic
+ with	description
+	[;
+	    if (ContainsLight(player))
+		"The passage runs a short way, north to south. The 
+		ceiling above you is just barely high enough to 
+		allow you to walk without ducking your head, and the 
+		walls are close around you.";
+	    else
+		"The passage feels claustrophobic -- you can see the 
+		rough surface of the ceiling above, and you can run 
+		your hands against both sides of the tunnel just by 
+		stretching your arms a little. The passage runs 
+		north and south.";
+	],
+	ambient1
+	    "~Are you there?~ a voice says in the distance.",
+	ambient2
+	    "~Are you lost?~ a voice asks, somewhere in the 
+	    distance.",
+	s_to aisle10,
+	n_to aisle1;
+
+SupermarketRoom aisle1 "Aisle 1"
+ with	description
+	    "The produce aisle is wider and larger than the aisles 
+	    you've passed through before, and it is dead empty. 
+	    Where there would be canteloupe, watermelon, 
+	    strawberries, lettuce, even radishes, there are only 
+	    bare green plastic displays. Darkened passages lead 
+	    north and south.",
+	s_to darkened_claustrophobic,
+	n_to darkened_stairs;
+
+Object -> aisle1_mirror "mirror"
+ with	name
+	    'mirror' 'glass',
+	initial
+	    "In the center of the room is a mirror.",
+	description
+	[;
+	    <Examine player>;
+
+	    if (self hasnt general)
+	    {
+		give self general;
+		move aisle1_alice to location;
+
+		if (flashlight notin player)
+		    move lantern to aisle1_alice;
+		
+		print "^In the mirror, there is a ";
+
+		if (party_alice.has_appeared)
+		    print "familiar ";
+
+		print "girl behind you";
+
+		if (lantern in aisle1_alice)
+		    print ", a lantern in her hand";
+		
+		".";
+	    }
+	    else
+		"^God, Dante is ugly.";
+	],
+	before
+	[;
+	 Search:
+	    <<Examine self>>;
+	],
+ has 	static;
+
+Object -> aisle1_displays "displays"
+ with	name
+	    'displays' 'display' 'plastic' 'green',
+	description
+	    "There's nothing in the displays, nothing at all.",
+ has 	scenery pluralname;
+
+FrozenPerson aisle1_alice
+ with	short_name
+	[;
+	    print (string) aliced.short_name();
+	    rtrue;
+	],
+	name
+	    'alice' 'alicia' 'girl' 'woman',
+	initial
+	[;
+	    print "A girl stands looking into space";
+
+	    if (lantern in self)
+		print ", a lantern in her right hand";
+
+	    ".";
+	],
+	description
+	[;
+	    aliced.sync_belief();
+	    print (string) aliced.short_name();
+	    " is good at waiting. This is a joke she tells herself 
+	    and no one else; she works as a waitress in an Italian 
+	    restaurant she would call ~nice enough.~ So much of her 
+	    life is nice enough. She went to a decent college -- not 
+	    a state school, but not really prestigious, either. She 
+	    tried to get into grad school, but she wasn't accepted 
+	    anywhere.^^The funny thing is it didn't feel bad to get 
+	    all those rejection letters. She just moved on to what 
+	    was possible. A small apartment and a small job. Not 
+	    small -- nice enough. She doesn't feel bad. When she 
+	    knows what she wants to be, she'll know.^^It just takes 
+	    time. She believes this without question. Does that 
+	    count as faith?";
+	],
+	life
+	[;
+	 Show:
+	    if (noun == silver_key)
+		"The girl smiles gently.";
+	],
+	react_before
+	[;
+	 Take:
+	    if ((lantern in self) && (noun == lantern))
+	    {
+	        move lantern to player;
+		"It slides easily from her fingers.";
+	    };
+	],
+ has 	female proper transparent;
+
+Object lantern "lantern"
+ with	name
+	    'lantern' 'metal' 'light',
+	description
+	    "It's an anachronism, only in reverse -- a lantern? It 
+	    seems unbelievable. But it shines brightly, faithfully.",
+	before
+	[;
+	 SwitchOn, SwitchOff:
+	    "You're not sure how to do that -- you've never used a 
+	    lantern before.";
+	],
+ has 	light;
+
+DarkenedRoom darkened_stairs
+ with 	description
+	[;
+	    if (ContainsLight(player))
+		print "Stairs -- real stairs, measured carefully and 
+		    cut at precise angles -- lead downward in a 
+		    tight clockwise circle."; 
+	    else
+		print "Stairs begin here -- it's hard to say how far 
+		    down they could lead, nor if, for that matter, 
+		    if they end in midair, with you tumbling into a
+		    nothingness you never imagined...";
+
+	    " A slight, moist breeze comes from below. To the south 
+	    is the supermarket.";
+	],
+	ambient1
+	    "You hear... an echo of water sloshing against 
+	    something?",
+	ambient2
+	    "You hear... an echo of water sloshing against 
+	    something?",
+	s_to aisle10,
+	d_to darkened_deadend2;
+
+Object -> darkrened_stairs_stairs "stairs"
+ with	name
+	    'stairs' 'stair' 'stairway' 'measured' 'cut' 'precise'
+	    'careful' 'carefully' 'clockwise',
+	description
+	    "They're curious, how well-made they are.",
+	before
+	[;
+	 Enter:
+	    <<Go d_obj>>;
+	],
+ has 	scenery;
+
+DarkenedRoom darkened_deadend2
+ with	description
+	    "The stairs end abruptly at a flat, blank gray wall to 
+	    your north. Nothing. It feels wrong somehow -- you don't 
+	    know what you should expect here, but you are certain 
+	    there ought to be more. The stairway leading up is 
+	    behind you.",
+	ambient1
+	    "You swear you hear footsteps on the stairs above you.",
+	ambient2
+	    "There's a dull thump high above you.",
+	u_to darkened_stairs;
+
+Object -> darkened_deadend2_wall "gray wall"
+ with	name
+	    'flat' 'blank' 'gray' 'wall' 'north',
+	description
+	    "You look carefully over the surface of the wall, but 
+	    there's nothing hidden there.",
+	before
+	[;
+	 Search:
+	    <<Examine self>>;
+
+	 Attack:
+	    "You don't even put a dent in the wall.";
+	],
+ has 	scenery;
+
+!
+! Super-labyrinth stuff
+! i.e. where the girls are laying out the puzzle pieces
+!
+
+Class MapRoomRecessSpace
+ with 	description
+	[;
+	    self.space_description();
+
+	    if (bedroom_tile in self)
+		"^The tile the girls gave you sits north of this tile.";
+	],
+	before
+	[;
+	 Receive:
+	    if (noun ~= bedroom_tile)
+		"It doesn't fit.";
+
+	    move noun to self;
+
+	    if (self.connected_to ~= nothing)
+		move empty_room_bed to self.connected_to.door_to;
+	    else
+    		remove empty_room_bed;
+	    
+	    "The tile fits perfectly.";
+
+	 LetGo:
+	    move noun to player;
+	    remove empty_room_bed;
+	    print_ret "You pull the tile from ", (the) self, ".";
+
+	 PutNear:
+	    <<Insert noun self>>;
+	],
+	capacity 1,
+	connected_to nothing,
+ has 	static open container transparent;
+
+Object 	map_room "In A Map Room With Two Mysterious Girls"
+ with	description
+	[;
+	    SetPronoun('them', map_room_girls);
+	    SetPronoun('her', map_room_girls);
+	    
+	    print "They look up at you, smiling at you, expecting 
+		you. They're kneeling on the floor at opposite sides 
+		of a deep circular recess where it looks like 
+		they're ";
+
+	    if (second_bedroom has visited)
+		print "still playing that game you saw them with
+		    before";
+	    else
+		print "playing some kind of board game";
+
+	    ". The room itself is circular, and the walls are 
+	    painted a brilliant shade of blue. You can return the way
+	    you came to the north.";
+	],
+	connect_to
+	[ the_door the_room i;
+	    if (~~ self.already_connected)
+	    {
+	      	self.already_connected = true;
+	      	the_door.door_to = self;
+		map_room_door.door_to = the_room;
+		    
+		! We lead the other doors to blank rooms
+
+		i = empty_room;
+
+		if (the_door ~= waiting_room_door)
+		{
+		    child(i).door_to = waiting_room;
+		    waiting_room_door.door_to = i;
+		    i = empty_room2;
+		};
+
+		if (the_door ~= post_office_door)
+		{
+		    post_office_door.door_to = i;
+		    child(i).door_to = post_office;
+		    i = empty_room2;
+		};
+
+		if (the_door ~= bank_lobby_vault_door)
+		{
+		    bank_lobby_vault_door.door_to = i;
+		    child(i).door_to = bank_lobby;
+		};
+		
+		! then get rid of the appropriate space in the map
+		! room's recess
+
+		switch (the_door)
+		{
+		 waiting_room_door:
+		    remove map_room_recess_waiting;
+
+		 post_office_door:
+		    remove map_room_recess_post;
+
+		 bank_lobby_vault_door:
+		    remove map_room_recess_bank;
+		};
+	    };
+	],
+	already_connected false,
+	n_to map_room_door;
+
+Object -> map_room_girls "girls"
+ with 	name
+	    'girl' 'girls' 'mysterious' 'alice' 'alicia',
+	description
+	    [;
+		print "They're wearing pajamas ";
+
+		if (second_bedroom has visited)
+		    print "now ";
+		
+		" -- cute ones, with little moons and stars -- and 
+		their hair is done up in simple ponytails. Like this 
+		is a slumber party. For some reason, this is 
+		intimidating to you... maybe bad middle school 
+		memories.^^It's hard to say what they're more 
+		interested in now, you or the game before them. 
+		Their eyes keep darting up at you. ";
+	    ],
+	each_turn
+	[;
+	    switch (++self.number)
+	    {
+	     1:
+		print "^~You made it,~ one of the girls says warmly. 
+		    ~We're happy to see you.~^^";
+		
+		if (turns - darkened_entrance.entered_turn < 25)
+		    "~And you did it so quickly,~ the other adds. 
+		    ~You're smarter than we thought.~";
+		else
+		    "~We were a little worried about you,~ the other
+		    adds. ~It took you so long to figure things out.~";
+
+	     2:
+		move bedroom_tile to player;
+		"^~Here,~ one of the girls says, holding out a tile 
+		from the game. ~We're almost done with our map. You 
+		should place the last one down.~^^You take the tile 
+		from her and consider it for a moment.";
+	    };
+	],
+	life
+	[;
+	 Kiss:
+	    "The girls recoil. ~Can you believe it?~ one of them
+	    says. ~He likes us.~";
+
+	 Attack:
+	    "You can't bring yourself to do it.";
+
+	 Ask, Tell:
+	    switch (second)
+	    {
+	     'girl', 'girls', 'themselves':
+		print "~Who are you, anyway?~ you ask. ~I mean, this 
+		    is just a little too weird.~^^";
+
+		if (random(2) == 1)
+		    "~We're imaginary,~ one of the girls replies, and
+		    then they break up into giggles.";
+		else
+		    "~I'm Alice,~ one says.^^~No, I want to be 
+		    Alice,~ the other says. ~You have to be Alicia 
+		    this time.~";
+
+	     'me', 'myself':
+		"~Why are you so interested in me?~ you ask.^^~We 
+		don't have a crush or anything on you,~ one of the 
+		girls says. ~We're just doing our part.~";
+
+	     'tile', 'bed', 'gray', 'square', 'bedroom':
+	       	"~What should I do with this tile you gave me?~ you 
+		ask.^^~Duh,~ one of the girls says, gesturing towards
+		the circular recess.";
+
+	     'blue', 'door', 'doors':
+		"~Why are there blue doors everywhere?~ you ask.^^~We
+		don't know either,~ one of the girls says. ~We just
+		pick the tiles out of the box.~";
+		
+	     'map', 'tiles', 'recess':
+		"~Did you two build this map all by yourselves?~ you 
+		ask.^^~Don't be patronizing,~ one of the girls 
+		says.^^~I'm serious -- I really want to 
+		know.~^^~Okay, fine, we did it,~ she replies. ~We 
+		got the kit from Amazon.~";
+
+	     'game':
+		"~So, what, is this part of your game?~ you
+		ask.^^~This isn't a game, not exactly,~ one of the
+		girls says.^^~We'd like to think this is a story and
+		not a dream,~ the other says.";
+		
+	     'chris':
+		"~I don't trust Chris,~ you say. ~Not really.~^^~The 
+		guy giving you a ride?~ one of the girls asks. ~He's 
+		a nice guy -- too bad you won't get to hang out with 
+		him more.~^^~But we were told to tell you that,~ the 
+		other says.";
+
+	     'alice', 'alicia':
+		print "~Which one of you is Alice and which is 
+		    Alicia? I really want to know.~^^~That question 
+		    is more important than you'd think,~ one of the 
+		    girls replies. ~But you should ask her 
+		    yourself.~^";
+
+		if (silver_key in second_bedroom_girls)
+		{
+		    move silver_key to player;
+		    "^She holds out a key. ~Hold onto this and maybe 
+		    you'll figure it out.~^^You take it from her, 
+		    not sure of what's going on.";
+		}
+		else
+		    rtrue;
+
+	     'beatrice', 'dream', 'dreams', 'drug', 'drugs',
+	     'phlocodine':
+		"~I have to ask you... is any of this real? Am I 
+		really going to find Beatrice?~^^~Well, first of 
+		all, it'd be telling if we told you,~ one of the 
+		girls says.^^~We should give him advice, though,~ 
+		the other says.^^~Okay, hmm...~ the first looks up, 
+		thinking. ~Hmm...~^^~Maybe we should give him a 
+		riddle.~^^~No, that's so cliche.~^^~Alright, how 
+		about this instead: this can be real and it can't. 
+		It's up to you to decide.~^^~That's a riddle,~ the 
+		first says.^^~No, it's an ambiguous statement,~ the 
+		other replies.";
+
+	     'help', 'hint', 'hints':
+		"~Can you guys give me any help on what I should be 
+		doing here?~^^~What, the built-in hints aren't 
+		enough?~ one girl asks.^^~Sshh! You're screwing up 
+		mimesis,~ the other says, and they both start 
+		giggling helplessly.^^~Mimesis is a dumb word, 
+		anyway,~ the first girl says after they stop 
+		laughing.";
+
+	     'mini', 'mart', 'market':
+		print "~Where's the mini-mart?~ you ask.";
+		self.tell_map();
+		rtrue;
+
+	     'waiting', 'room':
+		print "~Where's the waiting room?~ you ask.";
+		self.tell_map();
+		rtrue;
+
+	     'pool', 'water', 'underground', 'large', 'still', 'vast':
+		print "~Where's this pool of water?~ you ask.";
+		self.tell_map();
+		rtrue;
+
+	     'bank', 'lobby':
+		print "~Where's the bank lobby?~ you ask.";
+		self.tell_map();
+		rtrue;
+
+	     'post', 'office':
+		print "~Where's the post office?~ you ask.";
+		self.tell_map();
+		rtrue;
+
+	     'maze', 'labryinth', 'tunnels':
+		"~These tunnels are really confusing,~ you say.^^~We 
+		know,~ one of the girls. ~But it had to be the way 
+		it is.~";
+		
+	     default:
+		"The two girls look at you, weighing your question,
+		and laugh a little bit.";
+	    };
+
+	 Show, Give:
+	    print "~We've got no use for it,~ one of the girls says";
+
+	    if (noun == silver_key)
+		". ~It's for you.~";
+	    else
+	    	".";
+	    
+	 Answer:
+	    "The girls just sort of look at you.";
+	],
+	orders
+	[;
+	    <<Answer self>>;
+	],
+	react_after
+	[;
+	 Examine:
+	    if ((self hasnt general) && (noun == map_room_recess))
+	    {
+		give self general;
+		if (random(2) == 1)
+		    "^~We've been working hard,~ one of the girls 
+		    says, noticing your stare. ~It's almost 
+		    finished.~";
+		else
+		    "^~It got kind of tangled up towards the end,~ 
+		    one of the girls says. ~So we apologize if 
+		    things got confusing.~";
+	    };
+	],
+	tell_map
+	[;
+	    ! This is just to save time up in the life routine
+
+  	    "^^~What, you haven't been there yet?~ the girl on your 
+	    right says. ~Maybe you should make a map too.~^^The 
+	    other girl snickers, that way girls always do when you 
+	    act dumb.";
+	],
+	number 0,
+ has 	pluralname animate female concealed;
+
+Object 	-> -> bedroom_tile "tile"
+ with	name
+	    'tile' 'piece' 'blue' 'bed',
+	description
+	    "The tile shows a blue bed drawn in a friendly, open 
+	    style.";
+
+Object 	-> map_room_door "door"
+ with	name
+	    'door' 'blue',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+     	    "The door looks so ordinary now.",
+	door_dir n_to,
+	door_to nothing,
+ has 	door open openable;
+
+Object 	-> map_room_recess "recess"
+ with	name
+	    'recess' 'deep' 'circular' 'map' 'tiles' 'spaces' 'game'
+	    'board',
+	description
+	[;
+	    print "You step in for a closer look. It's breathtaking. 
+		Spread across the map is the party ";
+
+	    if (beside_car_dante_car has general)
+		print "-- your car, still smoking -- ";
+
+	    print "and 83, stretching all the way from Baltimore to 
+		Beatrice's house and beyond. So many houses you 
+		could count them for days... and at the center is 
+		the mini-mart, with a tunnel extending from its 
+		back...^^There are ";
+
+	 if (IndirectlyContains(self, bedroom_tile))
+	     print "three spaces still open";
+	 else
+	     print "just four spaces left to you";
+	    
+	    print ": one is beside a mini mart";
+
+	    if (child(map_room_recess_mini))
+		print (string) self.tile_message;
+
+	    print "; ";
+
+	    ! I bet if I got very clever, I could do this with a for
+	    ! loop
+
+	    if (map_room_recess_waiting in self)
+	    {
+   	       	print "another is beside a waiting room";
+		
+	       	if (child(map_room_recess_waiting))
+		    print (string) self.tile_message;
+		
+	       	print "; ";
+	    };
+
+	    if (map_room_recess_bank in self)
+	    {
+		print "one next to a bank lobby";
+
+		if (child(map_room_recess_bank))
+		    print (string) self.tile_message;
+		
+		print "; ";
+	    };
+		
+	    if (map_room_recess_post in self)
+	    {
+		print "one by a post office";
+
+		if (child(map_room_recess_post))
+		    print (string) self.tile_message;
+
+		print "; ";
+	    };
+
+	    print "and one is in the middle of what looks to be a 
+		large underground pool of water";
+
+	    if (child(map_room_recess_pool))
+		print (string) self.tile_message;
+	    
+	    ".";
+	],
+	before
+	[;
+	 Receive:
+	    "Be more specific about where you want to put it -- there
+	    are a couple different spaces to choose from.";
+	],
+	tile_message
+	    " (where you've placed the tile the girls gave you)",
+ has 	scenery container open;
+
+MapRoomRecessSpace -> -> map_room_recess_mini "space next to the mini-mart"
+ with	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'space', 'mini', 'mart', 'market', 'mini-mart':
+		    i++;
+		    definite_match = true;
+
+		 'beside', 'next', 'to', 'the':
+		    i++;
+
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	space_description
+	    "The map shows something close to the mini-mart you first
+	    entered, only the kid sitting at the front has a black
+	    face, not Chinese...";
+
+MapRoomRecessSpace -> -> map_room_recess_waiting "space next to the
+	    waiting room"
+ with 	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'space', 'waiting', 'room':
+		    i++;
+		    definite_match = true;
+
+		 'beside', 'next', 'to', 'the':
+		    i++;
+		    
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	space_description
+	[;
+	    print "The map shows a deserted waiting room";
+	    
+	    if (waiting_room has general)
+		" shrouded in darkness.";
+	    else
+		", chairs thrown against the corners.";
+	],
+	connected_to waiting_room_door;
+
+MapRoomRecessSpace -> -> map_room_recess_bank "space next to the bank
+	    lobby"
+ with	parse_name
+	 [ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'space', 'bank', 'lobby':
+		    i++;
+		    definite_match = true;
+
+		 'beside', 'next', 'to', 'the':
+		    i++;
+
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	 ],
+	space_description
+	    "The map shows an empty bank lobby, an enormous pit at 
+	    its center.",
+	connected_to bank_lobby_vault_door;
+
+MapRoomRecessSpace -> -> map_room_recess_post "space next to the post
+	    office"
+ with 	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'space', 'post', 'office':
+		    i++;
+		    definite_match = true;
+
+		 'beside', 'next', 'to', 'the':
+		    i++;
+		    
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	space_description
+	[;
+	    print "The map shows an empty post office";
+
+	    if (post_office_door in post_office)
+		", a plain blue door in its south wall.";
+	    else
+	    	" an entire wall taken up by mailboxes.";
+	],
+	connected_to post_office_door;
+
+MapRoomRecessSpace -> -> map_room_recess_pool "space in the pool of water"
+ with 	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'space', 'vast', 'pool', 'water', 'still', 'large',
+		 'immense', 'humongous':
+		    i++;
+		    definite_match = true;
+
+		 'beside', 'next', 'to', 'the', 'in':
+		    i++;
+		    
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	space_description
+	    "This part of the map shows an immense pool of water. 
+	    You aren't sure of the scale of the map, but it must be 
+	    humongous.";
+
+Object 	empty_room "A Gray Room",
+ with	description
+	    "The room is square, gray, featureless. Not even clay:
+	    just flat. A door returns north.",
+	n_to empty_room_door;
+
+Object -> empty_room_door "door"
+ with	name
+	    'door' 'north',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "The door is painted gray as well.",
+	door_dir n_to,
+	door_to nothing,
+ has 	openable open static door;
+
+Object 	empty_room2 "A Gray Room"
+ with	description
+	[;
+	    print_ret (string) empty_room.description;
+	],
+	n_to empty_room2_door;
+
+Object -> empty_room2_door "door"
+ with	name
+	    'door' 'north',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	[;
+	    print_ret (string) empty_room_door.description;
+	],
+	door_dir n_to,
+	door_to nothing,
+ has 	openable open static door;
+
+Object 	empty_room_bed "bed"
+ with	name
+	    'bed' 'mattress' 'blue' 'linen' 'linens' 'sheet' 'sheets',
+	initial
+	    "A blue bed stands in the center of the room.",
+	description
+	    "The linens are the shade of a sky right before dark 
+	    clouds roll in.",
+	before
+	[;
+	 Enter:
+	    print "You close your eyes, just for a second, and it 
+		happens.^[...]";
+	    KeyCharPrimitive();
+	    ClearScreen();
+	    hide_status = true;
+	    
+	    style bold;
+	    print "^(What does it mean to dream you are dreaming?)";
+	    style roman;
+
+	    print "^^~Do you love me?~ she asks in the dark -- she's 
+		had another nightmare. She always has nightmares on 
+		Wednesday nights... something about what happened to 
+		her as a kid... something she never really explained 
+		to you...^^~Yes,~ you say.^^~Will you always love 
+		me?~ she asks.^^";
+
+	    style bold;
+	    print "(Does it mean that what happens next is less than 
+		imaginary?)";
+	    style roman;
+
+	    print "^^~Yes...~^^~Even after we break up?~^^~We're not 
+		going to break up,~ you say.^^";
+
+	    style bold;
+	    print "(But this happened to you -- you remember it)";
+	    style roman;
+
+	    print "^^~We will, someday... I know we will... and 
+		you'll hate me, or I'll hate you, or maybe things 
+		will really go wrong, and we'll both hate each 
+		other...~^^You hate it when she starts talking like 
+		this.^^~Will you really love me then?~ she asks.^^";
+
+	    style bold;
+	    print "(Or is this just another dream you're 
+		remembering?)";
+	    style roman;
+	    
+	    print "^^>>";
+
+	    if (YesOrNo())
+		{
+		print "~Yes,~ you say.^^~Are you lying to me now? 
+		    Because I'll forgive you.~^^>>";
+
+		if (YesOrNo())
+		    print "~I don't know,~ you say. ~I just don't 
+			know what'll happen. It's not fair to 
+			promise you something I don't know anything 
+			about.~^^She doesn't say anything for a long 
+			time.^^~Just lie to me,~ she says.^^But you 
+			can't.^^Nobody says anything for a long 
+			time.";
+		else
+		{
+		    print "~I'll always love you,~ you say.^^You 
+			pause without really knowing why.^^~You 
+			know, I'm going to be president one 
+			day.~^^She laughs a little bit, the way she 
+			does when you tell her about your dreams 
+			about dogs.^^~It's not funny, I'm serious. 
+			They're going to elect me president of 
+			nowhere and they're going to put me in 
+			charge of nothing. They're going to give me 
+			a crown and a ";
+
+		    if (silver_key in player)
+		    	print "silver key";
+		    else
+			print "scepter";
+
+		    print " and they're going to tell me I can never 
+			say a true word, and I won't mind.^^~They're 
+			going to take away my life. I'm not going to 
+			have a story. It'll all be mixed up instead. 
+			They're going to make me walk through 
+			supermarkets and post offices and waiting 
+			rooms, and they're going to make me drinks 
+			at parties to ensure I keep smiling... and 
+			I'm going to hate it all. Not the way I hate 
+			things now -- for reasons, you know?^^~I 
+			mean, I hate Disney World because I never 
+			liked any of the cartoons, and I hate 
+			chocolate chip cookies because chocolate 
+			tastes weird to me. What's going to happen 
+			is... I'm going to hate things without 
+			feeling angry. And it's going to be 
+			terrible. I'll be hopeless. I'll do 
+			everything without understanding 
+			why.~^^~But... I'll still love you. It'll be 
+			the only thing I'll have left.~^^She 
+			probably isn't listening now. When you talk 
+			like this, she calls it babbling, and 
+			maybe's she's right about all the other 
+			times -- you do talk too much, it's in your 
+			nature, or at least it used to be --";
+		}
+	    }
+	    else
+		print "~I don't know...~ you say. ~I... don't 
+		    know.~^^She sighs, turns away from you, and 
+		    says: ~I forgive you. You should remember that. 
+		    It might be important.~^^You lie there together 
+		    in the darkness.";
+
+	    print "^^~What were you dreaming about?~ you finally 
+		ask.^^She laughs. ~You were looking for a doughnut 
+		and then your beeper went off...~^";
+
+	    move working_dante to fuckfuckfuck;
+	    ChangePlayer(working_dante);
+	    move wallet to working_dante;
+	    move pager to working_dante;
+	    move keys to working_dante;
+	    hide_status = false;
+	    PlayerTo(fuckfuckfuck);
+	    rtrue;
+	],
+ has 	static supporter;

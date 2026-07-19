@@ -1,0 +1,71 @@
+!
+! Blue Chairs
+! abbreviations
+!
+! I used to generate these automatically, but Inform kept crapping its
+! pants on the text. Blah. Now I'm just guessing.
+
+Abbreviate ". ";
+Abbreviate ", ";
+Abbreviate " the ";
+Abbreviate "The";
+Abbreviate "you";
+Abbreviate ".^^";
+Abbreviate "...";
+Abbreviate "You";
+Abbreviate " that ";
+Abbreviate "n't ";
+Abbreviate "he";
+Abbreviate "Beatrice";
+Abbreviate " says";
+Abbreviate "ed ";
+Abbreviate "es ";
+Abbreviate "er ";
+Abbreviate "ly ";
+Abbreviate "and ";
+Abbreviate "ing ";
+Abbreviate "It's";
+Abbreviate "White House";
+Abbreviate ".~^^";
+Abbreviate " that ";
+Abbreviate "'re";
+Abbreviate ",~ she says";
+Abbreviate "and";
+Abbreviate "Beatrice";
+Abbreviate ",~ he says";
+Abbreviate "-- you";
+Abbreviate "kind of";
+Abbreviate " th";
+Abbreviate " you";
+Abbreviate " to";
+Abbreviate " wa";
+Abbreviate " co";
+Abbreviate " st";
+Abbreviate "e i";
+Abbreviate " lo";
+Abbreviate " rea";
+Abbreviate " ma";
+Abbreviate " sh";
+Abbreviate " say";
+Abbreviate " wi";
+Abbreviate " of";
+Abbreviate " bu";
+Abbreviate " just";
+Abbreviate "d i";
+Abbreviate "e doesn't";
+Abbreviate " wo";
+Abbreviate "e f";
+Abbreviate "'s a";
+Abbreviate "'s no";
+Abbreviate "s i";
+Abbreviate " su";
+Abbreviate " her";
+Abbreviate " pa";
+Abbreviate " som";
+Abbreviate " remember";
+Abbreviate " don't";
+Abbreviate "e on";
+Abbreviate " ho";
+Abbreviate " hav";
+Abbreviate " mo";
+Abbreviate "--";

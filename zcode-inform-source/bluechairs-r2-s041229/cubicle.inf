@@ -1,0 +1,92 @@
+!
+! Blue Chairs
+! the cubicle where unwary players go to die
+!
+
+! can't use the Protagonist class here for inclusion order reasons (I
+! think), but it doesn't matter since he can't do anything anyway.
+
+Object 	death_cubicle "Half-Asleep"
+ with	description
+	    "It gets warm down here in the afternoon -- something to
+	    do with poor ventilation, maintenance told you once. The
+	    day has been slow, thankfully. A chance to get yourself
+	    together, to re-establish a sense of reality.",
+	cant_go
+	    "It isn't time to go home yet.";
+
+Object 	-> cubicle_dante "Dante"
+ with 	description
+    	    "You look the same as you always have.",
+	orders
+	[;
+	 Take:
+	    print_ret "You don't have anywhere to take ", (the) noun,
+		".";
+	],
+	number 0,
+ has 	light;
+
+Object -> death_cubicle_chair "chair"
+ with	name
+	    'chair',
+	description
+	    "Your chair has never been particularly nice to you.",
+	react_before
+	[;
+	 Exit:
+	    <<Go n_obj>>;
+	],
+ has 	scenery supporter;
+
+Object -> death_cubicle_desk "desk"
+ with	name
+	    'desk' 'unimportant' 'stuff',
+	description
+	    "Your desk's full of unimportant stuff.",
+ has 	scenery supporter;
+
+! Tecnically, I should put this inside the desk, but I need its
+! initial property to trigger.
+
+Object -> death_cubicle_computer "computer"
+ with	name
+	    'computer' 'pc' 'monitor' 'screen' 'alert' 'message' 'box',
+	initial
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+		"The computer on your desk beeps and brings up an 
+		alert box you've never seen before: ~Would you like 
+		to RESTART, RESTORE a saved game or QUIT?~";
+	    }
+	    else
+		"The alert on your computer screen beckons to you.";
+	],
+	description
+	[;
+	    print "You've just tooling around on the Web for past hour or 
+	    so, catching up on news. You don't know where that alert 
+	    message came from -- maybe some screwy form of spyware? 
+	    It still says: ~";
+	    L__M(##Miscellany, 5);
+	    "~";
+	],
+	before
+	[;
+	 SwitchOff:
+	    <<Go n_obj>>;
+	],
+	each_turn
+	[;
+	    if (self.should_beep)
+	    {
+		self.should_beep = false;
+		"^Your computer beeps again.";
+	    }
+	    else
+		self.should_beep = true;
+	],
+	should_beep false,
+ has 	static switchable on;

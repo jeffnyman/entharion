@@ -1,0 +1,4272 @@
+!
+! Blue Chairs
+! the initial party
+!
+
+!
+! Before the opening
+!
+
+Object 	pre_attic "Stuck in an Attic"
+ with 	description
+	[;
+	    SetPronoun('him', pre_attic_dude);
+	    "Sure, you're used to piece-of-shit architecture (you
+	    live in Dundalk, for crissake), but this place will be
+	    receiving some kind of award from you by the end of the
+	    night. There's totally unimportant crap strewn all over
+	    the place -- old sewing machines, an Easy-Bake oven,
+	    even a set of folding chairs painted carnival blue --
+	    but fortunately, almost all of it is in shadow thanks to
+	    an underperforming fifty-watt bulb directly above.^^It's
+	    just you and the dude here. The only place in the entire
+	    house you could get any privacy. It's only ten o'clock
+	    and already the call to hook up has come down from the
+	    heavens.^^Stairs lead downward, back to the party and
+	    that awful trance-bop they keep playing.";
+	],
+	before
+	[;
+	 Yes:
+	    <<Take drug_bottle>>;
+	    
+	 No:
+	    <<Go d_obj>>;
+	],
+	cant_go
+	    "There's nowhere to go from here but down.",
+	d_to
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+		"Now technically speaking, you have a great deal of
+		free will during this story, so you're allowed to
+		call it a night here and now.^^You can go ahead and
+		go downstairs if you want to -- surely there's
+		something interesting going on in this party. Maybe
+		there's a pretty girl with long blonde hair you bump
+		into and end up hooking up with. You won't remember
+		whether her name is Alice or Alicia, so you'll bail
+		the next morning without a word.^^It's okay. You
+		won't see her ever again. And it all happens again
+		the next weekend, and the weekend after that,
+		too.^^So it's okay if you want to say no to the
+		whole thing.";
+	    }
+	    else
+	    {
+		deadflag = DEAD_CUBICLE;
+		"It's not worth it, you decide. So you say a quick
+		goodbye, thanks anyway, whatever, and head down the
+		stairs straight into a story that was never meant
+		for you.";
+	    };
+	];
+
+Object 	-> pre_attic_bulb "fifty-watt bulb"
+ with 	name
+	    'bulb' 'light' 'lights' 'fifty-watt' 'fifty' 'watt',
+	description
+	    "Probably installed a hundred years ago. In this sense,
+	    it's a credit to Thomas Edison or General Electric or
+	    whoever was in charge of light bulbs back then. It is
+	    otherwise pretty uninteresting, even on the light bulb
+	    scale of interest.",
+	before
+	[;
+	 Take:
+	    "The light bulb's not going anywhere. Seriously.";
+	    
+	 SwitchOn:
+	    "Although you may have missed it, the light is already 
+	    on.";
+
+	 SwitchOff:
+	    "As hip/urban/postmodern as you are, You're not really 
+	    comfortable with the concept of being in a dark room 
+	    with this skeeve.";
+	],
+ has 	scenery;
+
+Object -> pre_attic_sewing_machines "sewing machines"
+ with 	name
+	    'sewing' 'machines' 'machine',
+	before
+	[;
+	    "Now if you investigated really carefully, you'd find 
+	    that hidden inside one of those sewing machines is a 
+	    treasure map to a lost underground empire beneath this 
+	    very house. And by the time this story ended, you'd have 
+	    a couple dead trolls and a shitload of ancient treasures 
+	    to your name -- but who wants to tell their grandkids a 
+	    life story that begins with you screwing around with 
+	    some sewing machines in the middle of a drug deal?^^So 
+	    leave the sewing machines alone, okay?";
+	],
+ has 	scenery;
+
+Object 	-> pre_attic_oven "Easy-Bake oven"
+ with 	name
+	    'easy' 'bake' 'easy-bake' 'oven',
+	before
+	[;
+	    print "Here's a secret: if you open the Easy-Bake oven's
+		door, you'll find a portal leading to a fantastical
+		land full of figures from classical mythology (we'll
+		even throw in a reference to ";
+	    style underline;
+	    print "Snow Crash";
+	    style roman;
+	    ", since you've probably read it as well). The whole
+	    adventure will turn out to be either a profound
+	    self-examination or a mindless romp littered with
+	    fucked-up puzzles -- either way, you're going to end up
+	    seriously disappointed.^^Have a little faith in authorial
+	    intent and leave the Easy-Bake oven alone, okay?";
+	],
+ has 	scenery;
+
+Object 	-> pre_attic_chairs "blue chairs"
+ with 	name
+	    'carnival' 'blue' 'folding' 'chair' 'chairs',
+	before
+	[;
+	    "The blue chairs are bad news. Best just to leave them
+	    alone.";
+	],
+ has 	scenery;
+
+Object 	-> pre_attic_dude "guy"
+ with 	parse_name
+	[ i definite_match;
+
+	    while (true)
+		switch (NextWord())
+		{
+		 'guy', 'man', 'dude', 'christopher', 'chris',
+		 'klimas', 'dealer':
+		    definite_match = true;
+		    i++;
+		    
+		 'drug':
+		    i++;
+
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	description
+	    "In middle school, he would've been the kind of kid you
+	    would have written off immediately. Greasy hair and a
+	    dirty look in his eyes, like he's simultaneously thinking
+	    of fucking some cheerleader's brains out and calculating
+   	    how many experience points a red dragon is worth.^^The
+	    problem is that this is the real world, such as it is, and
+	    he's still the the same greasy kid. But then again, you're
+	    still the same loser you've always been at heart.",
+	life
+	[;
+	 Tell, Answer:
+	    "You don't feel like getting expository on this dweeb.";
+
+	 Kiss:
+	    "Please.";
+
+	 Attack:
+	    "Not a half-bad strategy, but it's early still to get
+	    violent.";
+
+	 Give:
+	    if (noun == money)
+	    {
+		remove money;
+		Title();
+		rtrue;
+	    };
+
+	 Show:
+	    if (noun == money)
+	    	"~So I take it you want to buy?~ the guy says.";
+	    else
+		"He looks kind of unimpressed.";
+	    
+	 Ask:
+	    switch (second)
+	    {
+	     'drug', 'drugs', 'medicine', 'bottle', 'cough', 'syrup',
+	     'green', 'stuff':
+		"~What is that stuff going to do to me?~ you
+		ask.^^~In the long run, probably kill you,~ he says,
+		putting on a dungeonmaster grin. ~Short term, life
+		gets pretty fucking grand.~ Coming from a real drug
+		dealer, it would give you pause. But let's face facts:
+		this dweeb probably just put some food coloring into
+		some DXM and called it a day.";
+
+	     'deal', 'offer', 'money', 'dollars', 'twenty-three',
+	     'twenty', 'three':
+		"~Why twenty-three dollars?~ you ask.^^~You look like
+		the kind of man who can pay that kind of price,~ he
+		says a little peevishly -- probably expecting you to
+		try some kind of haggling maneuver.";
+
+	     'himself', 'him', 'guy', 'dude', 'man', 'chris',
+	     'christopher', 'klimas':
+		self.told_name = true;
+		"~What's your name, anyway?~ you ask.^^~Chris,
+		why?~^^~Dunno, just seemed like a useful thing to
+		know.~";
+
+	     'house', 'attic':
+		"~What a piece of shit house, eh?~ you
+		comment.^^~There are worse places to be,~ the guy
+		says, trying his best to put on a worldly air, like
+		he's mentally comparing it Tangiers or something.";
+
+	     'party', 'music', 'tonight', 'here':
+		"~What do you think of this party?~ you ask.^^He just
+		shrugs. ~Where you gotta be, you gotta be.~";
+		
+	     default:
+		"You engage in some useless small talk with the
+		guy. He smiles and nods just like anybody else, but
+		it's clear he doesn't really care.";
+	    };
+	],
+	react_before
+	[;
+	 Take, Drink:
+	    if ((noun == drug_bottle) && (drug_bottle in self))
+		"~Not so fast,~ the guy says. ~You need to give me 
+		some actual cash here.~";
+	 Buy:
+	    if ((noun == drug_bottle) && (drug_bottle in self))
+	    {
+		if (money in player)
+		{
+		    print "(giving your money to the guy)^";
+		    Title();
+		    rtrue;
+		}
+		else
+		    "~Can I see some cash here?~ the guy asks.";
+	    };
+	],
+	before
+	[;
+	 Taste:
+	    <<Kiss self>>;
+	],
+	orders
+	[;
+	 Yes:
+	    <<buy drug_bottle>>;
+
+	 No:
+	    <<Go d_obj>>;
+
+	 default:
+	    "The guy looks at you, unconvinced.";
+	],
+	each_turn
+	[;
+	    self.number++;
+	    
+	    if (self.number == 3 or 6 or 9)
+		"^The guy waggles the bottle a little in case your
+		attention is wandering.";
+
+	    if (self.number == 12)
+		"^~Hey, are you going to buy this shit or what?~ the
+		guy asks. ~Cause there are about twenty-three other
+		people I'd rather be talking to right now.~";
+	],
+	number 0,
+	told_name false,
+ has 	animate male concealed transparent;
+
+Object 	-> -> drug_bottle "cough syrup bottle"
+ with 	parse_name
+	[ i;
+ 	    while (true)
+ 		switch (NextWord())
+		{
+		 'medicine', 'bottle', 'cough', 'syrup', 'drug',
+		 'drugs':
+		    i++;
+		    
+	         'green', 'liquid':
+		    if (green_drugs in self)
+			i++;
+		    else
+			return i;
+
+		 default:
+		    return i;
+		};
+	    ],
+	description
+	[;
+	    print "The label on the side of the bottle reads:
+		PHOLCODINE 5 mg. Mm-hmm. ";
+	    
+	    if (green_drugs in self)
+		"The actual liquid looks kind of weird. It's maybe
+		close to the color of creme de menthe (ah, college
+		days, where mixed drinks were new and exciting) but
+		paler.";
+	    else
+		"Right now it's empty.";
+	],
+	before
+	[;
+	 Search:
+	    if (green_drugs in self)
+		<<Examine self>>;
+	    else
+		"Right now, it's empty.";
+
+	 Receive:
+	    "You don't see what that would accomplish.";
+	];
+
+Object 	-> -> -> green_drugs;
+
+!
+! Post-intro attic
+!
+
+Class 	PartyRoom
+ with 	each_turn
+	[;
+	    if (random(4) == 1)
+		switch (random(11))
+		{
+		 1, 2:
+		    "^There's a crash somewhere else in the house --
+		    you can't tell where, exactly -- followed by a
+		    happy shout.";
+
+		 3:
+		    print "^You hear someone running ";
+		    if (self ~= post_attic)
+			print "upstairs";
+		    else
+			print "downstairs";
+		    " -- scampering, almost.";
+		    
+		 5, 6, 7, 8:
+		   "^You lose your balance momentarily -- weird. You
+		    don't feel intoxicated, exactly, not yet...";
+
+		 9:
+		    "^You hear someone cackling hysterically -- not
+		    sure what direction it's coming from, though.";
+
+		 10:
+		    "^For a moment, there's a weird odor, like
+		    someone's lit a candle. But then it's gone.";
+
+		 11:
+		    "^There's silence for a second, and then the music
+		    cuts back on.";
+		};
+	];
+
+Class PartyObject
+ with found_in
+	[;
+	    return (location ofclass PartyRoom);
+	];
+
+PartyObject party_music "music"
+ with 	name
+	    'music' 'noise',
+	description
+	    "Kind of hard to see the music, per se.",
+	before
+	[;
+	 Listen:
+	    "It's hard to follow just one thread of it; you keep
+	    losing track of it, like voices in a bar.";
+	],
+ has 	scenery;
+
+PartyRoom post_attic
+ with 	short_name
+	[;
+	    if (self has general)
+		print "Not Exactly the Same Attic";
+	    else
+		print "In the Dark and Noise of an Attic";
+
+	    rtrue;
+	],
+	description
+	[;
+	    if (self has general)
+	    	"It's the light that makes it different: somehow
+		it's become even dimmer than before, so that
+		everything is shadow but your own body and the
+		stairs leading down. Who knows what's in the
+		recesses of the dark? Probably plenty of useful
+		things: things to keep your shoelaces tied, things
+		to remind you of your dentist appointments -- even
+		things that could save your own life. But who knows?
+		It's just a pile of stuff you don't know how to sort
+		through.^^The music downstairs is insistent, even
+		burning.";
+	    else
+		"You can't see a thing but it doesn't matter because
+		the music fills in what isn't there. There may be
+		monsters all around you -- the whole place smells
+		like nearly-rotting pumpkins or maybe your
+		grandmother's last meal -- but it doesn't matter
+		because you aren't scared.";
+	],
+	d_to second_landing,
+ has 	general;
+
+Object 	-> post_attic_bulb "light bulb"
+ with 	name
+	    'bulb' 'light' 'lights' 'fifty-watt' 'fifty' 'watt',
+	description
+	    "It's just the same light bulb it was before.",
+	after
+	[;
+	 SwitchOn:
+	    give post_attic general;
+	    <<Look>>;
+
+	 SwitchOff:
+	    give post_attic ~general;
+	    <<Look>>;
+	],
+	before
+	[;
+	 Take:
+	    "You don't see any point in taking it.";
+	],
+ has 	scenery switchable on;
+
+Object 	-> post_attic_darkness "darkness"
+ with 	name
+	    'darkness' 'dark' 'shadow' 'recesses' 'recess' 'pile' 'of'
+	    'stuff' 'useful' 'things' 'attic',
+	description
+	[;
+	    if (ContainsLight(player))
+	    {
+		if (wine_bottle in self)
+		{
+		    move wine_bottle to parent(self);
+		    "Armed with a flashlight, it's a lot easier to 
+		    sort through all this junk and detritus... you 
+		    wonder who it belongs to, since Rob, the guy 
+		    renting this place, probably doesn't have a lot 
+		    of use for an artillery manual or a sky blue 
+		    wig... what's this?^^There's a bottle of wine 
+		    hidden here. Only it's not normal wine.";
+		}
+		else
+		    "Come on, man, you were lucky enough with that 
+		    wine bottle. Don't get greedy.";
+	    }
+	    else
+	    {
+	    	if (post_attic hasnt general)
+		    "You grope around in the dark, but you don't find
+		    anything tangible.";
+
+	    	print "You rummage through a pile of ";
+	    	print (string) random("empty Atari 2600 game boxes", "old
+				      tax returns", "postcards from
+				      Spain", "coloring books",
+				      "dessicated comic books");
+	    	print "... ";
+	    	print (string) random("a half-strung tennis racket", "a
+				      set of Lucky Charms-themed playing
+				      cards", "a broken marionette", "an
+				      acid green sweater", "some kind of
+				      machine that looks like it
+				      develops photographs");
+	    	print "... ";
+	    	print (string) random("a teddybear with no eyes left", "a
+				      red marker", "someone's philosophy
+				      homework from 1976", "a Beatles
+				      record", "a nearly-empty bag of dog
+				      food");
+	    	"... nothing useful.";
+	    };
+	],
+	before
+	[;
+	 Search:
+	    <<Examine self>>;
+
+	 Enter:
+	    "There's too much stuff to just wade through.";
+	],
+ has 	scenery;
+
+Object 	-> -> wine_bottle "wine bottle"
+ with 	name
+	    'bottle' 'wine' 'gold' 'yellow' 'orange',
+	description
+	[;
+	    if (~~ player.drank_wine)
+	    {
+		print (The) self, "'s ordinary enough, but the stuff 
+		    inside is fucking orange. Like pumpkin orange.";
+		
+		if ((self in player) && (self hasnt general))
+		{
+		    give self general;
+		    print " You give it an exploratory shake -- there
+			are these little reddish streaks in it that
+			shift slightly.";
+		};
+
+		" There's no label on it. Maybe it's actually some
+		kind of pasta sauce? Either way, Mom would definitely
+		not approve.";
+	    }
+	    else
+	    	print_ret (The) self, "'s still maybe three-quarters 
+		    full of that weird orange liquid.";
+	],
+	before
+	[;	    
+	 Drink:
+	    if (player.drank_wine)
+		"Honestly, you're happy with where your relationship 
+		is with this wine right now. More would probably be 
+		pushing it.";
+	    else
+	    {
+		player.drank_wine = true;
+		if (player.beers)
+		{
+		    style underline;
+		    print "Beer in Fridge vs. Strange Orange Wine: A
+			Study in Contrasts";
+		    style roman;
+		    print " by Dante Hicks: ";
+		}
+
+		print "Sure, the wine tastes like it should've been 
+		    drunk about five centuries ago, and honestly it 
+		    really does taste like pumpkin juice, or what 
+		    pumpkin juice would taste like if there were 
+		    such a thing. But it's got character. And more 
+		    importantly, it makes you feel different and 
+		    pleasant. The stuff is obviously potent, but 
+		    somehow it doesn't feel like you're going to get 
+		    trashed.";
+
+		if (player.beers)
+		    print " It's fundamentally different from the 
+			beer in that respect. In fact, it almost 
+			erases the beer from your memory.";
+
+		"^^It makes you feel like life is being nicely 
+		chilled before being served to you. It also makes 
+		you want to dance.";
+	    };
+
+	 Empty:
+	    "Why waste it?";
+
+	 Close:
+	    if (self has open)
+		"There's no obvious way to close the wine bottle again.";
+
+	 ThrowAt:
+	    "That doesn't seem like a very cool thing to do.";
+	],
+	after
+	[;
+	 Open:
+	    give self open;
+	    "The cork is loose for some reason; it comes off with a
+	    shallow sort of pop.";
+	],
+ has 	openable;
+
+
+!
+! Second floor
+!
+
+PartyRoom second_landing "Second Floor Landing"
+ with 	description
+	[;
+	    print "Christmas lights twist around the railing leading 
+		down. There are enough of them that the the walls of 
+		the stairway are the hue of fruit salad, the kind 
+		with tiny oranges, not the other kind, the kind with 
+		apple slices. Ugh. That awful shade of brown they 
+		turn once they're exposed to air for too long.";
+
+	    if (self hasnt general)
+	    {
+		give self general;
+		print "^^The music's louder now, and there are 
+		    echoes of synthesizer burble and cymbal crashes. 
+		    It's starting to make sense in your 
+		    head.";
+	    };
+	    
+	    "^^Stairs go up and down, and there's a hallway to the 
+	    west.";
+	],
+	w_to second_hallway,
+	u_to post_attic,
+	d_to foyer;
+
+Object 	-> second_landing_lights "Christmas lights"
+ with 	name
+	    'lights' 'light' 'christmas' 'xmas',
+	description
+	    "Just typical college-student decor. Which is of course
+	    is a little odd, seeing as how the people throwing the
+	    party -- friends of a friend -- are at least four years
+	    out of UMBC. Old habits die hard.",
+	before
+	[;
+	 Take:
+	    "No time for interior redesign.";
+	],
+ has 	scenery pluralname;
+
+Object 	-> second_landing_railing "railing"
+ with 	name
+	    'railing',
+	description
+	    "The railing's bare black metal.",
+ has 	scenery;
+
+PartyRoom second_hallway "A Short Hallway"
+ with 	description
+	[;
+   	    print  "It's a regular old hallway with blank off-white 
+		walls. Undoubtedly you'll forget all about this one 
+		in a couple days -- isn't that sort of sad? Then 
+		again, it's just a hallway, one of thousands, one of 
+		millions of moments your brain will eventually 
+		discard as unimportant.^^There's a door north ";
+	    
+	    if (second_bathroom hasnt visited)
+    		print "-- you think it's to a bathroom --";
+	    else
+		print "that leads to a bathroom;";
+	    
+	    " the hallway continues west, and the landing is back to 
+	    the east.";
+	],
+	e_to second_landing,
+	w_to second_hallway_end,
+	n_to second_hallway_door;
+
+! There's some trickery here with the describe property because
+! concealed doors don't work right.
+
+Object -> second_hallway_door "bathroom door"
+ with 	parse_name
+	[ i;
+	    while (true)
+		switch (NextWord())
+		{
+		 'bathroom', 'north', 'door':
+		    i++;
+
+		 'smidge', 'crack', 'in', 'the':
+		    if (second_hallway_voice notin second_hallway)
+			i++;
+		    else
+			return i;
+
+		 default:
+		    return i;
+		};
+	],
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	[;
+	    if (second_hallway_voice in second_hallway)
+	    	"Just a plain, off-white door.";
+	    else
+		"The lights are on inside -- that's all you can tell
+		from looking through the crack.";
+	],
+	before
+	[;
+	 Enter:
+	    if (self hasnt open)
+		"The door's locked.";
+	   
+	 Open:
+	    if (second_hallway_voice notin parent(self))
+	    {
+		if (self has open)
+		    <<Enter self>>;
+		else
+		    rfalse;
+	    };
+	    
+	    switch (self.number)
+	    {
+	     1:
+	       	self.number++;
+	       	"It's locked.^^~Hey,~ a male voice calls from
+		inside. ~I'm in here. Please don't bother me.~";
+		
+	     4:
+	       	"It's locked again now. What the hell?";
+		
+	     default:
+	       "It's locked.";
+	    };
+	    
+	 Unlock:
+	    if (second == silver_key)
+		"The silver key doesn't fit the lock. Bleh.";
+	    else
+		<<Open self>>;
+	    
+	 Attack:
+	    if (second_hallway_voice notin second_hallway)
+	    	"There's no response.";
+
+	    switch (self.number)
+	    {
+	     1:
+		self.number++;
+		"~It's just me in here,~ the voice says. ~I know I
+		ought to have someone else in here that I'm making
+		out with, but it's just me. Please don't knock on
+		the door again or I'll have to tell you more.~";
+
+	     2:
+		self.number++;
+		print "~Look,~ the voice says. ~I just want to be
+		    left alone.~^^A pause, and then a quiet
+		    question: ~Have you ever felt alone as me?~^^>>";
+
+		if (YesOrNo())
+		{
+		    give self open;
+		    remove second_hallway_voice;
+		    "~Yeah,~ you say. ~Assuming of course you are 
+		    not suffering from any--~^^~Do you make things 
+		    up just like me?~ the voice asks. ~I think 
+		    sometimes that I should believe in made-up 
+		    things.~^^There's an audible crack: the door is 
+		    open a smidge.";
+		};
+		
+		"~No,~ you say. ~Probably not.~^^~But you will be,~
+		the voice says. ~Someday.~";
+
+	     3:
+		"This time, there is no reply.";
+	    };
+	],
+	door_dir n_to,
+	door_to second_bathroom,
+	number 1,
+ has 	static door openable;
+
+Object 	-> second_hallway_voice "voice"
+ with 	name
+	    'voice' 'guy' 'man' 'dude',
+	description
+	    "There's no really anything to see, owing to the closed
+	    door.",
+	before
+	[;
+	 AskForRide:
+	    "~Hey, is there any chance you could give me a ride?~ you
+	    ask weakly.^^There's a long silence.^^~No,~ the voice
+	    says. ~It would be a bad idea.~";
+	],
+	life
+	[;
+	 WakeOther, Kiss, Attack:
+	    "Huh?";
+	    
+	 Give, Show:
+	    "Um, you're going to have to somehow get around that door
+	    problem first.";
+
+	 Ask:
+	    "He doesn't reply.";
+	    
+	 Tell:
+	    switch (second)
+	    {
+	     'myself', 'me':
+		"~Hey, my name's Dante,~ you say.^^There isn't a
+		reply.";
+
+	     'beatrice':
+		print "~Look, there's this girl Beatrice I know--~ you
+		    begin.^^~Is she pretty?~ the voice asks.^^>>";
+		if (YesOrNo())
+		    "~Yeah, she kind of is,~ you say.^^~I thought she
+		    would be,~ the voice says. ~I hope you find
+		    her.~";
+		else
+		    "~Not exactly,~ you say. ~She's not ugly or
+		    anything, but she never turned anyone's head...
+		    but that's sort of part of why I--~^^~Please,~
+		    the voice says. ~Please don't tell me any
+		    more. I'm sorry for asking.~";
+
+	     default:
+		"You talk for a little bit, but the voice doesn't
+		respond.";
+	    };
+	],
+	orders
+	    "The voice doesn't reply.",
+ has 	scenery animate;
+
+PartyRoom second_bathroom "An Empty Bathroom"
+ with 	description
+	    "What the fuck? There's nobody in here. There's nothing
+	    in here. The fuck? Seriously. This is not cool.^^(To the
+	    south is the hallway...)",
+	before
+	[;
+	 Go:
+	    if (noun == s_obj)
+	    {
+		give second_hallway_door ~open;
+		second_hallway_door.number++;
+		rfalse;
+	    };
+	],
+	goto_next_room
+	    "You're too flustered, too confused...",
+	s_to second_bathroom_door;
+
+Object 	-> second_bathroom_door "bathroom door"
+ with 	name
+	    'bathroom' 'door',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "The door is open right now.",
+	before
+	[;
+	 Close:
+	    "Dude, it doesn't matter.";
+	],
+	door_to second_hallway,
+	door_dir s_to,
+ has 	static door openable open;
+
+PartyRoom second_hallway_end "End of the Hallway"
+ with 	description
+	    "It stops abruptly at a poster of the Sahara desert -- a 
+	    pretty big one, too. All you can hear of the music is 
+	    the bass line, a steady four-four beat straight out of 
+	    middle school band class.^^To the north is an open 
+	    doorway, and a closed door is south; the hallway returns 
+	    to the landing to the east.",
+	e_to second_hallway,
+	s_to second_hallway_end_door,
+	n_to second_bedroom;
+
+Object 	-> second_hallway_end_door "door"
+ with 	name
+	    'closed' 'south' 'door',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "It's a pretty unamazing door, as doors go.",
+	before
+	[;
+	 Close:
+	    print_ret (The) self, "'s already closed.";
+	    
+	 Open:
+	    "It's locked.^^~No moleste, por favor,~ a male voice 
+	    calls out, obviously occupied with something extremely 
+	    pressing.";
+
+	 Unlock:
+	    if (second == silver_key)
+		"It doesn't fit the lock.";
+	    else
+	    	<<Open self>>;
+	    
+	 Attack:
+	    "The door doesn't budge. ~No consiga el trastorno que no 
+	    es su aver@'ia,~ someone inside says, his voice a little 
+	    strained.";
+	],
+	door_dir s_to,
+ has 	static door;
+
+Object 	-> second_hallway_end_voice "voice"
+ with 	name
+	    'voice' 'guy' 'dude',
+	description
+	    "He's more of a hearing vs. looking kind of entity.",
+	before
+	[;
+	 AskForRide:
+	    "~Hey, can any of you in there, uh, perhaps give me a
+	    ride?~^^~Lo siento, se@~nor, estoy ocupado ahora,~ the
+	    voice replies.";
+	],
+	life
+	[;
+	 Show, Give, Kiss, Attack:
+	    "Kind of hard to, what with the door in the way.";
+
+	 Ask, Tell, Answer:
+	    "There's no reply, which is kind of not a huge surprise.";
+	],
+	orders
+	[;
+	    <<Ask self 'uh'>>;
+	],
+ has 	animate concealed;
+
+Object -> second_hallway_end_poster "poster"
+ with 	name
+	    'sahara' 'desert' 'poster' 'picture' 'photo' 'photograph'
+	    'big',
+	description
+	    "It's amazing how beautiful a desert is when you really 
+	    look at it. It's not like whoever took this picture 
+	    really took the time to compose it, exactly -- sure, 
+	    there's a nice outline of a dune on the horizon, but 
+	    still. It looks blank, blank the way no one can fake a 
+	    photo into looking.^^Hmm. There's a man in the distance 
+	    of the poster, almost invisible.",
+	before
+	[;
+	 Take:
+	    "It wouldn't be cool to take it.";
+	],
+	after
+	[;
+	 Examine:
+	    move second_hallway_end_poster_man to parent(self);
+	],
+ has 	scenery;
+
+! This is only in view after the poster is examined.
+
+Object 	second_hallway_end_poster_man "anonymous man on the poster"
+ with 	name
+	    'man' 'business' 'suit' 'businessman',
+	description
+	    "You can't really tell anything beyond that he's wearing
+	    a dark business suit.",
+	before
+	[;
+	    if (Action ~= ##Examine)
+	    	"He's just a guy on a poster.";
+	],
+ has 	scenery;
+
+PartyRoom second_bedroom "In a Bedroom with Two Mysterious Girls"
+ with 	description
+	[;
+	    print "Well, this isn't as cool as you had hoped this 
+		kind of thing would be. The bed's been pushed to one 
+		side of the room, presumably to make more room for 
+		some kind of insane board game that's being played 
+		on a ridiculous number of tables, each of which is 
+		set up in some obviously important position. There 
+		are weird little tiles all over them.^^As previously 
+		advertised, there are two girls kneeling beside the 
+		tables, planning out some kind of strategy. ";
+
+	    if (self hasnt visited)
+	    	print "They look briefly up at you, but it's clear
+		    that their priorities are elsewhere. ";
+
+	    print "The music thrums loudly below you, but
+		the girls don't seem to care";
+
+	    if (self hasnt visited)
+		print " about that, either";
+
+	    SetPronoun('them', second_bedroom_girls);
+	    SetPronoun('her', second_bedroom_girls);
+	    ".^^To the south is the hallway.";
+	],
+	s_to second_hallway_end;
+
+Object 	-> second_bedroom_bed "bed"
+ with 	name
+	    'bed' 'mattress' 'sheet' 'sheets',
+	description
+	    "Rumpled sheets, a decided lack of pillows.",
+	react_before
+	[;
+	 Sleep:
+	    if (player in self)
+		"It feels strange to do it while these girls are 
+		around. And besides, you don't feel sleepy, not 
+		exactly.";
+	],
+ has 	scenery supporter open enterable;
+
+Object 	-> second_bedroom_tables "tables"
+ with 	name
+	    'table' 'tables' 'card' 'coffee',
+	description
+	    "It's like a freaky table family reunion in here, 
+	    really. Short, tall, fat, thin... what's more 
+	    interesting is the way they're set up. Things must have 
+	    started with just one table, but which one it was is 
+	    hard to tell.",
+	before
+	[;
+	 Take, Push, Pull:
+	    "One of the girls shoots you a fell look.";
+
+	 PutOn:
+	    "~We'd appreciate it if you didn't do that,~ one of the
+	    girls says. ~We need all the space we can get.~";
+	],
+ has 	scenery pluralname;
+
+Object 	-> second_bedroom_tiles "tiles"
+ with 	name
+	    'tile' 'tiles' 'game' 'board' 'roads' 'road' 'castles'
+	    'castle' 'landscape' 'circle' 'circles' 'gap' 'gaps' 'map',
+	description
+	[;
+	    print_ret (The) self, " depict little roads and castles 
+		and things -- together, they form a weird sort of 
+		pseudo-medieval landscape. Except there are a couple 
+		of roads that just run in circles, and there are odd 
+		little gaps in the map.";
+	],
+	before
+	[;
+	 Take, Push:
+	    "~Hey!~ says one of the girls. ~Don't touch that. That's
+	    our city.~";
+
+	 Play:
+	    "You're not really clear on how to play.";
+	],
+ has 	scenery;
+
+Object -> second_bedroom_girls "girls"
+ with	name
+	    'girls' 'girl' 'mysterious' 'alice' 'alicia'
+	    'handkerchief' 'handkerchiefs' 'shirts' 't//' 't-shirts'
+	    't-shirt' 'shirt' 'jeans',
+	description
+	    "The girls are difficult to regard individually. Your 
+	    eyes just slide from one to the other naturally. They're 
+	    both maybe seventeen if you're generous, with black hair 
+	    they've got done up in matching red handkerchiefs. 
+	    T-shirts and jeans, of course -- you're not sure exactly 
+	    how to classify these two beyond, of course, Too Young 
+	    for A Roll in the Hay But Lest We Not Forget Our 
+	    Purpose, Probably Old Enough to Drive.",
+	before
+	[;
+	 AskForRide:
+	    self.number++;
+	    print_ret "~Hey, is there any chance either of you could 
+		give me a ride? It's real important,~ you say.^^",
+		(The) self, " look up at you, almost simultaneously, 
+		almost enough to freak you out.^^~We can't go,~ one 
+		says. ~We really have to stay until the game is 
+		over.~";
+
+	 Play:
+	    <<Play second_bedroom_tiles>>;
+	],
+	react_before
+	[;
+	 Go:
+	    if ((noun == s_obj) && (silver_key in self) &&
+		(self.number > 2))
+	    {
+	    	move silver_key to player;
+	    	print_ret "~Wait,~ one of ", (the) self, " says. 
+		    ~You'll need this.~^^She holds open her hand: 
+		    there's a silver key resting there. ~Take it,~ 
+		    she says. ~It won't open any doors for you, but 
+		    it'll be useful.~^^You pocket it... who can turn 
+		    down a useful key?";
+	    };
+	],
+	react_after
+	[;
+	 Enter:
+	    if (noun == second_bedroom_bed)
+		print_ret "One of ", (the) self, " gives you a 
+		    suspicious look as you climb onto the bed.";
+	],
+	life
+	[;
+	 Attack:
+	    "But why, dude?";
+
+	 Kiss:
+	    "Come on, man. You're twenty-three years old. These kids 
+	    are probably in high school or something. That ain't 
+	    right.";
+
+	 Give:
+	    if (noun == silver_key)
+		print_ret "~It's for you,~ one of ", (the) self, " 
+		    says.";
+	    else
+	    	print_ret "~No thanks,~ one of ", (the) self, " 
+		    says. ~We have to put everything we have out on 
+		    the table, so we don't want more stuff.~";
+
+	 Show:
+	    if (noun == silver_key)
+		print_ret "One of ", (the) self, " nods at you 
+		    encouragingly.";
+	    else
+	    	"They don't seem too impressed.";
+
+	 Answer:
+	    print_ret (The) self, " look at you blankly.";
+	    
+	 Ask:
+	    switch (second)
+	    {
+	     'ride', 'car':
+		<<AskForRide self>>;
+		
+	     'girl', 'girls', 'herself', 'themselves':
+		self.number++;
+		"~So what are a pair of girls like you doing here?~
+		you ask.^^~We've been here since yesterday,~ one
+		replies. ~This is important work.~^^~I'm getting a
+		masters,~ the other says, sort of absently.";
+
+	     'masters', 'master', 'degree':
+		self.number++;
+		"~What are you studying?~^^~SimCity,~ she
+		says.^^~Civil fallacies,~ the other corrects.";
+
+	     'civil', 'fallacies':
+		self.number++;
+		"~What the hell kind of field of study is civil
+		fallacies?~ you ask.^^~Civil what? I'm studying
+		ergodic literature,~ the girl says.";
+
+	     'ergodic', 'literature':
+		self.number++;
+		"~What's ergodic literature?~^^~It's stories with
+		paths,~ the girl explains. ~It's great because I can
+		read anything I want to, because every story has a
+		path.~ She looks at you for a moment, then adds: ~You
+		have a path too, you know.~";
+
+	     'path', 'paths':
+		self.number++;
+		"~What path am I on?~ you ask.^^~Same as we are,~
+		one girl says. ~We'll tell you more the next time we
+		see you.~";
+		
+	     'rules', 'playing':
+		self.number++;
+		"~How do you play this game?~ you ask, indicating the
+		tables.^^~The rules are secret,~ one of the girls
+		says. ~At least for you, they are.~";
+		
+	     'tile', 'tiles', 'game', 'city':
+		self.number++;
+		"~Excuse me if I'm being kind of rude here, but what
+		are you guys doing?~ you ask.^^~We're playing
+		Carcassonne,~ the girl nearest you says. ~We're
+		building a city.~^^~Soon it's going to be big enough
+		to have its own airport and ice cream factory,~ the
+		other girl explains.";
+
+	     'play', 'playing':
+		self.number++;
+		"~Hey, can I play?~ you ask.^^~Sorry,~ one girl
+		says. ~It's really delicate. One wrong move and the
+		whole thing will collapse.~^^~Don't take it
+		personally,~ the other girl says. ~You seem nice,
+		maybe even brave, but it's for the best. You don't
+		have time to play games, do you?~";
+		
+	     'table', 'tables':
+		self.number++;
+		"~Where'd you get all these tables from?~ you
+		ask.^^They look up at you. ~There's a lot of tables in
+		the world, if you just stop to notice,~ one says.";
+
+	     'carcassonne':
+		self.number++;
+		"~What the fuck is Carcassonne?~ you ask.^^~It's 
+		like a city in France or something,~ one of the 
+		girls says. ~But we're making a better version now.~";
+
+	     'airport':
+		self.number++;
+		"~Where are you putting the airport?~ you ask.^^~Next
+		to the public library,~ one of them replies drily.";
+
+	     'public', 'library':
+		self.number++;
+		"~Where's the library?~ you ask. One of them just
+		rolls her eyes at you.";
+		
+	     'ice', 'cream', 'factory':
+		self.number++;
+		print_ret "~What now about the ice cream factory?~ 
+		    you ask.^^~You've never been to one?~ one of ",
+		    (the) self, " asks.^^~Nope.~^^~You should go,~ 
+		    she says. ~We went up the East Coast on a road 
+		    trip, checking them all out, until we got to 
+		    Vermont, where Ben and Jerry's main one is.~ She 
+		    looks at you, maybe assessing something. ~You 
+		    look like a trip would do you good.~";
+
+	     'drugs', 'drug', 'green', 'cough', 'syrup', 'dxm',
+	     'absinthe':
+		self.number++;
+		print_ret "~Hey, do you guys know anything about... 
+		    say, a green liquid you drink that probably is 
+		    some form of drug?~^^~No, but I expect you 
+		    might,~ one of ", (the) self, " says.";
+
+	     'beer', 'beers':
+		self.number++;
+		print_ret "~Can I get you a beer?~ you ask.^^~No 
+		    thanks,~ one of ", (the) self, " says, giving 
+		    you an irritated look. ~We don't drink.~";
+
+	     'wine', 'yellow', 'pumpkin':
+		self.number++;
+		if (wine_bottle notin post_attic_darkness)
+		    print_ret "~Do you guys know where I could find 
+			some wine?~ you ask.^^~No...~ one of ",
+			(the) self, " replies.";
+		else
+		    print_ret "~Do you guys know what's up with this 
+			wine I found in the attic?~ you ask.^^One of 
+			", (the) self, " gives it a quick once-over. 
+			~Doesn't look familiar,~ she says.";
+		
+	     'party', 'house', 'here', 'dance', 'dancing':
+		self.number++;
+		"~Why aren't you guys downstairs with everyone else?~
+		you ask.^^~We don't like people as much as we do
+		places,~ one girl says. ~No offense.~";
+
+	     'cloister':
+		self.number++;
+		"~What's a cloister?~ you ask.^^~It's like a church,~
+		one girl replies. ~Except smaller, with monks and
+		things inside.~";
+		
+	     'sue':
+		self.number++;
+		"~I'm trying to find someone named Sue,~ you
+		explain.^^~We don't really meet people,~ one girl
+		says.";
+
+	     'wanda':
+		self.number++;
+		print "~Do you know anyone named Wanda?~ you
+		    ask.^^~Sorry,~ a girl says. ~Wanda's a pretty
+		    name, though. It's the kind of name only people
+		    in novels have because it's too pretty for
+		    someone to have all their life.~";
+
+		if (self.name_talked)
+		    "^^~Didn't you already say that?~ the other girl
+		    asks.^^~Maybe. I have trouble remembering my own
+		    name sometimes.~";
+		else
+		{
+		    self.name_talked = true;
+		    print_ret " ";
+		};
+
+	     'silver', 'key', 'alice', 'alicia':
+		if (silver_key notin self)
+		    "~What's the story on this key?~ you ask.^^They
+		    just smile enigmatically.";
+		else
+		    <<Ask self 'uh'>>;
+		
+	     default:
+		"The two girls look at you briefly, decide not to 
+		answer.";
+	    };
+
+	 Tell:
+	    switch (second)
+	    {
+	     'myself':
+		self.number++;
+		"~My name's Dante,~ you say.^^~Hi,~ a girl says. ~My
+		name's Alice, and hers is Alicia.~^^Of course you
+		immediately forget which is which. Dammit. You suck at
+		remembering names.";
+
+	     'drugs', 'drug', 'green', 'cough', 'syrup', 'dxm',
+	     'absinthe':
+		self.number++;
+		"~Just as an FYI,~ you say, ~I'm on drugs and you two
+		are kind of freaking me out.~^^~I know,~ one girl
+		says. ~We don't mean to. We just have a mission.~^^~It
+		must be nice,~ you say.";
+
+	     'wine':
+		if (wine_bottle notin post_attic_darkness)
+		{
+		    self.number++;
+		    print_ret "~Hey, I found this weird wine up in 
+			the attic,~ you say.^^~Oh yeah?~ one of ",
+			(the) self, " asks, vaguely trying to sound 
+			interested.";
+		};
+		
+	     'beatrice':
+		self.number++;
+		print "~There's this girl I know who I think is in
+		    trouble,~ you say.^^~What's her name?~ one girl
+		    asks as she places a tile on a
+		    table.^^~Beatrice.~^^~It's a pretty name,~ she
+		    says. ~It's the kind of name only people in novels
+		    have because it's too pretty for someone to have
+		    all their life.~";
+
+		if (self.name_talked)
+		    "^^~You said that already, I think,~ the other 
+		    girl says.^^~I know, but I like it when I say 
+		    things that are true.~";
+		else
+		{
+		    self.name_talked = true;
+		    print_ret " ";
+		};
+
+	     default:
+		<<Ask self 'uh'>>;
+	    };
+	],
+	each_turn
+	[;
+	    if (random(3) == 1)
+	    {
+		switch (random(13))
+		{
+		 1, 2:
+		    print_ret "^One of ", (the) self, " pauses for a 
+			moment, murmurs a couple words to herself, 
+			and places a tile down.^^~That's 
+			interesting,~ the other says.";
+
+		 2, 3, 4:
+		    print_ret "^One of ", (the) self, " picks up a 
+			tile and holds it to her lips, thinking it 
+			over.";
+
+		 5:
+		    "^~Are you trying to screw up my cloister?~ one
+		    girl asks.";
+
+		 6:
+		    print_ret "^~I forgot whose turn it is,~ one of ",
+			(the) self, " says.^^~It's yours, of 
+			course,~ the other replies.";
+
+		 7:
+		    print_ret "^One of ", (the) self, " drops a tile 
+			by accident, and swipes it up as fast as she 
+			can.";
+
+		 8:
+		    print_ret "^~You shouldn't put that there,~ one of
+			", (the) self, " comments. ~You're never 
+			going to be able to finish that castle.~";
+
+		 9, 10, 11:
+		    print_ret "^One of ", (the) self, " hands a tile 
+			to the other.";
+
+		 12:
+		    print_ret "^~Twenty-three points,~ one of ", (the)
+			self, " notes.";
+
+		 13:
+		    print_ret "^~You can't put that there,~ one of ",
+			(the) self, " says. ~The wall doesn't 
+			match.~";
+		};
+	    };
+	],
+	orders
+	[;
+	    <<Ask self 'uh'>>;
+	],
+	name_talked false,
+	number 0,
+ has 	animate pluralname female concealed;
+
+Object 	-> -> silver_key "silver key"
+ with 	name
+	    'silver' 'key',
+	description
+	[;
+	    if (party_alice.has_appeared)
+	    	aliced.sync_belief();
+	    
+	    print_ret "It's a small key, with the name ", (string)
+		aliced.capped_name(), " inscribed in it. Hmm.";
+	];
+
+!
+! First floor
+!
+
+Class FridgeBeer
+ with short_name
+	[;
+	    if (self hasnt general)
+	    {
+		if (self in kitchen_fridge)
+		    print "beer in the fridge";
+		else
+		    print "beer";
+	    }
+	    else
+	       	print "empty bottle of beer";
+	    return true;
+	],
+	parse_name
+	[ i word;
+	    if (parser_action == ##TheSame)
+	    {
+		! we are comparing two FridgeBeers
+		
+	     	if (((parser_one hasnt general) && (parser_two hasnt
+						    general))
+		    || ((parser_one has general) && (parser_two has
+						     general)))
+		    return -1;
+		else
+		    return -2;
+	    }
+	    else
+	    	while (true)
+	    	{
+		    ! we are parsing words -- allowing 'empty'
+		    ! to refer to empty bottles
+		    
+	       	    word = NextWord();
+		    
+		    if (word == 'empty')
+		    	if (self has general)
+		    	    i++;
+		    	else
+		    	    return i;
+		    else
+		    	if (word == 'glass' or 'bottle' or 'beer')
+		    	    i++;
+		    	else
+			    if (word == 'bottles' or 'beers')
+			    {
+			    	i++;
+			    	parser_action = ##PluralFound;
+			    }
+			    else
+			    	return i;
+	    	};
+	],
+	plural
+	[;
+	    if (self hasnt general)
+	    	print "beers";
+	    else
+		print "empty beer bottles";
+	],
+	description
+	[;
+	    if (self hasnt general)
+	    	"It's probably for the best that these beers are
+		left ambiguous. You're a level 1 beer snob, which
+		means you're smart enough to know that most any beer
+		you're likely to discover at a party would be
+		considered a crime against nature by any
+		right-thinking human being... but just as you have
+		to shrug your shoulders when the DJ cranks up ~Hit
+		Me Baby, One More Time,~ so too must sacrifices be
+		made when it comes to alcohol.^^(Besides which, why
+		start worrying about what you're throwing down your
+		gullet now?)";
+	    else
+		"Eh, your average empty glass bottle. You've never
+		been in a bar brawl before, but holding an empty by
+		the neck always give you a weird sense of security.";
+	],
+	before
+	[;
+	 Take:
+	    if (self.dont_take)
+		"Hey, if three beers were good enough for Douglas
+		Adams, they ought to be good enough for you.";
+	    
+	 Drink:
+	    if (self hasnt general)
+	    {
+		give self general;
+	    	player.beers++;
+	    	print "No poison like the present. It tastes kind
+		    of... ";
+	    	print (string) random("chocolate-y", "like muskrat",
+				  "terrible");
+	    	print "? But really, thinking about what it's doing 
+		    to your taste buds is missing the point";
+		if (player.beers == 1)
+		    ". You feel different -- in a different kind of
+		    way than before. You aren't as worried, not as
+		    rushed: you're looser, if you need a word to
+		    describe it.";
+		else
+		    ".";
+	    }
+	    else
+		"Actually, captain, it looks like this bottle's
+		empty.";
+
+	 Open:
+	    if (self hasnt open)
+	    {
+		give self open;
+		print_ret "You open the bottle of ", (name) self, ". 
+		    Ah, the wonder and majesty of twist-offs.";
+	    }
+	    else
+		"It's already open.";
+
+	 Close:
+	    if (self hasnt open)
+		"You haven't opened it yet.";
+	    else
+		"Bah, screw saving it for later.";
+
+	 ThrowAt:
+	    "Hey, let's not get destructive here.";
+	],
+	dont_take
+            false;
+
+Class 	PreDanceRoom
+ with 	react_before
+	[;
+	 Ask, Tell, Answer:
+	    "It's much too loud to talk.";
+	],
+	before
+	[;
+	 Dance:
+	    print "Okay. Time to give it a shot.^^";
+	    
+	    if (player.drank_wine)
+	    {
+		print "Finally. Finally you can do it right, for 
+		    once in your life. Finally there's no awkward 
+		    feeling, no weird suspicion that someone is 
+		    watching you, taking notes even, chuckling to 
+		    themselves about how uncoordinated you are, how 
+		    you are so terribly white, how you don't belong, 
+		    how you ought to go home and catch up on your 
+		    email, maybe even re-do your desktop wallpaper 
+		    while you're at it, then pop onto Instant 
+		    Messenger and pretend to have a 
+		    conversation.^^No one can say anything to you 
+		    now.^";
+	    	PlayerTo(dancing_dance);
+		rtrue;
+	    };
+	    
+	    if (player.beers > 0)
+	    {
+		print "Something deep in your stomach goes into 
+		    action -- you'd like to imagine that it's 
+		    something fundamentally cool, buried deep down 
+		    inside your body. But let's be honest. It isn't 
+		    anything cool. All the beer ever did for you is 
+		    stop you from thinking you're an idiot.^^But 
+		    what the fuck. It's good enough.^";
+ 		PlayerTo(dancing_dance);
+		rtrue;
+	    }
+	    else
+		"You've always considered yourself a good dancer, at 
+		least as geeks go. But this one is a little beyond 
+		your current capabilities. There are just too many 
+		beats to try to synchronize your hips to, and it's 
+		no use trying to follow anyone else's moves. They 
+		all keep changing their rhythm.^^There's gotta be a 
+		solution to this problem. There always is.";
+
+	 Sing:
+	    "The words of the music come too quickly, too 
+	    confusingly for you to try to follow along.";
+	];
+
+Class 	PreDanceObject
+ with 	found_in
+	[;
+	    return (location ofclass PreDanceRoom);
+	],
+ has 	scenery;
+
+PartyRoom foyer "In A Foyer, Among the Stoners"
+ with 	description
+	[;
+	    print "The music is incredibly loud, booming even, but
+		that hasn't stopped some fucking stoners, too
+		unmotivated to even get up and dance, from watching
+		Dr. Who on the old TV set sitting against one wall.
+		They're all slumped in different positions on an
+		orange couch, staring idly at the newest adventures
+		of a British dude in space.^^To the west is what
+		used to be the living room but is now a solid mass
+		of people dancing, grooving, groping";
+
+	    if (center_dance has visited)
+		print " -- but through all that chaff, you can now
+		    see the guy at the center clearly. In a word,
+		    he's lost.";
+    	    else
+		print ". They've set up one of those budget
+		    disco-ball projectors and because of it, you
+		    can't distinguish people at all in there. It's
+		    all just once big dance. The weird part is that
+		    it looks like there's a pole in the middle of
+		    the whole thing. What's the story on that?";
+
+	    SetPronoun('them', foyer_stoners);
+	    "^^The front door's to the south, and the kitchen --
+	    which for some reason appears to be empty -- is north.";
+	],
+	w_to
+	[;
+	    if (center_dance hasnt visited)
+		return edge_of_dance;
+	    else
+	    {
+		print "It's so easy to go places when you know where
+		    they are -- and that weird sound, that soft happy
+		    sound, the one you had heard before is back and
+		    the music is gone.^";
+		return center_dance;
+	    };
+	],
+	u_to second_landing,
+	n_to kitchen,
+	s_to foyer_door,
+	out_to
+	[;
+	    <<Go s_obj>>;
+	];
+
+Object 	-> foyer_door "front door"
+ with 	name
+	    'front' 'door' 'off' 'white',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "It's the same off-white almost every house-for-rent
+	    you've been to has -- you've been to paint stores, you
+	    know there are tons of kinds of off-white, but they all
+	    seem to have exactly the same one.",
+	door_dir s_to,
+	door_to front_porch,
+ has 	static door openable;
+
+Object 	-> foyer_tv "television set"
+ with 	name
+	    'tv' 'television' 'set' 'dr' 'doctor' 'who' 'british'
+	    'dude' 'screen',
+	description
+	    "This week, it looks like Dr. Who's chilling in a 
+	    British army base, and if you are actually seeing what 
+	    you're seeing, he is engaged in a drinking contest with 
+	    either a robot or a crystalline alien. What the fuck. Do 
+	    they even have any concept of national security over 
+	    there?",
+	before
+	[;
+	 Take:
+	    print_ret (The) self, "'s a little too heavy to be 
+		toting around.";
+	],
+ has 	scenery;
+
+Object 	-> foyer_couch "orange couch"
+ with 	name
+	    'couch' 'orange',
+	description
+	    "It's just this couch, you know?",
+	before
+	[;
+	 Take:
+	    "The stoners are kind of using it right now.";
+
+	 Enter:
+	    "There's no room, man.";
+	],
+ has 	scenery;
+
+FarScenery -> foyer_dance "people dancing"
+ with 	name
+	    'people' 'dancing' 'dance' 'mass' 'crowd',
+	description
+	    "It's hard to make people from all the arms waving and --
+	    it's just like watching anenomes in an aquarium.",
+ has 	animate pluralname;
+
+FarScenery -> foyer_pole
+ with	short_name
+	[;
+   	    if (center_dance has visited)
+		print "guy at the center of the crowd";
+	    else
+		print "dark pole shape";
+	    rtrue;
+	],
+	parse_name
+	[ i;
+	   while (true)
+	   {
+	      switch (NextWord())
+	      {
+	       'dark', 'pole':
+		  if (center_dance hasnt visited)
+		      i++;
+		  else
+		      return i;
+
+	       'guy', 'chris', 'man', 'dude', 'center':
+		  if (center_dance has visited)
+		      i++;
+		  else
+		      return i;
+		  
+	       default:
+		  return i;
+	      };
+	   };
+	],
+	description
+	[;
+	    if (center_dance hasnt visited)
+	    	"You can't make out anything from here beyond the
+		shape.";
+	    else
+		"He's just an ordinary guy. What's he doing there?";
+	];
+
+Object 	-> foyer_stoners "stoners"
+ with 	name
+	    'stoner' 'stoners' 'guys' 'guy' 'left' 'middle' 'right'
+	    'smart' 'one',
+	description
+	    "The three guys parked on the couch may actually be
+	    perfectly average young men. It's just a gut feeling
+	    here that they smoke weed on a regular basis. Maybe it's
+	    the corduroy pants they're wearing or something. You've
+	    never trusted anyone wearing corduroy pants.",
+	life
+	[;
+	 Answer:
+	    "The one in the middle looks at you for a second, then
+	    says, ~Well alright, if you say so, man.~";
+
+	 Kiss:
+	    "As interesting as things might turn out if you did
+	    that... let's keep your pothead love on the DL for now.";
+
+	 Attack:
+	    print_ret "Going after some peaceful ", (name) self, " 
+		stoners? Come on.";
+
+	 Give:
+	    if (noun == drug_bottle)
+		<<Show drug_bottle self>>;
+	    "~No thanks,~ the one on the left says.";
+
+	 Show:
+	    if (noun == drug_bottle)
+		"~Hey, what do you make of this?~ you ask, showing
+		them the bottle.^^~Hunh,~ the one on the right
+		says. ~Looks like a plain old cough syrup bottle to
+		me.~";
+	    "They don't look terribly amazed.";
+
+	 Ask:
+	    switch (second)
+	    {
+	     'ride', 'car':
+		<<AskForRide self>>;
+
+	     'dr', 'who', 'television', 'tv', 'episode', 'drinking',
+	     'contest':
+		"~What's this episode you're watching?~ you ask.^^~I
+		dunno, man,~ one of them comments. ~I think, like, the
+		universe is going to blow up if Dr. Who can't hold his
+		liquor.~^^~Doesn't he have six livers or something?~
+		another comments.";
+		
+	     'themselves', 'himself', 'stoners':
+		"~Who are you guys, anyway?~ you ask.^^~Right now,
+		we're sitting on this couch,~ the one in the middle
+		says.^^~No, you dumbass,~ the one on his left says.
+		~He asked who we are.~^^~Oh,~ the other one replies.
+		~Well, that's a story too long to be told.~";
+
+	     'drug', 'drugs', 'green', 'liquid', 'cough', 'syrup',
+	     'bottle':
+		self.number++;
+		print "~Hey, I just drank this weird green liquid 
+		    and I have no idea what it was... any thoughts?~ 
+		    you say.^^~Hmm, could be absinthe,~ one of the 
+		    stoners says.^^~I doubt it,~ another says. ~They 
+		    don't make it strong enough these days. How hard 
+		    are you tripping?~^^~Let me get back to you on 
+		    that one,~ you reply.^";
+		self.drug_check();
+		rtrue;
+
+	     'party', 'house', 'dancing', 'dance', 'people':
+		"~So I guess you guys aren't too impressed by the
+		party,~ you say.^^~Nah, man. It started out awesome,
+		but then it turned into this fucking rave, and we
+		are many things, but ravers we are not,~ the one on
+		the right says, gesturing over at the living
+		room.^^~Drunk ravers especially,~ the one on the
+		left says.";
+
+	     'pole':
+		"~What's up with that pole in the living room?~ you
+		ask. ~I don't remember it being there before.^^~Dude,
+		I don't the fucking foggiest,~ one of the stoners
+		says. ~What they're doing over there is probably
+		illegal in some state of mind or something.~";
+
+	     'pholcodine':
+		self.number++;
+		print "~Do you guys know what Pholcodine is?~ you
+		    ask.^^~Pholcodine? Nah, dude,~ the one with an
+		    acid green T-shirt on says. ~Do you mean
+		    codeine?~^";
+		self.drug_check();
+		rtrue;
+
+	     'codeine':
+		self.number++;
+		print "~What does codeine do to you?~ you 
+		    ask.^^~Makes you happy,~ the stoner on the right 
+		    says and scratches his head. ~Makes you want to 
+		    go to sleep.~^";
+		self.drug_check();
+		rtrue;
+
+	     'absinthe':
+		self.number++;
+	     	print "~Tell me about absinthe,~ you say.^^~What, you
+		    never saw ";
+		style underline;
+		print "Moulin Rouge";
+		style roman;
+		print "? It makes you see shit,~ the one on the left 
+		    says.^^~Shit that isn't there,~ the stoner next 
+		    to him clarifies.^";
+		self.drug_check();
+		rtrue;
+
+	     'marijuana', 'weed', 'pot', 'sensamilla':
+		self.number++;
+		print "~Do you guys have any weed?~ you ask.^^The 
+		    one in the middle almost says something, but his 
+		    buddy over on the left puts a hand on his knee 
+		    and answers for him: ~We don't smoke the 
+		    sensamilla.~^";
+		self.drug_check();
+		rtrue;
+
+	     'beer', 'alcohol':
+		if (kitchen_fridge has general)
+		{
+		    print "~Do you guys want a drink?~ you ask.^^";
+
+		    if (~~player.beers)
+		    	"~Nah, man, it looks like you could use it 
+			more than we could,~ the one on the left 
+			says.";
+		    else
+		    	"~No thanks, mi amigo,~ the stoner on the 
+			right says. ~We already ate.~";
+		}
+		else
+		    "~Hey, do you know where I can get a beer around
+		    here?~ you ask.^^~Well, this is a pretty big leap
+		    of faith,~ the stoner in the middle says. ~But
+		    have you checked the fridge yet?~";
+
+	     'wine':
+		if (wine_bottle notin post_attic_darkness)
+		{
+      		    self.number++;
+		    print "~I found this weird bottle of orange wine 
+			up in the attic,~ you say. ~Do you guys know 
+			anything about it?~^^~Well, they do make 
+			wine out of oranges sometimes...~ the stoner 
+			on the right says.^^~They make wine out of 
+			everything, man,~ the one in the middle 
+			says. ~You can even make it out of fucking 
+			Mountain Dew.~^";
+		    self.drug_check();
+		    rtrue;
+		}
+		else
+		    "~Do you guys know if there's any wine around?~ 
+		    you ask.^^~Nah, man,~ one of the stoners 
+		    replies. ~But there's some beer in the fridge.~";
+		
+	     'dxm':
+		self.number++;
+		print "~Do you guys know anything about DXM?~ you 
+		    ask.^^~Dextromethorphan?~ the one in the middle 
+		    says. ~Nah, I've never heard of it.~^";
+		self.drug_check();
+		rtrue;
+		
+	     'wanda':
+		if (~~ self.talked_wanda)
+		{
+		    self.talked_wanda = true;
+		    print "~What does Wanda look like?~ you 
+			ask.^^~Uh, she's kind of pretty,~ one of 
+			them says.^^~Nah, man, I wouldn't say she's 
+			pretty, except like that girl from ";
+		    style underline;
+		    print "Sex in the City";
+		    style roman;
+		    " is pretty,~ the one in the middle 
+		    comments.^^~She's about yea tall--~ the one on 
+		    the right says, gesturing with his hand at about 
+		    five foot two. ~And she's got an eyepatch 
+		    on.~^^~Don't fuck with him,~ the middle one 
+		    says. ~She doesn't have an eyepatch.~^^~Then 
+		    maybe we should tell him her name's not Wanda,~ 
+		    the one on the right says. ~Actually, it's Sue.~";
+		}
+		else
+		    "~So you were just making up all that stuff 
+		    about Wanda?~ you ask.^^~Yeah, I was just 
+		    shitting you,~ the one on the left says. ~To 
+		    tell you the truth, I'm just trying to entertain 
+		    myself with some scintillating conversation. 
+		    This Dr. Who episode blows.~^^~Hey, do you 
+		    remember how to spell scintillating?~ the one in 
+		    the middle asks.";
+
+	     'sue':
+	    	if (~~ self.talked_sue)
+	    	{
+		    self.talked_sue = true;
+		    "~What's Sue look like?~ you ask.^^~Ah, you'd 
+		    know Sue if you met her,~ the middle stoner 
+		    says. ~But I'll tell you a secret. You can tell 
+		    if it's the real Sue because her belly button 
+		    isn't pierced.~^^~Sue would never pierce a 
+		    single thing on her beautiful body,~ the one on 
+		    the left says. ~She's a vegan, man.~^^~I 
+		    wouldn't call her beautiful,~ the middle one 
+		    retorts. ~Just kind of pretty.~^^~Oh, Jesus, 
+		    don't start this argument again,~ the one on the 
+		    left says.";
+	    	}
+	    	else
+		    "~So Sue is a real and factual person,~ you 
+		    say.^^~Yeah,~ the left stoner says. ~As far as I 
+		    know, anyway.~";
+
+	     default:
+		"The stoners look at you and shrug. It's hard to say 
+		whether this is due to an actual lack of knowledge 
+		on their part, or if they just don't feel like 
+		talking to you.";
+	    };
+
+	 Tell:
+	    switch (second)
+	    {
+	     'me', 'myself':
+		"~Hi, I'm Dante,~ you say.^^~Sup,~ the one on the 
+		left, who appears least interested in the TV, says.";
+
+	     'beatrice':
+		if (self.asked_ride)
+		    "~The reason why I'm asking for a ride is 
+		    because there's this girl I know who's in really 
+		    bad shape, and I need to help her,~ you 
+		    explain.^^~Sorry, man,~ the one on the left 
+		    says. ~We'd help you if we could.~";
+		else
+		    "~Hey, this girl I know is in really bad shape,~
+		    you say.^^The one on the right fixes you with a
+		    weird look. ~What do you want us to do about
+		    it?~";
+		
+	     'drug', 'drugs', 'green', 'liquid', 'bottle',
+	     'pholcodine':
+		self.number++;
+		print "~Hey, I just drank this weird green liquid 
+		    and I have no idea what it was... any thoughts?~ 
+		    you say.^^~Hmm, could be absinthe,~ one of the 
+		    stoners says.^^~I doubt it,~ another says. ~They 
+		    don't make it strong enough these days. How hard 
+		    are you tripping?~^^ ~Let me get back to you on 
+		    that one,~ you reply.^";
+		self.drug_check();
+		rtrue;
+	    };
+	],
+	react_before
+	[;
+	 SwitchOn, SwitchOff:
+	    if (noun == foyer_tv)
+		"~Hey!~ one of the stoners says when you reach for 
+		the dial. ~Watching this show is quite possibly the 
+		most important thing happening to anyone anywhere
+		right nowq.~";
+	],
+	before
+	[;
+	 AskForRide:
+	    self.asked_ride = true;
+	    "~Hey, can any of you guys give me a ride?~ you ask. 
+	    ~It's real important.~^^The most intelligent of them -- 
+	    maybe just because he wears glasses and doesn't have any 
+	    overtly marijuana-oriented garments on -- fixes with you 
+	    a look. ~Sorry, man, we got a ride from Wanda.~";
+
+	 Smell:
+	    "You hate the smell of pot, never understood exactly 
+	    why.";
+	],
+	each_turn
+	[;
+	    if (random(4) == 1)
+		switch (random(11))
+		{
+		 1, 2, 3, 4, 5:
+		    print_ret "^One of ", (the) self, " stretches a 
+			little and yawns.";
+
+		 6:
+		    "^~Dude, do you know where the Triscuits went?~
+		    the stoner on the left asks.^^~No,~ the one on the
+		    right says after some thought.^^~How fucking sad
+		    is that... reduced to fucking Triscuits,~ the left
+		    one replies.";
+
+		 7:
+		    print_ret "^One of ", (the) self, " laughs for 
+			no discernable reason.";
+
+		 8:
+		    print_ret "^~Dude, I love this part,~ one of ",
+			(the) self, " comments. ~You'd never think 
+			Dr. Who was such a lush.~";
+
+		 9:
+		    print_ret "^~I'm bored,~ one of ", (the) self, " 
+			says. The rest murmur agreement.";
+
+		 10:
+		    print_ret "^One of ", (the) self, " belches. ~My 
+			bad,~ he says.";
+
+		 11:
+		    print_ret "^One of ", (the) self, " punches the 
+			one next to him. ~Why'd you do that?~ he 
+			asks.^^~Saturdays just make me feel 
+			violent.~";
+		};
+	],
+	drug_check
+	[;
+	    if (self.number == 3)
+		"^~Why are you asking us all these questions, man?
+		Do we look like a drug reference to you?~ the one on
+		the right interjects.^^~Kinda, yeah,~ you
+		reply.^^~Well, alright,~ he says.";
+	],
+	talked_wanda false,
+	talked_sue false,
+	asked_ride false,
+	number 0,
+ has 	animate pluralname male concealed;
+
+PartyRoom kitchen "Kitchen"
+ with 	description
+	    "An island of calm and fluorescence. The music is just 
+	    muffled enough by the walls that you can't hear any of 
+	    the words -- instead it's a steady humdrum. The 
+	    kitchen's the usual first-apartment affair: aging white 
+	    tile floor, 60's era cabinets. A dishwasher, maybe still 
+	    functional beyond its design life, and a refrigerator 
+	    humming softly. There's not much decor beyond the series 
+	    of photographs of drunk people, love letters, and 
+	    past-due notices stuck on the fridge.^^To the south is 
+	    the foyer.",
+	s_to foyer;
+
+Object 	-> kitchen_cabinets "cabinets"
+ with 	name
+	    'cabinet' 'cabinets',
+	description
+	    "They're made of lacquered dark brown wood -- dunno
+	    which kind. You've never been much of an expert on
+	    lumber.",
+	before
+	    [;
+	     Open:
+		<<Search self>>;
+		
+	     Search:
+		give self open;
+		print "A quick search of ", (the) self, " reveals an 
+		    unexciting collection of food: sugar, flour, 
+		    salt... three boxes of fettucini";
+		
+		if (flashlight in self)
+		{
+		    "... oh hey, look, there's a flashlight in
+		    here. Why do people keep emergency supplies in
+		    their kitchen, anyway? You do it too, but thinking
+		    over it now, it doesn't really make sense.";
+		}
+		else
+		    ".";
+
+	     Receive:
+		"Nah, there's no need to start leaving behind presents
+		for the party hosts.";
+	    ],
+ has 	scenery container openable pluralname;
+
+Object	-> -> flashlight "flashlight"
+ with 	name
+	    'flashlight' 'light' 'torch' 'slider' 'switch' 'plastic',
+	description
+	[;
+	    print "It's an average-sized plastic one, with a fat
+		slider switch for easy lighting action. Right now,
+		it's ";
+	    if (self has on)
+		"on.";
+	    else
+		"off.";
+	],
+	after
+	[;
+	 SwitchOn:
+	    ! If we are in a dark location, look again
+	    
+	    give self light;
+	    print "You click ", (the) self, " on.^";
+
+	    if ((location ofclass DarkenedRoom) ||
+		(location == waiting_room))
+	     	<<Look>>;
+	    else
+		rtrue;
+
+	 SwitchOff:
+	    give self ~light;
+	    print_ret "You click ", (the) self, " off.";
+	],
+ has	switchable;
+
+Object 	-> -> kitchen_cabinets_food "food"
+ with	name
+	    'sugar' 'salt' 'flour' 'fettucini' 'box' 'boxes' 'three'
+	    '3//' 'two' '2//' 'one' '1//' 'food' 'pasta',
+	description
+	    "Pretty much what you'd expect.",
+	before
+	[;
+	    if (action ~= ##Examine)
+		"You weren't planning to do any cooking tonight if 
+		it could be at all avoided, honestly. Stir fry is 
+		kind of the limit of your abilities.";
+	];
+
+Object -> kitchen_counters "counters"
+ with 	name
+	    'counter' 'counters' 'formica',
+	description
+	[;
+	    print "Formica in all its glory";
+
+	    if (children(self))
+	    {
+		print ". Sitting on the counter is ";
+		WriteListFrom(child(self), ENGLISH_BIT);
+ 	    };
+	    
+	    ".";
+	],
+	after
+	[;
+	 Receive:
+	    "Sure, okay, why not?";
+	],
+ has 	scenery supporter;
+
+Object 	-> kitchen_dishwasher "dishwasher"
+ with 	name
+	    'dishwasher',
+	description
+	    "You know, the usual kind that you don't normally pay
+	    attention to.",
+	before
+	[;    
+	 Open, Search:
+	    "You've always made a rule to stay the hell away from
+	    dishwashers at parties whenever possible. Maybe someday
+	    you'll miss out some fabulous treasure because of it, but
+	    let's face it: 99.99% of the time, they're total grimefests.";
+
+	 SwitchOn:
+	    "Nah, that wouldn't really do anyone any good.";
+	],
+ has 	scenery;
+
+Object 	-> kitchen_detritus "random stuff on the fridge"
+ with 	name
+	    'drunk' 'people' 'photograph' 'photographs' 'photo'
+	    'photos' 'love' 'letter' 'letters' 'past' 'due' 'notice'
+	    'notices',
+	before
+	    "Enh, you've kind of already seen it all before.",
+ has 	scenery;
+
+Object 	-> kitchen_fridge "refrigerator"
+ with 	name
+	    'refrigerator' 'fridge' 'door',
+	describe
+	[;
+	    print "^The fridge door's open, displaying a depressing
+		selection of beer";
+	    if (self.others_inside())
+	    {
+		print " as well as ";
+		self.print_others();
+	    };
+	    ".";
+	],
+	description
+	[;
+	    if (self hasnt open)
+		"It's that beautiful light brown color old home
+		appliances have -- the kind your parents did, and
+		maybe their parents before them.";
+	    else
+		<<Search self>>;
+	],
+	before
+	[;
+	 Empty:
+	    "That would be kind of rude.";
+	],
+	after
+	[;
+	 Open:
+	    give self general;
+	    give self ~concealed;
+	    print "The fridge door opens, revealing a meager 
+		selection of beer. Granted, a step above a case of 
+		Natty Boh, but still.^";
+	    party_alice.appear();
+	    rtrue;
+
+	 Close:
+	    give self concealed;
+	    "You shut the fridge door.";
+
+	 Receive:
+	    print_ret "You put ", (the) noun, " in the fridge... for
+		safekeeping?";
+	    
+	 Search:
+	    print "Inside, there's a fairly lame assortment of
+		beers.";
+	    if (self.others_inside())
+	    {
+		print " For some reason, there's also ";
+		self.print_others();
+		" inside.";
+	    }
+	    else
+	    	print_ret " ";
+	],
+	others_inside
+	[ i;
+	    objectloop (i in self)
+		if (~~ i ofclass FridgeBeer)
+		    rtrue;
+	    rfalse;
+	],
+	print_others
+	[ i;
+	    objectloop (i in self)
+		if (~~ i ofclass FridgeBeer)
+		    give i workflag;
+	    WriteListFrom(child(self), ENGLISH_BIT + WORKFLAG_BIT);
+	],
+ has 	concealed static container openable;
+
+FridgeBeer -> ->;
+FridgeBeer -> ->;
+FridgeBeer -> ->;
+
+FridgeBeer -> ->
+ with 	dont_take true;
+
+Object 	party_alice
+ with	short_name
+	[;
+	    print (string) aliced.believed_name();
+	    rtrue;
+	],
+	parse_name
+	[ word i;
+	    while (word = NextWord())
+	    {
+ 		if (word == aliced.grammar_name())
+		    i++;
+		else
+		    if (word == aliced.wrong_grammar_name())
+		    {
+		    	self.wrong_name = true;
+		    	i++;
+		    }
+		    else
+			if (word == 'girl' or 'woman')
+			{
+		    	    if ((aliced.believed_state ~=
+				 aliced.UNKNOWN_STATE) && random(2) == 1)
+				self.wrong_name = true;
+		    	    i++;
+			}
+			else
+			    return i;
+	    };
+
+	    return i;
+	],
+	sync_belief
+	[;
+	    ! This should be called before any social interaction happens.
+	    
+	    if (self.wrong_name)
+	    {
+	    	aliced.sync_belief();
+		self.wrong_name = false;
+	    	print_ret "~", (string) aliced.wrong_name(), "--~^^~My 
+		    name's ", (string) aliced.short_name(), ",~ she 
+		    interrupts, ", (string) random("looking kind of 
+						   peeved.",
+				    		   "grimacing.",
+						   "frowning.");
+	    };
+	],
+	initial
+	[;
+	    print (string) aliced.believed_name(), " stands in front 
+		of you, ";
+	    
+	    if (self.has_answered)
+		"looking kind of amused.";
+	    else
+		"waiting for some kind of coherent answer.";
+	],
+	description
+	[;
+	    if (~~ self.looked)
+	    {
+		self.looked = true;
+		"If you weren't feeling creative and/or on drugs, 
+		you'd call her pretty. But she's a particular kind 
+		of pretty, the kind of pretty girl you always saw in 
+		high school but never seemed to find you interesting 
+		enough to talk to.^^She's the kind of girl who's got 
+		such an awesome body and a genuine smile that she 
+		doesn't have to dress up to look good; in fact, it 
+		looks kind of good when she doesn't, like it's even 
+		more effortless to look good.^^She's got 
+		shoulder-length blonde hair, the kind of impromptu 
+		hairdo that looks absolutely killer specifically 
+		because it looks impromptu, and she's wearing a nice 
+		shirt and a a pair of jeans with a patch on the left 
+		knee. The patch looks sort of quilt-like, but it's 
+		hard to tell exactly -- hey, be careful now. If you 
+		stare too long, you're probably going to creep her 
+		out.^^She's looking at you with an undisguised 
+		grin, which would normally be unnerving. But the 
+		particular endorphins running through your body 
+		right now are something else entirely.";
+	    }
+	    else
+		"You give her a little look, almost unconsciously. 
+		Not even long enough to tell if she looks back.";
+	],
+	each_turn
+	[;
+	    switch (-- self.number)
+	    {
+	     2:
+		if (~~ self.has_answered)
+		    "^She gives you a bored sort of look... you plan 
+		    on answering her question, chief?";
+
+	     1:
+		if (self.has_answered)
+		    print_ret "^", (string) aliced.believed_name(),
+		    	" looks away for a moment, maybe growing a 
+			little bored.";
+		else
+		    print_ret "^", (string) aliced.believed_name(),
+ 		    	" taps her foot on the floor, waiting for an 
+			answer.";
+		
+	     0:
+	    	self.disappear();
+	    	if (self.has_answered)
+		{
+	       	    print "^~Anyway, I gotta run,~ ", (string)
+			aliced.believed_name(), " says. ~Catch you 
+			    in the dance?~^^~Sure,~ you say";
+
+		    if (self.likes_player)
+		     	".^^She starts to walk away, then turns and
+		    	stops for a second -- like she's going to say
+		    	something important or dramatic, but then she just
+		    	lets off a goofy laugh and leaves.";
+		    else
+			".";
+		}
+	    	else
+		    print_ret "^~Um, okay, I'll, uh, talk to you 
+			later,~ ", (string) aliced.believed_name(),
+		    	" says. And as she leaves: ~Thanks for 
+			answering my question.~^^That girl's 
+			probably got a killer sense of humor, once 
+			you got to know her.";
+	    };
+	],
+	react_before
+	[;
+	 Go:
+	    if (noun == s_obj)
+	    {
+		self.disappear();
+		if (self.talked())
+		{
+		    print "~Anyway, I gotta run,~ you say.^^~Later,~ she 
+		    says";
+
+		    if (self.likes_player)
+			print ", watching you as you go";
+
+		    print ".^^(Maybe you should've said ~Nice 
+			meeting you~ or something like that? Stop 
+			being such a fucking dweeb. You're supposed 
+			to be cool now.)^";
+		}
+		else
+	       	    print "~I gotta go,~ you say. ~It's, um, 
+		    important.~^^She gives you a weird look, but at 
+		    least you didn't have to give her a primer on 
+		    IPv4.^";
+	    };
+	],
+	life
+	[ selftalked;
+	    
+	 Ask:
+	    if (self.sync_belief())
+		rtrue;
+	    
+	    selftalked = self.talked();
+	    
+	    switch (second)
+	    {
+	     'car', 'ride':
+		<<AskForRide self>>;
+
+	     'shirt', 't-shirt', 'my':
+		if (selftalked)
+		    "~What's so interesting about my shirt, anyway?~
+		    you ask.^^~Nothing... exactly,~ she says. ~I just
+		    wondered.~";
+		else
+		    "~Uh... why are you so interested in my shirt?~ 
+		    you ask.^^~Dunno,~ she says, ~Why are you trying
+		    to dodge the question?~";
+
+	     'party', 'place', 'house', 'here', 'tonight', 'this':
+		if (selftalked)
+		{
+		    self.talked_wanda = true;
+		    print_ret "~So how did a stranger like you end 
+			up at this party?~ you ask. ~This party is 
+			full of people I vaguely know, so it's 
+			interesting to actually see someone 
+			new.~^^(This is kind of a lie, but let's 
+			call it an exaggeration for the sake of 
+			conversational interest.)^^~I'm a friend of 
+			Wanda,~ ", (string) aliced.believed_name(),
+		    	" says.^^~Oh, okay, I used to go to school 
+			with her.~^^(This is a total lie.)";
+		}
+		else
+		{
+		    self.likes_player = true;
+		    "~The real question,~ you say. ~is how you ended 
+		    here tonight.~^^~What do you mean?~ she 
+		    asks.^^~Hey, cut me some slack here,~ you say. 
+		    ~I'm just trying to be polite here and steer the 
+		    conversation away from my stupid shirt.~^^She 
+		    sort of laughs a little bit, maybe wondering if 
+		    you're acting stupid on purpose.";
+		};
+
+	     'beer', 'beers', 'alcohol', 'fridge', 'a//':
+		if (self.offered_beer)
+		    "Dude, you already tried that tactic.";
+		
+		if (~~ selftalked)
+		{
+		    self.offered_beer = true;
+		    "~Um, before I answer that, you should have a
+		    beer,~ you say.^^~What, are you trying to get me
+		    drunk?~ she asks.^^~No, I'm just trying to
+		    be, uh, considerate.~^^She looks a little dubious.";
+		}
+		else
+		{
+		    self.offered_beer = true;
+		    self.likes_player = true;
+		    "~Can I get you a beer?~ you ask.^^~Yeah, sure,~
+		    she says. You grab a beer from the fridge and toss
+		    it to her -- she catches it with a smile.";
+		};
+
+	     'stoners', 'stoner':
+		if (~~ selftalked)
+		    <<Ask self 'uh'>>;
+		else
+		    "~Did you run into those stoners in the living room?~
+		    you ask.^^~Yeah, they were kind of losers, don't
+		    you think?~ she says. ~I don't get why they're here.~";
+		
+	     'wanda':
+		if (~~ selftalked)
+		{
+		    self.has_answered = false;
+		    <<Ask self 'uh'>>;
+		};
+		    
+		if (foyer_stoners.talked_wanda || self.talked_wanda)
+		{
+		    print "~Have you seen ";
+		    
+		    if (~~ self.talked_wanda)
+			print "a girl named ";
+		    
+		    "Wanda, by the way?~ you ask.^^~No,~ she says. 
+		    ~Last I saw her, she was out smoking on the 
+		    porch. But that was like an hour ago.~";
+		}
+		else
+		{
+		    self.has_answered = false;
+		    "Wanda who?";
+		};
+		
+	     'sue':
+		if (~~ selftalked)
+		{
+		    self.has_answered = false;
+		    <<Ask self 'uh'>>;
+		};
+		
+		"~I'm looking for someone named Sue,~ you 
+		say.^^~Sue?~ she says. ~No, I don't know anybody 
+		named Sue.~";
+		
+	     'herself', 'alice', 'alicia', 'girl', 'job', 'work':
+		if (selftalked)
+		{
+		    self.talked_job = true;
+		   "~So, like, what do you do?~ you ask.^^~For a
+		    living?~ she asks. ~I'm a waitress.~";
+		}
+		else
+		{
+		    self.has_answered = false;
+	     	    <<Tell self 'myself'>>;
+		};
+
+	     'waiting', 'waitress', 'tables', 'waitressing':
+		self.likes_player = true;
+
+		if (selftalked || (~~self.talked_job))
+		{
+		    "~What's waiting tables like?~ you ask.^^~Pretty
+		    much how it is in the movies,~ she says. ~Except
+		    there's no twist...~";
+		}
+		else
+		    "~Are you a waitress?~ you ask. ~Because you 
+		    look like one.~^^She's awestruck for a second, 
+		    seems to completely forget her question. ~Yeah 
+		    -- yeah, I am,~ she says.";
+
+	     'school', 'college', 'university':
+		if (selftalked)
+		    "~So, are you like, a college student?~ you 
+		    ask.^^~No,~ she says. ~Not anymore. I 
+		    graduated...~ Here she pauses to count years on 
+		    the ceiling. ~... Five years ago.~";
+		else
+		    "~Um, are you a college student?~ you ask.^^~Why,
+		    am I not going to get it if I'm not?~ she
+		    replies.^^~No, uh...~ you trail off.";
+		
+	     'drug', 'drugs', 'green', 'liquid', 'cough', 'syrup',
+	     'bottle':
+		self.likes_player = false;
+		if (selftalked)
+		    "~Forget the t-shirt,~ you say. ~I need your 
+		    advice on drugs.~^^She looks pretty unimpressed.";
+		else
+		    print_ret "~You don't happen to be an expert on 
+			drugs at all, do you?~ you ask.^^~What kind 
+			of drugs?~", (string) aliced.believed_name(), "
+			asks.^^~Well, that's the thing,~ you say. ~I
+			don't know what exactly I've gotten myself
+			into.~^^~Hmm,~ she says, giving you an odd
+			look. ~I probably wouldn't be any help.~";
+
+	     'pole':
+		"~Do you know what's up with that pole in the 
+		living room?~ you ask.^^~Pole?~ she says. ~I don't 
+		know what you mean.~";
+		
+	     'dance', 'dancing':
+		if (~~ selftalked)
+		    "~Forget my shirt,~ you say. ~We should be dancing
+		    right now.~^^She smiles, unimpressed -- ~";
+		else
+		{
+		    self.disappear();
+		    print "~Hey, do you want to dance or something?~
+			you ask.^^";
+		    if (self.likes_player)
+			"~Okay,~ she says. ~I've got to find 
+			somebody, but I'll meet you on the dance 
+			floor in a minute?~^^~Sounds like a cool 
+			plan,~ you say as she gives you a nod and 
+			walks out of the kitchen.";
+		    else
+			"~No thanks,~ she says. ~Anyway, I've gotta
+			run.~^^~Uh, see you,~ you say.";
+		}
+	     default:
+		self.number--;
+		"~Uh...~ you bravely venture.";
+	    	};
+
+	 Tell:
+	    if (self.sync_belief())
+		rtrue;
+	    
+	    selftalked = self.talked();
+	    
+	    switch (second)
+	    {
+	     'myself', 'me':
+		if (selftalked)
+		{
+		    if (self.talked_name)
+		    	print_ret "~Did I mention my name's Dante?~ you 
+			    ask.^^~Um, yeah, I caught that,~ ", (string)
+			    	aliced.believed_name(), " says.";
+		    else
+		    {
+			self.talked_name = true;
+			aliced.sync_belief();
+			print_ret "~My name's Dante,~ you say.^^~I'm
+			    ", (string) aliced.believed_name(), ",~
+			    she says.";
+		    };
+		}
+		else
+		{
+		    print "~Before I tell you about my shirt, you 
+			oughta at least know my name first,~ you 
+			say.^^~Do names matter to you?~ she
+			asks.^^>>";
+		    self.talked_name = true;
+		    aliced.sync_belief();
+		    
+		    if (YesOrNo())
+			"~Yeah, they do. I'm Dante,~ you say.^^~I'm 
+			Alice,~ she says. Maybe she looks impressed?";
+		    else
+		    {
+			self.likes_player = true;
+			"~No, but I'm just trying to avoid a boring 
+			discussion of my shirt,~ you say.^^She 
+			laughs. A genuine sort of laugh, the kind of 
+			thing almost never audible at parties. ~My 
+			name is Alice,~ she says.";
+		    };
+		};
+		
+	     'shirt', 't-shirt', 'joke', 'geeky', 'geek', 'my',
+	     'unix', 'linux', 'localhost':
+		if (selftalked)
+		    "~Well, the thing about the shirt is it's a joke 
+		    based on the way the Internet works... I mean, 
+		    like everything has an address and stuff, just 
+		    like in real life, so 127.0.0.1~ -- here you 
+		    point at your shirt like a dumbass, like she's 
+		    illiterate -- ~is the address for the machine 
+		    you're on... like, it's your home.~^^~Uh hunh,~ 
+		    she says, clearly not really up for IPv4 101.";
+		else
+		    "~Well, you see, on the Internet, everthing has 
+		    an address, right?~^^~Okay,~ she says.^^~So the 
+		    addresses are what's called dotted quads, 
+		    because they're four numbers separated by 
+		    period...~^^Her smile is quickly fading here, 
+		    Dante. Do something smart and do it fast. ";
+		
+	     default:
+		<<Ask self 'uh'>>;
+	    };
+	    
+	 Show, Give:
+	    if (noun ofclass FridgeBeer)
+	    	if (~~ self.offered_beer)
+	 	{
+		    move noun to self;
+		    self.offered_beer = true;
+   		    self.likes_player = true;
+		    print "~Thanks,~ she says.";
+
+		    if (~~ self.has_answered)
+			" ~But you haven't answered my question.~";
+		    else
+			" ~People aren't usually this nice to 
+			me.~^^You shoot her a goofy, earnest smile.";
+		}
+	    	else
+		    "~Nah, I only need one,~ she says.";
+	    
+	    if (noun == silver_key)
+	    {
+		aliced.sync_belief();
+		"~Weird,~ she says. ~You don't run into too many keys
+		with your name on them.~";
+	    }
+	    else
+		print_ret (string) aliced.believed_name(), " gives 
+		    it a once-over, but doesn't seem that amazed.";
+
+	 Answer:
+	    if (~~ self.talked())
+		<<Tell self 'joke'>>;
+	    else
+		<<Ask self 'uh'>>;
+	    
+	 Attack:
+	    "Wow, that'd be a terrible idea.";
+
+	 Kiss:
+	    self.disappear();
+	    "She gives you a shove, a serious one, the kind that 
+	    cannot be interpreted as anything but: fuck 
+	    off.^^~What's your problem?~ she asks, and when you 
+	    don't have any kind of ready reply, she disappears into 
+	    the living room. ";
+	],
+	orders
+	[;
+	    <<Ask self 'uh'>>;
+	],
+	before
+	[;
+	 AskForRide:
+	    if (self.talked())
+	    {
+		self.disappear();
+		print "~Hey, would you mind giving me a ride?~ you 
+		    ask.^^", (string) aliced.believed_name(), " 
+		    looks at you, weighing things for a second. 
+		    ~What, back to your place?~ she asks.^^>>";
+
+		if (YesOrNo())
+		    print "~Normally, the answer would be yes,~ you 
+			say. ~But I'm on a mission.~";
+		else
+		    print "~Sorry, but no,~ you say. ~I'm on a 
+			mission.~";
+
+		print_ret "^^~A mission,~ she says. ~A mission. For 
+		    serious.~^^She looks at you.^^~Can I get a rain 
+		    check?~ you ask.^^~Sorry,~ ", (string)
+			aliced.believed_name(true), " says. ~I'm not 
+			    Super Fresh.~^^She turns and walks away 
+			    a little, then adds just as she turns a 
+			    corner and disappears from your life 
+			    forever: ~I wish sometimes things didn't 
+			    happen the way they do.~^^Before you can 
+			    agree, she's gone.";
+	    }
+	    else
+	    {
+		self.disappear();
+		"~Forget my shirt -- I have an important question 
+		for you,~ you say.^^~What?~ she asks.^^~Could you 
+		give me a ride somewhere?~^^She gives you a cold 
+		kind of look.^^~Sorry,~ she says. ~You know that 
+		saying about accepting rides from 
+		strangers?~^^~Yeah,~ you say, ~But you seem--~^^~I 
+		also believe in the reverse,~ she says, and while 
+		you're puzzling that one out, she turns around and 
+		walks away.^^Ouch.";
+	    };
+	],
+	appear
+	[;
+	    if (~~ self.has_appeared)
+	    {
+	    	move self to location;
+	    	self.has_appeared = true;
+		SetPronoun('her', self);
+		self.number = 4;
+	    	"^~Hey, what's your shirt mean?~ this girl who 
+		apparently has silently queued up nearby in hopes 
+		you would sometime get around to opening the 
+		fridge.^^~It's a geeky joke,~ you say.^^~Yeah, but 
+		what makes it funny?~ She seems to earnest on this 
+		point, not trolling you high school style.^^~Uh...~ 
+		you say, desperately trying to think of some way to 
+		turn this conversation around.";
+	    };
+	],
+	disappear
+	[;
+	    ! Note that unlike appear(), this prints nothing, because
+	    ! we disappear for several different reasons.
+
+	    remove self;
+	],
+	talked
+	[ i;
+	    ! This returns whether the player has answered Alice's
+	    ! question, but also has the side effect of resetting
+	    ! Alice's timer of getting bored and leaving.
+
+	    i = self.has_answered;
+	    self.has_answered = true;
+	    self.number = 5;
+	    return i;
+	],
+	looked false,
+       	wrong_name false,
+	likes_player false,
+	has_appeared false,
+	has_answered false,
+	talked_wanda false,
+	talked_name false,
+	offered_beer false,
+	talked_job false,
+	number 0,
+ has 	animate female;
+
+PreDanceObject predance_music "music"
+ with 	name
+	    'music' 'sound' 'beat',
+	description
+	    "You aren't quite cool enough to be able to see sound. At
+	    least not yet...",
+	before
+	[;
+	 Listen:
+	    print_ret "Listening to ", (the) self, "? Kind of like 
+		breathing the air -- you're surrounded by it, almost 
+		drowning in it.";
+	];
+
+PreDanceObject predance_people "people dancing"
+ with 	name
+	    'people' 'person' 'dancers' 'dancer' 'crowd' 'dance',
+	description
+	    "There are faces to look at, and perhaps details of
+	    clothes to be noted, but you can't focus on anything
+	    long enough to catalog it.",
+	before
+	[;
+	 AskForRide:
+	    "It's too loud -- nobody can hear you.";
+
+	 Enter:
+	    switch (location)
+	    {
+	     edge_of_dance:
+		<<Go nw_obj>>;
+
+	     standing_in_dance:
+		<<Go sw_obj>>;
+
+	     crammed_corner:
+		<<Go e_obj>>;
+	    };
+	],
+	life
+	[;
+	 Ask, Tell, Answer:
+	    "It's too loud -- nobody can hear you.";
+
+	 Attack, Kiss, WakeOther, Give, Show:
+	    "You can barely catch sight of one person long enough to
+	    see them. Forget about any kind of complicated
+	    transaction.";
+	],
+	orders
+       	    "It's too loud -- nobody can hear you.",
+ has 	animate pluralname;
+
+Object 	predance_pole "pole"
+ class 	PredanceObject FarScenery,
+ with	name
+	    'pole' 'dark' 'shape',
+	description
+	    "It isn't so much a problem of distance as it is 
+	    persistence of vision. Whatever it is, it's about 
+	    six-and-a-half feet tall. And you keep catching glimpses 
+	    of what looks like clothing: is it a totem pole or 
+	    something dressed up a person? It's almost certainly not 
+	    a real person. It's too still to be alive.";
+
+PreDanceRoom edge_of_dance "The Edge of the Dance"
+ with 	description
+	    "The only detail you can seize on is the hardwood floor.
+	    This probably once was a regular old living room, with
+	    bookcases, an easy chair with the stuffing half missing
+	    -- all that good stuff. But now it's all a mess. You
+	    can't even count how many people are dancing. Every time
+	    you start, people start shifting around and you can't
+	    remember whether you'd counted the guy with
+	    highlighter-yellow hair already or left him for later.
+	    And the pole -- what's up with that pole? It's not
+	    exactly a pole. It doesn't reach the ceiling entirely
+	    but you can't make out any other detail.^^The music is
+	    insane: some Linkin Park shit mixed in with The Flaming
+	    Lips and maybe the Beatles' Abbey Road, and whoever it
+	    is that's DJing this thing has got it cranked so loud
+	    that you can barely float two thoughts in your head at
+	    once.^^It looks like there's a slight opening in the
+	    crowd to the northwest, and back east is the foyer.",
+	e_to foyer,
+	nw_to standing_in_dance;
+
+PreDanceRoom standing_in_dance "Standing in the Dance"
+ with 	description
+	    "Everyone's moving in this weird rhythm that doesn't 
+	    seem to have anything to do with the music or any other 
+	    system of dance you've read about. But it's fucking cool 
+	    to watch. It's like they all know something you don't 
+	    and have been practicing since before you were 
+	    born.^^There looks like there might be an opening in the 
+	    crowd to the southwest, towards the center, where that 
+	    pole is.",
+	se_to
+	    "You turn to try to go back the way you came, but the
+	    way is blocked.",
+	sw_to
+	[;
+	    print "You almost get through the opening, but then you
+		get crowded out into a corner. It's impossible to
+		walk anywhere -- people keep bumping into you, like
+		you don't belong.^";
+	    return crammed_corner;
+	];
+
+PreDanceRoom crammed_corner "Crammed in a Corner"
+ with 	description
+	    "As far as points of interest go, it's you, a bookcase
+	    full of stuff probably nobody in this house has bothered
+	    to read, and a small window. There's nothing worse than
+	    getting stuck in a corner at any kind of dance -- you
+	    always get that odd awkward feeling that you first found
+	    in middle school.^^It looks like you might be able to
+	    scuttle east, against the wall, to the foyer.",
+	e_to foyer;
+
+Object 	-> crammed_corner_bookcase "bookcase"
+ with	name
+	    'book' 'books' 'case' 'bookcase' 'texts' 'text'
+	    'textbooks',
+	description
+	    "You scan the titles briefly -- nothing really 
+	    important. Mostly just leftover college textbooks.",
+	before
+	[;
+	 Push, Pull:
+	    "It's too heavy -- and besides, it's pretty doubtful that
+	    there's a secret passage behind it.";
+
+	 Receive:
+	    "Forget it. It's not worth your time.";
+
+	 Take:
+	    "None of the books seem really useful.";
+	],
+ has 	scenery;
+
+Object 	-> crammed_corner_window "window"
+ with	name
+	    'window' 'small',
+	description
+	    "Your eyes flick from rowhouse to rowhouse -- some still
+	    lit, some not.",
+	before
+	[;
+	 Open:
+	    "There doesn't seem to be any obvious advantage in that.";
+
+	 Close:
+	    print_ret (The) self, "'s already closed.";
+	],
+ has	scenery;
+
+! This next room is kind of weird and very functional. It encompasses
+! wherever you'd want to wander while dancing -- there is a virtual
+! 5x5 space in which the player moves. Chris/the pole is in the
+! center. The player has 9 turns before being swept away by the whole
+! thing -- the description property changes to reflect that. The
+! player's compass is a bit dodgy (sometimes moving nw instead of n,
+! for example) and each move, the player is rotated counter-clockwise
+! around the origin.
+!
+! Note that in this room's mini-coordinate system, (0, 0) is where the
+! pole is.
+
+Object dancing_dance "Dancing in the Dance"
+ with description
+	[;
+	    switch (self.number)
+	    {
+	     9:
+	    	print "You can go anywhere you want. You can see
+		    anything you want. Where are you? There are five
+		    hundred people crammed into this room -- it's a
+		    miracle of genetic instinct and secular humanism
+		    that no one's bumping into anyone else, except
+		    when they want to, which is always... Why don't
+		    you touch people more? You never hug people
+		    except when they hug you first. Your grandmother
+		    leaving for a trip to New Orleans, to see where
+		    her body will reside once she's gone up to
+		    wherever it is that grandmothers belong after
+		    they die...^^";
+
+	     8:
+		print "You can hear it all now. You can know
+		    everything. You brush hands with someone and for
+		    a long descending guitar riff, you have a
+		    partner. Who it is -- even male or female, hair
+		    color, Alice or Alicia -- you don't know, but
+		    what difference does identity make, anyway? Just
+		    be cool for once in your life. Just fucking
+		    dance. Do you still have a goal in mind here?
+		    Maybe you should just stay here all night. Maybe
+		    this is poisonous and you don't know it, and
+		    maybe you shouldn't care.^^";
+
+	     7:
+		print "Wobble the wobble. Sing the song. How do
+		    people write songs? Do the words come first or
+		    the melody? Probably it depends...^^";
+
+	     6:
+		print "Once there was a boy named you, and one night
+		    he awoke with a start because he had forgotten
+		    to shut the windows of the house, and all the
+		    monsters of the world sneaked in... Jesus
+		    Christ, you're freaking out here. Better get
+		    somewhere definite before you're gibbering like
+		    a children's book author.^^";
+		
+	     5:
+		print "You can barely move now -- no, you can barely
+		    think. Your brain is changing, you think, but
+		    it's just the heat. Why is it so hot? It's
+		    April, isn't it?^^";
+
+	     4:
+		print "You find yourself for the briefest moment
+		    face to face with someone else -- maybe only
+		    inches separating the two of you. But then
+		    they're gone, and you can't remember a thing, so
+		    maybe they were never there at all. Maybe you
+		    are dreaming.^^";
+		
+	     3:
+		print "This doesn't feel right at all. Something's
+		    wrong. Something's really wrong and you keep
+		    dancing.^^";
+	     2:
+		print "Lost lost lost lost lost lost.^^";
+
+	     1:
+		print "Dance dance dance dance dance dance.^^";
+	    };
+
+	    self.describe_pole();
+	],
+	before
+	[ direction_changed;
+	 StopDancing:
+	    print "Plant two feet solidly on the ground, don't even
+		bother with that stupid head bop you always find
+		yourself doing -- easy as that, the crowd guides you
+		away. There's no time for people like you.^";
+	    self.player_x = 4;
+	    self.player_y = 2;
+	    self.number = 9;
+	    PlayerTo(crammed_corner);
+
+	 Dance:
+	    "You do it without thinking now, like breathing.";
+	    
+	 Go:
+	    if (noun == u_obj or d_obj)
+	    {
+		! can't go that way
+		L__M(##Go, 2, noun);
+		rtrue;
+	    };
+
+	    if (noun == in_obj or out_obj)
+		"But which way is that?";
+	    
+	    if (--self.number == 0)
+	    {
+		deadflag = DEAD_CUBICLE;
+	     	"You try to move but find you're lost. You're just
+		gone. The music's too much for a weak thin boy like
+		yourself.^^Don't feel bad. You never had a chance.
+		Don't worry. You wake up in the morning and it's as
+		if nothing at all happened to you. You don't even
+		remember that Beatrice called you.";
+	    };
+
+	    if ((player.beers) && (random(3) == 1))
+	    {
+		! mutate the direction the player is moving in
+
+		direction_changed = true;
+		
+	    	switch (noun)
+	    	{
+	     	 n_obj:
+		    noun = random(nw_obj, ne_obj);
+
+	     	 ne_obj:
+		    noun = random(n_obj, e_obj);
+		    
+	     	 e_obj:
+		    noun = random(ne_obj, se_obj);
+		    
+	     	 se_obj:
+		    noun = random(e_obj, s_obj);
+		    
+	     	 s_obj:
+		    noun = random(se_obj, sw_obj);
+
+	     	 sw_obj:
+		    noun = random(s_obj, w_obj);
+		    
+	     	 w_obj:
+		    noun = random(nw_obj, sw_obj);
+		    
+	     	 nw_obj:
+		    noun = random(n_obj, w_obj);
+	    	};
+	    };
+	    
+	    ! now actually move
+	    
+	    switch (noun)
+	    {
+	     n_obj, ne_obj, nw_obj:
+		self.player_y++;
+
+	     e_obj, ne_obj, se_obj:
+		self.player_x++;
+
+    	     s_obj, se_obj, sw_obj:
+		self.player_y--;
+		
+	     w_obj, nw_obj, sw_obj:
+		self.player_x--;
+	    };
+
+	    ! then the player gets rotated
+	    ! I'm trying this out to see if this means wine has more
+	    ! of an advantage
+	    
+! 	    if (player.beers)    
+! 	    	if (((self.player_y > 0) && (self.player_x > 0)) ||
+! 		    ((self.player_y < 0) && (self.player_x < 0)))
+! 		    self.player_x = self.player_x * -1;
+! 	    	else
+! 	    	    if (((self.player_y > 0) && (self.player_x < 0)) ||
+! 		    	((self.player_y < 0) && (self.player_x > 0)))
+! 		    	self.player_y = self.player_y * -1;
+	    
+	    ! clamp coordinates
+	    ! we don't clamp positive x -- that's how people can leave
+	    
+	    if (self.player_y < -5)
+		self.player_y = -5;
+	    if (self.player_y > 5)
+		self.player_y = 5;
+	    if (self.player_x < -5)
+		self.player_x = -5;
+
+	    ! Are we off the floor?
+
+	    if (self.player_x > 5)
+	    {
+		self.number = 9;
+		self.player_x = 4;
+		self.player_y = 2;
+		PlayerTo(foyer);
+		rtrue;
+	    };
+
+	    ! Did we make it to the center?
+
+	    if ((self.player_y == 0) && (self.player_x == 0))
+	    {
+		print "One final step in the right direction and 
+		    you're in a weird pocket at the center of the 
+		    crowd. A few square feet of emptiness. It feels 
+		    good to be able to breathe.^^The music changes. 
+		    No more beat, no more vocals, no more almost 
+		    anything. It's just a steady tone -- maybe 
+		    synthesized, maybe not. Like the hum of a slot 
+		    machine paying out three million dollars.^";
+ 		PlayerTo(center_dance);
+		 rtrue;
+	    };
+
+	    if (player.beers)
+	    {
+	    	print (string) random("You try your best to direct your 
+				      groove, ", "You try hard to move 
+				      where you need to, ");
+	    	print (string) random("but it's like swimming in a pool 
+				      full of screaming children.", "but 
+				      people push back against you, like 
+				      you're their enemy.", "but it's 
+				      almost impossible to remember the 
+				      path your feet should take.");
+	    	if (direction_changed)
+		    print ".. plus this beer is fucking you up. Fucking 
+		    	cheapass swill.";
+	    }
+	    else
+		print (string) random("You swim through the crowd.",
+				      "It's so easy, fitting through 
+				      the gaps and spaces and 
+				      grooves.");
+	    
+	    print "^";
+	    <<Look>>;
+	    
+	 Exit:
+	    "But which way is out?";
+	],
+	describe_pole
+	[ north east south west;
+	    if (self.player_y > 0)
+		south = true;
+	    
+	    if (self.player_y < 0)
+		north = true;
+	    
+	    if (self.player_x > 0)
+		west = true;
+	    
+	    if (self.player_x < 0)
+		east = true;
+	    
+	    print "The pole ";
+	    
+	    if (self.number == 9)
+		print "-- the pole? -- ";
+	    
+	    print "you had noticed before is ";
+	    
+	    if ((abs(self.player_y) == 1) || (abs(self.player_x) ==
+					      1))
+		print "a few feet away, ";
+	    else
+		if ((abs(self.player_y) <= 3) && (abs(self.player_x)
+						  <= 3))
+		    print "maybe ten feet away, ";
+	    
+	     print "to the ";
+	    
+	    if (north)
+	    {
+		if (east)
+		    print "northeast";
+		else
+		    if (west)
+			print "northwest";
+		     else
+			 print "north";
+	    }
+	    else
+		if (south)
+		{
+		    if (east)
+			print "southeast";
+		    else
+			if (west)
+			    print "southwest";
+			 else
+			     print "south";
+		}
+		else
+		    if (east)
+			print "east";
+		    else
+			print "west";
+	    
+	    ".";
+	],
+	each_turn
+	[ i new_i;
+	    
+	    ! Clear any dropped items
+
+	    i = child(self);
+
+	    while (i)
+	    {
+		new_i = sibling(i);
+		if (i ~= player or dance_pole or dance_people)
+		    remove i;
+		i = new_i;
+	    };
+	    
+	    if (self.number > 6)
+	    {
+		print "^~";
+
+		switch (random(7))
+		{
+		 1:
+	    	    print "Boys forget promises";
+
+		 2:
+		    print "I wanna see their faces";
+
+		 3:
+		    print "Let's go down the waterfall";
+
+		 4:
+		    print "There are 80 windows we can see";
+
+		 5:
+		    print "So I'm gonna change -- maybe tonight";
+
+		 6:
+		    print "True love is hard to find";
+		    
+		 7:
+		    print "There was no future left at all";
+		};
+
+    		",~ a mutated voice sings.";
+	    }
+	    else
+		if (self.number > 3)
+		{
+		    print "^~";
+		    switch (random(5))
+		    {
+		     1:
+			print "You were dreams";
+			
+		     2:
+			print "So leave behind";
+
+		     3:
+			print "409";
+
+		     4:
+			print "So they didn't make me Saturdays";
+
+		     5:
+			print "It wants to be said";
+		    };
+
+		    "...~";
+		}
+	    	else
+		{
+		    print "^(";
+		    switch (random(5))
+		    {
+		     1:
+			print "it's go don't die";
+
+		     2:
+			print "every morn I saw";
+
+		     3:
+			print "pulling";
+
+		     4:
+			print "Dante listen now";
+
+		     5:
+			print "and pat you find out";
+		    };
+
+		    ")";
+		};
+	],
+	after
+	[;
+	 Drop:
+	    print_ret "As soon as you put it down, ", (the) noun, "'s 
+		gone, swept away by the dance.";
+	],
+	number 9,
+	player_x 4,
+	player_y 2;
+
+FarScenery -> dance_pole "pole"
+ with 	name
+	    'pole',
+	description
+	    "You see parts of its shape but can't assemble it into a
+	    whole. It's all confusing. Four fingers? An eye? What is
+	    it made out of?";
+
+Object -> dance_people "people"
+ with 	name
+	    'people' 'person' 'dancing' 'dancers',
+	description
+	    "Waving arms, thrashing feet, closed eyes.",
+	before
+	[;
+	    if (action ~= ##Examine or ##StopDancing) 
+	    	"It's too confusing in here. It's too weird.";
+	],
+ has 	animate concealed;
+
+Object 	center_dance "At the Center"
+ with 	description
+	[;
+	    if (self hasnt visited)
+	    	print "It wasn't a pole at all you were looking at. 
+		    What the hell is wrong with you? It's a guy -- 
+		    granted, a tall guy who's nearly catatonic.";
+	    else
+		if (center_dance_chris hasnt proper)
+		    print "So here you are at the center of things, 
+			face to face with some weirdo.";
+	    	else
+	       	    print "Chris stands here at the center of 
+			things, still lost or confused or something. 
+			He doesn't seem that perturbed by the scene 
+			around him for some reason.";
+
+	    if (center_dance_chris hasnt proper)
+	    	print " His eyes stare straight ahead and his arms 
+		    are as limp as a mackerel.";
+	    
+	    if (self hasnt visited)
+   	    	print "^^Everyone else is still dancing, as if they 
+		    still hear the music? So maybe it's just you? 
+		    Maybe you've gone selectively deaf? Or maybe 
+		    they lost their hearing a long time ago, but 
+		    they're so used to dancing that they don't even 
+		    know that everything is different now?";
+	    else
+		print " And everyone else is still dancing, as if
+		    the music was just as it was, as if there was
+		    nothing wrong at all.";
+	    
+	    "^^You could probably make cut eastward through the
+	    crowd, back to the foyer.";
+	],
+	e_to
+	[;
+	    print "The moment you step away from him, the music
+		resumes. You don't understand, but it's happening,
+		everything is happening --^";
+	    return foyer;
+	],
+	before
+	[;
+	 Dance:
+	    "Go back into the fray? It seems like a bad idea.";
+	];
+
+Object -> center_dance_chris
+ with 	short_name
+	[;
+	    if (self has proper)
+		print "Chris";
+	    else
+		print "guy";
+	    rtrue;
+	],
+	name
+	    'chris' 'guy' 'klimas' 'dude' 'man' 'weirdo',
+	description
+	    "As previously observed, he's about six-and-a-half feet
+	    tall, with blond hair that's pretty much a wreck. Blue
+	    eyes, too, sober as the day is long. He has a black
+	    T-shirt on, just like you, only it's blank.^^The one
+	    weird thing is that he's carrying a book, but the cover
+	    doesn't have a title on it or anything.",
+	before
+	[;
+	 Push:
+	    if (~~ self.awake)
+	    {
+		print "You give him a little shove on his shoulder. ";
+		self.wake();
+		rtrue;
+	    }
+	    else
+		"No need to now. He looks like he's awake.";
+	    
+	 AskForRide:
+	    if (~~ self.awake)
+		"He doesn't even blink in response.";
+	    else
+	    {
+		print "~Hey, could you by any chance give me a 
+		    ride?~ you ask.^^He looks surprised for a 
+		    moment, then smiles. ~Yeah, sure. This party 
+		    kind of sucks, anyway.~^";
+
+		if (self hasnt proper)
+		{
+		    print "^On the way out, he says, ~By the way, my 
+			name's Chris.~^";
+
+		    if (pre_attic_dude.told_name)
+			print "^Of course it is.^";
+		};  
+	    };
+	    print "[...]";
+	    KeyCharPrimitive();
+	    ClearScreen();
+	    print "^";
+	    PlayerTo(driving_to_donuts);
+	    rtrue;
+	    
+	 ThrownAt:
+	    print "Bonk! You manage to score a hit on his forehead. ";
+	    self.wake();
+	    rtrue;
+	],
+	life
+	[;
+	 Attack, WakeOther:
+	    if (~~ self.awake)
+	    {
+		print "You give him a little shove on his shoulder. ";
+		self.wake();
+		rtrue;
+	    }
+	    else
+		"No need to now. He looks like he's awake.";
+	    
+	 Kiss:
+	    "Hmm. Maybe not.";
+	    
+	 Ask:
+	    if (~~ self.awake)
+		"He doesn't even blink in response.";
+	    else
+		switch (second)
+		{
+		 'ride', 'car':
+		    <<AskForRide self>>;
+		    
+		 'him', 'himself', 'chris':
+		    "~Hey, what's your name?~ you ask.^^~Chris,~ he
+		    says, and adds, looking around the room, ~Who
+		    are all these people?~";
+		    
+		 'party', 'here':
+		    "~How long have you been here?~ you ask.^^~I
+		    got here... at eight?~ he says. Of course. He's
+		    one of those people who shows up right on time.
+		    ~I was in the living room drinking and talking
+		    to... somebody...~";
+		    
+		 'house':
+		    "~What do you think of this house?~ you
+		    ask.^^~It's nice,~ he says. ~Seems a little
+		    weird that there's only one bathroom, though.~";
+		    
+		 'drug', 'drugs', 'green', 'liquid', 'cough', 'syrup',
+		 'absinthe', 'dxm':
+		    "~Do you know much about drugs?~ you ask.^^~No,
+		    not really,~ he says, frowning. ~Sad to say, I
+		    never thought they were a good idea.~";
+
+		 'book', 'paperback', 'blue':
+		    "";
+		    
+		 default:
+		    "~What?~ he asks.";
+		};
+	    
+	 Tell:
+	    if (~~ self.awake)
+		"He doesn't even blink in response.";
+	    else
+		switch (second)
+		{
+		 'me', 'myself':
+		    give self proper;
+		    "~My name's Dante,~ you say.^^~Nice to meet 
+		    you...~ he replies, still a little out of 
+		    sorts.^^ ~I'm Chris.~";
+
+		 'drug', 'drugs', 'green', 'liquid', 'cough',
+		 'syrup', 'absinthe', 'dxm':
+		    "~I just drank this green liquid which I think 
+		    is doing something to my brain,~ you 
+		    exposit.^^~Yeah?~ he asks.^^~I'm mentioning this 
+		    because I can't drive right now,~ you say.^^He 
+		    looks at you a little puzzled, waiting for the 
+		    point to be brought home.";
+
+		 'beatrice':
+		    "~This friend of mine, Beatrice, is in trouble,
+		    man,~ you say.^^He looks at you, really actually
+		    concerned. ~Are you going to go help her?~";
+		    
+		 default:
+		    "He doesn't seem to hear you, which is weird.";
+		};
+
+	 Answer:
+	    <<Ask self 'uh'>>;
+	],
+	wake
+	[;
+	    SetPronoun('him', self);
+	    self.awake = true;
+	    print "He startles awake, like he really has been 
+		dreaming all this time.^^~Are you here to rescue 
+		me?~ he asks.^^>>";
+	    if (YesOrNo())
+		"~Yeah,~ you say. ~I'm your Prince
+		Charming.~^^~Weird,~ the guy says. ~I always
+		thought I'd get rescued by a hot chick,
+		myself.~^^~Me too,~ you admit.";
+	    else
+		"~No, man,~ you say. ~I'm not really the
+		rescuing type.~^^~Oh,~ he says, sort of like
+		he's just been informed that the sky is blue.
+		~Well, thanks anyway.~";
+	],
+	name_known false,
+	awake false,
+ has 	animate concealed transparent;
+
+Object 	-> -> center_dance_chris_book "blue book"
+ with 	name
+	    'book' 'blue' 'paperback' 'trendy',
+	description
+	    "It's a blue paperback with rough edges -- you know, the
+	    trendy kind that try to look like they weren't produced
+	    in a factory. Beyond that, you can't tell.",
+	before
+	[;
+	 Take:
+	    if (~~ center_dance_chris.awake)
+	       	print_ret (The) center_dance_chris, " has a solid
+		    grip on it.";
+	];
+
+!
+! Outside
+!
+
+Object 	party_street "street"
+ with	name
+	    'street' 'road' 'cracked' 'torn' 'up' 'torn-up',
+	description
+	    "The street is cracked, torn-up.",
+	before
+	[;
+	 Enter:
+	    "But where do you want to go?";
+	],
+	found_in front_porch outside_party beside_car, 
+ has 	scenery;
+
+Object 	front_porch "Front Porch"
+ with 	description
+	[;
+	    print "You love night breezes. It's hard to say why 
+		exactly they make you feel as though as something is 
+		changing -- swiftly, invisibly -- about the whole 
+		world. As though you could fly, but only as long as 
+		you could see the moon.^^The porch is built maybe 
+		ten feet above ground, and through some weird 
+		configuration of architecture, the night breeze is 
+		stronger than you've ever remembered it. Not like a 
+		real wind or anything. Just... constant.";
+
+	    if (self hasnt general)
+		{
+		give self general;
+		print " Jesus. Things were getting weird in there. It 
+		    was too hot in there. Unnaturally hot. Something 
+		    isn't right about that place.";
+	    };
+	    
+	    print "^^";
+	    
+	    front_porch_guy.print_self();
+	    
+	    " Downward is the street, and the front door is north.";
+	],
+	n_to front_porch_door,
+	s_to outside_party,
+	d_to outside_party,
+	in_to
+	[;
+	    <<Go n_obj>>;
+	];
+
+Object 	-> front_porch_chair "lawn chair"
+ with 	name
+	    'chair' 'lawn',
+	description
+	    "Looks like the standard issue kind of thing -- probably 
+	    glommed from somebody else's basement a long time ago.",
+	before
+	[;
+	 Take:
+	    "Mm, no.";
+	    
+	 Enter:
+	    "The passed-out guy's kind of using it right now.";
+	],
+ has 	scenery;
+
+Object 	-> front_porch_door "front door"
+ with 	name
+	    'front' 'door' 'blue',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "It's a dull blue color, without any kind of decoration 
+	    beyond the house number: 1028.",
+	door_dir n_to,
+	door_to foyer,
+ has 	static door open openable;
+
+Object 	-> front_porch_guy "passed-out guy"
+ with 	name
+	    'passed' 'out' 'unconscious' 'guy' 'man' 'dude',
+	print_self
+	[;
+	    ! I am doing this in a weird custom method because neither
+	    ! describe nor initial will let me output where I want to,
+	    ! and I want to keep code where it belongs.
+	    
+	    print "There's a guy passed out in a lawn chair";
+	    
+	    if (photograph in self)
+		print ", a photograph clutched to his chest";
+	    
+	    print ", snoring as peacefully as a dog.";
+	],
+	description
+	[;
+	    if (photograph in self)
+		"He's forty years old, which is sort of weird. Most
+		everybody else you've seen here has been in their
+		twenties, same as you. And more than being old, he's
+		downright scruffy: wife beaters matched with a
+		goatee that belongs to a different, uglier place
+		than 2004.";
+	    else
+		"Well, if you allow for about twelve years of fast
+		food and a terminally shitty job, he does look like
+		he once was the guy in the photo he was holding.
+		Damn. So the question is: why was he toting that
+		thing around?";
+	],
+	before
+	[;
+	 AskForRide:
+	    "~Hey, uh, can you give me a ride?~ you ask him, to which
+	    he snores a little differently.";
+
+	 ThrownAt:
+	    "Wife beaters on a man say many things. One of them in
+	    particular is: don't throw shit at me when I'm asleep.";
+	],
+	life
+	[;
+	 WakeOther:
+	    if (photograph in self)
+		"He doesn't stir.";
+	    else
+		"Right, first steal from him and then wake him up?";
+
+	 Attack:
+	    "You give him a little shove, but this guy is out for 
+	    the count.";
+
+	 Kiss:
+	    "No thanks.";
+
+	 Show:
+	    "Hmm, he doesn't seem like he's going to be all that 
+	    great of an audience.";
+
+	 Give:
+	    if (noun == photograph)
+		"You try to thread the photo back into his fingers,
+		but it doesn't work.";
+	    else
+		"You don't think he'd really appreciate it.";
+
+	 Ask, Tell:
+	    "No offense, dude, but the guy is sound asleep.";
+	],
+	orders
+	[;
+	    "He's asleep, man.";
+	],
+	each_turn
+	[;
+	    if (random(2) == 1)
+		"^~Zzzzzz,~ the guy snores.";
+	],
+ has 	animate concealed transparent;
+
+Object 	-> -> photograph "photograph"
+ with 	name
+	    'photo' 'photograph',
+	description
+	[;
+	    if (self in front_porch_guy)
+		"Between the guy's fingers, you can see a young man
+		-- not quite enough of his face to be sure if you've
+		seen him before. Maybe posed behind a mountain of
+		some kind? Maybe smiling?";
+	    
+	    if (self hasnt general)
+	    {
+		give self general;
+		move photograph to parent(player);
+		print_ret (The) self, " is of you.^^It falls to the 
+		    ground.";
+	    }
+	    else
+		"You were wrong. It's just someone who looks a lot
+		like you -- a little thinner, honestly, and a tad
+		better looking. He's standing in front of some kind
+		of tropical forest, you know, the kind of thing
+		you'd expect out of South America.";
+	],
+	before
+	[;
+	 Take:
+	    if (self in front_porch_guy)
+	    {
+		move self to player;
+		"With a little deftness, it's yours. You've always 
+		wanted to do something like that... even though you 
+		feel a bit like a bastard for stealing a fucking 
+		photograph, of all things. Too bad it isn't a prison 
+		key or something else instead.";
+	    };
+	];
+
+Object 	outside_party "Standing By the Street"
+ with 	description
+	    [;
+		print "The rowhouses up and down the block are lit
+		    up with people and noise, maybe even with
+		    parties just like the one you were just in. So
+		    many people. It's kind of weird if you think
+		    about it for too long. Are they all dancing? Are
+		    they all in love? Is there somebody like you,
+		    who doesn't really know why they've wandered out
+		    here? Maybe hoping for someone random to enter
+		    their lives and give them a ride?^^Fuck it.
+		    It's a city block, just like any other in
+		    Baltimore. Your ";
+
+		if (beside_car_dante_car hasnt general)
+ 		    print "parked";
+		else
+		    print "smoking wreck of a";
+
+		" car is a little bit down to the east, and the
+		porch steps lead up, back to the house.";
+	    ],
+	cant_go
+	    "It probably would be a bad idea to start wandering 
+	    around the city in your state.",
+	u_to front_porch,
+	n_to front_porch,
+	e_to beside_car;
+
+Object 	-> outside_party_houses "rowhouses"
+ with 	name
+	    'rowhouse' 'rowhouses' 'house' 'houses',
+	description
+	    "They're crowded against each other like paperbacks in a
+	    bookcase.",
+	before
+	[;
+	 Enter:
+	    "No need to start canvassing the neighborhood.";
+	],
+ has 	pluralname scenery;
+
+Object 	beside_car "Beside Your Car"
+ with 	description
+	[;
+	    print "Your beautiful blue Camry ('92, before they got
+		sleek and cool) is";
+	    
+	    if (beside_car_dante_car hasnt general)
+		print " hemmed in by a crusty pickup truck in front 
+		    of it and a Volkswagen Beetle ('99, sparkly and 
+		    new) behind. Well, not really hemmed in. It's 
+		    just going to take about five years to get your 
+		    car out from the two-inch margin these cars have 
+		    left you. Dammit.";
+	    else
+		print " not looking too great overall, all things 
+		    considered. Mostly the part where you rammed it 
+		    into a fucking telephone pole. How cliche. If 
+		    only you had had to foresight to locate 
+		    something new and interesting, say a dumpster 
+		    full of gold doubloons, while you were tripping. 
+		    Fuck. It's going to cost a serious amount of 
+		    money to fix this.";
+
+	    "^^The party is back to the west.";
+	],
+	w_to outside_party;
+
+Object 	-> beside_car_dante_car "Camry"
+ with 	article "your",
+	name
+	    'car' 'blue' 'camry' 'beautiful' 'vehicle' 'door' 'doors'
+	    'toyota',
+	description
+	[;
+	    if (self hasnt general)
+	    	"Well, it's not really that beautiful when you look 
+		at it somewhat objectively. It came with a slew of 
+		dings -- you bought it from an Israeli couple who 
+		obviously had personal issues with common household 
+		obstacles -- and you've only made the situation 
+		worse. Still, it at least gets decent mileage.";
+	    else
+		"What a wreck.";
+	],
+	before
+	[;
+	 Enter, Open:
+	    if (self has general)
+		"Dude, it's not going anywhere.";
+	    
+       	    give self general;
+	    remove beside_car_pickup_truck;
+	    remove beside_car_volkswagon;
+	    move beside_car_telephone_pole to location;
+	    
+	    print "You fumble with your car keys for a second, then 
+		open the door.^[...]";
+	    KeyCharPrimitive();
+	    ClearScreen();
+	    print "^";
+	    PlayerTo(cruising_baltimore);
+	    rtrue;
+	],
+ has 	scenery;
+
+Object 	-> beside_car_pickup_truck "pickup truck"
+ with 	name
+	    'pickup' 'truck' 'car' 'door' 'doors' 'vehicle' 'crusty',
+	description
+	    "These fucking dirty rusty things are everywhere, it seems
+	    like. This one's owner has decide to flaunt his uniqueness
+	    with BUSH/CHENEY 2000 bumper stickers and Calvin pissing
+	    on the Dallas Cowboys. Haven't these people heard of
+	    intellectual property?",
+	before
+	[;
+	 Enter:
+	    "The truck's doors are locked.";
+
+	 Open:
+	    <<Enter self>>;
+	],
+ has 	scenery;
+
+Object 	-> beside_car_volkswagon "Volkswagen"
+ with 	name
+	    'volkswagen' 'volkswagon' 'beetle' 'sparkly' 'new' 'car'
+	    'door' 'doors' 'vehicle',
+	description
+	    "True, you'd never buy one. But you can sort of admire
+	    the kind of person who would. It's a statement one way
+	    or the other... about something.",
+	before
+	[;
+	 Enter:
+	    print_ret (The) self, "'s doors are locked.";
+
+	 Open:
+	    <<Enter self>>;
+	],
+ has 	scenery;
+
+Object 	-> beside_car_telephone_pole "telephone pole"
+ with	name
+	    'telephone' 'pole' 'wood',
+	description
+	    "Pretty much everything you could hope for in a 
+	    telephone pole.",
+	before
+	[;
+	 Attack, Pull, Push:
+	    "You give it a solid kick, which changes approximately 
+	    nothing about your situation.";
+	],
+ has 	scenery;
+
+!
+! The title sequence
+!
+
+
+BlueCard title1
+ with	text
+	    "It seems like now would be an excellent time"
+	    "to reflect on why you, once a consistently"
+	    "above-average student full of ambition and love,"
+	    "just bought an unknown but almost certainly"
+	    "illegal substance from a stranger"
+	    "and drank it without a second thought.",
+	sub_text
+	    "k metal" "diment?" "~No mor" "eppermi" "Mr. Pre";
+
+BlueCard title2
+ with	text
+	    "It would be nice if there were a single moment"
+	    "you could use in the event of autobiography"
+	    "that would illustrate what happened to you."
+	    "Why you feel listless during the day and"
+	    "stay up till two in the morning most nights.",
+	sub_text
+	    "cold ai" "'s no d" "a Chine" "ing gas" "oddy pa";
+
+BlueCard title3
+ with	text
+    	    "The truth is, there's no story to be told."
+	    "It just happened, one second at a time,"
+	    " and now you just have to live with it.",
+	sub_text
+	    "ese cha" "ore 'em" "Se@~nor B" "all rec" "uck Fuc";
+
+BlueCard title4
+ with	text
+	    "Blue Chairs"
+	    "a chance to change"
+	    "a story by Chris Klimas",
+	sub_text
+	    "~Hey ma" "Dante?~" "a voice" "is aski" "or name";
+
+[ Title;
+    print "The transaction happens quickly: no hesitations, no 
+	reconsiderations, no refunds.^^~Drink it slowly,~ the guy 
+	advises but you're already shotgunning it, staring directly 
+	at the poor light bulb, so dim it won't even leave behind an 
+	afterimage on your retinas, so far away now that the sound 
+	of the party below takes five minutes to reach you, so far 
+	now that the world is turning blue as it recedes into the 
+	distance, so dim now that the wires in the bulb... what are 
+	they called?^^Luminants? No, that isn't the right word, 
+	that's not even a word at all --^[...]";
+
+    KeyCharPrimitive();
+    title1.display();
+    title2.display();
+    title3.display();
+    title4.display();
+    
+    font on;
+    PhoneConversation();
+];
+
+[ PhoneConversation;
+    font on;
+    style roman;
+    
+    print "^^~Hey man, is your name Dante?~ a voice is asking.^^You
+	sit up with a start. ~Yeah.~^^The attic is different now but
+	you couldn't say why. How. You don't know how it's
+	different. You're sitting on the floor -- lying on it, more
+	accurately -- and for a split second, everything's slowed
+	down and peaceful and makes sense, even the Easy-Bake
+	oven.^^Then this guy with a dirty baseball cap (what the
+	fuck? how cliched are we going to get tonight?) who's been
+	standing over you has to start talking to you again and it
+	fucks everything up. No sign of your esteemed drug merchant,
+	of course. He's probably onto bigger and better
+	prey.^^~There's this girl who's been calling everyone's cell
+	phones asking for you, man.~^^You frown.^^~Here, talk to
+	her, man, she's been freaking out on me the last fifteen
+	minutes.~^^He presses his cell phone up to your ear, which
+	is a nice thing to do considering your arms are completely
+	numb for reasons you don't want to think about right
+	now.^^~Dante?~ asks a voice you recognize in an instant,
+	never mind the cell phone, never mind the years: it's
+	Beatrice. If this were a movie, there'd be a convenient fade
+	to black to allow you to reminisce about your shared past
+	history, perhaps beginning with that sunrise six years ago
+	-- but this isn't a movie, kiddo, and she says
+	again:^^~Dante, is that you?~^^She's crying.^^";
+    PhoneInput();
+    print "You try to speak but the words come out all nonsense.
+	Isn't that the final insult? Finally a cell phone
+	conversation worth having and you can't even form a single
+	damn word.^^~Dante, I'm in trouble,~ she says.^^";
+    PhoneInput();
+    print "You try hard to enuniciate, to make sense, to at least
+	convey some mixture of longing and surprise in your tone of
+	voice, but you can't do it right.^^~I... I can't explain it
+	to you on the phone. But I need you to come help me. Do you
+	remember where my house is?~^^";
+    PhoneInput();
+    print "Of course you remember where her fucking house is. You
+	still remember every single thing about her. French toast
+	for breakfast with enough syrup to drown yourself...^^~It's
+	important,~ Beatrice says. ~Come as soon as you can.~^^
+	There's a faint click, like a bird's beak tapping on a
+	chalkboard, and then she isn't there anymore.^^Your arms are
+	working now -- you're pushing yourself up off the floor
+	without even realizing it -- and so is your voice. ~I've got
+	to go see her,~ you're saying.^^The guy with the cell phone
+	gives you as serious a look as a frat boy can. ~Dude, I've
+	never met you before or anything, but can I give you some
+	advice? If I were you, I wouldn't drive anywhere tonight?
+	Not with the kind of pupils you've got.~^^He backs away from
+	you, maybe waiting for a rebuttal. But there's no point in
+	arguing with a frat boy who's managed to cobble together
+	some kind of personal belief.^^~Can you give me a ride?~ you
+	ask.^^~Nah, man,~ he says, suddenly displaying an interest
+	in the stairway. ~I gotta get back downstairs. The dance
+	won't dance itself, you know what I'm saying?~^^If you were
+	not at all on drugs right now, you'd be able to come up with
+	a really killer line, but it doesn't matter. There's got to
+	be somebody at this hoedown that can get you to Beatrice.^";
+    move drug_bottle to player;
+    remove green_drugs;
+    PlayerTo(post_attic); ];
+
+[ PhoneInput i stop;
+    print ">>";
+    stop = false;
+
+    while (~~ stop)
+    {
+	i = KeyCharPrimitive();
+
+	! see the ZSCII chart for the meaning of these numbers
+
+	if (i == 13)
+	    stop = true;
+	else
+	    if (i == 8)
+	    	@sound_effect 2;
+	else
+	    if (((i >= 32) && (i <= 47)) ||
+		((i >= 58) && (i <= 64)) ||
+		((i >= 91) && (i <= 96)) ||
+		((i >= 123) && (i <= 126)))
+		print (char) i;
+	    else
+		print "u";
+    };
+    print "^";
+];

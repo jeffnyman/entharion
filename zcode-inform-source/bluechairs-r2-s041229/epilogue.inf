@@ -1,0 +1,497 @@
+!
+! Blue Chairs
+! the epilogue
+!
+
+Protagonist epilogue_dante "Dante"
+ with 	description
+    	    "You must look like a mess.",
+    	orders
+	[;
+	 Sleep:
+	    if (parent(player) ~= epilogue_in_chair
+		or epilogue_porch_chair)
+	    	"You should find somewhere to rest if you're going 
+		to sleep this off...";
+	],
+ has 	male;
+
+Object 	-> epilogue_dante_clothes "clothes"
+ with 	name
+	    'clothes' 'shirt' 'pants' 't-shirt' 't//',
+	description
+	    "Your clothes look kind of frumpy and wrinkled now.",
+	before
+	[;
+	 Disrobe:
+	    "Not now.";
+	],
+ has 	concealed;
+
+Object 	epilogue_in_chair "Sitting in a Lawn Chair"
+ with 	description
+	    "Your clothes feel wrong, like blankets tangled round 
+	    your body, and your arms are awkwardly positioned, like 
+	    someone's moved them while you were sleeping. You're 
+	    sitting in a lawn chair, facing a street that seems sort 
+	    of familiar, but your brain isn't up to full speed yet, 
+	    so you aren't sure yet why you know it...",
+	cant_go
+	    [;
+		print_ret "You'll have to get out of ", (the)
+		 epilogue_in_chair_chair, " first.";
+	    ],
+	before
+	[;
+	 Exit:
+	    print "It takes a second to regain your sense of balance,
+		to look around and realize you are on the:^";
+	    PlayerTo(epilogue_porch);
+	    rtrue;
+
+	 Sleep:
+	    self.sleep();
+	    rtrue;
+	],
+	sleep
+	[;
+	    deadflag = DEAD_JUSTPRINT;
+	    "Better not wander off into the city, you decide. better 
+	    to wait until morning to work things out, when things 
+	    make more sense and people will answer the 
+	    phone.^^Better to doze off now, to dream meaninglessly. 
+	    To pass time safely, where nothing can happen.^^The 
+	    night has been a strange one. But then there are so many 
+	    small, weird things in your life that have passed 
+	    unremembered -- so many that if you put them all 
+	    together, you might wonder how you could wake up 
+	    tomorrow a bored man.";
+	];
+
+Object -> epilogue_in_chair_chair "lawn chair"
+ with 	name
+	    'lawn' 'chair',
+	description
+	[;
+	    print_ret (string) front_porch_chair.description;
+	],
+ has 	scenery supporter enterable;
+
+Object -> epilogue_in_chair_street "city street"
+ with	name
+	    'city' 'street' 'road',
+	description
+	    "The street waves and waggles in your vision.",
+	before
+	[;
+	    if (action ~= ##Examine)
+		<<Go n_obj>>;
+	],
+ has 	scenery;
+
+Object 	epilogue_porch "Front Porch, Outside the Party"
+ with 	description
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+	    	print "How did you end up here? And what time is it?";
+	    }
+	    else
+		print "The porch is silent and empty.";
+
+	    " The front door of the house is closed and the interior 
+	    is completely dark. It must be very late or very early, 
+	    but you can't tell which. The sky is pitch black, but 
+	    that barely means anything: with the city lights, it's 
+	    impossible to see the stars, anyway. Steps lead down to 
+	    the street.";
+	],
+	d_to epilogue_standing_street,
+	s_to epilogue_standing_street,
+	n_to epilogue_porch_door;
+
+Object 	-> epilogue_porch_chair "lawn chair"
+ with 	name
+	    'chair' 'lawn',
+	description
+	[;
+	    print_ret (string) front_porch_chair.description;
+	],
+	before
+	[;
+	 Sleep:
+	    epilogue_in_chair_chair.sleep();
+	    rtrue;
+	],
+	after
+	[;	    
+	 Enter:
+	    "The lawn chair rocks slightly as you sit in it again.";
+	],
+ has 	supporter scenery enterable;
+
+Object 	-> epilogue_porch_door "front door"
+ with 	name
+	    'door' 'front' 'blue',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	[;
+	    print_ret (string) front_porch_door.description;
+	],
+	before
+	[;
+	 Open:
+	    "It's locked.";
+
+	 Attack:
+	    "Nobody answers the door.";
+	],
+ has 	static door openable locked lockable;
+
+Object -> epilogue_porch_porch "porch"
+ with name
+	    'porch' 'front',
+	description
+	    "The surface of the porch is empty.",
+	before
+	[;
+	 Search:
+	    <<Examine self>>;
+	],
+ has 	scenery;
+
+Object 	-> epilogue_porch_house "house"
+ with	name
+	    'house' 'interior',
+	description
+	    "Looks like nobody's awake right now -- no lights on, no
+	    sound at all. Or maybe there's nobody inside... anything
+	    is possible.",
+	before
+	[;
+	 Search:
+	    <<Examine self>>;
+
+	 Enter:
+	    <<Enter epilogue_porch_door>>;
+	],
+ has 	scenery;
+
+Object 	epilogue_standing_street "Standing by the Street"
+ with 	description
+	    "Everything is so quiet. No sign of life in the
+	    rowhouses. Parked cars sleeping on both sides of the
+	    road. No wind, no sound of traffic finding its way home --
+	    cities are meant to be noisy, aren't they? Aren't they
+	    supposed to never sleep? But then, everyone has to
+	    rest. Every night has to come to an end.^^The street runs
+	    east and west, and steps lead to the porch.",
+	w_to
+	    "You wander down a block and realize you have no idea
+	    where you're going -- you don't know the neighborhood, and
+	    nothing but rowhouses seem to be that way.",
+	e_to epilogue_int,
+	u_to epilogue_porch;
+
+Object -> epiloggue_standing_street_houses "rowhouses"
+ with	name
+	    'rowhouses' 'rowhouse' 'row' 'house' 'houses',
+	description
+	[;
+	    print_ret (string) outside_party_houses.description;
+	],
+	before
+	[;
+	 Enter:
+	    "Burglary seems like a bad plan.";
+	    
+	 Search:
+	    "You look them over quickly -- no lights on.";
+	],
+ has 	scenery pluralname;
+
+Object -> epilogue_standing_street_cars "parked cars"
+ with	name
+	    'parked' 'car' 'cars' 'vehicle' 'vehicles' 'automobile'
+	    'automobiles' 'old' 'station' 'wagon' 'wagons' 'shiny'
+	    'suv' 'suvs' 'door' 'doors',
+	description
+	    "There are all kinds of cars, from old station wagons 
+	    with peeling wood trim to shiny SUVs.",
+	before
+	[;
+	 Enter, Open:
+	    "None of the cars are unlocked.";
+
+	 Unlock, Lock:
+	    "You don't have a key to any of these cars.";
+	    
+	 Search:
+	    "Nothing inside the cars but what you'd expect.";
+	],
+ has 	scenery pluralname;
+
+Object 	epilogue_int "Intersection"
+ with 	description
+	[;
+	    print "Just two small roads meeting; no need for a 
+		traffic light. Nor street signs, either. North and 
+		south are businesses: an old, on-its-last-legs 
+		pizzeria, a knick-knack shop with a silly name. The 
+		porch is back to the west, and your car should be 
+		just a little bit down the road to the east";
+
+	    if ((epilogue_beside_car hasnt visited) &&
+		(beside_car_dante_car has general))
+		" -- you're sure that it's still there, and that 
+		it's untouched. Why? Maybe it's just that some 
+		things feel to unreal to ever really happen";
+	    
+	    ".";
+	],
+	n_to
+	[;
+	    if (epilogue_int_alice in self)
+		"There's no chance you'd catch up with her; she's
+		much too far away.";
+	    else
+		"The streets are deserted to the north. No one's in
+		sight, not even that girl you had seen.";
+	],
+	s_to
+	[;
+	    if (epilogue_int_alice in self)
+		"The girl holds your attention. It seems wrong to go
+		the opposite way from her.";
+	    else
+		"You walk a little bit down the block, but there's 
+		nothing worth finding there. Nothing to get you 
+		home, anyway.";
+	],
+	w_to epilogue_standing_street,
+	e_to epilogue_beside_car;
+
+! This object works kind of like party_alice, only it behaves
+! differently depending on whether you use her right name, wrong name,
+! OR vague name. (Before, it would infer what to use based on what you
+! last believed her nmae to be.)
+!
+! So I guess the challenge for the next game is going to be retarded
+! scope hacking, since I feel I have finally gotten name parsing under control
+
+Object 	-> epilogue_int_alice "girl"
+ with 	name
+	    'girl' 'familiar' 'woman' 'alice' 'alicia',
+	initial
+	[;
+	    print "Two blocks north, you see a";
+	    
+	    if (party_alice.has_appeared)
+		print " familiar";
+	    
+ 	    " girl walking away from you.";
+	],
+	description
+	[;
+	    if (party_alice.has_appeared)
+		print "She's the girl you spoke to in the kitchen --
+		    at least who you thought you spoke to, back
+		    then... you can tell it's her, even looking at
+		    her back.";
+	    else
+		print "You can't see too much of her, but there's
+		    something about her that catches your eye.";
+	    
+	    " She's walking by herself, fairly quickly. Worried, 
+	    maybe? Rational people would be at this hour.";
+	],
+	life
+	[ word acting_as;
+
+	    ! Because the parser is being too nice, we look at the
+	    ! parse buffer directly to make sure the player typed in
+	    ! the right name.
+	    !
+	    ! Note that because of the name property, we at least are
+	    ! ACTING_MAYBE. We'd never get this far if we hadn't
+	    ! matched that.
+	    
+	    wn = 1;
+	    acting_as = self.ACTING_MAYBE;
+
+	    while (word = NextWord())
+	    {
+		if ((word == aliced.grammar_name()) &&
+		    (acting_as ~= self.ACTING_WRONG))
+		    acting_as = self.ACTING_RIGHT;
+
+      		if (word == aliced.wrong_grammar_name())
+		{
+		    acting_as = self.ACTING_WRONG;
+		    break;
+		};
+	    };
+	    
+	    if (acting_as == self.ACTING_MAYBE)
+	    	if (self hasnt general)
+	    	{
+		    give self general;
+	    	    "~Hey!~ you shout.^^She just keeps walking -- 
+		    doesn't seem to hear you, doesn't even turn 
+		    around. But then, would you stop if a stranger 
+		    was shouting at you in the middle of the night?";
+	    	}
+	    	else
+		    "~Hey, stop!~ you shout again, but she just quickens
+		    her pace.";
+	    else
+		if (acting_as == self.ACTING_WRONG)
+		{
+	       	    remove self;
+	    	    "She doesn't seem to hear you -- she just turns a corner 
+	    	    and disappears forever.";
+		}
+	    	else
+		    if (acting_as == self.ACTING_RIGHT)
+	     	    {
+			deadflag = DEAD_JUSTPRINT;
+	    		print_ret "~", (string) aliced.short_name(), "!~ 
+			    you yell.^^Slowly, surely, she turns 
+			    around.^^As you run to catch up to her, 
+			    you realize you have no idea what to say 
+			    to her, what there is to say at this 
+			    hour and in this place. All the witty 
+			    conversational bits you might have used 
+			    hours ago are gone. This should be 
+			    serious, you think, but somehow running 
+			    makes you stop worrying, makes you not 
+			    even think about it at all.^^~How do you 
+			    know my name?~ she asks.^^Her face is 
+			    confused, lost. But her eyes shine.^^~Do 
+			    you know me from somewhere?~ she 
+			    continues.^^~No,~ you say. ~You just 
+			    look like you could use a ride.~^^You 
+			    should understand -- this isn't an 
+			    ending. Not even close. This is just how 
+			    it happens.^^This is how your story 
+			    changes.";
+	    	    };
+	],
+	react_before
+	[;
+	 Go:
+	    if (noun == w_obj or e_obj)
+		remove self;
+	],
+	before
+	[;
+	    switch (action)
+	    {
+	     ##AskForRide:
+	    	<<Ask self 'uh'>>;
+		
+	     ##Examine:
+		;
+		
+	     default:
+		"She's too far away.";
+	    };
+	],
+	each_turn
+	[;
+	    if (~~ --self.number)
+	    {
+		remove self;
+		"^The girl turns a corner and disappears forever.";
+	    };
+	],
+	acting_as 0,
+	number 5,
+
+	! faked constants used for acting_as
+
+	ACTING_RIGHT 1,
+	ACTING_WRONG -1,
+	ACTING_MAYBE 0,
+ has 	animate female;
+
+Object 	-> epilogue_int_pizzeria "pizzeria"
+ with 	name
+	    'pizzeria' 'old' 'on-its-last-legs' 'on' 'its' 'last'
+	    'legs' 'sign',
+	description
+	    "It looks like the kind of place that survives mostly on
+	    the fact that it's the only place for a couple blocks
+	    around and it's cheap enough to be convenient. But who
+	    knows, really -- this is just a guess, a tired guess...",
+	before
+	[;
+	 Enter:
+	    print_ret (The) self, " is closed.";
+	],
+ has 	scenery;
+
+Object -> epilogue_int_knickknack "knick-knack shop"
+ with	name
+	    'knick-knack' 'knick' 'knack' 'shop' 'store' 'silly'
+	    'time' 'remembered',
+	description
+	    "Time Remembered, it says on the front door in a frilly 
+	    typeface.",
+	before
+	[;
+	 Enter:
+	    print_ret (The) self, " is closed.";
+	],
+ has 	scenery;
+
+Object 	epilogue_beside_car "Beside Your Car"
+ with 	description
+	[;
+	    if (beside_car_dante_car has general)
+	    	"Your car is fine. Perfectly fine. It really was all 
+		a dream, or the drugs, or whatever. It's a last-second
+		reprieve, a pleasant surprise, a way out. Take it
+		now, you think, before things get screwed up again.";
+	    else
+		"Your car waits for you -- the only logical exit 
+		from this night, the only way out of this mess. 
+		Because it has been a mess. You don't even remember 
+		the party or any of the day that preceded it. This 
+		is just bad, just a bad way to end up.";
+
+	    "^^The intersection you just passed is to the west.";
+	],
+	e_to
+	    "No sense in wandering through the city aimlessly.",
+	w_to epilogue_int;
+
+Object 	-> epilogue_beside_car_car "Camry"
+ with	article
+	    'your',
+	name
+	    'camry' 'toyota' 'vehicle' 'automobile' 'car' 'door',
+	description
+	    "Your Camry is blue, sky blue.",
+	before
+	[;
+	 Enter, Open:
+	    deadflag = DEAD_JUSTPRINT;
+	    "The interior of your car is cool and the drive home 
+	    uneventful. The highway is empty, of course -- your 
+	    car's radio claims it's around 4 o'clock -- and you 
+	    leave the windows open, so that the sound of wind 
+	    rushing by your ears keeps you awake.^^You don't know 
+	    what to think about tonight. Hard to separate real from 
+	    fake, hard to say if you should even try to figure it 
+	    out. There's something nice about leaving some things 
+	    unsolved, un-puzzled out.^^Nothing may have really 
+	    happened to you tonight -- nothing real, anyway. But 
+	    that's alright. You have a mystery now. Someday you'll 
+	    understand.^^Waiting doesn't feel so bad.";
+	],
+ has 	scenery;

@@ -1,0 +1,1622 @@
+!
+! Blue Chairs
+! the sequence in which you dream you are president
+!
+
+Class 	DesertRoom
+ with	cant_go
+	[;
+	    print "No, in that direction is ";
+	    
+	    switch (random(5))
+	    {
+	     1:
+		print "your old elementary school";
+
+     	     2:
+		print "Taco Bell";
+
+	     3:
+		print "your grandmother's grave";
+
+	     4:
+		print "Cape Canaveral";
+		
+	     5:
+		print "the gorilla";
+	    };
+
+	    ". There's no time -- you have a job to do.";
+	];
+
+Class 	DesertObject
+ with 	found_in
+	[;
+	    return (location ofclass DesertRoom);
+	],
+ has 	scenery;
+
+Class 	DesertSign
+ with	article	"the",
+	initial
+	    "A sign is stuck in the sand here.",
+	description
+	[;
+	    print "~",  (string) self.text, ",~ the sign";
+	    
+	    if (self hasnt moved)
+		print ", half-sunk in the sand,";
+	    
+	    print " reads";
+
+	    if (self in player)
+		". It's mounted on a thin steel pole.";
+	    
+	    ".";
+	],
+	before
+	[;
+	 Pull:
+	    <<Take self>>;
+	],
+	after
+	[;
+	 Take:
+	    if (self hasnt moved)
+		print_ret (The) self, " comes free of the sand easily.";
+	];
+
+Class 	WhiteHouseRoom
+ class	DesertRoom;
+
+Class 	WhiteHouseObject
+ with	found_in
+	[;
+	    return (location ofclass WhiteHouseRoom);
+	],
+ has	scenery;
+
+! This class is hard-coded to whitehouse_doors.
+! I could make it more abstract, but who cares?
+
+Class 	WhiteHouseStatueHole (4)
+ with	name
+	    'circular' 'small' 'hole',
+	short_name
+	    "hole",
+	description
+	[;
+	    if (self.empty())
+		"It's perfectly circular, and maybe a few inches
+		deep.";
+	    else
+		print_ret "There is a sign that reads ~",
+		    (string) child(self).text, "~ placed in the hole,";
+	],
+	before
+	[;
+	 Receive:
+	    if (~~ self.empty())
+		"There already is a sign in the hole below the statue.";
+	    else
+		if (~~ noun ofclass DesertSign)
+		    "It doesn't seem to fit.";
+	],
+	after
+	[;
+	 Receive:
+	    if (self.right_gender(noun))
+		print (The) noun, " slips into the hole easily.^";
+	    else
+		print "It doesn't feel like it wants to fit, but with
+		    a little effort, it does.^";
+
+	    whitehouse_doors.check();
+	    rtrue;
+
+	 LetGo:
+	    if (self.right_gender(noun))
+		print (The) noun, " seems to come out of the 
+		    hole reluctantly.^";
+	    else
+		print (The) noun, " comes out with a little tug.^";
+
+	    whitehouse_doors.check();
+	    rtrue;
+	],
+	empty
+	[;
+	    return (children(self) == 0);
+	],
+	sign
+	[;
+	    return child(self);
+	],
+	sign_text
+	[;
+	    if (child(self))
+	    	return child(self).text;
+	    else
+		rfalse;
+	],
+	right_gender
+	[ i;
+	    ! This is implementation-specific.
+
+	    if (((parent(self) has male) && (i == sign1 or sign3)) ||
+		((parent(self) has female) && (i == sign2 or sign4)))
+		rtrue;
+	    else
+		rfalse;
+	],
+ has 	scenery container open;
+
+Class 	WhiteHouseStatue
+ with	each_turn
+	[;
+	    ! This seems to be the best way to instantiate a hole for
+	    ! the statue, since the statue itself is not created
+	    ! dynamically.
+	    
+	    if (~~ self.has_hole)
+	    {
+		self.hole = WhiteHouseStatueHole.create();
+		move self.hole to self;
+		self.has_hole = true;
+	    };
+	],
+	before
+	[;
+	 Receive:
+	    ! We need to be a container because the hole is a
+	    ! container too. If we're just transparent,
+
+	    L__M(##Insert, 2, self);
+	    rtrue;
+	    
+	 Examine:
+	    print (string) self.description;
+
+	    if (self.hole.empty())
+		"^^There's a small circular hole at the statue's 
+		feet. Not quite wide enough for a broomstick, but 
+		larger than, say, the point of a sword.";
+	    else
+		print_ret "^^~", (string) self.hole.sign_text(), ",~ 
+		    a sign in front of the statue reads.";
+	],
+	correct
+	[;
+	    if (~~ self.hole)
+		rfalse;
+	    else
+	    	return (self.hole.sign() == self.correct_sign);
+	],
+	has_hole false,
+	correct_sign,
+	hole,
+ has 	static container open;
+
+CarRoom driving_to_donuts "Driving Through Baltimore"
+ with	description
+	[;
+	    SetPronoun('him', driving_to_donuts_chris);
+	    "You're cruising through some side streets -- turns out 
+	    Chris knows an easier way to 83 than you do. He seems to 
+	    have come out of whatever weird state he was in back at 
+	    the party. Though he hasn't said that much so far, he at 
+	    least seems alert and somewhat coherent.^^His car is 
+	    kind of nice, though not quite nice enough to write home 
+	    about: there's a decent aftermarket stereo in the middle 
+	    of the dash and only the very bare minimum of crud on 
+	    the floor. A couple Blockbuster receipts, an ice scraper 
+	    in the back seat. That kind of thing.^^You've both got 
+	    your windows up, so the scene is silent and almost 
+	    tranquil.";
+	],
+	before
+       	[;
+	 Exit:
+	    "Hey, the car's still moving.";
+	],
+	each_turn
+	[;
+	    switch (++self.number)
+	    {
+	     1, 2:
+		rtrue;
+
+	     3:
+		"^It's sort of warm in here, now that you think of 
+		it -- which is weird, considering that the heat's 
+		off.";
+		
+	     4:
+		"^It's getting warmer, and you don't understand why.";
+
+	     5:
+		"^Goddamn, it's warm.";
+
+	     default:
+		"^It's unbearably warm. You've got to do something 
+		about it.";
+	    };
+	],
+	cant_go
+	    "Hey, you managed to get a ride here. Let's not screw it
+	    up already.",
+	number 0;
+
+Object	-> driving_to_donuts_window "window"
+ with	parse_name
+	[ i definite_match;
+	    while (true)
+	  	switch (NextWord())
+		{
+		 'car':
+		    i++;
+
+		 'window', 'windows', 'outside':
+		    definite_match = true;
+		    i++;
+
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	description
+	    "So many buildings. So many it's hard to begin to count.",
+	before
+	[;
+	 Open:
+	    print "You crack the window. For some reason, the air 
+		outside is freezing cold. Cold even for nighttime, 
+		cold even for:^";
+	    move bush to limo;
+	    ChangePlayer(bush);
+	    StartTimer(limo, 2);
+	    PlayerTo(limo);
+	    rtrue;
+	],
+ has 	scenery;
+
+Object 	-> driving_to_donuts_climate "climate controls"
+ with	name
+	    'air' 'conditioning' 'ac' 'heat' 'heater',
+	description
+	    "The car's climate controls are pretty
+	    straightforward-looking.",
+	before
+	[;
+	    if (action ~= ##Examine)
+		if (self hasnt general)
+		{
+		    give self general;
+  		    "Hey, don't mess with another man's climate
+		    control. Best to ask first.";
+		}
+		else
+		    "Chris swats away your hand. ~I mean, seriously,~
+		    he says, ~leave it be.~";
+	],
+ has 	scenery;
+
+Object 	-> driving_to_donuts_stereo "stereo"
+ with	name
+	    'stereo' 'aftermarket' 'decent' 'radio',
+	description
+	[;
+	    if (self has on)
+		"The display reads ~TR-01.~";
+	    else
+		print_ret "Right now, ", (the) self, "'s display is 
+		    blank -- it's off.";
+	],
+	before
+	[;
+	 Listen:
+	    if (self has on)
+		"Don't torture yourself. It's probably only going to
+		get worse.";
+	    else
+		"It would probably be more rewarding if said stereo 
+		was on.";
+	],
+	after
+	[;
+	 SwitchOn:
+	    give self on;
+	    "You lean over, click on the stereo. The dulcet voice of 
+	    Avril Lavigne fills the car, which causes your jaw to
+	    instinctually clench.";
+	    
+	 SwitchOff:
+	    "You jab at the power button, but for some reason, it 
+	    doesn't turn off. Well damn. The Avril front is not 
+	    looking so good.";
+	],
+ has 	scenery switchable;
+
+Object 	-> driving_to_donuts_receipts "Blockbuster receipts"
+ with 	name
+	    'blockbuster' 'receipt' 'receipts',
+	description
+	    "They lie in a tangled-up dirty pile near your feet.",
+	before
+	[;
+	 Take:
+	    "If you possessed an inclination toward identity theft, 
+	    then the receipts would probably be of some use -- but 
+	    as a mild-mannered, drug-addled kid, they're just some
+	    receipts.";
+	    
+	 Read:
+	    "Meh, it's not worth the time.";
+	],
+ has  	scenery pluralname;
+
+Object 	-> ice_scraper "ice scraper"
+ with	name
+	    'ice' 'scraper',
+	description
+	    "It's kind of goofy-looking, actually. There's a snow
+	    brush on one end, a ice scraper on the other. The whole
+	    shebang is cheap black plastic.",
+	before
+	[;
+	 Take:
+	    "~Hey,~ Chris says. ~I'll probably need that.~^^~It's
+	    April, man,~ you reply.^^~You never know,~ he says, giving
+	    you a brief look.";
+	],
+ has 	scenery;
+
+Object	-> driving_to_donuts_chris "Chris"
+ with	name
+	    'chris' 'klimas' 'guy' 'man' 'dude',
+	description
+	    "He looks straight ahead at the road, barely blinking.",
+	each_turn
+	[;
+	    if ((--self.number == 0) && (driving_to_donuts_stereo
+					 hasnt on))
+	    {
+		give driving_to_donuts_stereo on;
+		"^Chris leans over and turns the stereo on. What is 
+		this? None other that Miss Avril Lavigne. Jesus.";
+	    }
+	    else
+		if (random(3) == 1)
+		    "^Chris scratches at his ear a little anxiously.";
+	],  
+	life
+	[;
+	 Attack, Kiss:
+	    "Come on, that's totally inappropriate. The man is trying 
+	    to drive here.";
+	    
+	 Give, Show:
+	    "~Hey, I'm trying to drive here,~ he says.";
+
+	 Ask:
+	    self.number = 3;
+	    switch (second)
+	    {
+	     'heat', 'warm', 'warmth', 'hot', 'air',
+	     'conditioning', 'temperature':
+		"~Hey, can you turn on the AC or something? I'm 
+		really warm,~ you say.^^Chris gives you a weird 
+		look. ~Come on, man. It's fifty out there. If you're 
+		too hot, open a window or something.~";
+
+	     'party', 'house', 'tonight':
+		self.talked_party = true;
+		"~What were you doing at that party?~ you 
+		ask.^^~Just chilling, mostly,~ he says. ~One of 
+		those things you get invited to through a friend of 
+		a friend.~^^He's been hesitant to talk about where 
+		you found him -- you're not sure exactly why.";
+
+	     'friend':
+		if (self.talked_party)
+		    "~What's your friend's name?~ you ask. ~Just
+		    wondering. Maybe I know them.~^^~I actually don't
+		    know her last name... Alice?~";
+		else
+		    "~Did you come with any friends?~ you ask.^^~Nah,
+		    they all ditched me tonight. What are you gonna
+		    do?~";
+		
+	     'alice', 'alicia':
+		"~Do you know Alice?~ you ask.^^~No, not really,~
+		Chris says. ~Just another pretty girl I don't know all
+		that well.~";
+		
+	     'dance', 'dancing', 'living', 'room':
+		"~What were you doing out on the dance floor?~ you 
+		ask.^^~I'm not really much of a dancer,~ he says. 
+		~You blink once, and all of a sudden, you're 
+		surrounded by a whole lot of people you don't know 
+		and the music's so loud.~";
+
+	     'car', 'corolla', 'vehicle':
+		"~Nice car,~ you note.^^~Thanks,~ Chris says. ~I've 
+		had it for a couple years now.~";
+
+	     'avril', 'lavigne', 'music', 'stereo', 'radio':
+		if (driving_to_donuts_stereo has on)
+		   "~What's up with Avril?~ you ask.^^~Hey,~ he 
+		    says. ~Everybody's got a band they love but 
+		    don't want anyone else to know about. What's 
+		    yours?~^^~Christina,~ you admit.";
+		else
+		    "~Mind if I turn on the stereo?~ you 
+		    ask.^^~Sure,~ he says. ~Go ahead.~";
+
+	     'drug', 'drugs', 'green', 'liquid':
+		"~Hey, just wondering, but are you at all knowledgable
+		about drugs?~ you ask.^^~Not really,~ he says.";
+
+	     'ear', 'ears':
+		"~Is your ear okay?~ you ask.^^~Yeah, it's just a
+		habit,~ he says.";
+
+	     default:
+		"~Hmm,~ Chris says.";
+	    };
+
+	 Tell:
+	    self.number = 3;
+	    switch (second)
+	    {
+	     'beatrice':
+		"~Beatrice is up near the PA border,~ you explain. 
+		~It'll take a while to get up there.~^^~It's cool,~ 
+		Chris replies. ~I don't mind the drive.~";
+
+	     'me', 'myself':
+		"~I feel like I should tell you about myself or 
+		something,~ you say. ~What with you giving me a 
+		ride. So, uh, I'm an IT person for this real estate 
+		company.~^^~Do you like it?~ he asks.^^~Nah, not 
+		really.~";
+
+	     'drug', 'drugs', 'green', 'liquid':
+		"~To be totally fair,~ you say, ~I think I'm high
+		right now.~^^~Oookay,~ Chris says, and seems
+		remarkably unperturbed.";
+
+	     'avril', 'lavigne', 'music', 'song':
+		if (driving_to_donuts_stereo has on)
+		    "~Dude, Avril Lavigne blows,~ you say.^^~What can
+		    I say?~ Chris says. ~Everybody's allowed to like
+		    bad music.~";
+		else
+		    <<Ask self second>>;
+
+	     default:
+		<<Ask self second>>;
+	    };
+	],
+	talked_party
+	    false,
+	number
+	    3,
+ has 	concealed proper animate transparent;
+
+Object -> -> driving_to_donuts_chris_ear "ear"
+ with	name
+	    'ear' 'chris^s',
+	description
+	    "You don't see anything wrong with it...";
+
+Protagonist bush
+ with	description
+	    "You're dressed in your finest, of course. Laura helped 
+	    pick the suit out with you, a long time ago, a nice 
+	    afternoon it must have been though you don't quite 
+	    recall...";
+
+Object -> bush_suit "suit"
+ with	name
+	    'blue' 'finest' 'suit' 'clothes',
+	description
+	    "It's blue, my friend, the color of the working man.",
+	before
+	[;
+	 Disrobe:
+	    "No, that would be a terrible idea.";
+	],
+ has 	worn clothing concealed;
+
+CarRoom limo "January 20, in a Limousine"
+ with	description
+	[;
+	    if (self hasnt general)
+	    	"It's just before dawn, but you can tell it's going 
+		to be a fine day for an inauguration, finer by far 
+		than 2000 -- too cold that day, too many signs held 
+		up by the haters, the people who never understood 
+		that you won it fair and square. Their time has 
+		passed. The stars outside are magnificent. They all 
+		love you.^^You decided to ride shotgun this time 
+		since Laura and the kids couldn't make it, and 
+		there's nothing worse than sitting in the back of an 
+		empty limo.";
+	    else
+		"The limo's stopped now, right at the beginning of the
+		final leg to the White House. The engine purrs just
+		audibly; the driver taps a finger against the wheel, ";
+	],
+	time_left
+	    3,
+	time_out
+	[;
+	    give self general;
+	    "^The limo comes to a stop. ~Congratulations, Mr. 
+	    President,~ the driver says.^^It's time to take the last 
+	    leg of the journey from the ceremony to the White House; 
+	    it's time to take a walk.";
+	],
+	out_to
+	[;
+	    if (self hasnt general)
+		"The limo's still moving.";
+	    else
+	    {
+		print "~Good luck, sir,~ the driver says. ~I've been 
+		    praying for you ever since the day I turned 
+		    twenty-three.~^";
+		return desert1;
+	    };
+	];
+
+Object	-> limo_window "windows"
+ with	name
+	    'window' 'windows' 'outside' 'out',
+	description
+	    "Through the sliver of open window, you can see just the 
+	    faintest shade of blue. The sun must be just ready to 
+	    rise.",
+	before
+	[;
+	 Open, Close:
+	    "~Sorry, sir,~ the driver says. ~The windows aren't
+	    working. Not sure why.~^^Dammit.";
+	],
+ has  	scenery;
+
+Object 	-> limo_door "door"
+ with	name
+	    'door',
+	description
+	    "It's just a door, my friend. No need to get fancy about
+	    it.",
+	before
+	[;
+	 Open:
+	    <<Go out_obj>>;
+	],
+ has 	scenery;
+
+Object 	-> limo_limo "limo"
+ with	name
+	    'limo' 'limousine',
+	before
+	[;
+	 Examine:
+	    <<Look>>;
+	],
+ has 	scenery;
+
+Object 	-> limo_stars "stars"
+ with	name
+	    'stars' 'star' 'sky' 'night',
+	description
+	    "They glitter and glimmer.",
+ has 	scenery pluralname;
+
+Object 	-> limo_motorcade "motorcade"
+ with 	name
+	    'motorcade' 'cars',
+	description
+	    "You barely even notice them anymore, to tell the
+	    truth. All you really need to know is that they keep you
+	    safe.",
+ has	scenery;
+
+Object 	-> limo_driver "limo driver"
+ with	name
+	    'driver' 'man' 'guy',
+	initial
+	[;
+	    give self concealed;
+	    "The limo driver beside you scowls a little at the pace 
+	    of the motorcade and scratches his head. Nervous twitch 
+	    that guy's got. He's been putting you on edge all day 
+	    with that. Needs to calm down.";
+	],
+	description
+	    "An ordinary sort of guy, with a meek face and hands 
+	    that have never seen a day of real labor. The kind of 
+	    kid that thrives in Washington, the kind who will have a 
+	    job just five inches from the famous all his life.",
+	life
+	    "~Yes sir,~ the driver says, not really paying attention.",
+	orders
+	    "~In just a moment, sir,~ the driver says.",
+	each_turn
+	[;
+	    if ((limo has general) && (random(5) == 1))
+		"^~Mr. President,~ the driver says, looking at the
+		door. ~They're waiting for you.~";
+	],
+ has 	animate;
+
+DesertObject desert_sand "sand"
+ with	name
+	    'sand' 'dune' 'desert',
+	description
+	    "God, if you wanted to, you could stare it all
+	    day. America is more beautiful than it knows.",
+	before
+	[;
+	 Take:
+	    "You let a few grains fall through your fingers. Kind of a
+	    nice sensation.";
+	];
+
+DesertObject desert_sun "sun"
+ with	name
+	    'sun' 'sky',
+	description
+	    "You can't see the sun itself -- it must just be rising 
+	    now behind the White House. But there's a lovely orange 
+	    glow to the sky now and a barely perceivable warmth in 
+	    the air.";
+
+DesertObject desert_horizon "horizon"
+ with	name
+	    'horizon',
+	description
+	    "A line drawn by a shaking hand -- or maybe a graph of a
+	    single heartbeat...";
+
+
+Object desert_whitehouse "White House"
+ with	name
+	    'white' 'house' 'whitehouse',
+	description
+	    "It is the most perfect sandcastle you have ever seen.",
+	before
+	[;
+	 Enter:
+	    "You have to walk there first, of course.";
+	],
+	found_in
+	[;
+	    ! This is more restrictive than a normal DesertObject, in
+	    ! that it doesn't appear in WhiteHouseRooms. This is
+	    ! because there's two versions -- one very far off, one
+	    ! sort of near.
+	    
+	    return ((location ofclass DesertRoom) &&
+		    (~~ (location ofclass WhiteHouseRoom)));
+	],
+ has 	scenery;
+
+
+DesertRoom desert1 "On the Path to the White House"
+ with	description
+	[;
+    	    print "It's a desert. Sand the color of cocoa, as fine a 
+		powder as a man can ask for. It stretches to the 
+		horizon in every direction. Fortunately, the White 
+		House is exactly due east -- maybe a half hour's 
+		leisurely walk";
+
+	    if ((sign1 notin player) && (sign2 notin player) &&
+		(sign3 notin player) && (sign4 notin player))
+		print " -- and there seem to be signs stuck 
+		in the sand along the way, so there's no chance 
+		you'll get lost";
+
+	    ".^^This is different from four years ago, of course, 
+	    but wasn't everything? It was so gray then.";
+	    ],
+	each_turn
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+		"^The motorcade speeds off into the distance.";
+	    };
+	],
+	e_to
+            desert2;
+
+FarScenery -> desert1_signs "sighs"
+ with	name
+	    'sign' 'signs',
+	description
+	    "The signs are plain white -- that's all you can make out
+	    at this distance.";
+
+DesertRoom desert2 "A Bit Closer to the White House"
+ with	description
+	    "The desert has a way of clouding a man's mind -- more 
+	    so even than the string of McDonald'ses and churches 
+	    that once constituted America could. There's no 
+	    dimension to it, no geography beyond sun and horizon. 
+	    You're lucky you know where you're going. To the east, 
+	    toward the White House.",
+	e_to
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+		give reporter general;
+		move reporter to self;
+		reporter.question1();
+		rtrue;
+	    }
+	    else
+		return desert3;
+	],
+	w_to
+	    "There's nothing there, son. Not anymore.";
+
+DesertSign -> sign1 "first sign"
+ with	name
+	    'one' 'first' '1//' 'sign' 'trapped' 'steel' 'pole',
+	text
+	    "I want to be rescued";
+
+DesertRoom desert3 "Further in the Desert"
+ with 	description
+	    "You're at the peak of a dune, a pretty high one at that 
+	    -- you can see for miles and miles perhaps. Shame 
+	    there's really not too much to see: just sand and more 
+	    sand. Not even footprints. Folks must have packed it in 
+	    this year. Ah well. No sense in worrying about it. To 
+	    the east is the White House, and you can perhaps pick 
+	    out the way you came to the west.",
+	each_turn
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+		reporter.question2();
+	    };
+	],
+	w_to
+            desert1,
+	e_to
+	    desert4;
+
+DesertSign -> sign2 "second sign"
+ with	name
+	    'two' 'second' '2//' 'sign' 'name' 'steel' 'pole',
+	text
+	    "No one knows my name";
+
+DesertRoom desert4 "Halfway to the White House"
+ with 	description
+	    "It's only maybe another fifteen minutes' walk to the 
+	    White House. The sand rises and falls around you and for 
+	    some reason, you are acutely aware that the air is still 
+	    cool, that this is the desert's resting point. There's a 
+	    smell of cinnamon in the air for some reason -- just a 
+	    faint smell, the kind that ought to trigger an old 
+	    memory but doesn't. You can continue to the east, to 
+	    where the sun is rising -- but then you could always try 
+	    west.",
+	each_turn
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+		reporter.question3();
+	    };
+	],
+	w_to
+            desert3,
+	e_to
+            desert5;
+
+DesertSign -> sign3 "third sign"
+ with	name
+	    'three' 'third' '3//' 'sign' 'different' 'steel' 'pole',
+	text
+	    "I'm dreaming";
+
+DesertRoom desert5 "Close to the White House"
+ with	description
+	    "A man could go mad trying to describe the desert to 
+	    another man -- it's easy enough to talk sand, mind you. 
+	    It's harder to get down to brass tacks with endlessness 
+	    and loneliness, to talk the truth about anything, 
+	    really, except the long white curves of the desert. But 
+	    they're not even curves, really. Maybe closer to waves, 
+	    maybe closer to doodles drawn by a half-asleep 
+	    Picasso.^^The White House is just a little bit to the 
+	    east, and you can follow the trail of footsteps you left 
+	    behind to the west.",
+	each_turn
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+		reporter.question4();
+	    };
+	],
+	e_to
+	[;
+	    if (reporter has general)
+	    {
+		give reporter ~general;
+		remove reporter;
+		print "There's a weird noise behind you -- you look, 
+		    and the reporter's gone.^";
+	    };
+	    
+	    return whitehouse_west;
+	],
+	w_to
+            desert4;
+
+DesertSign -> sign4 "fourth sign"
+ with 	name
+	    'four' 'real' 'fourth' '4//' 'sign' 'steel' 'pole',
+	text
+	    "I'm waiting for you";
+
+WhiteHouseObject whitehouse_whitehouse "White House"
+ with 	name
+	    'white' 'house' 'building' 'wall' 'walls' 'window'
+	    'windows' 'frame' 'filigree' 'sandcastle' 'blank',
+	description
+	    "The White House had windows once, you know. Back when 
+	    it was made of sandstone, not sand; back when you were a 
+	    real human being and not president. But be rational 
+	    about it. In the middle of a desert, windows are a bad 
+	    idea, a desperate attempt to believe you still live in a 
+	    temperate clime. The White House is dark, cool, and 
+	    quiet inside. So few things are all three 
+	    simultaneously.^^The walls of the White House are ragged 
+	    -- the result of nearly a quarter-century in the desert 
+	    -- but still seem stable.",
+	before
+	[;
+	 Enter, Open:
+	    "IF you want to get in, you'll have to use the door.";
+	];
+
+WhiteHouseRoom whitehouse_west "Outside the White House"
+ with	description
+	    "Steps -- milky white sand, packed tightly -- rise from 
+	    the desert in front of you. It takes a careful eye to 
+	    tell sand from sand, to see where nature ends and man's 
+	    work begins. How long did it take to build all the 
+	    pillars that support the White House's pediment? How 
+	    long to pack all the sand as tight as a man's last 
+	    breath, to carve perfect grooves from top to bottom, and 
+	    to make sure it never falls?^^The great iron doors of 
+	    the White House are beneath the pediment to the east. If 
+	    you'd like, you can also walk around the White House to 
+	    the northeast and southeast.",
+	w_to
+            desert5,
+	e_to
+            beneath_pediment,
+	ne_to
+	    whitehouse_north,
+	se_to
+	    whitehouse_south;
+
+WhiteHouseStatue -> dante_statue "statue of a young man"
+ with	name
+	    'young' 'man' 'statue' 'black' 'metal' 'scraggly' 'hair'
+	    'eyes' 'jeans' 't-shirt' 'shirt',
+	initial
+	    "A statue of a young man is a few feet in front of the 
+	    steps. Funny. It wasn't here four years ago.",
+	description
+	    "It's made from an almost black metal -- you're terrible 
+	    with the names of metals once you get past the Olympics. 
+	    But whoever made this spent a lot of time on it. The 
+	    young man depicted looks like he's just woken up, with 
+	    scraggly hair and half-closed eyes. As if he's afraid to 
+	    even look to see that he's still alive. He's got on a 
+	    pair of jeans and a T-shirt, of all things, with this 
+	    mysterious message: ~THERE'S NO PLACE LIKE 127.0.0.1.~",
+	correct_sign
+            sign3,
+ has 	male;
+
+Object -> whitehouse_west_steps "steps"
+ with	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'sand':
+		    i++;
+
+		 'step', 'steps':
+		    definite_match = true;
+		    i++;
+
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	description
+	    "The steps are mostly decorative -- there are only three 
+	    of them.",
+	before
+	[;
+	 Climb:
+	    <<Go e_obj>>;
+	],
+ has 	scenery;
+
+Object -> whitehouse_west_pillars "pillars"
+ with	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'sand':
+		    i++;
+
+		 'pillar', 'pillars', 'groove', 'grooves':
+		    i++;
+		    definite_match = true;
+
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	description
+	    "There are nine pillars, evenly spaced out, supporting 
+	    the White House's pediment.",
+ has 	scenery;
+
+Object -> whitehouse_west_pediment "pediment"
+ with	name
+	    'pediment' 'roof',
+	description
+	    "It's a -- wait, that can't be right. The White House 
+	    doesn't have one of those. It's the Jefferson Memorial 
+	    that has one, like on the nickel. But this looks right 
+	    to you. It doesn't seem that anything's changed. But it 
+	    isn't right.",
+ has 	scenery;
+
+FarScenery -> whitehouse_west_doors "White House doors"
+ with	name
+	    'iron' 'door' 'doors',
+	description
+	[;
+	    if (whitehouse_doors hasnt open)
+		"The doors would be sort of forbidding, if they
+		weren't so familiar.";
+	    else
+		"Hey, it looks like the doors are open now.";
+	];
+
+WhiteHouseRoom beneath_pediment "Beneath the Pediment"
+ with	description
+	    "There would be shade here if it were afternoon. But it 
+	    isn't, and instead it feels almost clammy. The warmth 
+	    you felt walking the desert is gone. The main doors -- 
+	    two stories tall, plain iron -- are the main feature of 
+	    this face of the White House. The sand wall still holds 
+	    some suggestion of what this house once was: a filigree 
+	    here, a window frame directly above you. But soon it'll 
+	    all be gone. Sand can only hold memory for so long.^^You 
+	    can head back out to the west. ",
+	w_to
+            whitehouse_west,
+	e_to
+	[;
+	    <<Go in_obj>>;
+	],
+	in_to
+	    whitehouse_doors,
+	cant_go
+		"The only way into the White House seems to be the
+		iron doors in front of you.";
+
+Object -> whitehouse_doors "iron doors"
+ with	name
+	    'iron' 'cellar' 'flat' 'doors' 'door' 'handle' 'handles',
+	describe
+	[;
+	    if (self has open)
+		"^The doors leading inside are open, but you can't 
+		see inside. It's too dark.";
+
+	    rtrue;
+	],
+	description
+	    "The doors are flat iron, almost like the kind of thing 
+	    you'd see leading to a cellar. There are barely handles 
+	    on the doors, let alone a keyhole or knocker.",
+	before
+	[;
+	 Open:
+	    if (self hasnt open)
+		"The doors don't budge when you pull on them.";
+	    else
+		"The doors are already open.";
+
+	 Close:
+	    if (self has open)
+		"You can't seem to move the doors.";
+	    else
+		"Mission accomplished: the doors are already closed.";
+
+	 Attack:
+	    "The sound is like a church bell. There's no response 
+	    from inside -- but then, your staff haven't arrived yet.";
+	],
+	check
+	[;
+	    if ((self has open) && ((~~ dante_statue.correct()) ||
+				    (~~ beatrice_statue.correct()) ||
+				    (~~ chris_statue.correct()) ||
+				    (~~ alice_statue.correct())))
+	    {
+		give self ~open;
+
+		if (location == whitehouse_west)
+		    "^The doors to the White House slide closed.";
+		else
+		    "^You hear a dull, scraping-metal kind of noise. 
+		    You're not exactly sure where it came from.";
+	    };
+
+	    if ((self hasnt open) && (dante_statue.correct() &&
+				      beatrice_statue.correct() &&
+				      chris_statue.correct() &&
+				      alice_statue.correct()))
+	    {
+		give self open;
+
+		if (location == whitehouse_west)
+		    "^With an uneasy rustling noise, the doors 
+		    beneath the pediment open.";
+		else
+		    "^There's a dull, scraping-metal kind of 
+		    noise. It's coming from somewhere nearby, but 
+		    you're not sure where exactly.";
+	    };
+	],
+	door_dir in_to,
+	door_to whitehouse_darkness,
+ has 	static door;
+
+WhiteHouseRoom whitehouse_north "White House, North Side"
+ with 	description
+	    "This side of the White House is a blank wall, as if 
+	    someone didn't feel up to finishing the blueprint. 
+	    Quirky. That's what the word for it might be. Modern 
+	    life demands quirkiness -- and what you end up with is a 
+	    blank face and perfect corners. To the southwest is the
+	    front of the White House; southeast is the rear.",
+	s_to
+	    "There isn't any way into the White House on this side.",
+	sw_to whitehouse_west,
+	se_to whitehouse_east;
+
+WhiteHouseStatue -> beatrice_statue "statue of a beautiful woman"
+ with	name
+	    'beautiful' 'woman' 'statue' 'hands' 'dress' 'body' 'face',
+	initial
+	    "A statue of a beautiful woman stares into the desert.",
+	description
+	    "She peers into the distance through her hands, as if 
+	    she cannot believe what she is seeing. Waiting for 
+	    someone, maybe, who may not be coming. Her dress clings 
+	    to her body, caught in a slow breeze forever.^^How do 
+	    you know she's beautiful, if you can't see her face? You 
+	    just -- know. Maybe you've met before and just don't 
+	    remember. You meet so many people these days.",
+	correct_sign
+            sign4,
+ has 	female;
+
+WhiteHouseRoom whitehouse_south "White House, South Side"
+ with	description
+	    "The remains of a garden: a square stone wall that once 
+	    separated dandelions from orchids. Aside from that, 
+	    there's not much worth remembering here. It's always the 
+	    inside of things that counts. The east side of the White 
+	    House is to the northeast; to the northwest is the 
+	    entrance.",
+	n_to
+	    "There isn't any way into the White House on this side.",
+	nw_to whitehouse_west,
+	ne_to whitehouse_east;
+
+WhiteHouseStatue -> chris_statue "statue of a tall man"
+ with	name
+	    'tall' 'man' 'statue' 't-shirt' 'jeans' 'clothes',
+	initial
+	    "A statue of a tall man is here.",
+	description
+	    "Oddly, he's wearing a T-shirt and jeans, though his 
+	    clothes aren't otherwise notable. He clutches a 
+	    paperback book in his hands. He slouches slightly, as if 
+	    it had taken him a long time to learn how to be tall.",
+	correct_sign
+            sign1,
+ has 	male;
+
+Object -> -> chris_statue_book "book"
+ with 	name
+	    'paperback' 'book',
+	description
+	    "The book's face is blank.",
+ has 	static;
+
+Object 	-> whitehouse_south_wall "garden wall"
+ with	name
+	    'garden' 'wall' 'walls' 'stone' 'square' 'chunk' 'chunks' 'mortar',
+	description
+	    "Your grandfather's house once had a wall like it:
+	    individual chunks of stone mortared together. It's covered
+	    in sand and grime, and parts of the wall have fallen to
+	    the ground entirely.",
+ has 	scenery;
+
+WhiteHouseRoom whitehouse_east "White House, East Side"
+ with	description
+	    "At last you can see the sun. It's just over the horizon 
+	    now, and glows a bright orangish red. The back of the 
+	    White House is all leftovers -- doors that once led 
+	    somewhere, a balcony without an entrance. All of it is 
+	    just a surface to reflect the sun's rosy hue. An entire 
+	    building the color of a heart not yet broken. The only 
+	    door that works is the front one, back northwest or 
+	    southwest.",
+	w_to
+	    "There isn't any way into the White House on this side.",
+	nw_to whitehouse_north,
+	sw_to whitehouse_south;
+
+WhiteHouseStatue -> alice_statue "statue of a young woman"
+ with	name
+	    'young' 'woman' 'statue' 'patch' 'jeans' 'metal' 'cold',
+	initial
+	    "A statue of a young woman smiles at you.",
+	description
+	    "She's got a goofy smile on her face, that kind of look 
+	    girls take on when they've decided you're cute. And 
+	    what's more, there's hope in her eyes, that somehow she 
+	    believes things will be different in a second, that 
+	    everything from now on will be surprising.^^The jeans 
+	    she wears are rumpled, with a patch sewn on her left 
+	    knee. It's amazing how they can capture fabric and skin 
+	    so realistically with cold metal.",
+	correct_sign
+            sign2,
+ has 	female;
+
+Object -> whitehouse_east_scenery "White House"
+ with	name
+	    'balcony' 'door' 'doors' 'leftovers',
+	before
+	[;
+	    ! This is kind of lame because I don't know how to use a
+	    ! variable in <<verb object>> notation
+
+	    if (action == ##Examine)
+		<<Examine whitehouse_whitehouse>>;
+	    else
+		<<Take whitehouse_whitehouse>>;
+	],
+ has 	scenery;
+
+Object 	whitehouse_darkness "Darkness"
+ with 	description
+	    "This isn't right. There ought to be gilded halls, red 
+	    carpets, an agenda and a mission statement. A reason. 
+	    That's all you really need to get by. All it is is 
+	    darkness. You can't even really tell how big it is in 
+	    here -- whether this is the entirety of the White House, 
+	    or maybe just one room.^^There is one option, 
+	    however.^^A blue chair waits a few feet from you. It's 
+	    highlighted by a circle of light whose source you can't 
+	    see.",
+	each_turn
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+		"^There's a noise behind you and the meek light coming
+		from the doors behind you disappears; the doors have
+		closed themselves.";
+	    };
+	],
+	cant_go
+	[;
+	    if (noun ~= u_obj or d_obj or in_obj)
+	    	"You feel around for the doors, but can't find them.";
+	    else
+		L__M(##Go, 2);
+	];
+
+Object -> whitehouse_darkness_chair "blue chair"
+ with 	name
+	    'blue' 'chair',
+	description
+	    "Simple and ergonomic. The kind you'd see in every 
+	    cubicle across America -- well, when there were 
+	    cubicles.",
+	before
+	[;
+	 Enter:
+	    print "It's so nice to finally sit down after your walk 
+		across the desert. The chair is comfortable, but 
+		then all blue chairs are.^^~Can you do me a favor?~ 
+		a voice asks.^^Familiar. It's familiar.^^~Anything,~ 
+		you say.^[...]";
+	    KeyCharPrimitive();
+	    ClearScreen();
+	    print "^~Would you run in and grab me a doughnut?~^^It 
+		hurts to wake up. You feel scared but don't know 
+		why. Your throat's dry, which always happens to you 
+		when you take a nap, and your arms hurt, which is 
+		new. You're not sure what to think, what to 
+		feel.^^There's not much to see but you feel confused 
+		anyway. The car's parked beside a gas pump now, and 
+		there's a slight breeze coming through the window 
+		beside you. The air is just cold enough to be 
+		considered cool. Your eyes keep shifting over the 
+		same things, like you're going to catch something 
+		being wrong, being fake, being part of the dream 
+		still.^^But you're awake. You really are.^^~A 
+		doughnut?~ you ask.^^~Yeah, I gotta fill up the 
+		tank,~ Chris says. ~If they have Krispy Kreme, that 
+		would be ideal.~^^He plops a couple wrinked bills in 
+		your hand and gets out of the car. You're still not 
+		sure what to do, but what the fuck? Start with 
+		something simple. Follow his lead, get out of the 
+		car. Standing up feels weird for half a second, like 
+		maybe you're going to faint but you've never fainted 
+		before or anything, it's just how you imagine it 
+		might feel. And then the feeling's gone.^^You are 
+		awake. This is an important fact to remember -- you 
+		tell yourself this a couple times, to make sure it 
+		sinks in.^";
+	    ChangePlayer(dante);
+	    move chris_money to player;
+	    PlayerTo(outside_station);
+	    rtrue;
+	    
+	 Take:
+	    "You can't lift the chair from the ground.";
+
+	 Push, Pull:
+	    "You give it a little shove, but it doesn't move. Weird.";
+	],
+ has	scenery supporter;
+
+Object -> whitehouse_darkness_light "light"
+ with 	name
+	    'circle' 'light' 'spotlight' 'spot',
+	description
+	    "For some reason, it reminds you of middle school.",
+	before
+	[;
+	    if (action ~= ##Examine)
+		"It's just light.";
+	],
+ has 	scenery;
+
+Object -> whitehouse_darkness_doors "doors"
+ with	name
+	    'iron' 'cellar' 'flat' 'doors' 'door' 'handle' 'handles',
+	before
+	[;
+	    <<Go n_obj>>;
+	],
+ has 	scenery;
+
+Object 	reporter "reporter"
+ with	name
+	    'reporter' 'woman' 'alice' 'alicia',
+	initial
+	    "The reporter's not done with you yet, apparently -- she's
+	    still following you.",
+	description
+	    "She's beautiful, you know. Almost all the Washington 
+	    press are -- not in a beauty pageant kind of way. More 
+	    like a sleeping princess. She's got her blonde hair tied 
+	    tightly back in a bun, and while her slick black suit is 
+	    certainly professional, she could be so much
+	    prettier... if she just changed a little bit...",
+	found_in
+	[;
+	    return (self has general);
+	],
+	life
+	[;
+	 Ask, Tell:
+	    "Karl warned you: don't try to engage these fuckers in 
+	    real conversation. Just answer the questions they want 
+	    to ask you. Things get complicated when you jump off the 
+	    script.";
+
+	 Show:
+	    "She shrugs, doesn't really get it.";
+
+	 Give:
+	    "~No thanks,~ she says.";
+
+	 Attack, Kiss:
+	    "Oh, the headlines that'd cause.";
+	],
+	orders
+	[;
+	    <<Ask self 'uh'>>;
+	],
+     	question1
+	[;
+	    print "~Can I ask you a question, Mr. President--~ a 
+		voice says from behind you. You turn and smile 
+		immediately; there must be cameras watching. A 
+		reporter -- she must have run here to catch you, her 
+		face is so red -- is a few feet behind 
+		you.^^~Anything,~ you say.^^~Were you in love with 
+		Beatrice?~ the reporter asks.^^>>";
+
+	    if (YesOrNo())
+	    {
+		self.answer1 = true;
+		"~Yeah,~ you say. ~I thought we were supposed to 
+		fall in love with each other. I kept running into 
+		her my first year of college. I thought it was fate. 
+		I used to believe in it. I used to think things 
+		happened for a reason. But it was just that her last 
+		name was almost the same as mine.~^^~I never tried 
+		to talk to her or anything, even though I thought 
+		she was pretty. It was almost sort of a game. Like 
+		in the middle of Intro to Poli Sci, I'd glance at 
+		her and try to guess what her favorite ice cream 
+		flavor was. She looked kind of like a mint chocolate 
+		chip girl.~^^~Were you right?~ the reporter asks.^^ 
+		~Close,~ you say. ~Peppermint.~";
+	    }
+	    else
+		"~No, it wasn't exactly love,~ you say. ~Not 
+		obsession. Not infatuation. Not even 
+		yearning...~^^~Were you attract--~ the reporter 
+		begins.^^~Enchantment,~ you say. ~That's the right 
+		word for it. She was so much better than I was in 
+		almost every way I could tell. The only thing I was 
+		better at was spelling. Beatrice's dyslexic, but 
+		you'd almost never know it.~^^~How'd you meet?~^^~I 
+		was out for a walk at dawn and so was she,~ you 
+		explain. ~I had seen her around campus a couple 
+		times but never talked to her or anything. You know 
+		what I mean? All the people you see all the time but 
+		never talk to? The guy who works down the hall from 
+		you?~^^~What were you doing out there?~^^~I used to 
+		do it to help me think. Not so much anymore... I'm a 
+		night person.~^^~And why was she there?~^^~I don't 
+		know,~ you say. ~I never asked. I just kind of 
+		assumed she was there for the same reason I was.~";
+	],
+	question2
+	[;
+	    if (self.answer1)
+	    {
+		print "^~Did you finally make a move?~ the reporter 
+		    asks.^^>>";
+		
+	    	if (YesOrNo())
+	    	{
+		    self.answer2 = true;
+		    "~It took me three years. Can you believe 
+		    it?~^^The reporter chortles good-naturedly, 
+		    ingratiatingly, readying herself to ask the 
+		    deep, incisive question she's waited to ask the 
+		    leader of the free world all her career.^^~It 
+		    was all luck, maybe from start to finish. I 
+		    decided one night senior year to get totally 
+		    shitfaced. My thesis was done and I was just 
+		    killing time. And I'd never really gotten 
+		    trashed before. Never even had a hangover. I was 
+		    good at drinking.^^~I was walking back, not 
+		    really knowing where in the hell I was walking, 
+		    and there she was. Just sitting on a curb.~^^ 
+		    ~What was she doing there?~^^~I don't know. I 
+		    didn't even try to guess. I must've said hello 
+		    or tried to talk to her or something, but all I 
+		    remember is just kissing her. Just out of 
+		    nowhere. Or it's just that I don't remember what 
+		    happened. But somehow it all just... worked.^^ 
+		    ~I never told her about all the years before 
+		    then. It would have just been creepy. To her, I 
+		    was just some kid she found, beginning of the 
+		    day, just some kid...^^~It was really good,~ you 
+		    say. ~It was really good for almost a year.~";
+	    	}
+	    	else
+		    "~No. I was never that brave. I ran into her at 
+		    a dance my senior year. Really ran into her. I 
+		    was in the middle of this insane crowd -- things 
+		    always get really packed in the last hour or two 
+		    and I backed right into her.^^~I turned around 
+		    and must've had the most perfect 
+		    deer-in-the-headlights look on my face. But she 
+		    didn't care. She just grabbed me by the hand and 
+		    said something -- I wish I knew what it was, but 
+		    I couldn't hear a thing over the music.^^~I 
+		    thought she must've been trashed because she 
+		    seemed so happy to see me. But she wasn't. 
+		    Beatrice never drank, didn't even take aspirin 
+		    when she had a headache.^^~After it was all 
+		    over, we took a walk through town right before 
+		    dawn. And when we reached the water, she turned 
+		    to me and asked, 'Why didn't we meet each other 
+		    sooner?'^^~Everything fit so well with us. I 
+		    really do wish I had asked her out before. It 
+		    might've gone better. I might not even have to 
+		    be talking to you now.~";
+	    }
+	    else
+	    {
+		print "^~So did you hit it off right away?~ the 
+		    reporter asks.^^>>";
+
+		if (YesOrNo())
+		{
+		    self.answer2 = true;
+		    "~Yeah. It was so weird... I had been a loner 
+		    almost all the time, ever since middle school. I 
+		    mean, I had friends, but nobody really close. 
+		    And all of a sudden, she was there all the time. 
+		    We spent so much time together. I kept wondering 
+		    when she was going to get sick of me -- just get 
+		    tired of me, you know? But it never 
+		    happened.~^^~Isn't that love?~ the reporter 
+		    asks.^^~Maybe. I guess you're right. It has to 
+		    be, doesn't it? I don't know. We were good
+		    together, honestly. We were good for each
+		    other. We understood each other.^^~It's so hard to
+		    find anyone that understands me,~ you say.";
+		}
+		else
+		    "~Not at first. We were just strangers, and I 
+		    was shy. We'd walk places a lot, talk about 
+		    things, but we didn't really know each other. It 
+		    was a long time before I even knew her last 
+		    name, or even what dorm she lived in.^^~I always 
+		    wondered what she thought of me. Whether she 
+		    really liked me at all, or if I was just 
+		    somebody to talk to, just a reason to stop 
+		    feeling lonely. So one morning, she was there 
+		    with some flowers in her hand. I asked who they 
+		    were for -- it was a retarded move, even for 
+		    then -- and she said they were for me.^^~I asked 
+		    why -- which probably also was kind of dumb -- 
+		    and she said it was my birthday. Which was true. 
+		    How funny is that? I didn't even remember but 
+		    she did. I didn't even know I had told her.^^~I 
+		    smiled like a goof and was just about to say 
+		    something really dumb -- but she kissed 
+		    me.~^^You stop for a second, just to think.^^~We 
+		    had a really good relationship,~ you say. ~It 
+		    was so good when it worked.~";
+	    };
+	],
+	question3
+	[;
+	    print "^~Was it her fault that you broke up?~ the reporter
+	    asks.^^>>";
+
+	    if (YesOrNo())
+	    {
+		self.answer3 = true;
+
+		print "~Yeah, it was her fault. I'm not trying to be 
+		    petty. I know it's not fair because she can't 
+		    defend herself, but it's the truth. After she 
+		    decided to spend a year in Toronto.~^^~I asked 
+		    her why Toronto. She said she always knew there 
+		    was something she needed to find in Canada. I 
+		    deserve a fucking Congressional Medal of Honor 
+		    for not cracking even a single smile when she 
+		    said that. Like she misplaced her glasses there 
+		    or something.^^~I asked her why Toronto again. 
+		    Because if you're going to be romantic, why not 
+		    be all-the-way romantic? Go to Paris or maybe 
+		    Morocco or some other place that isn't half as 
+		    cool as people think it is.^^~She just smiled, 
+		    told me I would never understand it, told me she 
+		    was just plain old tired of her life.^^~I 
+		    figured she was tired of me, too. She never even 
+		    asked if I wanted to come with her. I never even 
+		    said goodbye to her. Not a real goodbye. We went 
+		    out for vanilla milkshakes one night and the 
+		    next morning, she was gone forever.^^~That was 
+		    maybe two years ago. I heard she came back 
+		    eventually, but I never tried to find her 
+		    again.~^^~Do you regret not saying goodbye to 
+		    her?~ the reporter asks.^^>>";
+
+	     	if (YesOrNo())
+	     	    "~Yeah,~ you say. ~I always thought there was 
+		    something I could say to her to make her stay. 
+		    But what was there that I hadn't already said? I 
+		    was all out of magic words.~ ";
+		else
+		    "~No,~ you say. ~I wouldn't have said the right 
+		    thing, anyway.~";
+	    }
+	    else
+		"~No. It was me. I moved. I got this job up in 
+		Philly after college -- turned out to be just 
+		another loser startup. Somehow the bust didn't catch 
+		everyone it should've. But you have to understand 
+		why I left. It felt like I was going to live the 
+		dream.~^^~The American dream?~ the reporter 
+		asks.^^~No,~ you say. ~The American dream is dead. 
+		What used to be the American dream, anyway. There's 
+		a new one now.^^~Breaking up was a mutual thing. It 
+		was just logical, you know? She liked her life in 
+		Maryland. I never liked the state, not even when I 
+		was a kid. I promised to call her, but I never 
+		did.~^^~Why didn't you?~ the reporter asks.^^~I 
+		don't know, you say. I wish I knew. And when the 
+		whole job thing fell through and I had to move back 
+		in with my parents for a few months, I didn't call 
+		her. I was ashamed then. I know that. But I don't 
+		know why I didn't try to call her when I moved out 
+		again. It's been a long time.^^~But then, she never 
+		tried to call me either.~ ";;
+	],
+	question4
+	[;
+	    print "^~I just have one last question, Mr. President,~ 
+		the reporter says.^^~Shoot.~^^~Is any of what you 
+		just told me real?~^^>>";
+
+	    if (YesOrNo())
+	    	print "~Yes, yes, of course it is. It's funny you 
+		    say that.";
+	    else
+		print "~I don't like the word 'real' because I don't 
+		    understand what people mean by it.";
+	    
+	    " Beatrice told me once that I was the most real person 
+	    she knew.~^^You turn, look at the reporter squarely.^^~I 
+	    mean, what does it mean to be real? Something's real if 
+	    you can touch if you can see it -- isn't that right? So 
+	    I'm touchable? So people can see me? So I'm really 
+	    actually a human being? Is that all that means?~^^The 
+	    reporter says nothing.^^~No more questions,~ you say. 
+	    ~I've got to get to my office. It's almost certainly not 
+	    real, but at least it's safe.~";
+	],
+	answer1
+           false,
+	answer2
+           false,
+	answer3
+           false,
+ has 	female animate;

@@ -1,0 +1,561 @@
+!
+! Blue Chairs
+! help and hints
+!
+
+Class 	Hint
+ class 	Option,
+ with 	hints,
+	number 0,
+	description
+	[ i;
+	    print "Press ENTER or Q to return to the menu, or H for
+		another hint.^^";
+
+	    ! print already-displayed hints
+	    ! this is sort of backwards to dovetail with print_hint()
+	    
+	    i = self.number;
+	    self.number = 0;
+	    
+	    for (self.number = 0 : self.number <= i : self.number++)
+		self.print_hint();
+
+	    self.number--;
+	    
+	    ! loop around input
+	    
+	    while (self.number < (self.#hints / 2) - 1)
+	    {
+		i = KeyCharPrimitive();
+
+		switch (i)
+		{
+		 13, 81, 113:
+		    ! enter or Q
+		    return 2;
+
+		 72, 104:
+		    ! H
+		    self.number++;
+		    self.print_hint();
+
+		 default:
+		    @sound_effect 2;
+		};
+	    };
+	],
+	print_hint
+	[ left;
+	    left = ((self.#hints) / 2) - self.number - 1;
+	    style bold;
+	    print "(";
+	    
+	    if (left)
+		print left;
+	    else
+		print "no";
+
+	    print " hint";
+
+	    if (left ~= 1)
+		print "s";
+
+	    print " left)";
+	    style roman;
+	    print " ", (string) self.&hints-->(self.number), "^";
+	];
+
+Menu help_menu "Blue Chairs";
+
+Option -> "Useful Things to Know"
+ with description
+    	    "This game uses color in very limited ways. Entering 
+	    MONOCHROME will disable color, and COLOR will re-enable 
+	    it. Nothing essential is conveyed through color.^^The 
+	    best way to talk to people is to ASK or TELL them 
+	    things. One-word topics are the tastiest. The one 
+	    exception is if you'd like to ask someone for a ride. 
+	    The most succinct way to do that is to type ASK person 
+	    FOR A RIDE.^^When the prompt becomes two arrows (i.e. 
+	    >>), that means you are saying something directly to 
+	    another character. Sometimes this entails just a 
+	    yes-or-no response; other times, you can say anything 
+	    you want to.";
+
+Option -> "About the Author"
+ with description
+    	    "Chris Klimas turned 23 two years ago. An elderly woman
+	    working the register at a sandwich shop asked him today
+	    how tall he is. He never knows the exact answer, even
+	    though lots of people ask him. Lots of people also call
+	    him a curmudgeon, even though he isn't. He loves lots of
+	    things: beaches, pretty girls, waffles.^^He can be
+	    reached at klimas@@64crunchable.net.";
+
+Option -> "Apologies and Acknowledgments"
+ with description
+    	    "If you've never heard of Krispy Kremes, I'm sorry.^^If 
+	    you've never heard of Dundalk... count yourself luckier 
+	    than you would know.^^This game was produced using a 
+	    combination of the programming language Inform, the text 
+	    editor Emacs, an iBook that crapped out at the very last 
+	    moment, and a dependable Linux box. So lots of people 
+	    deserve thanks on that score.^^But in particular, thank 
+	    you to my beta testers: Steve Bernard, Jonathan Blask, 
+	    Erik Frederickson, Robb Sherwin, Mark Wickham, and this 
+	    one dude who went by the name Elkins but never gave me 
+	    his real name.^^Special thanks to Katie and Sarah, my 
+	    first readers, for their encouragement.";
+
+Option -> "The Official Bootleg Blue Chairs Soundtrack"
+ with description
+	[;
+	    print "1. ~Car.~ Built to Spill, ";
+	    style underline;
+	    print "Live";
+	    style roman;
+	    print ".^2. ~I Might Be Wrong.~ Radiohead, ";
+	    style underline;
+	    print "Amnesiac";
+	    style roman;
+	    print ".^3. ~Music is Math.~ Boards of Canada, ";
+	    style underline;
+	    print "Geogaddi";
+	    style roman;
+	    print ".^4. ~80 Windows.~ Nada Surf, ";
+	    style underline;
+	    print "The Proximity Effect";
+	    style roman;
+	    print ".^5. ~Small Fires.~ Karate, ";
+	    style underline;
+	    print "Unsolved";
+	    style roman;
+	    print ".^6. ~Roberta C.~ Casiotone for the Painfully
+		Alone, ";
+	    style underline;
+	    print "Twinkle Echo";
+	    style roman;
+	    print ".^7. ~Everyday.~ Yo La Tengo, ";
+	    style underline;
+	    print "And Then Nothing Turned Itself Inside-Out";
+	    style roman;
+	    print ".^8. ~Robert Lowell.~ They Might Be Giants, ";
+	    style underline;
+	    print "TMBG Unlimited";
+	    style roman;
+	    print ".^9. ~Lost Carol.~ Melissa Williamson, ";
+	    style underline;
+	    print "Silent Hill 3";
+	    style roman;
+	    print ".^10. ~A Legacy's Demise.~ Forget Cassettes, ";
+	    style underline;
+	    print "Instruments of Action";
+	    style roman;
+	    print ".^11. ~Peer Pressure.~ Jon Brion, ";
+	    style underline;
+	    print "Eternal Sunshine of the Spotless Mind";
+	    style roman;
+	    print ".^12. ~The Dumbing Down of Love.~ Frou Frou, ";
+	    style underline;
+	    print "Details";
+	    style roman;
+	    print ".^(hidden track) ~Anything But Ordinary.~ Avril
+		Lavigne, ";
+	    style underline;
+	    print "Let Go";
+	    style roman;
+	    ".";
+	];
+
+Menu -> hint_menu "Hints for the Jaded"
+ with	sync
+	[;
+	    ! This does some quick moves so that hints are only
+	    ! available for the parts of the game you've visited.
+
+	    if (post_attic has visited)
+		move hint_party_menu to self;
+
+	    if (cruising_baltimore has visited)
+		move hint_driving_menu to self;
+
+	    if (driving_to_donuts has visited)
+		move hint_chris_car_menu to self;
+
+	    if (limo has visited)
+		move hint_desert_menu to self;
+
+	    if (outside_station has visited)
+		move hint_station_menu to self;
+
+	    if (darkened_entrance has visited)
+		move hint_labyrinth_menu to self;
+
+	    if (fuckfuckfuck has visited)
+		move hint_work_menu to self;
+
+	    if (beatrice_front has visited)
+		move hint_beatrice_menu to self;
+
+	    if (epilogue_in_chair has visited)
+		move hint_epilogue_menu to self;
+	];
+
+Menu -> -> hint_prologue_menu "Prologue";
+
+Hint -> -> -> "Do I have to buy the drugs?"
+ with 	hints
+	    "Well, you don't have to do anything."
+	    "But yes, if you want to continue in the story, you have
+	    to buy the drugs.";
+
+Hint -> -> -> "How do I pay for the drugs?"
+ with	hints
+	    "You'll need money, that's for sure."
+	    "Maybe you've got some on you?"
+	    "Look in your wallet.";
+
+Menu hint_party_menu "The Party";
+
+Hint -> "What am I supposed to do?"
+ with	hints
+	    "Well, you need to get to Beatrice, right?"
+	    "You'll need to find someone who could give you a ride."
+	    "Or you could try driving yourself.";
+
+Hint -> "Is there anything useful in the attic?"
+ with	hints
+	    "Surely there's something among all that stuff."
+	    "If you could shine some light in there, you might be able
+	    to sort through it better."
+	    "There's a flashlight in the kitchen cabinet."
+	    "Turn on the flashight, then search the pile of stuff.";
+
+Hint -> "Is there anything useful on the second floor?"
+ with	hints
+	    "Those girls seem interesting."
+	    "They have something that might help you."
+	    "But you have to be nice to them first."
+	    "Talk to them for a while, and when you leave, they'll 
+	    give you something.";
+
+Hint -> "How do I get to that pole?"
+ with	hints
+	    "It's hard getting to where you want to, eh?"
+	    "When in Rome..."
+	    "Try dancing.";
+
+Hint -> "How do I get the stoners to help me?"
+ with	hints
+	    "They're certainly unmotivated."
+	    "They might be able to help you figure out exactly what
+	    drug you just imbibed."
+	    "But they're not going to give you a ride.";
+
+Hint -> "How do I get my nerve up to dance?"
+ with	hints
+	    "There is a time-tested solution to this problem."
+	    "Alcohol."
+	    "There are two sources of alcohol in the party."
+	    "One is where you might expect it; the other isn't."
+	    "Try looking in the fridge that's in the kitchen."
+	    "The other is in the attic."
+	    "See the question about the attic for more help.";
+
+Hint -> "I can't get out of this stupid dance floor."
+ with	hints
+	    "Well, if you remember, the living room is east of the
+	    dance floor."
+	    "You could try moving towards that."
+	    "Or you could just stop dancing.";
+
+hint -> "What can I do with the guy with the blue book?"
+ with	hints
+	    "He seems kind of out of it, doesn't he?"
+	    "He doesn't seem to respond to anything you say."
+	    "Try waking him up by giving him a push."
+	    "Or you could throw something at him, though it's sort 
+	    of mean.";
+
+Hint -> "No one in here is willing to give me a ride."
+ with	hints
+	    "Maybe you just haven't noticed him yet."
+	    "Or maybe you've mistaken for something else."
+	    "Something inanimate."
+	    "Try investigating that pole on the dance floor.";
+
+Menu hint_driving_menu "Driving Your Car";
+
+Hint -> "How do I get control of my car?"
+ with 	hints
+	    "Drugs are screwing with your mind, hunh?"
+	    "If you could figure out a way to neutralize the effect
+	    the drugs are having, maybe you could drive."
+	    "Then again, you don't know what is actually wrong with 
+	    you."
+	    "There's no way to get control of your car.";
+
+Menu hint_chris_car_menu "In Chris's Car";
+
+Hint -> "How do I cool down?"
+ with	hints
+	    "It's Chris's car; try asking him about it."
+	    "Try opening your window.";
+
+Menu hint_desert_menu "The Desert";
+
+Hint -> "What's up with the signs?"
+ with	hints
+	    "They are kind of weird."
+	    "Probably important, too."
+	    "Stuff stuck in the sand has one interesting property."
+	    "You can pull it out."
+	    "Try taking the signs.";
+
+Hint -> "How do I get into the White House?"
+ with	hints
+	    "Maybe the statues have something to do with it?"
+	    "Did you notice the hole that each has?"
+	    "There are four statues, right?"
+	    "There are four signs, too?"
+	    "Maybe you could match the sign to the statue."
+	    "See the hints about the statues for more help.";
+
+Hint -> "What can I do with the statue of the young man?"
+ with 	hints
+	    "Doesn't it seem sort of familiar?"
+	    "One would hope it would ring some bells."
+	    "Did you examine yourself in the party?"
+	    "It's you."
+	    "Is there a sign that matches your state of mind?"
+	    "It's the sign that reads ~I'm dreaming.~"
+	    "Put it in the circular hole in the statue's base.";
+
+Hint -> "What can I do with the statue of the tall man?"
+ with	hints
+	    "Does it remind you of anyone you've met?"
+	    "Tall is the key word here."
+	    "It's Chris."
+	    "What was the first thing Chris asked you when you woke 
+	    him up?"
+	    "The sign that corresponds to this statue is ~I want to 
+	    be rescued.~"
+	    "Put it in the circular hole in the statue's base.";
+
+Hint -> "What can I do with the statue of the young woman?"
+ with 	hints
+	    "Does it remind you of anyone in the game?"
+	    "Maybe not."
+	    "It's possible you didn't meet the character this is a
+	    statue of."
+	    "But then the sign that matches it still would apply."
+	    "It's the sign that reads ~No one knows my name.~"
+	    "Put it in the hole in the statue's base.";
+
+Hint -> "What can I do with the statue of the beautiful woman?"
+ with 	hints
+	    "Does it remind you of anyone you've met?"
+	    "Probably not -- it doesn't depict anyone you've 
+	    encountered."
+	    "But it is of someone in the game."
+	    "Beatrice."
+	    "Are there any signs that seem to fit her?"
+	    "What do you think Beatrice is doing right now?"
+	    "The sign that says ~I'm waiting for you,~ matches
+	    this statue."
+	    "Put it in the hole in the statue's base.";
+
+Menu hint_station_menu "The Gas Station";
+
+Hint -> "Where are the doughnuts?"
+ with	hints
+	    "Have you checked all the aisles in the mini-mart?"
+	    "Maybe you should ask the Chinese kid about it.";
+
+Hint -> "What is the Chinese kid talking about?"
+ with	hints
+	    "If you're asking about doughnuts, he's referring to the
+	    back of the store."
+	    "More specifically, the refrigerated case."
+	    "Try opening the door to the case and entering it.";
+
+Hint -> "Why won't Chris let me back into his car?"
+ with	hints
+	    "The boy is clearly fiending for those doughnuts."
+	    "Ypu can't proceed without getting a doughnut for him";
+
+Menu hint_labyrinth_menu "Darkened Passages";
+
+Hint -> "This maze sucks."
+ with	hints
+	    "Really, it's not that bad. You don't need to do 
+	    anything special to get past it."
+	    "It's not really a maze, either."
+	    "But hey -- check out the PDF file that should have been 
+	    included with this game."
+	    "There's a (partial) map scribbled in the upper-right 
+	    corner.";
+
+Hint -> "What am I supposed to be doing here?"
+ with	hints
+	    "Well, technically, you're still looking for a doughnut."
+	    "But really, it's to find a way out."
+	    "It probably has something to do with those blue things."
+	    "The blue doors, specifically."
+	    "See the questions about individual rooms for more help.";
+
+Hint -> "I'm totally stuck."
+ with	hints
+	    "Well, you could always give up."
+	    "Try returning to the mini-mart. (The real one, that is.)"
+	    "If you've already found that part of the maze, then try
+	    re-exploring places you've already been to."
+	    "There are two branches of the maze that open up after you
+	    find certain rooms, or after a certain period of time."
+	    "One is north of Aisle 10."
+	    "The other is south of Aisle 8.";
+
+Hint -> "What's up with the people in here?"
+ with	hints
+	    "They don't seem to notice you."
+	    "Maybe there are clues in what you see when you look at 
+	    them."
+	    "Maybe not."
+	    "Some of them seem to be carrying interesting objects."
+	    "You can take those objects.";
+
+Hint -> "What can I do with the can of tunafish?"
+ with	hints
+	    "Its label is interesting."
+	    "If you could open it, you could eat its contents."
+	    "Too bad there isn't any way to open it."
+	    "It's a red herring.";
+
+Hint -> "What can I do with the lantern?"
+ with	hints
+	    "It provides light, as you might notice."
+	    "See the question about the waiting room for more help.";
+
+Hint -> "How do I survive the room with the blue chair?"
+ with	hints
+	    "Those monsters are scary, aren't they?"
+	    "But they tell the truth."
+	    "They won't hurt you."
+	    "Try blowing out the candles.";
+
+Hint -> "What can I do with this tile I've been given?"
+ with	hints
+	    "Have you tried opening a second blue door yet?"
+	    "The gray room's pretty boring, eh?"
+	    "Kind of like a placeholder?"
+	    "Take a look at the recess at the center of the map room."
+	    "If you put the tile in the space corresponding to where 
+	    you found the gray room, there should be something new 
+	    there."
+	    "Climb into the bed.";
+
+Hint -> "What can I do in the bank lobby?"
+ with	hints
+	    "The safe deposit vault seems like an obvious way to go."
+	    "You'll need to find its combination, though."
+	    "The combination is hidden in two places."
+	    "One is in an envelope."
+	    "See the question about the blue chair for help."
+	    "The other is in the bank lobby itself."
+	    "Try looking under the desk.";
+
+Hint -> "What can I do in the mini-mart?"
+ with	hints
+	    "You could trade something for that key."
+	    "The kid's pretty picky."
+	    "Is there something that someone gave you, specifically
+	    calling it useful?"
+	    "You may not have actually received it."
+	    "The kid will take the silver key."
+	    "The key he gives you won't work in the mini-mart, 
+	    though."
+	    "It works in the waiting room.";
+
+Hint -> "What can I do in the post office?"
+ with	hints
+	    "Those mailboxes seem interesting."
+	    "So does the mail slot."
+	    "Do you have anything worth mailing?"
+	    "Like an envelope?"
+	    "If you opened it first, it won't work."
+	    "You'll have to find a different way to proceed.";
+
+Hint -> "What can I do in the waiting room?"
+ with	hints
+	    "Waiting is boring."
+	    "You could take charge of the situation by going through
+	    the door."
+	    "You'll need a key first."
+	    "There are actually two keys that work."
+	    "One is in the case in the mini-mart. (The fake one.)"
+	    "The other is in the waiting room."
+	    "It's inside the light bulb."
+	    "Try breaking it."
+	    "You'll need a light source of your own to actually get
+	    the key."
+	    "See the question about the lantern for more help.";
+
+Hint -> "How do I get to the pool?"
+ with 	hints
+	    "You can see it from certain parts of the maze."
+	    "It's too far down to jump into, though."
+	    "Maybe if you had a parachute."
+	    "Or a rope."
+	    "There's no way to get to the pool.";
+
+Menu hint_work_menu "Work";
+
+Hint -> "What am I supposed to do here?"
+ with	hints
+	    "Try looking at your pager."
+	    "You have to get to work and fix the servers.";
+
+Menu hint_beatrice_menu "Beatrice's House";
+
+Hint -> "How do I get into the dark parts of the house?"
+ with 	hints
+	    "A light source would help."
+	    "It's too bad there aren't any in the house."
+	    "Don't worry about it. You don't have to explore the dark
+	    parts of the house to proceed.";
+
+Hint -> "What can I do on the stairway?"
+ with 	hints
+	    "The gap seems sort of notable."
+	    "But there's no way to climb into it."
+	    "There isn't anything you can do in the stairway.";
+
+Hint -> "How do I get to the playground?"
+ with	hints
+	    "You can't get to it from the dining room."
+	    "You can't get to it by walking around the house."
+	    "You can't get to it.";
+
+Hint -> "So where is Beatrice?"
+ with	hints
+	    "Maybe she's not here at all."
+	    "Maybe you shouldn't find her."
+	    "Maybe you should look in her room."
+	    "Maybe you can climb through the holes in the ceiling."
+	    "Maybe you should stand on the bed first.";
+
+Menu hint_epilogue_menu "Epilogue";
+
+Hint -> "What am I supposed to do here?"
+ with	hints
+	    "Sorry -- no hints on this section."
+	    "But if you're really stuck, try sleeping it off on the 
+	    lawn chair.";
+
+Hint -> "Is there more than one ending?"
+ with	hints
+	    "Yes."
+	    "There are actually nine in all."
+	    "But some of them happen earlier in the story."
+	    "Happy hunting.";

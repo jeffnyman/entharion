@@ -1,0 +1,1295 @@
+!
+! Blue Chairs
+! Beatrice's house
+!
+
+Object 	emptyhoused
+ with	daemon
+	[;
+	    if ((++self.number > 5) && (random(5) == 1))
+	    {
+		self.number = 0;
+		switch (self.printed++)
+		{
+		 0:
+		    "^The house is dead silent.";
+
+		 1:
+		    "^There's a noise above you... a footstep? But it
+		    sounds too far away.";
+
+		 2:
+		    StopDaemon(self);
+		    "^There's that noise again. From above.";
+		};
+	    };  
+	],
+	printed 0,
+	number 0;
+
+Object 	beatrice_front "In Front of Beatrice's House"
+ with	description
+	[;
+	    StopDaemon(emptyhoused);
+	    "The front yard is well-maintained, just as you remember 
+	    it. Neatly trimmed grass, a yellow mailbox at the edge 
+	    of the road, and a thin, almost reedy dogwood tree on 
+	    the right side of the flagstone path that leads to the 
+	    house.^^But the house has been destroyed. Fire. The 
+	    smell of it is thick in the air -- ten thousand 
+	    marshmallows cooked over a hundred bonfires, a million 
+	    campfires forgotten in the woods -- and the house looks 
+	    like it has been gutted. The roof is still there, but 
+	    one corner is coming loose, and the entire front of the 
+	    house has been burned black. All windows gone. Where the 
+	    front door was, there is a bare doorway leading north.";
+	],
+	cant_go
+	    "The only choices here, you think, are to go into the 
+	    house to the north, or just call it a night and get back 
+	    into the car.",
+	ne_to
+	    "Piles of debris stop you from walking around the house.",
+	nw_to
+	[;
+	    <<Go ne_obj>>;
+	],
+	in_to beatrice_inside,
+	n_to beatrice_inside;
+
+Object 	-> beatrice_front_car "Chris's car"
+ with	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'chris^', 'chris^s', 'car', 'vehicle', 'toyota',
+		 'corolla':
+		    definite_match = true;
+		    i++;
+
+		 'door':
+		    i++;
+
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	initial
+	    "The Corolla idles in the street.",
+	description
+	    "You look at it for a moment, not really seeing or 
+	    thinking -- just looking.",
+	before
+	[;
+	 Search:
+	    <<Examine beatrice_front_car_chris>>;
+
+	 Enter:
+	    deadflag = DEAD_CUBICLE;
+	    if (beatrice_inside hasnt visited)
+		"~You're not going in?~ Chris asks.^^~No,~ you say. 
+		~There's no one inside.~^^~How do you know?~^^You 
+		don't. But you don't want to walk inside, to know. 
+		One way or the other. There are questions that ought 
+		to be left unanswered.^^~Let's... let's just go,~ 
+		you say.^^After a moment, he nods.^^You never will 
+		understand why Chris is so nice to you, why he 
+		drives you back to your own place after all this 
+		confusion. Nearly an hour passed in silence a long 
+		empty highways. It takes so long. It's the worst 
+		night of your life.^^~We ought to call the police,~ 
+		you say absent-mindedly.";
+	    else
+		if (beatrice_roof hasnt visited)
+		    "~No one's inside?~ Chris asks.^^~No,~ you say. 
+		    ~No one I could find.~^^~I wonder what 
+		    happened,~ he says.^^~I don't know,~ you 
+		    say.^^~And this was her house?~^^~Yeah, I 
+		    think.~^^~Maybe she moved,~ Chris says.^^He 
+		    pulls out onto the street. The sensation of 
+		    speed is numbing. No choice now but to go home, 
+		    to call it a night.^^~Anything could have 
+		    happened to her,~ you say.";
+	    	else
+		    "~No one's inside?~ Chris asks.^^~No,~ you 
+		    say.^^~How bad was it?~^^~It was... bad.~^^You 
+		    just don't feel like talking.";
+	],
+ has 	static transparent;
+
+Object 	-> -> beatrice_front_car_chris "Chris"
+ with 	name
+	    'chris' 'klimas' 'guy' 'dude' 'man',
+	description
+	    "Chris watches you grimly.",
+	before
+	[;
+	    if (action ~= ##Examine)
+	    	"He's in the car.";
+	],
+	life
+	[;
+	    <<Take self>>;
+	],
+	orders
+	    "He can't hear you from inside the car.",
+ has 	animate male;
+
+Object 	-> beatrice_front_doorway "doorway"
+ with	name
+	    'door' 'front' 'doorway' 'bare',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "The metal hinges are the only left still shining.",
+	door_dir n_to,
+	door_to beatrice_inside,
+ has 	static door open;
+
+Object 	-> beatrice_front_mailbox "mailbox"
+ with	name
+	    'mail' 'box' 'mailbox' 'canary' 'yellow',
+	description
+	    "It's canary yellow -- what Beatrice told you to look 
+	    for the first time you came to visit her at her place. 
+	    There's a dent in it about the size of a baseball.",
+	before
+	[;
+	 Open:
+	    give self open;
+    	    "You open it, peek inside: nothing.";
+	    
+	 Search:
+	    if (self has open)
+		print_ret (The) self, " is completely empty.";
+	    else
+		<<Open self>>;
+
+	 Receive:
+	    "You don't see why that would be a good idea.";
+	],
+ has 	scenery;
+
+Object 	-> beatrice_front_grass "grass"
+ with	name
+	    'grass' 'mowed' 'yard' 'front' 'crater' 'craters' 'rip'
+	    'rips',
+	description
+	    "It must have been mowed only a few days ago at most. 
+	    Craters and rips run across its surface -- heavy 
+	    equipment, maybe.",
+ has 	scenery;
+
+Object -> beatrice_front_tree "dogwood tree"
+ with 	name
+	    'dogwood' 'tree',
+	description
+	    "Dogwoods are supposed to be thick, fairly strong trees. 
+	    But this one never catches the sun, Beatrice explained 
+	    to you once, so it never grew into what it could have 
+	    been.",
+	before
+	[;
+	 Climb:
+	    "It isn't sturdy enough.";
+	],
+ has 	scenery;
+
+Object 	beatrice_inside "Inside"
+ with	description
+	[;
+	    StartDaemon(emptyhoused);
+	    "The smell is horrible, the air barely breathable. You 
+	    remember everything: the pictures of her seven uncles 
+	    that used to hang on that wall there, the chair with a 
+	    wobbly leg, the bookcases full of books no one had read 
+	    in a long time. Rabelais. Carson McCullers. It was 
+	    always warm here, especially in the summer.^^There is 
+	    little now beyond ashes and pieces of things. Things you 
+	    could identify, paste together maybe, if you made it 
+	    your life's work. To the west is what remains of the 
+	    living room, and the dining room is north. A fractured, 
+	    humbled staircase leads up, and you can leave to the 
+	    south.";
+	],
+	n_to beatrice_dining_room,
+	w_to
+	[;
+	    if (~~ ContainsLight(player))
+		"The living room's completely dark -- you'd need a 
+		light to find your way.";
+	    else
+ 	    	return beatrice_living_room;
+	],
+	u_to
+	[;
+	    beatrice_stairs.jump_dir = u_to;
+	    return beatrice_stairs;
+	],
+	s_to beatrice_front,
+	out_to beatrice_front;
+
+Object -> beatrice_inside_debris "debris"
+ with 	name
+	    'ashes' 'ash' 'pieces' 'of' 'things' 'thing',
+	description
+	    "Too hard to tell exactly what they come from, too small 
+	    to be collected with your bare hands.",
+	before
+	[;
+	 Take:
+	    "No point in it.";
+
+	 Count:
+	    "It would take too long.";
+	],
+ has 	scenery;
+
+Object beatrice_dining_room "Dining Room"
+ with	description
+	    "A view onto the backyard. The wall is gone; in its 
+	    place are the studs holding the house together and a 
+	    spray of broken glass. You and Beatrice ate here alone 
+	    once, her parents away on a trip. You stared out at the 
+	    playground then. You wish you could remember what you 
+	    were thinking of. The night felt perfect. It felt like 
+	    whatever happened next, it would happen for a 
+	    reason.^^The playground is still there. You can see it. 
+	    No one and nothing has touched it. You can return to the 
+	    house's entrance to the south.",
+	n_to
+	    "Though you can see through the wall studs, you don't 
+	    see a way to move past them.",
+	out_to
+	[;
+	    <<Go n_obj>>;
+	],
+	s_to beatrice_inside;
+
+FarScenery -> beatrice_dining_room_playground "playground"
+ with	name
+	    'playground' 'play' 'ground' 'jungle' 'gym',
+	description
+	    "It's a simple, plastic one, the kind you'd buy at Toys 
+	    'R Us except no one you knew ever did, and you always 
+	    wondered what it would be like to have one. A playground 
+	    just for you and no one else.";
+
+Object 	-> beatrice_dining_room_studs "studs"
+ with	name
+	    'studs' 'wood' 'wooden' 'wall' 'stud',
+	description
+	    "At least you think that's what they're called. You know
+	    so little about construction.",
+	before
+	[;
+	 Take, Push, Pull:
+	    print (The) self, " won't budge.";
+
+	 Attack:
+	    "They're stronger than they look. You can barely chip away
+	    at the side of one.";
+	],
+ has 	scenery pluralname;
+
+Object 	beatrice_living_room "Living Room"
+ with	description
+	    "The couch now faces you and nothing else. It once was 
+	    against the opposite wall, facing the television set 
+	    that's now only a puddle of plastic in a rough 
+	    rectangular shape. (So many summer nights spent watching 
+	    some old movie you'd never bothered to watch before...) 
+	    Shards of blackened wood and bits of broken metal cover 
+	    the floor. The walls are blotched white with chemical 
+	    residue. A bathroom door is north, and the entrance to 
+	    the house is back to the east.",
+	e_to beatrice_inside,
+	n_to beatrice_living_room_door;
+
+Object 	-> beatrice_living_room_door "bathroom door"
+ with	name
+	    'bathroom' 'door' 'closed' 'locked',
+	description
+	    "The door is distorted and twisted and black.",
+	before
+	[;
+	 Open:
+	    "The door seems stuck fast.";
+
+	 Push, Pull, Attack:
+	    "You pound on the door, but it doesn't budge.";
+	],
+	door_dir n_to,
+ has 	static door openable;
+
+Object 	-> beatrice_living_room_couch "couch"
+ with 	name
+	    'couch',
+	description
+	[;
+	    print "You loved the couch -- you guess you still do. It 
+		was so comfortable in that old, broken couch kind of 
+		way. You and Beatrice would stay up late together 
+		and lie on the couch together. Not talking about 
+		anything really meaningful, the way people in love 
+		do in movies. More just being awake just to be 
+		together, just to feel each other breathe";
+
+	    if (child(self))
+	    {
+		print "^There's ";
+	    	WriteListFrom(child(self), RECURSE_BIT);
+		print " sitting on the couch";
+	    };
+
+	    ".";
+	],
+	before
+	[;
+	 Push, Pull:
+	    "You don't see any point in it.";
+	    
+	 Enter:
+	    "It looks too rickety to hold you up now.";
+	],
+	capacity 4,
+ has 	scenery supporter;
+
+Object -> beatrice_living_room_tv "television"
+ with	name
+	    'television' 'tv' 'set' 'screen' 'power' 'button',
+	description
+	    "The plastic looks deflated, not destroyed. Like someone 
+	    had tried to sculpt it, change a Magnavox 23~ into 
+	    something new and beautiful, but ran out of steam 
+	    halfway through.",
+	before
+	[;
+	 Take:
+	    "It's too heavy.";
+
+	 SwitchOn, SwitchOff:
+	    "The power button's gone.";
+	],
+ has 	scenery;
+
+Object -> beatrice_living_room_residue "chemical residue"
+ with	name
+	    'chemical' 'residue' 'white' 'blotch' 'blotched'
+	    'blotches' 'ghost' 'tiny' 'speckle' 'speckles' 'glimmer'
+	    'glimmering' 'walls' 'wall',
+	description
+	    "The residue is ghost white, with tiny speckles that 
+	    glimmer.",
+	before
+	[;
+	 Touch:
+	    "The surface feels like sand, almost.";
+
+	 Eat:
+	    "It's probably poisonous.";
+	],
+ has 	scenery;
+
+Object 	-> beatrice_living_room_debris "debris"
+ with	name
+	    'shard' 'shards' 'blackened' 'black' 'debris' 'wood'
+	    'broken' 'bits' 'metal',
+	description
+	    "Things best forgotten.",
+	before
+	[;
+	 Take:
+	    "It's not worth it.";
+	],
+ has 	scenery;
+
+Object 	beatrice_stairs "Stairs"
+ with	description
+	[;
+	   print "Planks creak uneasily beneath your feet. It ";
+
+	    if (beatrice_landing hasnt visited)
+		print "will take";
+ 	    else
+		print "takes";
+	    
+	    " care to make it up and down now. The two middle steps 
+	    are gone. There's just emptiness there now, a place no 
+	    one has ever visited and no one will -- an emptiness 
+	    that you ought to be able to step over gingerly, 
+	    carefully, just barely frightened, without breaking 
+	    anything more than it already is.";
+	],
+	first_leap
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+		"You step carefully over the gap, testing the step 
+		with your foot. It feels solid, though it surely 
+		can't be -- this is dangerous, you know. This kind 
+		of thing should not be done except by people who 
+		know what they are doing.";
+	    };
+	],
+        jump_dir u_to,
+	d_to beatrice_inside,
+	u_to beatrice_landing;
+
+Object -> beatrice_stairs_gap "emptiness"
+ with	name
+	    'emptiness' 'gap',
+	description
+	    "It's just darkness.",
+	before
+	[;
+	 Receive:
+	    remove noun;
+	    "It clatters on what sounds like stone, maybe fifteen 
+	    feet below.";
+	    
+	 Search:
+	    <<Examine self>>;
+
+	 JumpOver:
+	    <<Go beatrice_stairs.jump_dir>>;
+
+	 Enter:
+	    "You're kind of leery of jumping into it -- how would 
+	    you get back up?";
+	],
+ has 	scenery;
+
+Object -> beatrice_stairs_planks "planks"
+ with	name
+	    'planks' 'wood' 'wooden' 'steps' 'step',
+	description
+	    "The wood is scorched, barely stable.",
+	before
+	[;
+	    ! I feel odd about coding this, since "climb steps" won't
+	    ! work anywhere else in the game. But maybe people will
+	    ! get confused, seeing as this is an implemented object.
+	    
+	 Climb:
+	    <<Go u_obj>>;
+	],
+	react_before
+	[;
+	 Go:
+	    if ((self hasnt general) && (noun == u_obj))
+	    {
+		give self general;
+		print "You step carefully over the gap, testing the 
+		    next step with your foot. It feels solid, though 
+		    it surely can't be -- this is dangerous, you 
+		    know. This kind of thing should not be done.^";
+		rfalse;
+	    };
+	],
+ has 	scenery;
+
+Object 	beatrice_landing "Landing"
+ with	description
+	    "The smell of smoke isn't as bad up here, and the walls 
+	    retain some reminder of what was once here -- a dark 
+	    scrap of wallpaper, a shattered picture frame, a corner 
+	    of the red rug. The kind of things you only remember 
+	    when they're gone. Beatrice's room is west, its door a 
+	    wreck on the ground. The hallway that leads to her 
+	    parents' bedroom is north, and stairs lead down.",
+	n_to
+	[;
+	    if (~~ ContainsLight(player))
+		"The hallway disappears into darkness -- you'd need 
+		a light to find your way.";
+	    else
+		return beatrice_hallway;
+	],
+	w_to beatrice_room,
+	d_to
+	[;
+	    beatrice_stairs.jump_dir = d_to;
+	    return beatrice_stairs;
+	];
+
+Object -> beatrice_landing_door "door"
+ with	name
+	    'door' 'beatrice' 'beatrice^s' 'west',
+	description
+	    "You don't remember exactly what it looked like, what it 
+	    should look like.",
+	before
+	[;
+	 Take:
+	    "It's too heavy to carry around.";
+	],
+ has 	scenery;
+
+Object 	beatrice_hallway "Hallway"
+ with	description
+	    "The hallway comes to an abrupt end where the entire 
+	    left wall has fallen inward. The gap beneath where the 
+	    wall fell is crowded with odd, pointed fragments of 
+	    things you can't quite recognize: wood, metal, plastic. 
+	    The things that make up all domestic dreams. The bedroom 
+	    door, behind the wall, looks intact.^^To the south is 
+	    the landing.",
+	s_to beatrice_landing,
+	n_to beatrice_hallway_door;
+
+Object 	-> beatrice_hallway_door "bedroom door"
+ with	name
+	    'bedroom' 'door' 'closed' 'locked',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "The door is scarred with burn marks.",
+	before
+	[;
+	    if (action ~= ##Examine)
+		"You can't get to it -- the collapsed wall is in the 
+		way.";
+	],
+	door_dir n_to,
+ has 	static door openable;
+
+Object -> beatrice_hallway_wall "collapsed wall"
+ with	name
+	    'left' 'west' 'fallen' 'inward' 'wall' 'collapsed',
+	description
+	    "The wall looks as if it's been torn.",
+	before
+	[;
+	 Push, Pull, Attack:
+	    "You can't seem to move the wall. It's just too heavy.";
+
+	 Climb:
+	    "There's no way you could make it -- you'd slip off the 
+	    side.";
+	],
+ has 	scenery;
+
+Object -> beatrice_hallway_fragments "debris"
+ with	name
+	    'debris' 'fragments' 'pointed' 'fragment' 'odd' 'plastic'
+	    'wood' 'metal',
+	description
+	    "Who knows what all of this really is.",
+	before
+	[;
+	 Take, Rub, Straighten:
+	    "Too dangerous -- you'd probably cut yourself.";
+	],
+ has 	scenery;
+
+Object beatrice_room "Beatrice's Room"
+ with	description
+	    "The first time you saw this room, you were laughing. It 
+	    was Christmas, after dinner, and you were flush with the 
+	    wine her parents insisted you drink -- maybe because you 
+	    seemed so nervous -- and there you saw them: all those 
+	    paper cranes hanging from the ceiling. She made them, 
+	    one by one, to remember things worth remembering. Her 
+	    sixteenth birthday. When she stopped taking ballet 
+	    classes. You caught her reaching for a piece of origami 
+	    paper on her bureau that night. She thought you had 
+	    fallen asleep.^^All of the cranes are gone. Everything 
+	    is gone.^^The only thing left now is the metal frame of 
+	    the bed. There are holes everywhere in the walls, even 
+	    the ceiling. The second-floor landing is east.",
+	e_to beatrice_landing,
+	u_to beatrice_room_ceiling_hole;
+
+Object -> beatrice_room_bed "metal bedframe"
+ with	name
+	    'metal' 'bed' 'frame' 'bedframe',
+	description
+	    "It used to have bright blue blankets, the color of 
+	    robins in the morning. It's stripped bare now, strong 
+	    but empty.",
+	before
+	[;
+	 Climb:
+	    <<Enter self>>;
+	],
+	after
+	[;
+	 Receive:
+	    print_ret "You place ", (the) noun, " carefully on ",
+		(the) self;
+	    
+	 Enter:
+	    "It's very uncomfortable -- what were once box springs 
+	    are now twisted, pointed.";
+    	],
+	react_before
+	[;
+	 Sleep:
+	    if (player in self)
+	    	if (self hasnt general)
+		{
+		    give self general;
+		    "You close your eyes.^^Nothing happens. ";
+		}
+	    	else
+		    "It's just not going to happen.";
+	],
+	capacity 5,
+ has 	scenery supporter enterable;
+
+! I'm marking this as a door so that the parser doesn't prefer the
+! ceiling holes when the player types 'enter holes'
+
+Object 	-> beatrice_room_wall_holes "holes in the walls"
+ with	name
+	    'hole' 'holes' 'wall' 'walls' 'in' 'the',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "Their curves seem too smooth to be caused by just fire, 
+	    but you can't see how else they could have been formed.",
+	before
+	[;
+	 Search:
+	    move beatrice_room_streetlight to location;
+	    "You can see a streetlight, far down the road, from 
+	    here.";
+
+	 Enter:
+	    "There'd be nowhere to go: they face the front yard.";
+	],
+ has 	static door open pluralname;
+
+Object 	-> beatrice_room_ceiling_hole "holes in the ceiling"
+ with 	name
+	    'hole' 'holes' 'ceiling' 'overhead' 'in' 'the',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "You can't see anything through the holes in the ceiling
+	    -- it's just darkness.",
+	react_before
+	[;
+	    ! We funnel this to avoid the "You'll need to get off the
+	    ! metal bedframe first" message.
+	    
+	 Go:
+	    if (noun == u_obj)
+		<<Enter self>>;
+	],
+	before
+	[;
+	 Enter:
+	    if (parent(player) ~= beatrice_room_bed)
+    		"You can't reach high enough to get a good hand hold 
+		-- you aren't tall enough.";
+	    else
+	    {
+	    	PlayerTo(beatrice_attic);
+		rtrue;
+	    };
+	    
+	 Search:
+	    <<Examine self>>;
+    	],
+	door_dir u_to,
+ has 	static door open pluralname;
+
+Object beatrice_room_streetlight "streetlight"
+ with	name
+	    'street' 'light' 'streetlight',
+	description
+	    "Sodium, ordinary.",
+	before
+	[;
+	    if (action == ##Enter)
+		"There's nowhere to go through the hole but fall 
+		onto the front yard, which doesn't seem like a good 
+		idea.";
+		    
+	    if (action ~= ##Examine)
+		"It's too far away.";
+	],
+ has 	scenery;
+
+Object 	beatrice_attic "Attic"
+ with	description
+	[;
+	    print "You've never been here before";
+
+	    if (self hasnt visited)
+		print " tonight";
+
+	    ", so you don't know what had been collected here and is 
+	    now lost. The smell of smoke is thin, though the attic 
+	    is charred black and empty. A large chunk of the roof 
+	    has crumbled at the north end of the attic, leaving a 
+	    space about as wide as your arms can reach. The dim 
+	    starlight seems warm somehow, drawing you forward, 
+	    upward, onto the roof.";
+	],
+	d_to beatrice_room,
+	n_to
+	    [;
+		<<Go u_obj>>;
+	    ],
+	u_to
+	[;
+	    print "You lift yourself onto the roof awkwardly.^";
+	    return beatrice_roof;
+	];
+
+Object 	-> beatrice_attic_hole "space in the roof"
+ with 	name
+	    'hole' 'gap' 'roof' 'chun' 'in' 'of',
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "If you crawled carefully around, you'd probably be able 
+	    to lift yourself onto the roof.",
+	door_dir u_to,
+	door_to beatrice_roof,
+ has   	static door open;
+
+Object 	-> beatrice_attic_starlight "starlight"
+ with	name
+	    'star' 'stars' 'light' 'starlight',
+	description
+	    "Just barely perceivable.",
+ has 	scenery;
+
+Object 	beatrice_roof "Roof"
+ with	description
+	[;
+	    StopDaemon(emptyhoused);
+	    "Shingles tumble into the gutter as you steady yourself 
+	    on the slow slope of the roof. The night sky is clear of 
+	    clouds; stars are everywhere. The dim glow of Baltimore 
+	    is in the distance.";
+	],
+	before
+	[;
+	 Jump:
+	    if (beatrice_roof_beatrice has general)
+		<<Exit beatrice_roof_roof>>;
+	],
+	cant_go
+	    "There's nowhere to go but down.",
+ 	d_to beatrice_attic;
+
+Object 	-> beatrice_roof_roof "roof"
+ with	name
+	    'roof' 'surface',
+	description
+	    "Barely visible beneath your feet.",
+	before
+	[;
+	 Exit:
+	    if (beatrice_roof_beatrice hasnt general)
+	    	"It wouldn't even be suicidal -- you'd probably just 
+		break your legs.";
+	    else
+	    {
+		beatrice_roof_beatrice.jumped();
+	    	rtrue;
+	    };
+	],
+ has 	scenery;
+
+Object 	-> beatrice_roof_shingles "shingles"
+ with	name
+	    'shingle' 'shingles' 'rotted' 'rotten' 'rotting' 'burned'
+	    'burnt',
+	description
+	    "Rotted, burned.",
+	before
+	[;
+	    if (action ~= ##Examine)
+		print_ret "You can't see what use that would have.";
+	],
+ has 	scenery;
+
+Object 	-> beatrice_roof_gutter "gutter"
+ with	name
+	    'gutter',
+	description
+	    "The gutter is full of leaves.",
+	before
+	[;
+	 Search:
+	    <<Examine self>>;
+	],
+ has 	scenery transparent;
+
+Object 	-> -> beatrice_roof_gutter_leaves "leaves"
+ with	name
+	    'leaf' 'leaves' 'green' 'rotting' 'rotten' 'rotted',
+	description
+	    "Green, rotting.",
+	before
+	[;
+	 Take:
+	    "They fall through your fingers.";
+
+	 Count:
+	    "It would take too long.";
+	],
+ has 	scenery;
+
+Object 	-> beatrice_roof_sky "night sky"
+ with	name
+	    'night' 'sky' 'air',
+	description
+	    "It's calming to look at it, to let your eyes wander for 
+	    a second.",
+	before
+	[;
+	 Enter:
+	    <<Exit beatrice_roof_roof>>;
+	],
+ has 	scenery;
+
+Object 	-> beatrice_roof_stars "stars"
+ with	name
+	    'star' 'stars' 'orion' 'hunter',
+	description
+	    "You always look for Orion, the hunter. It's just habit 
+	    -- you saw it so many times on late-night walks at 
+	    college.",
+ has 	scenery;
+
+Object 	-> beatrice_roof_glow "glow"
+ with	name
+	    'dim' 'glow' 'baltimore',
+	description
+	    "The glow has always bothered you, maybe because you've 
+	    read too many science-fiction novels. The protagonist 
+	    wakes up, startled and innocent, and discovers the 
+	    townpeople worshipping alien monsters. His presence is 
+	    not noticed, not the first time...",
+ has 	scenery;
+
+Object 	-> beatrice_roof_beatrice "Beatrice"
+ with	name
+	    'beatrice' 'girl',
+	initial
+	[;
+	    if (self hasnt general)
+		"Beatrice... Beatrice is here. She stands at the 
+		opposite edge of the roof, looking down.";
+	    else
+		"Beatrice floats in the air beyond the roof, 
+		waiting.";
+	],
+	description
+	[;
+	    if (self hasnt general)
+	    	"Even with her back turned to you, you can tell it's 
+		her. Her hair is rough and frazzled, and her clothes 
+		are faded and ripped, like old pajamas. But she 
+		still is beautiful.";
+	    else
+		"She looks back at you, daring you forward.";
+	],
+	each_turn
+	[;
+	    if (self has general)
+		switch (-- self.number)
+		{
+		 3:
+		    remove beatrice_roof_snowflake;
+		    move beatrice_roof_snow to beatrice_roof;
+		    "^The snow grows steady. It makes no sense -- but
+		    that doesn't bother you as much as it should.";
+		    
+		 2:
+		    "^The snow becomes a torrent, a blizzard -- it's
+		    magic and it's yours.^^~Dante,~ Beatrice
+		    says. ~Just jump. You won't fall.~";
+		    
+		 1:
+		    print "^~Why don't you jump?~ Beatrice 
+			asks.^^~I... just can't believe it'll work,~ 
+			you say. ~I can't believe in anything 
+			now.~^^You can't see her anymore. Everything 
+			is gone in the snow.";
+		    WakeUp(2);
+		    rtrue;
+		};
+	],
+	react_before
+	[;
+	 Go:
+	    if (noun == d_obj)
+	    	if (self has general)
+	    	{
+		    print "~No,~ you say. ~This... this isn't 
+			real.~^^~How do you know?~ Beatrice 
+			asks.^^~Because I'm talking to you.~^^The 
+			whole world disappears without a sound.";
+	    	    WakeUp(2);
+		    rtrue;
+	    	}
+	    	else
+		    print "Beatrice doesn't seem to hear you climb 
+			back down -- that is, if that's really her 
+			you saw...^";
+	],
+	before
+	[;
+	 JumpTo:
+	    <<Exit beatrice_roof_roof>>;
+
+	 Talk:
+	    <<Ask self 'uh'>>;
+	],
+	life
+	[;
+	    if (self hasnt general)
+	    {
+		if (action == ##Kiss or ##Wake or ##Attack or ##Show
+		    or ##Give)
+		    print "You rush toward her, but she turns and
+			fixes you with a look you have never seen on
+			her face before.^^~Dante,~ she says.~^^";
+		
+	    	self.talk();
+	    	rtrue;
+	    }
+	    else
+		"She doesn't say anything, just waves you forward,
+		asking you to jump.";
+	],
+	orders
+	[;
+	    if (self has general)
+	   	switch (action)
+		{
+		 ##Yes:
+		    "~Then jump,~ she says. ~I'll catch you.~^^There's
+		    a logic that cannot be resisted in her words.";
+
+		 ##No:
+		    <<Go d_obj>>;
+		};
+
+	    ! fall-through
+	    
+	    <<Ask self 'uh'>>;
+	],
+	talk
+	[;
+	    print "~What... what are you doing here?~ you ask.^^She 
+		turns and looks at you curiously. ~You're here. You 
+		really came.~^^~Of course I did,~ you say. ~What 
+		happened to your house?~^^~I was dreaming,~ she says 
+		with a sudden, awkward smile. ~I was dreaming of 
+		monsters.~^^(~You always dream about monsters,~ you 
+		start to say...)^^~And when I woke up, everything 
+		was burning.~^^She doesn't say anything for a long 
+		time, like she's remembering something. But then she 
+		says: ~This isn't really happening, is it? It seems 
+		so impossible.~^^Beatrice stands up, walks to you, 
+		places a hand on your chest. Feeling your heart 
+		beat.^^~Is this real?~^^>>";
+
+	    if (YesOrNo())
+	    {
+		move beatrice_roof_snowflake to beatrice_roof;
+		give self general;
+		"~Wait -- don't answer that,~ she says, and takes 
+		two steps backwards, so that her feet no longer 
+		touch the roof.^^She should be falling now, but she 
+		isn't. She's standing on the air itself.^^~Dante,~ 
+		she says. ~This is real.~^^A snowflake dwindles 
+		through the sky behind her.";
+	    }
+	    else
+	    {
+		print "~No,~ you say. ~None of this is.~^^Beatrice 
+		    nods. She already knew the answer when she 
+		    asked.^^~I wish it was,~ you say. ~I never said 
+		    goodbye to you. And I guess I won't ever. You 
+		    don't live here anymore, do you?~^^She shakes 
+		    her head.^^~I wish I could have kept dreaming,~ 
+		    she says.^^~It's too bad wishes never come 
+		    true,~ you say.^^You know that the feeling of 
+		    her lips against yours is imaginary. A handful 
+		    of sand falling to the ground, a feverish dream, 
+		    a drug-induced hallucination: all kinds of 
+		    things that can be named, described, and then 
+		    forgotten --";
+		WakeUp(1);
+		rtrue;
+	    };
+	],
+	jumped
+	[;
+	    print "You step off the roof, not knowing what should 
+		happen next. Gravity seizes you for a brief,
+		frightening moment, and then you are:^";
+	    PlayerTo(beatrice_falling);
+	],
+	number 5,
+ has 	animate female proper;
+
+Object 	beatrice_roof_snowflake "snowflake"
+ with	name
+	    'snow' 'flake' 'white' 'snowflake',
+	before
+	    "It disappears as you focus on it.",
+ has 	scenery;
+
+Object beatrice_roof_snow "snow"
+ with	name
+	    'snow' 'flake' 'flakes' 'snowflake' 'snowflakes' 'storm',
+	description
+	    "The snow is overpowering, dreamy.",
+	before
+	[;
+	 Take:
+	    "It melts in your hand.";
+	],
+ has 	scenery;
+
+Object 	beatrice_falling "Holding Beatrice, Falling"
+ with	description
+	[;
+	    SetPronoun('her', beatrice_falling_beatrice);
+	    "Beatrice has her arms around you, and yours are around 
+	    her. Who is holding whom up? You are floating in 
+	    mid-air, though your weight must be the reason you're 
+	    drifting downward slowly, two leaves caught in a 
+	    friendly autumn breeze -- but it isn't autumn, it's not 
+	    even spring anymore. It's snowing, snowing so hard it's 
+	    almost impossible to see her blue eyes. It's snowing but 
+	    it isn't cold.";
+	],
+	each_turn
+	[ i next_i;
+	    ! This is what Graham Nelson told me to do
+	    ! and them some dudes on ifMUD suggested this loop
+
+	    i = child(self);
+	    
+	    while (i)
+	    {
+		next_i = sibling(i);
+		    
+		if (i ~= beatrice_falling_beatrice or player)
+		    remove i;
+
+		i = next_i;
+	    };
+	    
+	    if (~~ --self.number)
+		<<Go d_obj>>;
+	    else
+		"^You keep drifting, keep falling.";
+ 	],
+	after
+	[;
+	 Drop:
+	    "It plummets to the ground.";
+	],
+	d_to
+	[;
+	    deadflag = DEAD_JUSTPRINT;
+	    "You drift down to the ground silently. The landing is 
+	    perfect, but that's because the world is covered in snow 
+	    now: almost 8 inches now. It's amazing. Maryland only 
+	    gets this much snow maybe three times a year. Everything 
+	    will be closed tomorrow. It'll be great. No work, no 
+	    need to go anywhere.^^It's time, you know. It's time for 
+	    Beatrice and you to run through the snow, to fall over 
+	    and lose your balance when she tries to chuck a snowball 
+	    right into your face. It's time for hot chocolate; lots 
+	    of marshmallows for you, none for her. For staring out a 
+	    window and thinking how hard the day had been and how 
+	    easy it has become. Time for books. For kisses.^^It's 
+	    time for nights that grow longer and longer, though you 
+	    don't miss the sun. Lamplight keeps you warm. Time for 
+	    sweaters and long coats. Time for some things to be 
+	    remembered and most things to be forgotten.^^It's time 
+	    for a New Year's Eve that never ends.";
+	],
+	u_to
+	[;
+	    deadflag = DEAD_JUSTPRINT;
+	    "You let go of Beatrice. She doesn't seem surprised. 
+	    Maybe she knows what happens next --^^You can't believe 
+	    that you can fly, but you can. It's not like how you 
+	    dreamed it would be, like Superman or swimming. It just 
+	    happens. As if it isn't you that's in control, but 
+	    something else -- but you know that's not true. No one 
+	    can tell you what to do in the sky.^^The snow grows 
+	    thicker and thicker as you ascend, until you can no 
+	    longer see anything. It's all just pure white. And then 
+	    everything becomes black, and then you are in space, the 
+	    moon just a few minutes away. It's smiling at you.^^You 
+	    turn around; Beatrice giggles, just a few feet behind 
+	    you.^^Anything can happen now. And that's how you've 
+	    always wanted it to be.";
+	],
+	number 3;
+
+Object 	-> beatrice_falling_beatrice "Beatrice"
+ with	name
+	    'beatrice' 'girl' 'woman',
+	description
+	    "Beatrice is so pretty, so ephemeral. Yours after all 
+	    this time.",
+	react_before
+	[;
+	 Jump:
+	    "There's nowhere to jump now.";
+
+	 Listen:
+	    "You don't hear anything.";
+
+	 Fly:
+	    <<Go u_obj>>;
+	],
+	before
+	[;
+	 LetGoAnimate, Push:
+	    <<Go u_obj>>;
+	],
+	life
+	[;
+	 Ask, Tell:
+	    if (~~ self.already_shushed)
+	    {
+		self.already_shushed = true;
+		"~Dante,~ she says. ~Don't say anything now.~";
+	    }
+	    else
+		"~Please,~ Beatrice says. ~If you listen, you can 
+		hear it happening.~";
+
+	 Attack:
+	    "No.";
+
+	 WakeOther:
+	    "It's too late for that kind of thing.";
+	    
+	 Show, Give:
+	    "Why worry about something like that?";
+	    
+	 Kiss:
+	    print "It's perfect. (But how else could it feel?)^^";
+	    <<Go d_obj>>;
+	],
+	orders
+	[;
+	    <<Ask self 'uh'>>;
+	],
+	already_shushed false,
+ has 	proper animate female concealed transparent;
+
+Object 	-> -> beatrice_falling_beatrice_eyes "blue eyes"
+ with	name
+	    'blue' 'beatrice^s' 'eyes' 'eye',
+	description
+	    "Your own face is reflected in Beatrice's pupils.",
+	before
+	[;
+	 Search:
+	    <<Examine self>>;
+	],
+ has 	pluralname;
+
+BlueCard wakeup1_1
+ with 	text
+	    "There is something"
+	    "more than what can"
+	    "be felt with skin"
+	    "and seen by eyes --",
+	sub_text
+	    ".";
+
+BlueCard wakeup1_2
+ with	text
+	    "There is something"
+	    "you have looked for"
+	    "for a long time --",
+	sub_text
+	    ".";
+
+BlueCard wakeup1_3
+ with	text
+	    "And, until you wake up,"
+	    "you have found it.",
+	sub_text
+	    ".";
+
+BlueCard wakeup2_1
+ with	text
+	    "When does a dream end?"
+	    "Do you get to choose?",
+	sub_text
+	    ".";
+
+BlueCard wakeup2_2
+ with	text
+	    "Why does a dream end?"
+	    "Because you found something?",
+	sub_text
+	    ".";
+
+BlueCard wakeup2_3
+ with	text
+	    "You must remember:"
+	    "You aren't lost. Not yet.",
+	sub_text
+	    ".";
+
+[ WakeUp which_message;
+    print "^[...]";
+    KeyCharPrimitive();
+
+    if (which_message == 1)
+    {
+	wakeup1_1.display();
+	wakeup1_2.display();
+	wakeup1_3.display();
+    }
+    else
+    {
+	wakeup2_1.display();
+	wakeup2_2.display();
+	wakeup2_3.display();
+    };
+    
+    print "^";
+
+    move wallet to epilogue_dante;
+    move keys to epilogue_dante;
+    move pager to epilogue_dante;
+    
+    if (silver_key in player)
+	move silver_key to epilogue_dante;
+
+    if (fortune in player)
+	move fortune to epilogue_dante;
+
+    move epilogue_dante to epilogue_in_chair;
+    ChangePlayer(epilogue_dante);
+    PlayerTo(epilogue_in_chair);
+];

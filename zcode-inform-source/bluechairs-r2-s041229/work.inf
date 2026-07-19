@@ -1,0 +1,925 @@
+ !
+ ! Blue Chairs
+ ! rushing to work
+ !
+
+ ! It is moronic that I need to declare an array so I can read in a
+ ! line of input.
+
+Array this_blows -> 1;
+
+Class 	WorkRoom
+ with	goto_next_room
+	[;
+	    print_ret (string) random("No time, dude, no time.", "Come 
+				       on, no time to screw around 
+				      here.");
+	 ],
+	before
+	[;
+	  Wait:
+	    self.goto_next_room();
+	    rtrue;
+	],
+	cant_go
+	    "Come on, you're already going to get a fucking 
+	    supervisory write-up -- if you don't get this job done 
+	    now, you're going to have to have a sit-down with 
+	    Se@~nor Big-Nose, the supervisor so supervisory he 
+	    scored a real title, none of that ~Team Leader~ 
+	    bullshit.";
+
+Protagonist working_dante "Dante"
+ with 	description
+	    "You threw on some work clothes with just the barest 
+	    attempt at coordinating colors and patterns. Not that 
+	    you are skilled at this kind of thing anyway, but today 
+	    is an especially poor showing from the home team.";
+
+WorkRoom fuckfuckfuck "Fuck Fuck Fuck"
+ with	description
+	    "You're running down the road to the office, cursing 
+	    endlessly, monotonously -- you overslept again, and this 
+	    time they'll notice it, and this time you will have to 
+	    come up with justifications and apologies and promisary 
+	    notes. The sun's so bright it feels like your skin is 
+	    burning.^^Your pager's still going off, has been since 
+	    you woke up, but forget it -- you've got to head into 
+	    the building to the north.",
+	n_to ugly_lobby,
+	in_to ugly_lobby;
+
+Object 	-> fuckfuckfuck_building "building"
+ with	name
+	    'building' 'office',
+	before
+	[;
+	 Enter:
+	    <<Go n_obj>>;
+	 ],
+ has 	scenery;
+
+WorkRoom ugly_lobby "Ugly Ugly Lobby"
+ with	description
+	    "The lobby is a lie; lobby's just a way to trick those 
+	    stupid enough to actually enter the building into 
+	    believing this is a legitimate business and not an 
+	    excuse for jackasses of all religious convictions (yours 
+	    truly included, surely) to pull down a sucker's salary. 
+	    Business transacted, legitimacy guaranteed -- all 
+	    bullshit, all lies, the 21st century's used car 
+	    salesmen, all of them --^^West, west -- that's where 
+	    you've got to get before that evil hot receptionist 
+	    bothers to note your presence and brings it up in the 
+	    middle of some godforsaken all-hands meeting designed to 
+	    build team morale and destroy the weak --",
+	 s_to
+	    "Is today the day you quit, turn around and head into a 
+	    movie version of your own life, head down the highway 
+	    and meet your long-lost love? Be serious, Tyler Durden.",
+	each_turn
+	[;
+	    switch (++self.number)
+	    {
+	     1:
+		print_ret "^", (The) pager, " in your pocket sounds 
+		    again, drawing eyes from all over. You've got to 
+		    get out of sight before someone arrests you.";
+		
+	      2:
+		 print_ret "^", (The) ugly_lobby_receptionist, "'s 
+		    eyes lock on you. Not the way you dreamed they 
+		    did once -- that come-hither shit that's never 
+		    actually happened to you -- instead the look on 
+		    her face says: gotcha, motherfucker. Should've 
+		    brough a knife or something to work today, 
+		    would've gotten in the same amount of trouble 
+		    but at least you could do something constructive 
+		    here.";
+		
+	     3:
+		print "^You can't stand it any further, and scurry 
+		    off like the half-dead rat you are.^";
+		<<Go w_obj>>;
+	    };
+	],
+	w_to veal_pens,
+	number 0;
+
+Object  -> ugly_lobby_receptionist "receptionist"
+ with	name
+	    'receptionist' 'sandi' 'sandy',
+	description
+	    "A logical proposition: all receptionists are either 
+	    incredibly hot, spurring inappropriate fantasies in the 
+	    middle of morning meetings, or they're old fucking 
+	    ladies fresh from the dream they called the 1950s. There 
+	    is no in-between, because normal girls get real 
+	    jobs.^^This one's name is Sandi, by the way -- that's 
+	    free and useless information.",
+	life
+	 [;
+	  Attack:
+	     "Hoo boy, that would be interesting.";
+	     
+	  Kiss:
+	     "She'd probably taser you or some such shit -- she's the
+	     kind of girl who would think that kind of thing would be
+	     necessary to tote around at all times.";
+
+	  Show, Give:
+	     print_ret "Like she would care about ", (the) noun;
+
+	  Ask, Tell, Answer:
+	     "You tried talking to her once, really, made an honest 
+	     try at being honest with a co-worker and colleague, but 
+	     it was clear there was a line that could not be crossed, 
+	     a boundary not to be bounded, and it was the English 
+	     language.";
+	 ],
+	 orders
+	 [;
+	     <<Ask self 'uh'>>;
+	 ],
+  has 	animate concealed female;
+
+WorkRoom veal_pens "Veal Fattening Pens"
+ with 	description
+	[;
+	    print  "At least that's what Douglas Coupland called 
+		them in that book Beatrice gave you -- he was wrong, 
+		though, like most writers and all Canadians. There's 
+		not a mooncalf to be found here, just the deadening 
+		smell of old, awful coffee and those it addicts. 
+		These chumps aren't evil yet, won't yet try to steal 
+		your sheep and eat your pie, but they will someday. 
+		Their fate is not amenable to change.^^At least you 
+		don't have to live here -- your destination's the 
+		basement. You get to pick: elevator to your north, 
+		stairway west. Stairway's normally safer, but you've 
+		got to go past a bunch of offices that may or may 
+		not be occupied with people who hate you.^";
+
+	     if (self hasnt general)
+	     {
+		 give self general;
+		 "^(Word passes between the walls: can you get your
+		 email? No, me neither... I'll try rebooting just to be
+		 sure...)";
+	     };
+	],
+	before
+	[;
+	 Smell:
+	    "God, you can barely bear it.";
+
+	 Listen:
+	    "More rumor, more confusion about what's going on.";
+	],
+	n_to twiddling_thumbs,
+	w_to offices_burnouts;
+
+WorkRoom offices_burnouts "Offices and Burnouts"
+ with	description
+	    "Office doors are closed, half-closed, just barely open. 
+	    So hard to tell the difference between those that just 
+	    prefer to pretend they have privacy and those that have 
+	    something to hide. Who can be saved and who can't. There 
+	    is no triage unit in the building, no doctor to 
+	    pronounce time of death. You could take an afternoon 
+	    stroll around the cubicle farm before you realize your 
+	    heart's stopped beating and you've got no 
+	    reflection.^^Keep running, for God's sake. The 
+	    stairwell's right there, west of where you're standing.",
+	d_to
+	[;
+	    print "You fly down the stairs so fast, it seems like 
+		you could fly if you just clapped your hands, like 
+		Tinkerball --^";
+	    return sea_blue_chairs;
+	],
+	w_to
+	[;
+	    <<Go d_obj>>;
+	];
+
+Object 	-> offices_burnouts_stairway "stairway"
+ with	name
+	    'stairway' 'stairs' 'stair' 'stairwell',
+	before
+	[;
+	 Enter:
+	    <<Go d_obj>>;
+	],
+ has 	scenery;
+
+WorkRoom twiddling_thumbs "Twiddling Your Fucking Thumbs"
+ with	description
+	[;
+	    print "The elevator area's dead empty -- evidently 
+		middle management's all tied up in a meeting or 
+		something. They've got this weird thing for using 
+		the elevator all the time, even just to go down a 
+		single floor. At first, you chalked it up to plain 
+		old laziness, but now you're certain that their fat 
+		beliies have developed sentience, ";
+	    style underline;
+	    print "Star Trek";
+	    style roman;
+	    " style, and demand more and more potato chips and lack 
+	    of physical activity from their hosts, so as to ensure 
+	    the continued existence of the octopoids from Omicron 
+	    Persei 8.^^The elevator's right in front of you, to the 
+	    north.";
+	],
+	n_to twiddling_thumbs_doors;
+
+Object 	-> twiddling_thumbs_doors "elevator doors"
+ with	name
+    	    'elevator' 'doors' 'door',
+    	describe
+	[;
+	    rtrue;
+	],
+	description
+	[;
+	    if (self has open)
+		"They're open, sherlock.";
+	    else
+		"Here's a tough one to puzzle over: right now, the 
+		elevator doors are closed. Whatever shall you do 
+		next?";
+	],
+	before
+	[;
+	 Open:
+	    "Gee, maybe that call button there beside the elevator 
+	    might be of some use. Did you forget to notice that?";
+	    
+	 Close:
+	    "But why, dumbass?";
+	    
+	 Enter:
+	    if (self hasnt open)
+		"Wake up, you poor bastard: you're probably going to 
+		need to press the call button if you want to use the 
+		elevator. What, you forgot to notice it? Don't feel 
+		bad.";
+	    else
+	    {
+		! Re-using code from party.inf
+		
+		print "Just as the doors close, who slides in but 
+		    Se@~nor Big-Nose himself, the 
+		    acknowledged-by-all grand high samurai lord of 
+		    assholes --^^~Dante,~ he says pleasantly, almost 
+		    happily.^^~Mr. Werner,~ you say, nodding your 
+		    head. Just two fucking chums about to embark on 
+		    an epic voyage to the basement. (Why is he going
+		    to the basement?)^^~I was just talking to your 
+		    supervisor... uh...~^^~Mike,~ you helpfully 
+		    interject. This is getting dangerous, too 
+		    friendly. You're either fired or about to get 
+		    promoted.^^~Yes, Michael... good man...~ he 
+		    says, thinking for a moment. ~How much are you 
+		    making right now?~^^(What the fuck?)^^>>";
+		this_blows->0 = 125;
+		read this_blows 0;
+		print "Se@~nor Big-Nose thinks for a minute -- God 
+		    knows exactly what's so interesting about what 
+		    you've just said --^^~You should work more 
+		    hours,~ he says. ~You probably need more money, 
+		    don't you?~^^";
+		PhoneInput();
+		print "You stammer some shit out but it all comes 
+		    out like a mummy talking in his sleep. But maybe 
+		    that's for the best -- what the fuck are you 
+		    supposed to say to something like that? Christ, 
+		    you should've taken a shower this morning. You 
+		    must smell awful.^^Big-Nose seems satisfied by 
+		    your answer, though. ~By the way, have you 
+		    noticed anything wrong with email this morning?~ 
+		    he asks. ~I keep getting messages from someone
+		    named Beatrice.~^^";
+		PhoneInput();
+		print "You keep mumbling, your tongue's all fucked 
+		    up, but he seems to think what you're saying is 
+		    perfectly sensible, as he keeps nodding like the 
+		    professionally-trained good listener he 
+		    is.^^~Thanks for taking a look at it,~ Se@~nor 
+		    Big-Nose says, giving you a paternal look as the 
+		    doors open in front of you to the south.^^~uu 
+		    uuuuuuu,~ you say and get out before things get 
+		    too weird.^^Se@~nor Big-Nose just waves as the 
+		    doors close behind you and you start running...^";
+		PlayerTo(sea_blue_chairs);
+		rtrue;
+	     };
+	],
+	door_dir n_to,
+	door_to
+	[;
+	    <<Enter self>>;
+	],
+ has 	static door openable pluralname;
+
+Object 	-> twiddling_thumbs_button "call button"
+ with	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'call', 'button':
+		     definite_match = true;
+		    i++;
+		    
+		 'elevator':
+		    i++;
+		    
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+    	before
+	[;
+	 Push:
+	    if (twiddling_thumbs_doors hasnt open)
+	    {
+		give twiddling_thumbs_doors open;
+		"You jam on the button mercilessly, because the 
+		fucker no longer lights up when you push it. 
+		Somebody broke it a long time and no one 
+		cared...^^The doors slide open immediately, which is 
+		coincidence but somewhat spooky coincidence.";
+	    }
+	    else
+		"Dude, there's no point.";
+	],
+ has 	scenery;
+
+WorkRoom sea_blue_chairs "A Sea of Blue Chairs"
+ with	description
+	[;
+    	    print "They store 'em down here, you knew that, but 
+		things are different this morning. The blue chairs 
+		are arranged in straight rows";
+
+	    if (sea_blue_chairs_chairs hasnt general)
+		print " that block the door to the server room";
+	    else
+		print ", a small straight path right through the 
+		    middle";
+
+	    if (krispy_kreme_box in self)
+	    	print ", and maybe weirdest of all is the fact that 
+		    there's a Krispy Kreme box on the floor in front 
+		    of all the chairs.";
+	    else
+		print ".";
+	    
+	    "^^The whole scene's got this Wile E. Coyote trap vibe, 
+	    like if you make the wrong move, a pack of ravenous 
+	    interns will eat you alive.";
+	],
+    	n_to sea_blue_chairs_door,
+	in_to
+	[;
+	    ! For some reason, making two compass directions point to
+	    ! the same door causes a bug
+
+	    <<Go n_obj>>;
+	];
+
+Object	-> sea_blue_chairs_chairs "blue chairs"
+ with	name
+    	    'blue' 'chair' 'chairs',
+    	description
+    	    "You're tired of looking at these chairs, tired of 
+	    having them pop up whenever they feel like it. 
+	    Seriously... is this all you can ever expect? Just blue 
+	    chairs?",
+    	before
+	[;
+	 Climb:
+	    print "You've never had that much of a sense of balance, 
+		but why not learn now: you climb up on one, wobble a 
+		little, and start hopping chairs like this is some 
+		kind of retarded video game. It makes sense if you 
+		don't think about it too long, and then you've made 
+		it to the door, which opens with a burst of cool 
+		air:^";
+	    PlayerTo(station_revisited);
+	    rtrue;
+	    
+	 Rub, Straighten, Pull, Push:
+	    if (self hasnt general)
+	    {
+		give self general;
+		"It takes more than a significant amount of time to 
+		clear yourself a path through the chairs -- the 
+		cloth sticks to your hands though there is no 
+		spilled soda, no inexplicable trace of coffee 
+		creamer to blame.^^The chairs keep sliding back into 
+		place, like they've got little demented brains, but 
+		fuck it -- it's not like you have anywhere to be. 
+		Nowhere better, anyway. People always talk about 
+		going to New Orleans and skiing in Colorado... but 
+		how is that different, anyway? It's not like you'd 
+		feel any better about things if the sun was shining 
+		on your face...^^At last, the way to the door is 
+		clear.";
+	    }
+	    else
+		"Forget it -- you don't have all day to clean this 
+		shit up.";
+	],
+	react_before
+	[;
+	 Go:
+	    if (noun == n_obj or in_obj)
+		<<Enter sea_blue_chairs_door>>;
+	    
+	 Enter, Open, Close:
+	    if ((self hasnt general) &&
+		(noun == sea_blue_chairs_door))
+		"The blue chairs block the way, which seems absurd, 
+		ridiculous...";
+	],
+ has 	scenery;
+
+Object 	-> krispy_kreme_box "Krispy Kreme box"
+ with	parse_name
+	[ i;
+	    while (true)
+		switch (NextWord())
+		{
+		 'box', 'of', 'doughnuts', 'donuts':
+		    i++;
+
+		 'donut', 'doughnut', 'krispy', 'kreme':
+		    if (((doughnut in self) && (self has open)) ||
+			(parent(doughnut) == parent(self)))
+			return 0;
+		    else
+			i++;
+
+		 default:
+		    return i;
+		};
+	],
+	description
+	[;
+	    print "It's a stupid cardboard box with green dots all 
+		over it -- nothing worth remembering, nothing worth
+		reporting except that it's ";
+
+	    if (self has open)
+	    {
+		print "open";
+
+		if (child(self))
+		{
+		    print " and contains ";
+		    WriteListFrom(child(self), RECURSE_BIT);
+		}
+		else
+		    print " and empty";
+	    }
+	    else
+		print "closed";
+
+	    ".";
+	],
+	after
+	[;
+	 Open:
+	    print "You lift up the lid, revealing ";
+	    WriteListFrom(child(self), RECURSE_BIT);
+	    ".";
+			  
+	 Take:
+	    give self ~concealed;
+	],
+	capacity 3,
+ has 	concealed container openable;
+
+Object 	-> -> doughnut
+ with	short_name
+	[;
+	    if (self in krispy_kreme_box)
+		print "single doughnut";
+	    else
+		print "doughnut";
+
+	    rtrue;
+	],
+	name
+	    'doughnut' 'donut' 'krispy' 'kreme' 'glazed' 'plain'
+	    'single',
+	description
+	    "It's a plain glazed doughnut, the kind that are probably
+	    produced by the millions though a single one would drive a
+	    starving African to insanity -- how can you eat this stuff
+	    every day? How can you drink Coca-Cola without even
+	    thinking about it and stuff yourself full of French fries?
+	    Don't you realize all of it is fucked-up?",
+	before
+	[;
+	 Eat:
+	    remove self;
+	    "It's pretty delicious, actually -- you swore the things 
+	    off a while back, back when you were worried you were 
+	    starting to get fat and ugly and businesslike. But a 
+	    good doughnut is a good doughnut; beauty is beauty, no 
+	    matter what it does to your body.";
+	],
+	after
+	[;
+	 Take:
+	    if (self hasnt general)
+	    {
+		give self general;
+		move fortune to krispy_kreme_box;
+		"You pick up the doughnut. A little fortune lies in 
+		the hole:^^~Anything can be escaped.~^^It's true.";
+	    };
+	];
+
+Object 	-> sea_blue_chairs_door "server room door"
+ with	name
+	    'server' 'servers' 'room' 'door' 'pen',
+	describe
+	[;
+	    rtrue;
+	],
+	before
+	[;
+	 Open:
+	    "You throw the door open.";
+	    
+	 Close:
+	    "Come on, don't be such a dumbass. Forward progress is 
+	    key here.";
+	],
+	door_to station_revisited,
+	door_dir n_to,
+ has 	static door openable open;
+
+Object 	fortune "fortune"
+ with	name
+	    'little' 'fortune' 'scrap' 'of' 'paper',
+	description
+	    "A little scrap of paper. On its front, it reads,
+	    ~Anything can be escaped.~",
+ has 	transparent;
+
+Object 	-> fortune_back "back of the fortune"
+ with 	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+		{
+		 'back', 'reverse', 'fortune^s':
+		    definite_match = true;
+		    i++;
+
+		 'fortune', 'of', 'the':
+		    i++;
+
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;		    
+		};
+	],
+	description
+	[;
+	    aliced.sync_belief();
+	    print_ret "~Her name is ", (string) aliced.short_name(),
+		",~ the back of the fortune reads.";
+	],
+ has 	static;
+
+Object 	station_revisited "A Gas Station in the Middle of Nowhere",
+ with	description
+	    "Holy shit, you're outside and it's night and this is 
+	    really happening, all of it. Chris is sitting on the 
+	    hood of his car, pointedly bored and waiting. The gas 
+	    station's parking lot is otherwise empty. The dead of 
+	    the night; a breeze stirs past you. The world is 
+	    dreaming but -- let's be clear here because things are 
+	    getting a little bit more than confused -- you are not.",
+	cant_go
+	    "~Where are you going?~ Chris asks.^^~I... I don't 
+	    know,~ you say. ~Is this real?~",
+	each_turn
+	[;
+	    ! Switch us back to our regular self
+
+	    if (player == working_dante)
+	    {
+		move dante to self;
+		ChangePlayer(dante);
+		
+		while (child(working_dante))
+		    move child(working_dante) to dante;
+
+		remove working_dante;
+	    };
+	],
+	in_to
+	[;
+	    <<Go e_obj>>;
+	],
+	e_to station_revisited_door;
+
+Object 	-> station_revisited_chris "Chris"
+ with	name
+	    'chris' 'guy' 'man' 'dude',
+	description
+	    "He looks impatient, distracted. Hard to say why...",
+	life
+	[;
+	 Ask:
+	    switch (second)
+	    {
+	     'time', 'clock', 'watch':
+		print_ret "~Dude, what time is it?~ you ask.^^~I 
+		    think maybe twelve-twenty,~ he replies. ~I don't 
+		    have a watch.~^^~So I wasn't in there that 
+		    long?~^^~No...~ ", (name) self, " says.";
+
+	     'mart', 'mini-mart', 'market', 'convenience', 'store':
+		print_ret "~Anything seem wrong with the store?~ you 
+		    ask.^^To his credit, ", (name) self, " actually 
+		    looks it over for a second, just to be sure 
+		    there aren't any space invaders involved. ~Looks 
+		    pretty normal to me,~ he concludes.";
+
+	     'chinese', 'kid':
+		"~Did you see that Chinese kid in there?~ you 
+		ask.^^~No, man, was there something wrong with 
+		him?~^^~No...~ you say.";
+		
+	     default:
+		"Chris looks at you a moment, kind of dumbfounded.";
+	    };
+
+	 Tell:
+	    switch (second)
+	    {
+
+	     default:
+		<<Ask self second>>;
+	    };
+
+	 Give:
+	    switch (noun)
+	    {
+	     doughnut:
+		move noun to self;
+		
+		if (chris_money in self)
+		    "~No kidding,~ he says. ~How'd you work that 
+		    out?~^^~Don't ask, dude. It'd be too weird to 
+		    explain.~";
+		else
+		    "~Hey, thanks,~ he says and promptly starts 
+		    wolfing the thing down.";
+		
+	     chris_money:
+		move noun to self;
+		
+		if (doughnut in self)
+		    print_ret "~So what, was the doughnut free?~ ",
+			(name) self, " asks.^^~It's... kind of hard 
+			to explain,~ you say.^^He gives you a look 
+			for a second, decides not to push the issue.";
+		else
+		    "~Nothing doing, huh?~ he says.^^You're not sure
+		    what to say.";
+		
+	     krispy_kreme_box:
+		if (doughnut in krispy_kreme_box)
+		{
+		    remove krispy_kreme_box;
+		    move doughnut to player;
+		    print_ret (name) self, " opens the box, smiles. 
+			~Nice,~ he notes appreciatively, and starts 
+			wolfing down a doughnut.";
+		}
+		else
+		    print_ret (name) self, " gives it back. ~Very 
+			funny,~ he says. ~Nothing like a box of 
+			doughnuts without a doughnut inside. Is this 
+			a metaphor or something?~";
+		
+		
+	     default:
+		"~Uh, no thanks,~ he says.";
+	    };
+
+	 Kiss, Attack:
+	    "Hmm, no.";
+	    
+	 Answer:
+	    <<Ask self 'uh'>>;
+	],
+	orders
+	    "He looks at you, confused.",
+	react_before
+	[;
+	 Eat:
+	    if (noun == doughnut)
+	    	print_ret "^~Hey,~ ", (name) self, " says. ~Do I get 
+		    one or what?~^^You stop, sort of ashamed.";
+	],
+	each_turn
+	[;
+	    if ((doughnut in self) && (random(2) == 1))
+		print_ret "^~So, you ready to go?~ ", (name) self, " 
+		    asks, gesturing toward his car.";
+	],
+ has 	animate concealed male;
+	    
+Object 	-> station_revisited_door "mini-mart door",
+ with	parse_name
+	[ i definite_match;
+	    while (true)
+		switch (NextWord())
+	    	{
+	     	 'door', 'sign':
+		    definite_match = true;
+		    i++;
+		    
+	     	 'mini', 'mart', 'mini-mart', 'market', 'convenience',
+		 'store':
+		    i++;
+		    
+	     	 default:
+		    if (definite_match)
+		    	return i;
+		    else
+		    	return 0;
+	    	};
+	],
+	describe
+	[;
+	    rtrue;
+	],
+	description
+	    "The store inside is dark.",
+	before
+	[;
+	    ! I have to sort manually, because I need to pre-empt the
+	    ! first action involving the door.
+
+	    if (self hasnt locked)
+	    {
+		give self locked;
+		"You turn around to the door just as the Chinese kid 
+		inside locks it up and turns the sign over to 
+		CLOSED. You start to say something -- not sure what 
+		exactly you'd say, but there definitely is something 
+		that needs to be communicated -- but the kid 
+		dismisses you with a wave and disappears into the 
+		darkened interior of the mini-mart.";
+	    };
+
+	    if (action == ##Open)
+		"The door's locked, kiddo.";
+
+	    if (action == ##Search)
+		<<Examine self>>;
+
+	    if (action == ##Enter)
+	    	<<Open self>>;
+	],
+	each_turn
+	[;
+	    if (self hasnt general)
+	    {
+		give self general;
+		"^How do you know? Maybe it's just the sound of the 
+		door of the mini-mart closing behind you. Dreams 
+		never have that kind of detail in them.";
+	    };
+	],
+ has	static door openable;
+
+Object 	-> station_revisited_mart "mini-mart"
+ with	name
+	    'mini' 'mart' 'mini-mart' 'market' 'convenience' 'store'
+	    'darkened' 'interior',
+	description
+	    "The mini-mart seems sinister to you now. Not that any 
+	    of it was real, probably... probably...",
+	before
+	[;
+	 Enter:
+	    <<Enter station_revisited_door>>;
+
+	 Search:
+	    <<Search station_revisited_door>>;
+	],
+ has 	scenery;
+
+Object 	-> station_revisited_car "car"
+ with	parse_name
+	[ i definite_match;
+	    while (true)
+    		switch (NextWord())
+		{
+		 'car', 'vehicle', 'toyota', 'corolla':
+		    definite_match = true;
+		    i++;
+		    
+		 'door', 'doors':
+		    i++;
+
+		 default:
+		    if (definite_match)
+			return i;
+		    else
+			return 0;
+		};
+	],
+	description
+	    "Chris's Corolla, same as before.",
+	before
+	[;
+	 Open:
+	    <<Enter self>>;
+
+	 Close:
+	    "That doesn't make sense.";
+	    
+	 SwitchOn, SwitchOff:
+	    print_ret "You can't do that, just standing around", (the)
+		self;
+
+	 Enter:
+	    if ((doughnut notin station_revisited_chris) &&
+		(krispy_kreme_box notin station_revisited_chris))
+	    {
+	       	print "~No love, huh?~ Chris says as he climbs in 
+		    the driver's seat.^^";
+
+		if (doughnut notin player)
+		{
+		    print "~Sorry,~ you say. ~It just didn't work 
+			out.~^^He nods, like he expected you to say 
+			something dumb like that -- was it a tough 
+			breakup? -- and asks, ~Can I at least get my 
+			money back?~^^";
+
+		    if (chris_money in player)
+		    {
+			move chris_money to station_revisited_chris;
+			print "~Oh yeah, sorry,~ you say. ~I'm 
+			    having a lot of trouble keeping track of 
+			    things right now.~^^It's the first thing 
+			    out of your mouth, and you have no idea 
+			    if it's just a convenient excuse or the 
+			    truth.^^";
+		    }
+		    else
+			print "^~Uh... I've got it somewhere around 
+			    here...~^^Chris shakes his head, just 
+			    once, and starts driving.^^";
+		}
+		else
+		{
+		    move doughnut to station_revisited_chris;
+		    print "~Oh, geez, I forgot,~ you say -- but it 
+			seems by the grace of Krispy Kreme, all is 
+			forgiven.^^";
+		};
+	    };
+	    
+	    print "The ride passes in silence. What could you talk 
+		about now, anyway? Would you like to talk about how 
+		you are now a shrill right-wing lawyer's wet dream, 
+		unable to distinguish between reality and fantasy, 
+		undoubtedly due to some overflow of mass media and 
+		loneliness and drugs? Nobody wants to hear that kind 
+		of thing, least of all some near-stranger who's 
+		agreed to give you a ride to a place he's never been 
+		to before.^^You have a feeling you're about two 
+		inches away from really screwing this up, so you 
+		just spend your time watching the stars, the moon, 
+		the ground rushing past.^^Everything is so 
+		dark.^[...]";
+	    KeyCharPrimitive();
+	    ClearScreen();
+	    print "^^~Is this the place?~ Chris asks.^^You check the 
+		number on the mailbox, just to be sure. ~Yeah, it 
+		is.~^^He doesn't say anything as you get out.^";
+	    PlayerTo(beatrice_front);
+	    rtrue;
+	],
+ has 	scenery;

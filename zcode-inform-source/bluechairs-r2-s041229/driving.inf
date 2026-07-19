@@ -1,0 +1,377 @@
+!
+! Blue Chairs
+! the sequence in which you try to drive on your own
+!
+
+Class 	FastRoom
+ with	each_turn
+	[;
+	    if (self hasnt general)
+		give self general;
+	    else
+	    	self.goto_next_room();
+	],
+	goto_next_room
+	[ already_printed;
+	    if (~~ already_printed)
+		print (string) self.default_message, "^";
+	    
+	    print "[...]";
+	    KeyCharPrimitive();
+	    ClearScreen();
+	    print "^";
+	    PlayerTo(self.next_room);
+	],
+	before
+	[;
+	 Wait:
+	    self.goto_next_room(false);
+	    rtrue;
+
+	 Look:
+	    ! description is printed via Look, so we have to allow it
+	    ! once
+
+	    if (self.first_look)
+		self.first_look = false;
+	    else
+	    {
+		self.goto_next_room(false);
+		rtrue;
+	    };
+
+	 Examine:
+	    if (noun == player)
+	    {
+		print "Who cares, anyway--^";
+		self.goto_next_room(true);
+		rtrue;
+	    };
+
+	 Listen:
+	    print "Waves crashing, dreams breaking--^";
+	    self.goto_next_room(true);
+	    rtrue;
+
+	 Smell:
+	    print "Cinnamon, for some reason--^";
+	    self.goto_next_room(true);
+	    rtrue;
+
+	 Answer:
+	    self.goto_next_room(false);
+	    rtrue;
+	],
+	next_room
+             nothing,
+	first_look
+	    true;
+
+Class 	FastObject
+ with	before
+	[ i;
+	    i = self.handle_before();
+	    location.goto_next_room(i);
+	    rtrue;
+	],
+ has 	scenery;
+
+FastObject driving_car "car"
+ with	name
+	    'car' 'automobile' 'vehicle',
+	found_in
+	[;
+	    return (location ofclass FastRoom);
+	],
+	handle_before
+	[;
+	    if (action == ##Exit)
+		"That would be the easy way out, wouldn't it -- you've
+		always dreamed of leaping from a moving car --";
+
+	    if (action == ##Stop)
+		"You reach for the brake pedal but there's nothing 
+		there --";
+	];
+
+FastRoom cruising_baltimore "Cruising the Streets of Baltimore"
+ with	description
+	    "You're just about to hit 83, you think -- turn should 
+	    be a few more blocks down -- but you don't remember the 
+	    name of the street you're on. What does it matter -- 
+	    doesn't matter where you are, just where you're going -- 
+	    some homeless guy standing at a corner or something --",
+	next_room
+            turning_left,
+	default_message
+	    "The streets seem so warm for some reason --";
+
+FastObject -> cruising_baltimore_homeless "homeless man"
+ with	name
+	    'homeless' 'man' 'guy' 'dude',
+	description
+	    "He's trying to say something, but you can't tell what 
+	    -- your windows are shut and the air conditioning is 
+	    deafening --",
+	handle_before
+	[;
+	    switch (action)
+	    {
+	     ##Examine:
+	     	print_ret (string) self.description;
+		
+	     ##Listen:
+	     	<<Examine self>>;
+		
+	     ##Attack:
+	     	"~Hee hee hee,~ you giggle to yourself, always thought 
+	     	about doing that but of course not seriously. What are 
+	     	you doing out here driving anyway? This must be a bad 
+	     	idea --";
+	    };
+	];
+
+FastObject -> cruising_baltimore_corner "corner"
+ with	name
+	    'corner',
+	description
+	    "Cold concrete, old potato chip bags and a dream you 
+	    were having last night about a sandcastle --",
+	handle_before
+	[;
+	    if (action == ##Examine)
+		print_ret (string) self.description;
+	];
+
+FastRoom turning_left "Turning Left"
+ with	description
+	    "Shit, shit, you totally misjudged it. You're terrible 
+	    at left turns. They're harder than parallel parking, 
+	    honest. There's a cop car about to smack into you and 
+	    God knows what that'll do to your insurance -- wonder if 
+	    they throw you in the slammer for that --",
+	before
+	    [;
+	     SwerveLeft:
+		<<Turn turning_left_wheel 'left'>>;
+
+	     SwerveRight:
+		<<Turn turning_left_wheel 'right'>>;
+	    ],
+	next_room
+            stopped_light,
+	default_message
+	    "It isn't 100% clear what happens next --";
+
+FastObject -> turning_left_wheel "wheel"
+ with	name
+	    'wheel' 'steering',
+        handle_before
+	[;
+	    switch (action)
+	    {
+	     ##TurnLeft:
+		"You jerk the wheel, end up pulling a U-turn -- 
+		wonder if that was legal -- and there's a blaring 
+		car horn behind you --";
+
+	     ##TurnRight, ##Straighten:
+		"Jesus, now you're heading straight for the 
+		headlights -- can we get a substitute driver, 
+		please? This one is clearly medically unfit to 
+		continue as captain --";
+	    };
+	];
+
+FastObject -> turning_left_horn "horn"
+ with	name
+	    'horn',
+	handle_before
+	[;
+	    if (action == ##Honk or ##Push or ##Attack)
+		"Really you ought to be taking the situation much 
+		more seriously, and nobody is going to brake for 
+		you, you idiot -- what is wrong with you? Do you 
+		want to die? People often want the police to kill 
+		them -- you read that somewhere --";
+	];
+
+FastObject -> turning_left_brakes "brakes"
+ with	name
+	    'brake' 'brakes',
+        handle_before
+	[;
+	    if (action == ##Attack or ##Push)
+		"There's this happy chirpy noise, like there's a 
+		whole nest of canaries beneath the hood -- and it's 
+		not really clear what happens next --";
+	];
+
+FastRoom stopped_light "Stopped at a Red Light"
+ with	description
+	    "The engine is too loud -- you look at the temperature 
+	    gauge but it's fine, so who knows what's up --",
+	next_room
+	    rising_highway,
+	default_message
+	    "The light turns green --";
+
+FastRoom rising_highway "Rising on the Highway"
+ with	description
+	    "Not sure where you are, exactly -- obviously just out 
+	    of the city, rolling across the ramps or whatever you'd 
+	    call these -- the Pepsi clock says 13:03, which is 
+	    wrong, obviously -- and an exit sign says COLD SPRING 
+	    LANE, so you must not be that far along --",
+	next_room
+            heavy_snow,
+	default_message
+	    "Did you remember to turn on your headlights? That kind of
+	    thing is important --";
+
+FastObject -> rising_highway_clock "clock"
+ with	name
+	    'clock' 'pepsi',
+	description
+	    "You were wrong, it says 31:30 (that, and it's laughing at
+	    you) --",
+	handle_before
+	[;
+	 if (action == ##Examine)
+	    print_ret (string) self.description;
+	];
+
+FastObject -> rising_highway_exit "exit ramp"
+ with	name
+	    'exit' 'cold' 'spring' 'lane' 'ramp' 'sign',
+	description
+	    "Wonder why they chose that particular green for the 
+	    sign. A good choice, really, just the right hue to make 
+	    you think: yes, this is exactly where I've always wanted 
+	    to be --",
+	handle_before
+	[;
+	    switch (action)
+	    {
+	     ##Examine:
+		print_ret (string) self.description;
+	    
+	     ##Take, ##Enter:
+		"No way, Beatrice lives all the way near the 
+		Pennsylvania border --";
+	    };
+	];
+
+FastRoom heavy_snow "Heavy Snow"
+ with	description
+	    "You can't see shit, the dashed white lines are barely 
+	    visible, thank God you don't have to think about where 
+	    you're going -- but it shouldn't be snowing, that's 
+	    incorrect, it is... April? or November? This kind of 
+	    detail is important, isn't it?^^~Dante,~ a voice says 
+	    behind you --",
+	next_room
+            arguing_beatrice,
+	default_message
+	    "A hand touches your shoulder --";
+
+FastObject -> heavy_snow_snow "snow"
+ with	name
+	    'snow' 'snowflake' 'snowflakes',
+	description
+	[;
+	    print "Makes you think of ";
+	    style underline;
+	    print "Fight Club";
+	    " -- always thought they were wrong about that snowflake 
+	    thing --";
+	],
+	handle_before
+	[;
+	    if (action == ##Examine)
+		self.description();
+	];
+
+FastObject -> heavy_snow_voice "voice"
+ with	name
+	    'voice' 'beatrice',
+	description
+	    "You turn around to see what's going on, and holy crow
+	    --",
+	handle_before
+	[;
+	    switch (action)
+	    {
+	     ##Examine:
+		print_ret (string) self.description;
+
+	     ##Listen:
+		"~It's me,~ she says, ~It's me and I'm sorry--";
+	    };
+	];
+
+FastRoom arguing_beatrice "Arguing with Beatrice"
+ with	description
+	    "~No,~ you're shouting, ~No, that's bullshit and you 
+	    know it.~^^(It's snowing so hard you've turned off your 
+	    headlights because it's more bearable that way)^^~Dante, 
+	    this is important -- you have to remember exactly what 
+	    I'm saying because it's going to be important --~",
+	next_room
+            beatrice_screaming,
+	default_message
+	    "~Stop, just stop,~ you say--";
+
+FastObject -> arguing_beatrice_lights "headlights"
+ with	name
+	    'lights' 'light' 'head' 'headlight' 'headlights',
+	handle_before
+	[;
+	    if (action == ##SwitchOn)
+		"The world erupts into light -- ";
+	];
+
+FastObject -> arguing_beatrice_beatrice "beatrice"
+ with	name
+	    'beatrice' 'woman' 'girl',
+	handle_before
+	[;
+	    "~Look, I'm sorry that I don't believe you,~ you say --";
+	];
+
+FastRoom beatrice_screaming "Beatrice is Screaming"
+ with	description
+	    "~Don't follow me,~ is what she's saying, pounding the 
+	    crap out the back of your seat--^^~But I'm not following 
+	    you anywhere,~ you reply, ~You're the one who got in the 
+	    car--~^^~Please, you have to remember this --~",
+	next_room
+            beatrice_listen,
+	default_message
+	    "~Remember, it's snowing -- that's an important detail--~";
+
+FastObject -> beatrice_screaming_beatrice "beatrice"
+ with	name
+	    'beatrice' 'woman' 'girl',
+	handle_before
+	[;
+	    "~I will remember, okay?~ you say, ~I always remember--~";
+	];
+
+FastRoom beatrice_listen "Beatrice Won't Listen"
+ with	description
+	    "~What is your problem?~ she says.^^~Forget it,~ you 
+	    yell, ~Just forget everything...~^^There's this funny 
+	    noise --",
+	next_room
+            beside_car,
+	goto_next_room 
+        [;
+	   
+	    print "The funny noise is the sound of your car hitting 
+		something very, very solid.^[...]";
+	    KeyCharPrimitive();
+	    ClearScreen();
+	    print "^";
+	    PlayerTo(self.next_room);
+	];
