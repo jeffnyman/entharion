@@ -1,0 +1,2323 @@
+                         ------------------                4.95 - June 22, 2007
+                         Infocom Fact Sheet
+                         ------------------
+                 by Paul David Doherty <42@pdd.de>
+
+This file includes some information about Infocom's games and related subjects.
+Thanks to all the people who made contributions. Special thanks this time to
+Matt Ackeret, Evan Day, Marc G. Frank, Edward Franks, Alan J. Franzman, Richard
+Haase, Tom Hlavaty, Dave Jarvis, David Kinder, Roger J. Long, Graham Nelson,
+and Matthew T. Russotto. Very special thanks to C.E. Forman, for tracking down
+the most obscure packaging variants (and for his patience), and to Miron
+Schmidt and Manuel Schulz for all their help. The most recent release of the
+Infocom Fact Sheet is always available as
+                          http://www.if-legends.org/~pdd/infocom/fact-sheet.txt
+and also in The Interactive Fiction Archive under
+                http://www.ifarchive.org/if-archive/infocom/info/fact-sheet.txt
+
+
+List of contents:
+
+I    Released Games
+II   Packaging Details
+III  Books & InvisiClues
+IV   Newsletters
+V    Datafiles
+VI   Game Statistics
+VII  Implementors
+VIII Re-Releases
+IX   Trivia
+X    Chronology
+XI   Interpreters & Utilities
+
+
+                        I  Released Games
+                        =================
+
+This table lists all software products released under the Infocom label. The
+information is given in the form "PrC R Yr  Title_of_program (Author)", where
+PrC is the Product Code, R is the difficulty rating and Yr the year of first
+publication.
+
+Every Infocom product had a specific Order Code which consisted of the Product
+Code (to identify the program) and a System Code which identified the platform
+for which this product was produced. For example, the Order Code IM3-CO4
+identifies the game "Suspect" (IM3) for the Commodore Amiga (CO4). The Order
+Code was printed on the program disk as well as on the box and other packaging
+elements.
+
+The following System Codes were used:
+   AC1  Apricot
+   AP1  Apple II
+   AP2  Apple Macintosh
+   AP3  Apple IIgs (on 3.5" disks)
+   AT1  Atari 800/XL/XE
+   AT2  Atari ST
+   CO1  Commodore 64/128
+   CO4  Commodore Amiga
+   CO5  Commodore 128 ONLY
+   CP1  CP/M
+   DE1  PDP-11 (under RT-11)
+   DE2  DEC Rainbow (under CP/M)
+   EP1  Epson QX-10
+   IB1  IBM PC-DOS 2.0 or higher (IBM & 100% Compatibles)
+   IB2  IBM PC-DOS 2.0/MS-DOS 2.0 or higher (IBM & MS-DOS Compatibles)
+   KA1  Kaypro II (under CP/M)
+   MS1  MS-DOS 2.0
+   NE1  NEC PC-8000 (under CP/M)
+   NE2  NEC APC (under CP/M-86)
+   OS1  Osborne (under CP/M)
+   TA1  TRS-80 Model I
+   TA3  TRS-80 Model III
+   TA4  TRS-80 Color Computer
+   TI1  TI Professional
+   TI2  TI 99/4 A
+
+After the Infocom/Activision merger these System Codes were replaced by the
+standard Activision System Codes, although some packages still listed the old
+codes alongside the new ones. An incomplete list of Activision System Codes:
+   DD   Commodore 64/128
+   ECD  Atari XL/XE
+   EDD  Commodore 128 ONLY
+   KD   Apple IIgs
+   NES  Nintendo Entertainment System
+   PD   IBM/MS-DOS
+   SD   Atari ST
+   TD   Apple II
+   UQD  Amstrad CPC/PCW (under CP/M plus or CP/M 2.2)
+   WD   Commodore Amiga
+
+At least two platforms never had an Infocom System Code: the Commodore Plus/4
+(because these versions were distributed exclusively by CBM) and the Amstrad
+CPC/PCW (support for that platform was introduced after the Infocom/Activision
+merger).
+
+Not all games were available on every platform; e.g. the four graphics (V6)
+games were only available for Macintosh, Amiga, Apple II (with 128k RAM) and
+IBM. These were probably the seven best-supported platforms:
+  IBM:        all 35 IF games (plus Fooblitzky & Cornerstone)
+  Macintosh:  all 35 IF games (plus Quarterstaff)
+  Apple II:   all 35 IF games (plus Fooblitzky) -- V6 games need 128k RAM
+  Amiga:      34 IF games (all except Border Zone)
+  C128:       31 IF games (all V3-5)
+  Atari ST:   30 IF games (all V3-5 except, probably, Sherlock)
+  C64:        27 IF games (all V3 and Nord & Bert, Border Zone, Sherlock)
+
+Difficulty ratings were introduced in late 1984 and abandoned in March 1987:
+   i - Introductory (called Junior on "Seastalker")
+   s - Standard
+   a - Advanced
+   e - Expert
+
+I.1 Interactive Fiction (IF): The 35 canonical games
+----------------------------------------------------
+
+Fantasy
+IZ0 i 85  Wishbringer: The Magick Stone of Dreams (Brian Moriarty)
+          [development code IJ2]
+IZ1 s 80  Zork I: The Great Underground Empire (Marc Blank/Dave Lebling)
+IZ2 a 81  Zork II: The Wizard of Frobozz (Marc Blank/Dave Lebling)
+IZ3 a 82  Zork III: The Dungeon Master (Marc Blank/Dave Lebling)
+IZ4 s 83  Enchanter (Marc Blank/Dave Lebling)
+IZ5 a 84  Sorcerer (Steve Meretzky)
+IZ6 e 85  Spellbreaker (Dave Lebling)
+IZ7 s 86  Trinity (Brian Moriarty)
+IZ8 - 87  Beyond Zork: The Coconut of Quendor (Brian Moriarty)
+IZ9 - 88  Zork Zero: The Revenge of Megaboz (Steve Meretzky)
+
+Science Fiction
+IS1 e 82  Starcross (Dave Lebling)
+IS2 e 83  Suspended (Mike Berlyn)
+IS3 s 83  Planetfall (Steve Meretzky)
+IS4 s 84  The Hitchhiker's Guide to the Galaxy (Douglas Adams/Steve Meretzky)
+IS5 a 85  A Mind Forever Voyaging (Steve Meretzky)
+IS6 - 87  Stationfall (Steve Meretzky)
+
+Mystery
+IM1 e 82  Deadline (Marc Blank)
+IM2 s 83  The Witness (Stu Galley)
+IM3 a 84  Suspect (Dave Lebling)
+IM4 s 85  Ballyhoo (Jeff O'Neill)
+          [development code IJ3]
+IM5 i 86  Moonmist (Stu Galley/Jim Lawrence)
+
+Tales of Adventure
+IA1 a 83  Infidel (Mike Berlyn/Patricia Fogleman)
+IA2 i 84  Seastalker: [Your Name] and the Ultramarine Bioceptor (Stu Galley/
+          Jim Lawrence)
+          [development code IJ1; first released as IK1]
+IA3 s 84  Cutthroats (Mike Berlyn/Jerry Wolper)
+IA4 s 86  Hollywood Hijinx  (Dave Anderson/Liz Cyr-Jones)
+IA5 - 89  James Clavell's Shogun (Dave Lebling)
+
+Comedy
+IC1 s 86  Leather Goddesses of Phobos (Steve Meretzky)
+IC2 - 87  Bureaucracy (Douglas Adams et al.)
+IC3 - 87  Nord and Bert Couldn't Make Head or Tail of It (Jeff O'Neill)
+
+Horror
+IH1 - 87  The Lurking Horror (Dave Lebling)
+
+Romance
+IR1 - 87  Plundered Hearts (Amy Briggs)
+
+Espionage
+IE1 - 87  Border Zone (Marc Blank)
+
+Immortal Legends
+CS1 - 87  Sherlock: The Riddle of the Crown Jewels (Bob Bates)
+          [developed by Challenge Inc.]
+
+Chronicles
+IJ1 - 89  Journey: Part One of The Golden Age Trilogy (Marc Blank)
+
+Living Literature
+IL1 - 89  Arthur: The Quest for Excalibur (Bob Bates)
+          [developed by Challenge Inc.]
+
+I.2 Demos, Samplers, Compilations
+---------------------------------
+
+Demos & Samplers
+ID1 - 84  Zork Demo
+          [contains a demo of Zork I and Marc Blank's Catch-A-Butterfly
+           tutorial]
+ID2 - 84  The Four-In-One Infocom Sampler (version I)
+          [contains samples of Infidel, Planetfall, and Zork I, a session
+           transcript from The Witness, and Marc Blank's Catch-A-Butterfly
+           tutorial]
+ID3 - 87  The Infocom Sampler/Sample the Works of the Master Storytellers
+          (version II)
+          [contains samples of Zork I, LGOP and Trinity, and a Wishbringer
+           tutorial]
+--- - 87  Mini-Zork I
+          [only available for the C-64, this one came with Infocom's one and
+           only cassette based ZIP; it was first published in the British
+           Commodore magazine "Zzap! 64" #67, Nov. 1990]
+
+Trilogies
+IT1 - 87  Zork Trilogy              [includes IF1, IF2, IF3]
+IT2 - 87  Enchanter Trilogy         [includes IF4, IF5, IF6]
+IT3 - 87  Classic Mystery Library   [includes IM2, IM3, IM5]
+IT4 - 87  Science Fiction Classics  [includes IS4, IS3, IS5]
+
+Solid Gold releases
+IS4  - 87  The Hitchhiker's Guide to the Galaxy
+           [Note: This has the same Product Code as the standard HHGG.]
+IZ1G - 87  Zork I
+IC1G - 88  Leather Goddesses of Phobos
+IS3G - 88  Planetfall
+IZ0G - 88  Wishbringer
+
+I.3 Non-IF
+----------
+
+InfoComics
+SG1 - 88  Gamma Force in Pit of a Thousand Screams (Amy Briggs)
+SL1 - 88  Lane Mastodon vs. The Blubbermen (Steve Meretzky)
+SZ1 - 88  ZorkQuest: Assault on Egreth Castle (Elizabeth Langosy)
+SZ2 - 88  ZorkQuest II: The Crystal of Doom (Elizabeth Langosy)
+
+Others
+BC1 - 85  Cornerstone (Brian "Spike" Berkowitz/Rich Ilson et al.)
+GS1 - 86  Fooblitzky (Mike Berlyn/Brian Cody/Poh C. Lim/Paula Maxwell)
+IF1 - 88  Quarterstaff: The Tomb of Setmoth (Scott Schmitz/Ken Updike & Amy
+          Briggs)
+IF2 - 88  BattleTech: The Crescent Hawk's Inception (Westwood Associates)
+
+I.4 Post-Infocom "Infocom" releases
+-----------------------------------
+
+224 - 89  Mines of Titan (Westwood Associates)
+          [original version was published by Electronic Arts as "The Mars
+           Saga"]
+225 - 90  Circuit's Edge (Westwood Associates)
+2T  - 90  Tombs & Treasure (Tokyo Shoseki)
+--- - 91  BattleTech [2]: The Crescent Hawks' Revenge (Westwood Associates)
+--- - 92  Leather Goddesses of Phobos II (Steve Meretzky)
+--- - 93  Return to Zork (Eddie Dombrower/William D. Volk/Joe Asprin)
+--- - 94  Simon the Sorcerer (Mike Woodroffe/Adventuresoft UK)
+          [distributed under the Infocom label in the USA]
+--- - 96  Zork: Nemesis (Cecilia Barajas/Mark Long)
+          [published by Activision, no longer using the label "Infocom"]
+--- - 97  Zork Grand Inquisitor (Laird Malamed/Margie Stohl)
+          [published by Activision, no longer using the label "Infocom"]
+--- - 97  Zork: The Undiscovered Underground
+          [released as a promo on the ZGI web site]
+
+
+                  II  Packaging Details
+                  =====================
+
+All sizes (width x height x depth) are given in mm. Business reply cards and
+product brochures are not mentioned under package contents.
+
+
+II.1 PDP-11 Zork (1980)
+----------------
+
+The Infocom version of "Zork", before distribution was handed over to Personal
+Software. Came with a small instruction booklet with a yellow cover.
+
+II.2 Personal Software Zork, a.k.a. Barbarian Zork (1980-81)
+--------------------------------------------------
+
+The Personal Software version of "Zork I" was still called "Zork". It came in
+two variants:
+
+a) Large version (ziploc bag)
+
+This one was a 226x320x5 plastic ziploc bag containing the disk and a 36-page
+booklet. The title "Zork" was printed in white.
+
+b) Small version (box)
+
+A 146x218x23 box with the front cut out to showcase the 16-page manual
+(140x214). Manual was dated 1/1981.  The title "Zork" was printed in black.
+
+II.3 Zork Blister Packs (1981-83)
+-----------------------
+
+Zork I        blister pack [i.e. card with plastic tray]
+              158x249 for 5.25" disks, 238x256 for 8" disks
+ 1. ten-page manual with game instructions (141x218)
+
+Zork II       blister pack [i.e. card with plastic tray]
+              158x249 for 5.25" disks, 238x256 for 8" disks
+ 1. ten-page manual with game instructions (141x218)
+
+Zork III      blister pack [i.e. card with plastic tray]
+              158x249 for 5.25" disks, 238x256 for 8" disks
+ 1. ten-page manual with game instructions (141x218)
+
+II.4 Folio Packagings (1982-84)
+---------------------
+
+Deadline      police folder in 302x256x3 pouch
+ 1. Inspector's Casebook
+ 2. plastic bag with 3 white pills
+ 3. interview notes (5 pages)
+ 4. Corpus Delicti (coroner's note)
+ 5. letter from Coates to Chief of Police
+ 6. Police Dept. official memo
+ 7. Lab report
+ 8. photo of murder scene
+
+Starcross     304x306x45 flying saucer
+ 1. space map
+ 2. instruction booklet
+
+Suspended     240x317x70 box with recessed white face mask
+ 1. instruction booklet with congratulatory letter
+ 2. laminated colored cardboard map (600x230x3) of the Underground Complex
+    (folded once)
+ 3. six robot tracking devices (flat black round plastic chips)
+ 4. plastic mask
+
+The Witness   police folder in 302x256x3 pouch
+ 1. February 1938 issue of "Nat'l Detective Gazette"
+ 2. Virginia Linder's suicide note
+ 3. Western Union telegram from Freeman Linder
+ 4. matchbook of "The Brass Lantern"
+ 5. February 1, 1938 issue of Santa Ana's "The Register"
+
+Planetfall    240x304x8 folder
+ 1. "Today's Stellar Patrol" - recruitment brochure
+ 2. Special Assignment Task Force I.D. card
+ 3. three postcards (Ramos II, Nebulon, Accardi-3)
+ 4. personal diary (4 pages, 1 of them empty)
+
+Enchanter     308x239x12 box, containing pouch with
+ 1. Guild directory [Guild instructions, large!]
+ 2. ancient scroll with "wax" (rubber) seal
+
+Infidel       235x304x8 folder in form of writing case
+ 1. True tales of adventure
+ 2. letter to Rose Ellingsworth (5 pages)
+ 3. envelope addressed to Rose Ellingsworth
+ 4. pergament map of excavation site
+ 5. pergament with stone rubbing of hieroglyphs and hieroglyph translations
+
+Sorcerer      308x239x12 box, containing pouch with
+ 1. "Popular Enchanting" magazine
+ 2. Infotater
+
+Seastalker    238x300x7 folder
+ 1. "Scimitar Logbook"
+ 2. nautical chart of Frobton Bay (integrated in folder)
+ 3. sticker "The Discovery Squad * Dive Deep * Dive Far"
+ 4. eight clue cards and 1 instruction card
+ 5. Infocard decoder (integrated in folder)
+
+II.5 Standard Boxes, a.k.a. Greyboxes (1984-87)
+-------------------------------------
+
+For all games released from Summer 1984 onwards, and for the re-releases of the
+old games, a standarddized format (a 229x189x25 grey box with colored
+horizontal stripes) was employed. It opened like a book to reveal a booklet
+("browsie") and the Instruction Manual. (The browsie is always listed as first
+item.) A re-closable tray contained all the other packaging elements
+("feelies").
+
+(Trivia: The Infocom logo on the spine was usually printed between the 5th and
+10th stripe, counting from below. However, the first greybox releases had it in
+different positions: between stripe 6 and 11 for Seastalker and early Enchanter
+releases, and between stripes 4 and 9 for Infidel and Sorcerer.)
+
+a) Re-releases:
+
+Zork I
+ B. "The GUE: A History" by Froboz Munbar
+ 1. a map
+
+Zork II
+ B. "G.U.E. on nine zorkmids a day" - a traveller's guide
+ 1. travel brochure "Bozbarland"
+ 2. travel brochure "Grayslopes"
+
+Deadline
+ B. Documentary evidence, file #H657/SJ43.1
+ 1. plastic bag with 3 white pills
+ 2. Corpus Delicti (coroner's note)
+ 3. letter from Coates to Chief of Police
+ 4. photo of murder scene
+
+Zork III
+ B. "FrobozzCo International Annual Report 778 GUE"
+ 1. stock certificate (100 shares a 1 zm)
+ 2. letter from Chairman of the Board of FrobozzCo
+
+Starcross
+ B. "Log of the M.C.S. STARCROSS"
+ 1. space map
+ 2. "Bureau of Extra-Solar Intelligence" instructions for alien encounters
+
+Suspended
+ B. "Briefing for the Contra Central Mentality"
+ 1. cardboard map of the Underground Complex [playing board]
+ 2. robot tracking devices (6 black rubber chips) [markers]
+ 3. Contra Central Mentality Lottery Card
+ 4. congratulatory letter from Lottery Commision HQ
+
+The Witness
+ B. February 1938 issue of "Nat'l Detective Gazette"
+ 1. Virginia Linder's suicide note
+ 2. Western Union telegram from Freeman Linder
+ 3. matchbook of "The Brass Lantern"
+ 4. February 1, 1938 issue of Santa Ana's "The Register"
+
+Planetfall
+ B. "Today's Stellar Patrol" - recruitment brochure
+ 1. Special Assignment Task Force I.D. card
+ 2. three postcards (Ramos II, Nebulon, Accardi-3)
+ 3. personal diary (4 pages, 1 of them empty)
+
+Enchanter
+ B. "A Brief History Of Magic" by Gustar Woomax
+ 1. ancient scroll with "wax" (rubber) seal
+
+Infidel
+ B. "Expedition Log, Ellingsworth Pyramid Search"
+ 1. letter to Rose Ellingsworth (2 pages)
+ 2. envelope addressed to Rose Ellingsworth
+ 3. pergament map of excavation site
+ 4. pergament with stone rubbing of hieroglyphs
+
+Sorcerer
+ B. "Popular Enchanting" magazine
+ 1. "Field Guide to the Creatures of Frobozz" (replaced Infotater)
+
+Seastalker
+ B. "Scimitar Logbook"
+ 1. nautical chart of Frobton Bay
+ 2. sticker "The Discovery Squad * Dive Deep * Dive Far"
+ 3. five hint cards (4 "Infocards", 1 instruction card)
+ 4. Infocard decoder
+
+b) New Games:
+
+Cutthroats
+ B. "True Tales of Adventure"
+ 1. "Four Shipwrecks off Hardscrabble Island" booklet
+ 2. Outfitters Int'l Price List (with tide table)
+
+HHGG
+ B. "How Many Times has This Happened to you?" - HHGG sales brochure
+ 1. two "Orders for Destruction" (yellow and silver)
+ 2. black cardboard sunglasses
+ 3. "Don't Panic!" button
+ 4. fluff (in plastic bag)
+ 5. "microscopic space fleet" (empty plastic bag)
+
+Suspect
+ B. "Murder and Modern Manners" by Jane Darling Worthington
+ 1. invitation to Veronica's Halloween Ball
+ 2. note from editor of "The Washington Representative" newspaper
+ 3. page from "The Maryland Countryside" magazine
+ 4. William Cochrane's business card (with message to Veronica)
+ 5. receipt from "Costumes Unlimited"
+
+Wishbringer (version A)
+ B. "The Legend of Wishbringer"
+ 1. Wishbringer (glow-in-the-dark stone made of molded plastic)
+ 2. postal map of Festeron and Antharia
+ 3. sealed envelope (contains letter)
+
+Wishbringer (version B)
+ B. "The Legend of Wishbringer"
+ 1. postal map of Festeron and Antharia
+ 2. sealed envelope (contains letter)
+(This version without the stone is somewhat rarer. When the original shipment
+of molded stones was used up, later packages were produced without the stone.
+The stone is also not mentioned on the back of the box in this version.)
+
+AMFV
+ B. hardcopy of "Dakota Online Magazine" (April 2031)
+ 1. map of Rockvil, South Dakota
+ 2. yellow plastic pen ("Quad Mutual Insurance")
+ 3. "Class One Security Mode Access Decoder"
+
+Spellbreaker
+ B. "Frobozz Magic Magic Equipment Catalog" (Fall 966)
+ 1. six enchanter trading cards
+ 2. Enchanter's Guild pin
+
+Ballyhoo
+ B. "The Traveling Circus That Time Forgot, Inc." souvenir program
+ 1. "Dr. Nostrum's Extract" trade card
+ 2. balloon (came in various colors: blue, orange, black, light purple)
+ 3. circus ticket (August, 21) with punch-out holes
+
+Trinity
+ B. comic "The Illustrated History of the Atom Bomb"
+ 1. map of Trinity site
+ 2. cardboard DIY sundial
+ 3. instructions for folding origami crane
+
+LGOP
+ B. "The Adventures of Lane Mastodon #91" (3-D comic)
+ 1. 3-D glasses
+ 2. map of catacombs
+ 3. Scratch N Sniff card
+
+Moonmist
+ B. "Legendary Ghosts of Cornwall"
+ 1. visitor's guide "Welcome to Tresyllian Castle"
+ 2. two letters from Tamara (3 pages)
+ 3. MOONMIST iron-on logo
+
+Enchanter Trilogy
+  [Contains standard boxes of Enchanter, Sorcerer and Spellbreaker in a
+   specially designed trilogy slipcase]
+
+Zork Trilogy
+ B. "The GUE: A History" by Froboz Munbar
+ 1. metal coin (1 zorkmid) - "In Frobs We Trust"
+ 2. a map
+ 3. travel brochure "Bozbarland"
+ 4. travel brochure "Grayslopes"
+ 5. stock certificate (100 shares a 1 zm)
+ 6. letter from Chairman of the Board of FrobozzCo
+
+Hollywood Hijinx
+ B. "Tinsel World" magazine (vol. 35 no. 27)
+ 1. Aunt Hildegarde's will
+ 2. photo of Uncle Buddy (with poem on flip side)
+ 3. "Lucky Palm Tree Swizzle Stick" (green plastic)
+
+Bureaucracy
+ B. "You're ready to move!" (bank brochure)
+ 1. letter from your boss
+ 2. membership flyer for "Popular Paranoia"
+ 3. red pencil
+ 4. Beezer card application form (in triplicate)
+
+Classic Mystery Library
+  [Contains standard boxes of The Witness, Suspect and Moonmist in a specially
+   designed trilogy slipcase]
+
+Science Fiction Classics
+  [Contains standard boxes of HHGG, Planetfall and AMFV in a specially designed
+   trilogy slipcase]
+
+II.6 New Standard Box Format (1987-89)
+----------------------------
+
+It had the same size as the old (booklike) standard box but was a slipcase
+containing a cardboard tray. All packaging elements were put into that tray. A
+"Technical Manual" came with every game.
+
+Stationfall
+ 1. space station blueprints (envelope, 9 blueprints, 1 legend page)
+ 2. three forms (QX-17-T, JZ-59-G, HB-56-V)
+ 3. Stellar Patrol patch (Lieutenant First Class)
+
+The Lurking Horror
+ 1. "G.U.E. at a Glance" (G.U.E. Tech guide)
+ 2. G.U.E. Tech student ID card
+ 3. red rubber centipede (between 2 sheets of clear plastic)
+
+Nord and Bert
+ 1. "Home on the range" (12 page booklet with Kevin Pope cartoons)
+
+Plundered Hearts
+ 1. "elegant velvet reticule" (blue pouch), containing
+ 2. 50 guinea note and
+ 3. letter from Jean Lafond
+
+Beyond Zork
+ 1. "The Lore and Legends of Quendor"
+ 2. map of "Southland of Quendor"
+
+Border Zone
+ 1. "I am Frobnia" tourist guide and phrasebook
+ 2. business card from "Riznik's Antiques"
+ 3. Frobnia National Railway matchbook
+ 4. map of the border
+
+Sherlock
+ 1. tourist map of London
+ 2. copy of June 17, 1887 "The Thames"
+ 3. black rubber key fob (Holmes and Watson)
+
+Zork Zero
+ 1. The Flathead Calendar (883 GUE)
+ 2. folded map - blueprints of Rockville Estates, with
+ 3. yellow Post-It attached to it
+ 4. scrap of parchment
+
+Shogun
+ 1. folded map "The Known World 1600"
+ 2. "The Soul of the Samurai" paper
+
+II.7 The Last Two Games (1989)
+-----------------------
+...came in non-standard software cartons.
+
+Journey     202x202x27 box
+ 1. red velvet sack (contains piece of crystal)
+ 2. map
+
+Arthur      178x228x25 box
+ 1. "Book of Hours"
+
+II.8 Commodore Packagings (1983-85)
+-------------------------
+
+The Commodore 64 versions of 6 games -- Zork I, Zork II, Zork III, Deadline,
+Starcross and Suspended -- were exclusively distributed by CBM from 1983 to
+1985. CBM paid Infocom a royalty per copy and used their own blue-and-grey
+Commodore packaging without most of Infocom's packaging elements. The CBM
+packagings came in various forms and sizes (large folder, small folder, plastic
+case).
+
+II.9 DEC Packagings (1982/83)
+-------------------
+
+Another distribution deal, here with Digital for their computer range (DecMate,
+DecMate II, Rainbow). At least 3 games were published in these folio-sized
+packages: Zork II, Zork III, and The Witness. Inside are the standard folio
+contents.
+
+II.10 Dysan Packagings (1982-84)
+----------------------
+
+Dysan was Infocom's disk duplicator, but also published a number of games in
+their "Dysan Series Software" packagings. The boxes have a red slipcover, the
+Dysan name is printed in gold and the Infocom logo and game title in green. At
+least 7 games were released in this format, all for the IBM PC: Deadline,
+Starcross, Suspended, The Witness, Planetfall, Enchanter, Infidel (and maybe
+also Sorcerer and Seastalker).
+
+II.11 Solid Gold Packagings (1987/88)
+---------------------------
+
+The five Solid Gold releases in 1987/88 came in thin folders (229x189x6)
+containing disks and an instruction manual. LGOP and Wishbringer were the only
+ones with added feelies. [In Planetfall and Wishbringer, other parts of the
+documentation were incorporated into the game itself.]
+
+HHGG
+ M. Instruction Manual
+
+Zork I
+ M. Instruction Manual
+
+LGOP
+ M. Instruction Manual; contains
+     - map of catacombs
+     - "The Adventures of Lane Mastodon #91" (comic, no longer 3-D)
+ 1. Scratch N Sniff card
+
+Planetfall
+ M. Instruction Manual
+
+Wishbringer
+ M. Instruction Manual
+ 1. postal map of Festeron and Antharia
+
+II.12 Other Games
+-----------------
+
+Zork Demo (1984)
+  [probably disk-only]
+
+Four-In-One Sampler (1984)
+  [161x252 blister pack, no additional packaging elements]
+
+The Infocom Sampler (1987)
+  [white cardboard envelope labeled "Sample the Works of the Master
+   Storytellers"]
+
+Fooblitzky
+  [298x223x36 box]
+ 1. booklet "Official Ordinances Rules & Regulations For the city of
+    Fooblitzky"
+ 2. booklet "How to Play Fooblitzky. The Bare Essentials"
+ 3. yellow plastic inlay tray containing
+ 4. four felt-tip pens (blue, green, yellow, red for players 1-4)
+ 5. four 279x434x1 workboards (folded in the middle) in the colors of
+    players 1-4
+
+InfoComics
+  [229x189x6 folders]
+ 1. a page with "Everything you need to know about InfoComics"
+
+Quarterstaff
+  [202x202x27 box]
+ 1. "The Path to Enlightenment" parchment
+ 2. Wooden coin
+ 3. Quarterstaff box-art poster
+
+BattleTech
+  [202x202x27 box]
+ 1. Weapon and 'Mech Recognition Guide
+ 2. Battletech poster
+  The first release also contained:
+ 3. Crescent Hawk's lapel pin
+  Some versions also include:
+ 4. Order form for a Ral Partha Phoenix Hawk LAM miniature
+ [The instruction manual was printed in green ink on glossy paper in early
+  releases and later in black ink on cheap paper.]
+
+II.13 Business Products
+-----------------------
+
+Cornerstone (version A)
+  [no packaging info yet]
+
+Cornerstone (version B)
+  [no packaging info yet]
+
+II.14 Product Brochures
+-----------------------
+
+One of these catalogues was usually put in every game package.
+
+1983: "Our worlds, and welcome to them"
+       [4 pages, no illustrations, all 8 games up to Planetfall]
+1983: "Infocom Games and Accessories"
+1983: "Our Circuits Ourselves!"
+1984: "The Incomplete Works Of Infocom, Inc." (version A)
+       [16 pages, all 15 games up to Suspect; for Suspect, an early version of
+        the box artwork was pictured]
+1985: "The Incomplete Works Of Infocom, Inc." (version B)
+       [same as version A, except that the "Junior" difficulty level is now
+        called "Introductory"]
+1985: "You are about to see the fantastic worlds of Infocom unfold before your
+       very eyes"
+       [1 folded sheet, all 18 games up to Spellbreaker]
+1985: "A peculiar dame who claims she has the stone..." (Wishbringer promo)
+1986: "Passport to the United Products of Infocom"
+       [24 page boarding pass; 5 games no longer listed -- Deadline, Starcross,
+        Suspended, Infidel, Seastalker --, the other 18 games up to Hollywood
+        Hijinx are listed]
+1986: "Infocom Transports You to Six New Worlds in 1986"
+1987: "The Master Storytellers"
+       [10 pages]
+1988: "Infocom's New Graphics will blow you out of the water..."
+       [1 folded sheet]
+
+
+                   III  Books & InvisiClues
+                   ========================
+
+III.1 Zork interactive (choose your own path) novels
+----------------------------------------------------
+
+Four "What Do I Do Now Books" books written by Steve Meretzky and published in
+Tor Books' "Young Adult Series":
+
+ TITLE                          PUBL    ISBN
+ Zork: The Forces of Krill      8/83    0-8125-7975-5
+ Zork: The Malifestro Quest     9/83    0-8125-7980-1
+ Zork: The Cavern of Doom       9/83    0-8125-7985-2
+ Zork: Conquest at Quendor     10/84    0-8125-5989-4
+
+III.2 Infocom Books
+-------------------
+
+Published by Avon Books, N.Y. with Byron Preiss Visual Publications, these
+books had nothing much to do with Infocom but are listed here anyway. All the
+books were grey and had colored stripes running horizontally across the cover
+(in the style of Infocom's packaging).
+
+ TITLE                   AUTHOR                  PUBL    ISBN
+ Planetfall              Arthur Byron Cover      8/88    0-380-75384-7
+ Wishbringer             Craig Shaw Gardner      8/88    0-380-75385-5
+ Enchanter               Robin W. Bailey         5/89    0-380-75386-3
+ Stationfall             Arthur Byron Cover     12/89    0-380-75387-1
+ The Zork Chronicles     George Alec Effinger    7/90    0-380-75388-X
+ The Lost City of Zork   Robin W. Bailey         2/91    0-380-75389-8
+ Futurefall              Arthur Byron Cover         unpublished
+
+III.3 InvisiClues
+-----------------
+
+The InvisiClues booklets (hint books with answers printed using invisible ink)
+were introduced by Mike Dornbrook of the ZUG. The first one was published in
+April 1982. #1a-4a had illustrations by David Ardito. The last ZUG InvisiClues
+booklet was published in Spring 1983.
+
+After the ZUG's shutdown Infocom took over and published their first 10
+booklets in December 1983. All Infocom InvisiClues came with separate maps,
+except for Suspended and Seastalker (which had maps in the game packages) and
+HHGG (where the map was printed in the InvisiClues booklet).
+
+ #   Game(s)                     Pages  Year
+
+a) published by Zork Users Group (ZUG)
+
+ 1a  Zork I                        ?    82
+ 2a  Zork II                       ?    82
+ 3a  Zork III                      ?    82
+ 4a  Starcross                     ?    82
+ 5a  Deadline                      ?    83
+
+b) published by Infocom
+
+ 1b  Zork I                        24p  83
+ 2b  Zork II                       28p  83
+ 3b  Zork III                      24p  83
+ 4b  Starcross                     32p  83
+ 5b  Deadline                      24p  83
+ 6   Suspended                     20p  83
+ 7   Witness                       28p  83
+ 8   Planetfall                    28p  83
+ 9   Enchanter                     36p  83
+10   Infidel                       20p  83
+11   Sorcerer                      44p  84
+12   Seastalker                    24p  84
+13   Cutthroats                    32p  84
+14   HHGG                          52p  84
+15   Suspect                       24p  84
+16   Wishbringer                   40p  85
+17   AMFV                          24p  85
+18   Spellbreaker                  40p  85
+19   Ballyhoo                      40p  86
+20   Trinity                       32p  86
+21   LGOP                          24p  86
+22   Moonmist                      16p  86
+23   Hollywood Hijinx/Bureaucracy  28p  87
+24   Stationfall/Lurking Horror    48p  87
+25   Plundered Hearts/Beyond Zork  56p  87
+26   Zork Trilogy                  48p  88
+
+
+                       IV  Newsletters
+                       ===============
+
+IV.1 "The New Zork Times" & "The Status Line"
+---------------------------------------------
+
+ #  Vol No  Date            Pages  Featured game(s)
+
+a) "The New Zork Times" as ZUG (Zork Users Group) newsletter
+
+ 1  -   -   [Spring 82?]     [1p]  Deadline
+ 2  II  1   Fall 82          [2p]  Starcross/Zork III
+ 3  III 1   Spring 83        [2p]  Suspended
+ 4  II  oo  Summer 83        [6p]  The Witness
+
+b) "The New Zork Times" (NZT)
+
+ 5  3    1  Winter 84          4p  Sorcerer
+ 6  3    2  Spring 84          4p  Seastalker
+ 7  3    3  Summer 84          8p  Cutthroats
+ 8  3    4  Fall 84            4p  Suspect/HHGG
+ 9  4    1  Winter 85         12p  Cornerstone
+10  4    2  Spring 85         12p  Wishbringer
+11  4    2  Summer 85          8p  AMFV/Fooblitzky
+12  IV   4  Fall 85            8p  Spellbreaker
+13  V    1  Winter 86          8p  Ballyhoo
+
+c) "* * * *"
+
+14  V    4  Spring 86         12p  Trinity
+
+d) "The Status Line" (TSL)
+
+15  V    3  Summer 86         12p  Moonmist/LGOP
+16  V    4  Fall 86            8p  Hollywood Hijinx/Enchanter Tril.
+17  VI   1  Winter/Spring 87  12p  Bureaucracy/Zork Trilogy
+18  VI   2  Summer 87         12p  Lurking Horror/Stationfall
+19  VI   3  Fall 87           12p  Plundered Hearts/Nord and Bert
+20  VI   4  Winter 87         12p  Beyond Zork/Border Zone
+21  VII  1  Winter/Spring 88  12p  Sherlock/InfoComics 1-3
+22  VII  2  Summer 88          8p  InfoComics 4
+23  VII  3  Fall 88            8p  BattleTech/Zork Zero/Quarterstaff
+24  VIII 1  Spring 89          6p  Shogun/Journey/Arthur
+
+The Status Line's successor ("ZQ" or "Escape") was never published.
+ 
+IV.2 "InfoDope"
+---------------
+[For internal circulation only]
+
+
+                        V  Datafiles
+                        ============
+
+V.1 Story Datafiles
+--------------------
+
+V.1.1  Legend
+-------------
+
+Name   : Game title. "Solid Gold" releases are marked "SG".
+
+?      : Versions marked with "D" are internal development versions (usually
+         releases for in-house or outside testing). Whenever the exact
+         development stage (alpha/beta/gamma) is known, this information is
+         added.
+         Versions marked with "F" are unreleased final internal versions.
+         Turning them into actual releases would have meant another round of
+         testing, and this was only done if the fixes were deemed significant
+         and a new production run was needed.
+         Versions marked with "*" are those that no longer exist or survived
+         in corrupted form only.
+
+V.A    : Version number (a.k.a. "Release") and compilation date (a.k.a. "Serial
+         number"). Typing VERSION in a game usually gives you this information.
+         Compilation dates in the header were introduced in March 1982; earlier
+         datafiles have seemingly arbitrary values as serial number.
+
+Z-C    : The Z-code version (1...6) of the datafile. An "s" marks a datafile
+         that requires an interpreter with sound (not only beep) capabilities.
+         The Z-code versions correspond with the development stages of ZIP
+         ("Z-machine Interpreter Program", the virtual interpreter) in the
+         following way:
+               ZIP        Z-code
+               -----------------
+               ZIP           1-3
+               EZIP (LZIP)     4  ("extended")
+               XZIP            5  ("experimental")
+               YZIP            6  ("successor to X")
+         Z-code versions 7 and 8 were introduced by Graham Nelson in the 1990s;
+         they were not used by Infocom.
+         GZIP (Graphical ZIP) was used for Fooblitzky only.
+
+Length : The "real" length of the datafile, as indicated in the "game length"
+         field of the datafile header. Published IBM data files are often 1
+         byte too long (padded with a $1a byte); Amiga datafiles are always
+         padded to a page size of 256 or 512 bytes due to requirements of the
+         Amiga interpreter. Older datafiles (pre-July 1982) had no $VERIFY
+         command and therefore lack the game length field in the header; their
+         correct length is listed in brackets, with the checksum given after
+         "CHK:".
+
+Only very few beta/gamma testing releases leaked out and appeared on pirate
+bulletin boards (Sorcerer V67; Seastalker V86; LGOP V118, V50; Moonmist V65).
+Infocom reacted to the Sorcerer leak by adding unique identifiers to the
+testing versions, usually invoked via the $verify command.
+
+
+V.1.2  The 35 Canonical Games
+-----------------------------
+
+Name                      ?     V.A       Z-C  Length
+----------------------------------------------------------------------
+A Mind Forever Voyaging   D     1.841226   3    33536 (ZIP version)
+                          D    47.850313   4   119622 "Pre-Alpha"
+                          D*   64.850404   4   138366 "Alpha"
+                          D*   84.850516   4   189346 "Wide Alpha"
+                          D*  105.850605   4   222818 "Beta"
+                          D*  131.850628   4   254920 "Early Gamma"
+                          D*  132.850702   4   254906 "Gamma"
+                          D*  143.850711   4   257590 "Gamma II (IBM)"
+                               77.850814   4   262016
+                               79.851122   4   262036 (Amiga)
+
+Arthur                    D    40.890502   6   235344
+                          D    41.890504   6   235352
+                               54.890606   6   270848 (Amiga/Mac)
+                               63.890622   6   271304 (Apple II/IIgs)
+                               74.890714   6   269200 (IBM)
+
+Ballyhoo                       97.851218   3   128556
+                          F    99.861014   3   128602
+
+Beyond Zork               D     1.870412   5   182636 "Alpha I"
+                          D     1.870715   5   252548 "Beta I"
+                               47.870915   5   261952   [1]
+                               49.870917   5   261900
+                               51.870923   5   261548
+                               57.871221   5   261388
+                          F    60.880610   5   261444
+
+Border Zone                     9.871008   5   178372
+
+Bureaucracy                    86.870212   4   243144
+                              116.870602   4   243340
+                          F   160.880521   4   243524
+
+Cutthroats                     23.840809   3   112558
+                          F    25.840917   3   112538
+
+Deadline                       18.820311   3  [111342]  CHK: $39d5
+                               19.820427   3  [111420]  CHK: $780e
+                               21.820512   3  [111706]  CHK: $bf83
+                               22.820809   3   111782
+                               26.821108   3   108372
+                               27.831005   3   108454
+                          F    28.850129   3   108420
+
+Enchanter                      10.830810   3   109126
+                               15.831107   3   109230
+                               16.831118   3   109234
+                               16.840518   3   109332 (Mac)  [2]
+                               24.851118   3   108638
+                               29.860820   3   111126
+
+HHGG                      D*   62.840706   3    95228 "Alpha"
+                          D   108.840809   3   107452 "Beta I"
+                          D   119.840822   3   110982 "Beta II"
+                               47.840914   3   112622
+                               56.841221   3   113444
+                               58.851002   3   113332
+                               59.851108   3   113334
+                          F    60.861002   3   113330
+
+HHGG SG                        31.871119   5   158412
+
+Hollywood Hijinx          D   235.861118   3   118626 (beta)
+                               37.861215   3   109650
+
+Infidel                        22.830916   3    93556
+                               22.840522   3    94144 (Mac)  [2]
+
+Journey                   D    46.880603   5   229948 (XZIP version)
+                          D     2.890303   6   280936 (IBM)
+                               26.890316   6   279872 (Mac)
+                               30.890322   6   280472 (Amiga)
+                          D    51.890522   6   281408 (IBM)
+                          D    54.890526   6   281504
+                               77.890616   6   282176 (Apple II)
+                          D    79.890627   6   282240
+                               83.890706   6   282312 (IBM)
+
+LGOP                      D*   48.860103   3    86492 "Pre-Alpha"
+                          D*   57.860121   3    99484 "Alpha"
+                          D*  118.860325   3   129012 "Beta"
+                          D   160.860521   3   128998 "Gamma"   [3]
+                          D*   50.860711   3   128988 "Freeze I"
+                               59.860730   3   129022
+                               59.861114 (same as previous)
+
+LGOP SG                         4.880405   5   159928
+
+Lurking Horror                203.870506   3   128986
+                              219.870912   3s  129704 (Amiga)
+                              221.870918   3s  129944 (Amiga)
+
+Moonmist                  D*   65.     ?   3   128986 (beta)
+                                4.860918   3   129002
+                                9.861022   3   128866
+                          F    13.880501   3   128828
+
+Nord and Bert             D*   70.870423   4        ?
+                          D*   77.870428   4        ?
+                          D*  117.870512   4        ?
+                               19.870722   4   170284
+                          F    20.870722   4   170300
+
+Planetfall                D*    1.830306   3    85174 "Alpha"
+                          D*    1.830517   3   105158 "Beta"
+                          D*    1.830614   3   107500 "Gamma"
+                          D*    6.830619   3   107568 "Gamma III"
+                               20.830708   3   107958
+                               26.831014   3   108674
+                               29.840118   3   109052
+                               37.851003   3   109398
+                          F    39.880501   3   109282
+
+Planetfall SG                  10.880531   5   136560
+
+Plundered Hearts               26.870730   3   128962
+
+Seastalker                D    86.840320   3   116456 (beta)
+                               15.840501   3   117738
+                               15.840522   3   117728 (Atari)
+                               15.840612   3   117736 (CoCo)
+                               15.840716   3   117752 (Tandy)
+                          D    17.850208   3   117180
+                               16.850515   3   117752
+                               16.850603   3   117762
+                          F    18.850919   3   116802
+
+Sherlock                  D    97.871026   5   199248
+                               21.871214   5   188444
+                          D    22.880112   5   189016
+                               26.880127   5s  190180 (Amiga/Mac)
+                          F     4.880324   5   189220
+
+Shogun                        292.890314   6   341416 (Mac)
+                              295.890321   6   341912 (Amiga)
+                              311.890510   6   344224 (Apple II/IIgs)
+                          D   320.890627   6   344808 (IBM)
+                          D   321.890629   6   344872 (IBM)
+                              322.890706   6   344816 (IBM)
+
+Sorcerer                  D*   17.831001   3    82376 "Alpha"
+                          D    67.831208   3   107096 "Beta"
+                          D*   85.840106   3   108520 "Gamma"
+                                4.840131   3   109734
+                                6.840508   3   109482
+                               13.851021   3   108692
+                               15.851108   3   108682
+                               18.860904   3   111052
+
+Spellbreaker                   63.850916   3   128480
+                               87.860904   3   128916
+
+Starcross                      15.820901   3    84984
+                               17.821021   3    83792
+                          F    18.830114   3    84740
+
+Stationfall               D*   28.861221   3    91210 "Pre-Alpha"
+                          D*   36.870106   3    98146 "Alpha"
+                          D    63.870218   3   121724 "Beta"
+                          D    87.870326   3   127400 "Gamma"
+                              107.870430   3   128934
+
+Suspect                        14.841005   3   118692  CHK: $d0ec
+                               14.841005   3   118692  CHK: $d04e (Atari)
+                          F    18.850222   3   118746
+
+Suspended                       5.830222   3   105418
+                                7.830419   3   105500
+                                8.830521   3   105492
+                                8.840521   3   105584 (Mac)  [2]
+
+Trinity                   D     1.851202   4   154460 "Alpha"
+                          D     1.860221   4   230484 "Beta"
+                          D    14.860313   4   241564 "Beta II"
+                               11.860509   4   262016
+                               12.860926   4   262064
+                          F    15.870628   4   261484
+
+Wishbringer                    68.850501   3   128952
+                               69.850920   3   128904
+
+Wishbringer SG                 23.880706   5   164712
+
+Witness                        13.830524   3   102608
+                               18.830910   3   103728
+                               20.831119   3   104740
+                               21.831208   3   104704
+                               22.840924   3   104664
+                          F    23.840925   3   104260
+
+Zork I                          2.AS000C   1   [82728]  CHK: $7dc3
+                                5.         1   [82836]  CHK: $a8a4
+                               15.UG3AU5   2   [78566]  CHK: $e987
+                               20.         3   [75734]  CHK: $4506
+                               23.820428   3   [75780]  CHK: $e6dc
+                               25.820515   3   [75808]  CHK: $dfa0
+                               26.820803   3    75964
+                               28.821013   3    76018
+                               30.830330   3    76324
+                               75.830929   3    84868
+                               76.840509   3    84874
+                               88.840726   3    84876
+                          F   119.880429   3    86838
+
+Zork I SG                      52.871125   5   105264
+
+Zork II                         7.UG3AU5   2   [85260]  CHK: $6fb6
+                               15.820308   3   [82110]  CHK: $7961
+                               17.820427   3   [82368]  CHK: $cf13
+                               18.820512   3   [82422]  CHK: $cf14
+                               18.820517 (same as previous)
+                               19.820721   3    82586
+                               22.830331   3    82920
+                               23.830411   3    81876
+                               22.840518   3    83128 (Mac)  [2]
+                          *     ?.     ?   3    89136
+                               48.840904   3    89912
+                          *     ?.841220   3        ?
+                          F    63.860811   3    92524
+
+Zork III                       10.820818   3    82334
+                               12.821025   3    82396
+                               15.830331   3    82558
+                               16.830410   3    81626
+                               15.840518   3    82642 (Mac)  [2]
+                               17.840727   3    82714
+                          F    25.860811   3    87984
+
+Zork Zero                 D   153.880510   5   245600 (XZIP version)
+                          D   242.880901   6   269528 "Beta"
+                              296.881019   6   295536 (Mac)
+                              366.890323   6   296376 (Amiga)
+                              383.890602   6   299392 (Apple II)
+                          D   392.890714   6   299920 (IBM)
+                              393.890714   6   299968 (IBM)
+
+
+V.1.3  Demos and Small Versions
+-------------------------------
+
+Name                      ?     V.A       Z-C  Length
+----------------------------------------------------------------------
+Mini-Zork I               D     2.840207   3    47676 (beta)   [4]
+                               34.871124   3    52216
+
+Mini-Zork II              D     2.871123   3    55690
+
+Zork I Demo                    15.840330   3    62326
+
+Sampler I (Four-In-One)   D     5.840512   3   105196
+                               24.840627   3   112478
+                               26.840731   3   112610
+                               52.850402   3   126708
+                               53.850407   3   126708
+                               55.850823   3   126902
+
+Mini-Ballyhoo             D     8.870119   3    55472
+
+Sampler II                     97.870601   3   125314
+
+Sampler III               D     8.870601   3   106094
+
+
+V.1.4  Unfinished Projects
+--------------------------
+
+Name                      ?     V.A       Z-C  Length
+----------------------------------------------------------------------
+The Abyss                 D     1.890320   6   109416
+
+Milliways                 D    15.880512   5   62928
+                          D   184.890412   6   79152
+
+Zork I German             D     3.880113   5   116216 "Beta I" (A)
+                          D    15.890613   6   130928 "Beta I" (B)
+
+
+V.1.5  Footnotes
+----------------
+
+[1] In the IBM versions, the character definitions (font #3, used for the
+    runes) are simply appended to the datafile. On other platforms (e.g. Amiga
+    and Atari ST) the definitions are in a separate font file.
+
+[2] Recompile of older version with proportional font support added specially
+    for the Macintosh platform.
+
+[3] Some copies of this datafile are incorrectly identified as "50.860711" in
+    the game header. This is due to a mistake made by the maintainers of the
+    Infocom Patches collection.
+
+[4] There are enough differences between the beta and the released "Mini-Zork"
+    to think of them as two different games. For example, the broken egg with
+    the golden canary, the brass bauble, and the Timber Room with the broken
+    timber are only present in the beta, while the sapphire-encrusted bracelet,
+    the red buoy with the large emerald and the Mirror Rooms are only in the
+    released version. (The Echo Room has been removed in both versions.)
+
+
+V.2 Graphic Data Files
+----------------------
+
+The graphics were originally designed on the Amiga; the same data files seem to
+have been used for the Mac releases. Later they were converted to Apple II/IIgs
+and IBM.
+
+At the moment I only have information about the IBM graphics files. I don't
+know whether the "version numbers" shown by the VERSION command (byte 0x1b of
+the graphics file) are really version numbers or just random bytes.
+
+The MS-DOS versions of the YZIP games came with 3 graphics files: for MCGA/VGA
+graphics cards (*.MG1), for EGA (*.EG1) and for CGA (*.CG1). You could chose
+the graphics file via command line options; the syntax was "YZIP /D[M,E,C]". If
+invoked without this option the interpreter tries to automatically determine
+the type of graphic card (and usually ends up with EGA).
+
+Arthur and Shogun contained the program FILECVT.EXE, which can create EG1 and
+CG1 graphics files from the MG1 graphics file.
+
+Zork0
+  (James Shook)  conversions etc.: Tanya Allan/Denise Audette/Andy Briggs/Rob
+                                   Dunlavey/Sophia Green/Joy Pulver/Charlie
+                                   Voner
+
+  MG1    Pix 14    226436         (89-07-10 11:35)
+  EG1    Pix 29    333654         (89-07-13 17:48)
+  CG1    Pix 29    244507         (89-07-14 16:42)
+
+Shogun
+  (Donald Langosy)   conversions: Tanya Allen [Apple II]/Donna Dennison [IBM]
+  MG1    Pix 9     213425         (89-07-06 15:21)
+  EG1    Pix 21    278669         (89-06-28 11:47)
+  CG1    Pix 20    141450         (89-07-06 15:34)
+
+Journey
+  (Donald Langosy)
+  MG1    Pix 2     465606         (89-06-23 13:38)
+  EG1/2  Pix 12    360500/249241  (89-07-07 12:37/38)
+  CG1    Pix 8     297105         (89-07-07 17:01)
+
+Arthur
+  (Darrell Myers/Tanya Isaacson/Sophie Green/Donna Dennison/Jim Sullivan)
+  MG1    Pix 27    292279         (89-07-14 11:32)
+  EG1/2         [EGA file not included]
+  CG1    Pix 15    209359         (89-07-13 18:50)
+
+V.3 Title Pictures
+------------------
+
+The 4 YZIP games had title pictures which were incorporated in the graphics
+files. The only other game with a title picture was the Atari ST version of
+"Beyond Zork". (Also, "Fooblitzky" had an animated title screen.)
+
+V.4 Sound Files
+---------------
+
+The Amiga version of "The Lurking Horror" and the Amiga and Macintosh versions
+of "Sherlock" came with sampled sounds. "The Lurking Horror" had 14 different
+sounds, "Sherlock" 15. Sound versions of "Sherlock" were also planned for the
+Atari ST and the Apple IIgs, but these were never released.
+
+V.5 Font Files
+--------------
+
+For the runes in "Beyond Zork", special character definitions were needed.
+Infocom put these special characters in a separate font file (called
+"Graphic.Data" on the Amiga and "FONT3.DAT" on the Atari ST). In the MS-DOS
+version, the font file was appended to the game's datafile.
+
+The Amiga versions of "Journey" and "Arthur" also came with font files (called
+"Char.Data"). In "Arthur", it is used for the game's proportional font. The
+"Journey" font file is used for the runes; it is identical with the one from
+"Beyond Zork".
+
+V.6 Boss Keys
+-------------
+
+The (original) MS-DOS version of "Leather Goddesses of Phobos" came with a boss
+key picture ("LEATHER.DAT") displayed by the ZIP (version 3 N).
+
+
+                      VI  Game Statistics
+                      ===================
+
+Game               Version     Rooms  Words  Objects    Opcodes
+                               (int)        (takeable)  (total)
+
+Zork I             88.840726    110    697     60        6798
+Zork II            48.840904     86    684     50        6804
+Deadline           27.831005     51    656     37        6977
+Zork III           17.840727     89    564     23        5952
+Starcross          17.821021     86    557     25        6566
+Suspended           8.840521     63    676     33        6902
+The Witness        22.840924     30    715     22        8945
+Planetfall         37.851003    105    669     45        7879
+Enchanter          29.860820     74    723     33        8070
+Infidel            22.830916     77    613     57        7386
+Sorcerer           18.860904     84   1013     36        8963
+Seastalker         16.850603     30    911     15       14460
+Cutthroats         23.840809     68    790     21       12600
+HHGG               59.851108     31    971     45       10723
+Suspect            14.841005     57    674     43       10737
+Wishbringer        69.850920     52   1043     35       16223
+AMFV               79.851122    178   1812     30       18696
+Spellbreaker       87.860904     79    850     60       12472
+Ballyhoo           97.851218     36    962     42       15132
+Trinity            12.860926    134   2120     49       31389
+LGOP               59.861114     75    978     41       13763
+Moonmist            9.861022     69    955     26       15900
+Hollywood Hijinx   37.861215     67    854     58       10355
+Bureaucracy       116.870602     50   1416     44       24116
+Stationfall       107.870430    105    789     53       10662
+Lurking Horror    221.870918     71    773     44       12398
+Nord and Bert      19.870722     41   1230     69       13831
+Plundered Hearts   26.870730     57    816     28       13859
+Beyond Zork        57.871221    128   1569     77       32778
+Border Zone         9.871008    111    803     42       11273
+Mini-Zork I        34.871124     69    536     46        5204
+Sherlock           26.880127     92   1194     67       19702
+Zork Zero         393.890714    215   1624    106       23587
+Shogun            322.890706     75   1389     63       28346
+Journey            83.890706      -     27      -       16187
+Arthur             74.890714     90   1059     32       28242
+
+The number of rooms refers to the internal representation; externally (from the
+player's point of view) there can be less/more rooms, like in Infidel's
+never-ending desert around the camp (which in fact consists of only 10 rooms).
+
+Likewise the number of takeable objects can be higher than the figure given
+here. I have only counted objects which have the takebit set in the initial
+state of the game.
+
+
+                         VII  Implementors
+                         =================
+
+This is a list of games and other programs written by Infocom authors. The term
+"implementor" is used as a synonym for game author here (while at Infocom this
+usually meant a member of the Implementor Group, which not all authors were).
+A "#" before a year means that the game has not been finished or never been
+released.
+
+"Hollywood" Dave Anderson
+-------------------------
+[Untitled Demo Game]                                           (Infocom) #1985?
+Hollywood Hijinx  <+ L.Cyr-Jones>                                (Infocom) 1986
+
+Timothy A. Anderson
+-------------------
+Zork  <+ M.S.Blank/P.D.Lebling/B.K.Daniels>                       (MIT) 1977-79
+Bureaucracy  <+ many others>                                  (Infocom) 1985-87
+
+Bob Bates
+---------
+Sherlock: The Riddle of the Crown Jewels            (Challenge/Infocom) 1986/87
+Arthur: The Quest for Excalibur                        (Challenge/Infocom) 1989
+The Abyss                                             (Challenge/Infocom) #1989
+[Untitled Robin Hood game]                                      (Infocom) #1989
+Timequest                                                         (Legend) 1991
+Eric the Unready                                                  (Legend) 1993
+The Great Game  <+ W.Colby/J.Adams>                           (Activision) 1995
+[Educational game for US government]                            (US Govt.) 1995
+John Saul's Blackstone Chronicles  <+ J.Saul>           (Legend/Mindscape) 1998
+
+Michael Berlyn
+--------------
+Oo-Topos  <+ Muffy Berlyn>                                      (Sentient) 1981
+Cyborg                                                       (Sentient) ca.1982
+Congo  <+ Harry Willner>                                       (Sentient) 1982?
+Gold Rush                                                      (Sentient) 1982?
+Suspended                                                        (Infocom) 1983
+Infidel  <+ P.Fogleman>                                          (Infocom) 1983
+Cutthroats  <+ J.Wolper>                                         (Infocom) 1984
+Fooblitzky  <+ M.S.Blank et al.>                              (Infocom) 1985/86
+Tass Times In Tonetown  <+ Muffy Berlyn>             (Brainwave/Interplay) 1986
+Confetti  <+ Muffy Berlyn>                            (Brainwave/Infocom) #1987
+Rager  <+ Muffy Berlyn>                               (Brainwave/Infocom) #1987
+Dr. Dumont's Wild P.A.R.T.I.  <+ Muffy Berlyn>       (Brainwave/First Row) 1988
+WriteIdea  <+ Muffy Berlyn>                                 (Brainwave) 1988-99
+Les Manley in Search for the King  <+ S.Cartwright>             (Accolade) 1990
+Altered Destiny                                                 (Accolade) 1990
+Snoopy's Game Club  <+ Gene Smith>                              (Accolade) 1992
+Bubsy, in: Claws Encounters of the Furred Kind  <+ J.Skeel>     (Accolade) 1993
+Mystery Capers  <+ M.S.Blank>                             (Apple/Starcore) 1994
+Motile                                                     (Eidetic/Apple) 1994
+Newton Utilities  <+ M.S.Blank>                                    (Apple) 1994
+Live Action Football  <+ M.S.Blank>                             (Accolade) 1994
+All Star Baseball  <+ M.S.Blank>                                (Accolade) 1995
+Bubsy 3D  <+ M.S.Blank>                                         (Accolade) 1996
+Zork: The Undiscovered Underground  <+ M.S.Blank/G.K.Wilson>  (Activision) 1997
+Dr. Dumont's Wild P.A.R.T.I. [extended version]
+   <+ Muffy Berlyn/M.Musante>                           (Cascade Mountain) 1999
+Chameleon  <+ Muffy Berlyn>                            (Cascade Mountain) #1999
+
+ Berlyn also wrote several novels:
+  - The Integrated Man (1980)
+  - Crystal Phoenix (1980)
+  - Blight (19??)  [as Mark Sonders]
+  - The Eternal Enemy (1990)
+
+Marc S. Blank
+-------------
+Zork  <+ P.D.Lebling/T.A.Anderson/B.K.Daniels>                    (MIT) 1977-79
+Zork I: The Great Underground Empire  <+ P.D.Lebling>            (Infocom) 1980
+Zork II: The Wizard of Frobozz  <+ P.D.Lebling>                  (Infocom) 1981
+Zork III: The Dungeon Master  <+ P.D.Lebling>                    (Infocom) 1981
+Deadline                                                         (Infocom) 1982
+Enchanter  <+ P.D.Lebling>                                       (Infocom) 1983
+Zork Demo                                                        (Infocom) 1984
+The Four-In-One Infocom Sampler                                  (Infocom) 1984
+Fooblitzky  <+ M.Berlyn et al.>                               (Infocom) 1985/86
+Milliways: The Restaurant at the End of the Universe
+   <+ many others>                                              (Infocom) #1986
+Bureaucracy  <+ many others>                                  (Infocom) 1985-87
+Border Zone                                                      (Infocom) 1987
+Journey: Part One of The Golden Age Trilogy                      (Infocom) 1988
+[Part Two of The Golden Age Trilogy]                            (Infocom) #1989
+Mystery Capers  <+ M.Berlyn>                              (Apple/Starcore) 1994
+Live Action Football  <+ M.Berlyn>                              (Accolade) 1994
+All Star Baseball  <+ M.Berlyn>                                 (Accolade) 1995
+Bubsy 3D  <+ M.Berlyn>                                          (Accolade) 1996
+Syphon Filter  <+ Richard Ham>                           (Eidetic/Sony) 1996-99
+Zork: The Undiscovered Underground <+ M.Berlyn/G.K.Wilson>    (Activision) 1997
+
+Tomas Bok
+---------
+[Untitled Demo Game]                                           (Infocom) #1985?
+Bureaucracy  <+ many others>                                  (Infocom) 1985-87
+The Infocom Sampler (II)                                         (Infocom) 1987
+Sampler III                                                     (Infocom) #1987
+
+Amy Briggs
+----------
+Rhodomontade Symphony                                          (Infocom) #1986?
+Plundered Hearts                                                 (Infocom) 1987
+Gamma Force in Pit of a Thousand Screams                     (Infocom/TSP) 1988
+Quarterstaff  <+ S.Schmitz/K.Updike>                             (Infocom) 1988
+[Proposed Vampire game]                                         (Infocom) #1988
+Milliways: The Restaurant at the End of the Universe
+   <+ many others>                                              (Infocom) #1988
+
+Stuart W. Galley
+----------------
+The Witness                                                      (Infocom) 1983
+Seastalker: [Your Name] and the Ultramarine Bioceptor
+   <+ J.Lawrence>                                                (Infocom) 1984
+Checkpoint  [later became Border Zone]                       (Infocom) #1984-85
+Midnight Rider/Escape from Boston                               (Infocom) #1985
+Bureaucracy  <+ many others>                                  (Infocom) 1985-87
+Moonmist  <+ J.Lawrence>                                         (Infocom) 1986
+Milliways: The Restaurant at the End of the Universe
+   <+ many others>                                              (Infocom) #1987
+
+Elizabeth Langosy
+-----------------
+ZorkQuest: Assault on Egreth Castle                          (Infocom/TSP) 1988
+ZorkQuest II: The Crystal of Doom                            (Infocom/TSP) 1988
+Haitian Honeymoon ["adult" InfoComic]  <+ Donald Langosy>   (Infocom/TSP) #1989
+
+P. David Lebling
+----------------
+Zork  <+ M.S.Blank/T.A.Anderson/B.K.Daniels>                      (MIT) 1977-79
+Zork I: The Great Underground Empire  <+ M.S.Blank>              (Infocom) 1980
+Zork II: The Wizard of Frobozz  <+ M.S.Blank>                    (Infocom) 1981
+Zork III: The Dungeon Master  <+ M.S.Blank>                      (Infocom) 1981
+Starcross                                                        (Infocom) 1982
+Enchanter  <+ M.S.Blank>                                         (Infocom) 1983
+Suspect                                                          (Infocom) 1984
+Spellbreaker                                                     (Infocom) 1985
+Bureaucracy  <+ many others>                                  (Infocom) 1985-87
+The Lurking Horror                                               (Infocom) 1987
+Milliways: The Restaurant at the End of the Universe
+   <+ many others>                                              (Infocom) #1987
+James Clavell's Shogun                                           (Infocom) 1988
+
+Steven Eric Meretzky
+--------------------
+Planetfall                                                       (Infocom) 1983
+Sorcerer                                                         (Infocom) 1984
+Mini-Zork I                                                     (Infocom) #1984
+The Hitchhiker's Guide To The Galaxy  <+ D.N.Adams>              (Infocom) 1984
+A Mind Forever Voyaging                                          (Infocom) 1985
+Leather Goddesses Of Phobos                                      (Infocom) 1986
+Stationfall                                                      (Infocom) 1987
+LGOP 2: Gas Pump Girls <+ J.O'Neill>                            (Infocom) #1987
+Mini-Zork I                                                      (Infocom) 1987
+Lane Mastodon vs. The Blubbermen                             (Infocom/TSP) 1988
+Zork Zero: The Revenge of Megaboz                                (Infocom) 1988
+[Untitled Titanic game]                                         (Infocom) #1989
+Spellcasting 101: Sorcerers Get All The Girls                     (Legend) 1990
+Spellcasting 201: The Sorcerer's Appliance                        (Legend) 1991
+Leather Goddesses Of Phobos 2: Gas Pump Girls Meet the
+   Pulsating Inconvenience from Planet X                       ("Infocom") 1992
+Spellcasting 301: Spring Break                                    (Legend) 1992
+Superhero League of Hoboken                                       (Legend) 1994
+Hodj 'n' Podj                                                      (Boffo) 1995
+Planetfall: The Search for Floyd  <+ R.Manning/H.Beimler>     ("Infocom") #1995
+The Space Bar                                             (Boffo/Segasoft) 1997
+
+ Meretzky also wrote:
+  - four "Zork" interactive novels (see III.1)
+  - a "Rex Nebular" short story for Microprose (1993)
+
+"Professor" Brian Moriarty
+--------------------------
+Adventure in the Fifth Dimension                        (A.N.A.L.O.G. #11) 1983
+Borrowing Money  <+ T.Hudson>                                     (Atari) #1983
+Saving Money  <+ T.Hudson>                                        (Atari) #1983
+Crash Dive!                                             (A.N.A.L.O.G. #18) 1984
+Tachyon [adaptation of Atari's Quantum]                    (A.N.A.L.O.G.) #1984
+Trinity                                                       (Infocom) 1984-86
+Wishbringer: The Magick Stone of Dreams                          (Infocom) 1985
+Bureaucracy  <+ many others>                                  (Infocom) 1985-87
+Beyond Zork: The Coconut of Quendor                              (Infocom) 1987
+Timesink [SciFi RPG for the MacII]                              (Infocom) #1988
+Loom                                                        (Lucasfilm) 1988-90
+The Dig  <+ S.Spielberg>                                    (LucasArts) 1991-95
+Young Indiana Jones at the World's Fair                       (LucasArts) #1993
+Loadstar: The Legend of Tully Bodine  <+ R.Cobb>          (Rocket Science) 1994
+
+Jeff O'Neill
+------------
+[Untitled Demo Game]                                           (Infocom) #1985?
+Ballyhoo                                                         (Infocom) 1985
+Bureaucracy  <+ many others>                                  (Infocom) 1985-87
+Nord and Bert Couldn't Make Head or Tail of it                   (Infocom) 1987
+Milliways: The Restaurant at the End of the Universe
+   <+ many others>                                              (Infocom) #1987
+LGOP 2: Gas Pump Girls <+ S.E.Meretzky>                         (Infocom) #1987
+Zork I (Solid Gold version)                                      (Infocom) 1987
+Zork I (German Version)                                         (Infocom) #1988
+
+Jerry Wolper
+------------
+Cutthroats  <+ M.Berlyn>                                         (Infocom) 1984
+Bureaucracy  <+ many others>                                  (Infocom) 1985-87
+
+
+                        VIII  Re-Releases
+                        =================
+
+While Infocom's original releases are slowly becoming collectors' items, most
+of their games have been re-released as budget editions or in compilations.
+These are listed here in chronological order. The game version information is
+given (where known) in the format
+          "Version number.Assembly date (Interpreter version)".
+
+a) Infocom from Mastertronic
+----------------------------
+
+The "Infocom from Mastertronic" (aka "Budgets") were published in 1990 (#1-5)
+and 1991 (#6-10) by Virgin Mastertronic in Great Britain (with a license from
+Activision). They came in flat square-shaped cardboard boxes (black with blue
+stripes, 160x160x18 mm). All of them included a reprint of the original manual
+as a small (140x140) booklet; #2 and #4 also had maps.
+
+All games were priced at UKP9.99 and released for IBM, Amiga and Atari ST.
+
+ # Game           IBM              Amiga            Atari ST
+----------------------------------------------------------------
+ 1 HHGG           31.871119 (5E)     ???            56.841221
+ 2 Zork I         52.871125 (5E)   88.840726 (3A)   52.871125
+ 3 Planetfall     10.880531 (5J)   37.851003 (3B)     ???
+ 4 Wishbringer    23.880706 (5J)   69.850920 (3B)   68.850501
+ 5 LGOP            4.880405 (5I)   59.860730 (3B)     ???
+ 6 Zork II        48.840904 (3L)     ->      (3B)     ->
+ 7 Zork III       17.840727 (3L)     ->      (3B)     ->
+ 8 Enchanter      10.830810 (3A)   16.831118 (3B)     ->
+ 9 Sorcerer        6.840508 (3L)   13.851021 (3B)     ???
+10 Deadline       27.831005 (3L)     ->      (3B)     ->
+
+In late summer 1992 Virgin Mastertronic published two CD-ROMs called "The Zork
+Trilogy" (containing #2,6,7) and "The Infocom Collection" (#1,3,4,5). A third
+CD-ROM with the Enchanter Trilogy was planned but may not have been released.
+
+b) The Lost Treasures of Infocom
+--------------------------------
+
+This package ("LTOI I") was released by Activision (under the Infocom label) in
+December 1991 for the IBM (Macintosh version: January 1992; Amiga version:
+February 1992). CD-ROM versions (different CD-ROMs for PC and Mac) followed in
+1993. An Apple IIgs version was created and distributed by the Big Red Computer
+Club.
+
+It contained 20 games, complete with manual, hintbook (more or less identical
+to the text in the InvisiClues) and maps. The IBM and Amiga versions had $59.95
+as RRP, the Macintosh version $69.95.
+
+The package was produced on a shoestring budget: The hintbook was full of
+typos; the manual left out some vital information (the radio station ad for
+"Ballyhoo"; the "Moonmist" letters). Some early packages did not include the
+parchment for "Zork Zero" either.
+
+The IBM packages lack some not-so-vital files (the MCGA/VGA graphics for "Zork
+Zero", the boss key picture for the 3N interpreter). Early IBM versions had
+read errors on the disks. 
+
+Game                   IBM               Macintosh         Amiga
+------------------------------------------------------------------------
+Ballyhoo               97.851218 (3M2)     ->      (3G)      ->
+Beyond Zork            57.871221 (5J)      ->      (5B)      ->
+Deadline               27.831005 (3M2)     ->      (3G)      ->
+Enchanter              29.860820 (3N)      ->      (3G)    16.831118
+HHGG                   31.871119 (5E)    59.851108 (3G)    58.851002 
+Infidel                22.830916 (3M2)     ->      (3G)      ->
+Lurking Horror        203.870506 (3N)      ->      (3G)   219.870912
+Moonmist                9.861022 (3N)      ->      (3G)      ->
+Planetfall             37.851003 (3N)    10.880531 (5C)    37.851003
+Sorcerer               15.851108 (3M2)     ->      (3G)    13.851021
+Spellbreaker           87.860904 (3N)      ->      (3G)      ->
+Starcross              17.821021 (3M2)     ->      (3G)      ->
+   (some IBM packages: 15.820901)
+Stationfall           107.870430 (3N)      ->      (3G)      ->
+Suspect                14.841005 (3M2)     ->      (3G)      ->
+Suspended               8.840521 (3M2)     ->      (3G)     8.830521
+Witness                22.840924 (3M2)     ->      (3G)      ->
+Zork Zero             393.890714 (6.71) 296.881019 (6.1)  366.890323
+Zork I                 88.840726 (3M2)     ->      (3G)      ->
+Zork II                48.840904 (3M2)     ->      (3G)      ->
+Zork III               17.840727 (3M2)     ->      (3G)      ->
+
+c) The Lost Treasures of Infocom II
+-----------------------------------
+
+Following the (unexpected?) success of LTOI I, Activision released a second
+compilation in July 1992 (IBM, Macintosh). An Amiga version was planned but not
+released.
+
+This one contained only 11 games; "Journey", "Shogun", "Arthur" and "Leather
+Goddesses of Phobos" were not included (but the package contained a special
+$9.95 priced offer for LGOP). The CD-ROM version (PC and Mac on the same CD)
+was released end-1993; it included the 3 graphic games but not LGOP.
+
+The package did not contain maps or hintbooks but a 1-800 number for hints was
+listed. The RRP was $49.95.
+
+Game                   IBM               Macintosh     
+-------------------------------------------------------
+AMFV                   77.850814 (4A)      ->      (4E)
+Border Zone             9.871008 (5J)      ->      (5B)
+Bureaucracy           116.870602 (4D)      ->      (4I)
+Cutthroats             23.840809 (3M2)     ->      (3G or 3I?)
+Hollywood Hijinx       37.861215 (3N)      ->      (3I)
+Nord and Bert...       19.870722 (4E)      ->      (4I)
+Plundered Hearts       26.870730 (3N)      ->      (3G)
+Seastalker             16.850603 (3L)    15.840522 (3G or 3I?)
+Sherlock               21.871214 (5J)    26.880127 (5C)
+Trinity                12.860926 (4E)      ->      (4H)
+Wishbringer            69.850920 (3M2)   68.850501 (3G or 3I?)
+Arthur (CD)            74.890714 (6.71)  54.890606
+Journey (CD)           83.890706 (6.68)  26.890316
+Shogun (CD)           322.890706 (6.68) 292.890314
+
+d) Zork Anthology
+-----------------
+
+Published by Activision in 1994 as a CD-only companion piece to the pseudo-
+Infocom "Return to Zork".
+
+Game                   IBM               Macintosh     
+-------------------------------------------------------
+Zork I                 88.840726 (3M2)     ???
+Zork II                48.840904 (3M2)     ???
+Zork III               17.840727 (3M2)     ???
+Beyond Zork            57.871221 (5J)      ???
+Zork Zero             393.890714 (6.71)    ???
+Planetfall             37.851003 (3N)      ???
+
+e) Infocom Classics
+-------------------
+
+A set of 5 PC-and-Mac CD-ROMs published by Activision in June 1995. Each CD-ROM
+comes with manual and maps; a 1-900 line for hints is listed and separate
+hintbooks can be ordered for $10 (per collection). LGOP and three V6 games
+(Arthur, Shogun and Journey) are not included. The collections go for $20-25.
+
+Mystery Collection:         Deadline, The Witness, Suspect, Moonmist, The
+                            Lurking Horror, Sherlock (plus Zork Zero and
+                            Planetfall)
+
+Comedy Collection:          Ballyhoo (!), Bureaucracy, Hollywood Hijinx, Nord &
+                            Bert (plus Zork I and Planetfall)
+
+Fantasy Collection:         Enchanter, Sorcerer, Spellbreaker, Wishbringer,
+                            Seastalker (!) (plus Zork II and Planetfall)
+
+Adventure Collection:       Border Zone, Cutthroats, Infidel, Plundered Hearts,
+                            Trinity (!) (plus Zork III and Planetfall)
+
+Science Fiction Collection: AMFV, HHGG, Starcross, Stationfall, Suspended (plus
+                            Beyond Zork and Planetfall)
+
+[All versions and interpreters are as on LTOI 1 and 2.]
+
+f) Masterpieces of Infocom
+--------------------------
+
+Activision's last Infocom collection so far, bla bla.
+no HHGG and Shogun (rights reverted back)
+
+Game                   IBM               Macintosh     
+-------------------------------------------------------
+AMFV                   77.850814 (4A)      ->      (4E)
+Arthur                 74.890714 (6.71)  54.890606 (??)
+Ballyhoo               97.851218 (3M2)     ->      (3G)
+Beyond Zork            57.871221 (5J)      ->      (5B)
+Border Zone             9.871008 (5J)      ->      (5B)
+Bureaucracy           116.870602 (4D)      ->      (4I)
+Cutthroats             23.840809 (3M2)     ->      (3G)
+Deadline               27.831005 (3M2)     ->      (3G)
+Enchanter              29.860820 (3N)      ->      (3G)
+Hollywood Hijinx       37.861215 (3N)      ->      (3I)
+Infidel                22.830916 (3M2)     ->      (3G)
+Journey                83.890706 (6.68)  26.890316 (??)
+Lurking Horror        203.870506 (3N)      ->      (3G)
+Moonmist                9.861022 (3N)      ->      (3G)
+Nord and Bert...       19.870722 (4E)      ->      (4I)
+Planetfall             37.851003 (3N)    10.880531 (5C)
+Plundered Hearts       26.870730 (3N)      ->      (3G)
+Seastalker             16.850603 (3L)    15.840522 (3G)
+Sherlock               21.871214 (5J)    26.880127 (5C)
+Sorcerer               15.851108 (3M2)     ->      (3G)
+Spellbreaker           87.860904 (3N)      ->      (3G)
+Starcross              17.821021 (3M2)     ->      (3G)
+Stationfall           107.870430 (3N)      ->      (3G)
+Suspect                14.841005 (3M2)     ->      (3G)
+Suspended               8.840521 (3M2)     ->      (3G)
+Trinity                12.860926 (4E)      ->      (4H)
+Wishbringer            69.850920 (3M2)   68.850501 (3G)
+Witness                22.840924 (3M2)     ->      (3G)
+Zork I                 88.840726 (3M2)     ->      (3G)
+Zork II                48.840904 (3M2)     ->      (3G)
+Zork III               17.840727 (3M2)     ->      (3G)
+Zork Zero             393.890714 (6.71) 296.881019 (6.1)
+
+
+                          IX  Trivia
+                          ==========
+
+IX.1 Game titles prior to eventual release
+------------------------------------------
+
+Some game titles we know have been chosen by the marketing department rather
+than the authors. The in-house alpha/beta versions were called differently.
+
+A Gift From Space -> Starcross
+Aunt Hildegarde's Secret -> Hollywood Hijinx
+Checkpoint -> Spy -> Border Zone
+Invitation to Murder -> Witness -> The Witness
+PRISM -> AMFV
+Pyramid -> Infidel
+Ribbons and Rapiers -> Plundered Hearts
+Sole Survivor -> Survivor -> Planetfall
+Spellcrafter -> Mage -> Spellbreaker
+Suspension -> Suspended
+Was It Murder? -> Deadline
+Wordplay -> Nord and Bert Couldn't Make Head or Tail of it
+Zork IV -> Enchanter
+
+IX.2 The Gribnitz Apartments
+----------------------------
+
+These are the 27 names that can appear as inhabitants of the Gribnitz
+Apartments in Marc Blank's "Border Zone". Each time the game is started, 18 or
+19 names are randomly inserted into the directory in the Apartment Lobby.
+
+Bextra     (maybe Duane Beck)
+Blenka     (Marc Blank)
+Blivik     ?
+Brgmiz     (Ernie Brogmus)
+Brlensk    (Mike Berlyn)
+Brzni      (Joel Berez)
+Carlyni    (Linda Carlow)
+Cnezeni    (Cezanne Blank)
+Cyrink     (Liz Cyr-Jones)
+Dimwitz    (Lord Dimwit Flathead the Excessive)
+Dornik     (Michael Dornbrook)
+Endrizen   (Tim Anderson, or "Hollywood" Dave Anderson)
+Flipni     ?
+Galnitz    (Stu Galley)
+Gentezek   (Carl Genatossio)
+Kooplitz   ?
+Lebniz     (Dave Lebling)
+Lengnoz    (Elizabeth Langosy, or Donald Langosy)
+Mrtzki     (Steve Meretzky)
+Onilik     (Jeff O'Neill)
+Profnim    ("Professor" Brian Moriarty)
+Rivni      (Christopher Reeve)
+Robnerim   (the family name from "Deadline")
+Sinkriz    (maybe Anita Sinclair)
+Urg        ?
+Veznich    (Al Vezza)
+Winip      ?
+
+
+                         X  Chronology
+                         =============
+
+69-70:   Programming language Muddle (later called MDL) developed by several
+         people affiliated with the MIT's Dynamic Modelling (DM) Group (Dave
+         Cressey, Chris Reeve, Bruce K. Daniels) and AI Laboratory (Gerald
+         Sussman, Carl Hewitt). The MDL development system runs on a DEC PDP-10
+         under ITS.
+
+Dec 76:  First preliminary meeting of future Infocom founders.
+
+Jun 77:  "Zork" created by Marc Blank, Bruce K. Daniels, Tim Anderson, and Dave
+         Lebling. Written in MDL.
+
+Feb 79:  Last puzzles added to the mainframe "Zork".
+
+Apr 79:  First article about "Zork" published.
+
+6/22/79: Infocom founded by 10 DM Group members (Tim Anderson, Joel Berez, Marc
+         Blank, Mike Broos, Scott Cutler, Stu Galley, Dave Lebling, J. C. R.
+         Licklider, Chris Reeve, Al Vezza).
+         The first Board of Directors consists of Berez, Broos, Galley,
+         Lebling, and Vezza.
+
+Aug 79:  Mike Broos resigns; Marc Blank replaces him as Director.
+
+Nov 79:  Joel Berez elected Infocom's President.
+
+Mar 80:  Infocom gets own P.O. box.
+
+Jun 80:  Agreement with Personal Software Inc. to publish "Zork I".
+
+Nov 80:  "Zork I".
+         First sold copy: PDP-11 version.
+
+Dec 80:  ZIP for TRS-80 Model I (written by Scott Cutler).
+         About 1500 copies of Model I "Zork I" sold by PS until 9/81.
+
+Feb 81:  ZIP for Apple II (written by Bruce K. Daniels).
+         Over 6000 copies of Apple II "Zork I" sold until 9/81.
+
+Mar 81:  Chris Reeve becomes Director.
+
+May 81:  TRS-80 Model II version (never sold).
+
+Jun 81:  First 2 employees (Joel Berez and Marc Blank).
+         Zork II agreement with Personal Software.
+
+Aug 81:  ZIP V2 introduced.
+
+Sep 81:  Infocom moved to 6 Faneuil Hall Marketplace, Boston.
+         Mort Rosenthal becomes Manager of Marketing.
+
+Oct 81:  End of the sales agreement with PS. (Infocom buys all Apple II
+         versions of "Zork I" back from PS.)
+         Mike Dornbrook founds "Zork Users Group" (PO Box 20923, Milwaukee, WI
+         53220-0923) to handle requests for hints and merchandise. In 1983, the
+         ZUG has 20000 members.
+
+Nov 81:  "Zork II".
+         Repackaging of "Zork I".
+
+1/1/82:  Infocom moves to 55 Wheeler Street, Cambridge, MA 02138.
+         Marc Blank becomes vice-president (VP) for product development.
+
+Apr 82:  "Deadline".
+         ZIP V3 introduced.
+         New ZIPs for Atari 400/800 and CP/M.
+         ZUG issues first InvisiClues booklet (Zork I).
+
+May 82:  Marc Blank meets Mike Berlyn at an Applefest trade show.
+
+Jun 82:  ZIP for IBM-PC.
+         Employees: 4.
+
+Aug 82:  ZIPs for TRS-80 Model III and NEC APC.
+
+Sep 82:  "Zork III".
+         "Starcross".
+
+Oct 82:  Business Products division founded. "Cornerstone" development begins.
+
+Dec 82:  DECsystem-20 development mainframe, previously leased from Joel Berez,
+         bought outright.
+
+end-82:  Sales: $1.65 million (net income: $335.000).
+
+Mar 83:  "Suspended".
+         ZIP for DEC Rainbow.
+
+Apr 83:  ZIPs for Commodore 64 and TI Professional.
+
+Jun 83:  "The Witness".
+         Employees: 20.
+
+Jul 83:  Shutdown of Mike Dornbrook's ZUG.
+
+Aug 83:  "Planetfall".
+         Mike Dornbrook joins Infocom as Product Manager for Entertainment
+         Products.
+
+Sep 83:  "Enchanter".
+
+Nov 83:  "Infidel".
+         ZIP for DECmate.
+
+Dec 83:  ZIP for Tandy-2000.
+         Ray Stata elected Director.
+
+end-83:  Sales: $6 million (net income: $526.000).
+
+Jan 84:  Al Vezza becomes Chief Executive Officer (CEO).
+
+Feb 84:  ZIPs for Kaypro II and Osborne.
+
+Mar 84:  "Sorcerer".
+         ZIPs for MS-DOS and TI 99/4 A.
+         John Brackett new General Manager (GM) of Business Products division.
+
+May 84:  Second DECsystem-20 bought.
+
+Jun 84:  "Seastalker".
+         ZIP for Apple Macintosh (first ZIP with proportional font support).
+         John O'Leary new GM of Consumer Products division.
+         Employees: 50.
+
+Sep 84:  "Cutthroats".
+
+Oct 84:  "Hitchhiker's Guide to the Galaxy".
+
+11/1/84  Cornerstone announced at NYC press conference.
+
+Nov 84:  "Suspect".
+
+Dec 84:  Management restructured.
+
+end-84:  Sales: $10 million.
+
+Jan 85:  "Cornerstone".
+         CES in Las Vegas: For promotion of "Suspect", Infocom rents a mansion
+         and invites ~5000 people to become murder suspects.
+
+Mar 85:  ZIP for Epson QX-10.
+
+Apr 85:  Move to 125 Cambridge Park Drive, Cambridge, MA 02140.
+         New Mail Order Department (PO Box 478, Cresskill, NJ 07626).
+         ZIP for Apricot.
+
+Jun 85:  "Wishbringer".
+         Employees: 100.
+
+Aug 85:  ZIP for Atari ST.
+
+Sep 85:  "A Mind Forever Voyaging".
+         First layoffs due to "Cornerstone"s commercial failure (despite hiring
+         a separate sales and marketing team).
+
+Oct 85:  "Spellbreaker".
+
+Dec 85:  Business Products division laid off.
+         ZIP for Amiga.
+
+end-85:  Sales: $11.5 million.
+
+Jan 86:  Marc Blank and CEO Al Vezza leave.
+         Joel Berez new CEO. (He remains president.)
+
+Feb 86:  "Ballyhoo".
+         Price cut for "Cornerstone" (from $495 to $99.95).
+
+2/19/86: Directors of Infocom and Activision approve of merger.
+
+Mar 86:  "Fooblitzky".
+
+Jun 86:  "Trinity".
+         EZIP for Commodore 128.
+
+6/13/86: Merger. Activision Inc. (Mountain View, CA) buys Infocom for stock
+         swap worth $7.5...9.0 million.
+         GM John O'Leary leaves.
+         Employees: 40.
+
+Sep 86:  "Leather Goddesses of Phobos".
+
+Oct 86:  "Moonmist".
+
+Nov 86:  "Enchanter Trilogy".
+
+87-89:   Losses of ~$200.000 per fiscal quarter.
+
+Jan 87:  "Zork Trilogy".
+
+Feb 87:  "Hollywood Hijinx".
+
+Mar 87:  "Bureaucracy".
+
+Jun 87:  "Stationfall".
+         "The Lurking Horror".
+
+Sep 87:  "Nord and Bert Couldn't Make Head or Tail of It".
+         "Plundered Hearts".
+
+Oct 87:  "Beyond Zork".
+         Sound version of "The Lurking Horror" (Amiga).
+         "Classic Mystery Library".
+         "Science Fiction Classics".
+         XZIP for Apple IIgs.
+
+Nov 87:  "Border Zone".
+
+Dec 87:  Solid Gold "Hitchhiker's Guide to the Galaxy" and Solid Gold "Zork I"
+         (Apple II, Macintosh, C64, IBM).
+
+Jan 88:  "Sherlock" (Apple II, C64, IBM).
+         Mike Dornbrook new VP.
+
+Mar 88:  "Gamma Force".
+         "Lane Mastodon".
+         Sound version of "Sherlock" (Macintosh, Amiga).
+         Chris Reeve leaves.
+
+Apr 88:  "ZorkQuest I".
+
+Jun 88:  Employees: 30.
+
+Jul 88:  Solid Gold "Leather Goddesses of Phobos" and Solid Gold "Planetfall".
+         Joel Berez resigns.
+         Joe Ybarra (formerly at Electronic Arts) becomes new president.
+
+Aug 88:  "ZorkQuest II".
+
+Sep 88:  Solid Gold "Wishbringer".
+         "Quarterstaff" (Macintosh).
+
+Oct 88:  "Zork Zero"
+         YZIP for Macintosh (written by Duncan Blanchard; YZIP specification by
+         Tim Anderson & Dave Lebling).
+
+Nov 88:  "BattleTech" (IBM).
+
+Mar 89:  "Shogun"
+         "Journey"
+         YZIP for Amiga (written by Clarence Din).
+         "BattleTech" (C64).
+
+May 89:  YZIP for Apple II with 128k RAM (written by Jon D. Arnold), maybe
+         another one for the Apple IIgs.
+
+5/5/89:  Of Infocom's 26 employees, 15 are laid off. The 11 others are offered
+         the chance to move to Silicon Valley. Only 5 accept, including
+         President Joe Ybarra and GM Rob Sears. Duncan Blanchard is the only
+         long time Infocommie among the five.
+
+Jun 89:  Activision (now Mediagenic) moves Infocom from Cambridge, MA to Menlo
+         Park, CA.
+         "BattleTech" (Amiga, maybe Apple II)
+
+Jul 89: "Arthur".
+         YZIP for IBM (written by Scott Fray).
+
+
+                     XI  Interpreters & Utilities
+                     ============================
+
+XI.1 Infocom's own interpreters
+-------------------------------
+
+Some Z-code interpreter versions and their length:
+
+  Platform  Version  Length
+  -------------------------
+  Amiga     3 A      25180
+            3 B      25128/25584
+            3 C      42224       (supports sound)
+            4 A      26088
+            4 B      26160
+            4 C      42860       (supports sound)
+            5 A      37148
+            5 B      46472       (supports sound)
+            6.8      45844/45862
+            6.14     48368
+  Atari ST  3 A      21093
+            3 ?      15721
+            4 B      21706
+            5 ?      40295       (loads title screen "SCREEN.DAT")
+  IBM       3 A      ???         (boot disk, no file)
+            3 B      ???         (boot disk, no file)
+            3 C      ???         (boot disk, no file)
+            3 D      ???         (boot disk, no file)
+            3 L      11394 [V3/4 are .COM files from 3L onwards]
+            3 M2     11402
+            3 N      12004       (loads boss key "<GAMENAME>.SCR")
+            4 A      12640
+            4 B      12604
+            4 C      12642
+            4 D      12688
+            4 E      12682
+            5 A            [V5/6 are .EXE files]
+            5 B
+            5 C      31910 (MS-C 4.00)
+            5 D
+            5 E      31924 (MS-C 4.00)
+            5 F      32689 (MS-C 4.00)
+            5 G      32713 (MS-C 4.00)
+            5 H
+            5 I      34390 (MS-C 5.00)
+            5 J      33946 (MS-C 5.00)
+            6.68     47442/47402 (Turbo-C 2.0)
+            6.71     47494/47528 (Turbo-C 2.0)
+  Mac       3 B
+            3 C
+            3 G
+            3 I
+            4 E
+            4 H
+            4 I
+            5 A
+            5 B
+            5 C                  (supports sound)
+            6.1
+
+
+XI.2 Non-Infocom Interpreters
+-----------------------------
+
+These Z-code interpreters are freely available, as Freeware or Public Domain.
+Sources and executables for most of them reside in the IF archive
+(http://www.ifarchive.org/if-archive/infocom/interpreters/).
+
+Since the 2000s have seen a large number of Z-code interpreter ports to various
+platforms and programming languages which, sadly, then never underwent much
+testing or bugfixing, only the most important interpreters from that period
+will be listed here.
+
+a) InfoTaskForce/ITF (1987-1992)
+
+Written by the InfoTaskForce, i.e. David Beazley, George Janczuk, Peter Lisle,
+Russell Hoare and Chris Tham. Development started in early 1987 when the
+authors were undergrads at Sydney University (Australia). No public release was
+planned but an early version turned up on a Sydney University FTP server
+(physics.su.oz.au) in March 1991. This version (1.0/2.0, written June 1987)
+supported Z-code V3 only.
+
+In September 1992 the interpreter was officially released, now supporting
+Z-code V1-5 (lacking some V5 features). This version (4.01) has been widely
+ported since. The interpreter is no longer supported by the authors.
+
+b) zmachine (1988-1990)
+
+The first publically available portable Z-code interpreter. Written by Matthias
+Pfaller. Started in 1988, finished October 1989 and posted to comp.os.minix on
+12 March 1990. Supports Z-code V3; version 2.24 was the only release. No longer
+maintained.
+
+c) pinfocom (1992)
+
+Based on the inofficial release of ITF 1.0/2.0. The code was taken over in
+January 1992 by Paul D. Smith. Many bug fixes and enhancements were made but
+V4/5 support was still lacking. The announcement of pinfocom then prompted the
+ITF to release their code officially. Final version (3.0) released in October
+1992. No longer maintained.
+
+d) ZIPdebug (1991-1993)
+
+This interpreter/debugger by Frank Lancaster started life on the Apple II
+(written in UCSD Pascal). It was ported to the Acorn Archimedes in 1991. A V3
+interpreter (in TLA assembler) was written the same year. In 1992, full V4 and
+partial V5 support were implemented in the debugger, and it was p2c-ported to
+C. The latest version (0.6o, 21 Oct 1993) has full V5 and partial V6 support.
+
+e) ZIP (1991-1994)
+
+For a long time the reference interpreter. Developed by Mark A. Howell starting
+in late 1991. The first public release (1.0, Oct 1992) supported V3 and V4, the
+second (2.0, Mar 1993) also V5. No longer maintained, though some ports (XZIP,
+Zip2000, JZIP, ZipInfinity, MaxZIP) still are.
+
+f) Zterp (1992)
+
+Written by Charles M. Hannum, this interpreter (V3-5) has never really caught
+on. It was the first to abandon Infocom's virtual memory management system. The
+only version (0.3alpha) was posted to alt.sources on 22 Feb 1993.
+
+g) Frotz (1995-2002)
+
+Replaced ZIP as reference interpreter and was the first interpreter to fully
+implement Graham Nelson's Z-machine specification. Supports V1-8; the author is
+Stefan Jokisch. First released in Dec 1995. After 1997 maintained by Jim
+Dunleavy and David Griffith. Final release was version 2.43.
+
+h) ZPlet (1996-1999)
+
+Z-machine interpreter implemented as a Java applet; supports V3-5 and V8.
+Written by Matthew T. Russotto. Latest version is 1.0 (Jan 1999).
+
+i) rezrov (1998/99)
+
+A Z-machine interpreter written in perl which supports V3-5 and V8 and has lots
+of nifty cheat commands. Developed by Michael Edmonson.
+
+j) malyon (1999-2000)
+
+Interpreter implemented in elisp for the emacs editor. Written by Peter Ilberg.
+Supports V3, V5 and V8.
+
+k) Nitfol (1999)
+
+Could have become the new reference interpreter but never left beta stage.
+Supports V1-8, implements stricter error checking, auto-mapping and other
+interesting features. Written by Evin Robertson. Last version was 0.5.
+
+XI.3 Compilers & Assemblers
+----------------------------
+
+a) ZILCH/ZAP (1979-1989)
+
+Infocom's in-house compiler/assembler. Ran on their DECsystem-20 mainframes
+under TOPS-20. Now believed to be lost.
+
+b) Inform (1993-today)
+
+A compiler for Z-code compatible datafiles (first released in April 1993),
+written by Graham Nelson. Being freeware it has become one of the most widely
+used (and discussed) text adventure design tools. Inform gets periodically
+updated (the current version, Inform 7, includes a graphical IDE and was
+released in 2006) and comes with extensive documentation.
+
+c) zasm (1998)
+
+Z-machine assembler, implemented in perl. Written by Matt Kimball. No longer
+maintained.
+
+XI.4 Decompilers & Disassemblers
+---------------------------------
+
+a) vocab/zorkword (1991/92)
+
+The first portable vocabulary dumper for Infocom games, written by Mike
+Threepoint and posted to rec.games.misc in early 1991 (rec.arts.int-fiction and
+rec.games.int-fiction did not exist before late summer 1991 and 1992,
+respectively). Its comments were the best source of information on Z-code's
+internal data structures until Graham Nelson's Z-machine specification came
+along in 1993. Made obsolete by Mark Howell's infodump. Final version was
+10/970824.
+
+b) Ztools (1991-1998)
+
+Infocom toolkit by Mark Howell. The most useful tools are 'txd' (a Z-code
+disassembler) and 'infodump' (a datafile dumper). The Ztools were first
+released in September 1992, but 'txd' dates back to April 1991 (V3 only, V4
+support implemented January 1992, V5 in July 1992). Since May 1994 'txd'
+supports all Z-code versions used by Infocom (V1-6). Last maintainer was
+Matthew T. Russotto, last version was 7.31.
+
+c) Reform (2004)
+
+Following several other stabs at writing a useable Z-code decompiler
+('Disinformation/Uninform' by Jeremy A. Smith, 2001; 'Pram' by Paul Janssens,
+2002/03; 'ztool' by Allen Garvin, 2004), Ben Rudiak-Gould wrote this decompiler
+in 2004. It is currently the best.
+
+                           -------   ***   -------
+
+Infocom Fact Sheet - Release History
+------------------------------------
+v4.95 Jun 22, 2007
+v4.90 Jun 22, 2001 (circulated internally)
+v4.8  Sep  1, 1995
+v4.7  Jul  1, 1995
+v4.6  Aug 11, 1994
+v4.5  Sep 17, 1993
+v4.4  May 17, 1993
+v4.3  Apr 19, 1993
+v4.2  Jan  3, 1993
+v4.1  Nov 30, 1992
+v4.0  Nov 25, 1992
+v3.2  Oct 23, 1992
+v3.1  Oct 12, 1992
+v3.0  Sep 28, 1992
+v2.7  Sep 20, 1992
+v2.6  Jul 27, 1992
+v2.5  Jul 17, 1992
+v2.4  Apr 17, 1992
+v2.3  Mar 11, 1992
+v2.2  Mar  2, 1992
+v2.1  Feb 25, 1992
+v2.0  Feb 23, 1992
+V1.0  November, 1991
