@@ -1,0 +1,784 @@
+ZILCH of 6/30/89 14:41
+
+Combined ZIL Compiler Ver 2.0 (MIM)
+-----------------------------------
+Input file: /HOME/DEVELOPMENT/ZORK0/ZORK0.ZIL
+[YZIP instructions]
+
+[Object numbers assigned rooms first]
+
+[Zaps always go to current directory]
+
+First segment STARTUP
+Loading abstract /HOME/DEVELOPMENT/ZORK0/DEFS.ZABSTR.
+Start segment 0
+End segment 0
+XFLOAD /HOME/DEVELOPMENT/ZORK0/PARSER.ZORK0.
+Loading /HOME/DEVELOPMENT/INTERLOGIC/ZILLIB/CONSTANTS.ZIL and compiling it.
+Loading abstract /HOME/DEVELOPMENT/ZORK0/PSTACK.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ZORK0/PMEM.ZABSTR.
+Start segment 0
+End segment 0
+Loading /HOME/DEVELOPMENT/INTERLOGIC/ZILLIB/PARSER/PDEFS.ZIL and compiling it.
+Loading /HOME/DEVELOPMENT/ZORK0/DEFS2.ZIL and compiling it.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ZORK0/PARSER.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ZORK0/FIND.ZABSTR.
+Start segment 0
+End segment 0
+Loading /HOME/DEVELOPMENT/INTERLOGIC/ZILLIB/PARSER/REDS.ZIL and compiling it.
+
+Start segment 0
+Compiling routine: DIR-VERB-PRSI?
+Compiling routine: NOT-HERE-VERB?
+Compiling routine: RED-FCN
+Compiling routine: RED-PART
+Compiling routine: GET-SYNTAX
+Compiling routine: RED-SV
+Compiling routine: ROOT-VERB
+Compiling routine: RED-SVN
+Compiling routine: SVN
+Compiling routine: RED-SVPNPN
+Compiling routine: RED-SVD
+Compiling routine: RED-SP
+Compiling routine: IREDUCE-EXCEPTION
+Compiling routine: REDUCE-EXCEPT-IT
+Compiling routine: REDUCE-EXCEPTION
+Compiling routine: REDUCE-LOCATION
+Compiling routine: DETERMINE-OBJ
+Compiling routine: CHECK-DIR-ADJS
+Compiling routine: NUMERIC-ADJ?
+Compiling routine: DETERMINE-NP
+Compiling routine: DET-NP-NOT-HERE?
+Compiling routine: DET-NP-OWNEE?
+Compiling routine: FIND-OWNERS
+Compiling routine: READY-TO-DISAMBIGUATE?
+Compiling routine: DETERMINE-NP-XFER
+Compiling routine: DO-ORPHAN-TEST
+Compiling routine: RED-O-ADJ
+Compiling routine: RED-O-PP
+Compiling routine: INSERT-NP
+Compiling routine: TEST-SR
+Compiling routine: TEST-O-SR
+Compiling routine: RED-O-NP
+Compiling routine: RED-PERS
+Compiling routine: HACK-TELL
+Compiling routine: HACK-TELL-1
+Compiling routine: RED-VP
+Compiling routine: RED-NP
+Compiling routine: RED-OF
+Compiling routine: RED-QT
+Compiling routine: GET-QUANTITY-WORD
+Compiling routine: GET-QUANTITY
+Compiling routine: RED-QN
+Compiling routine: RED-NPP
+Compiling routine: RED-PP
+Compiling routine: RED-POSS
+Compiling routine: RED-ADJS
+Compiling routine: RED-ADJ
+Compiling routine: RED-QUOTE
+End segment 0
+Abstracting REDS to /HOME/DEVELOPMENT/ZORK0/REDS.
+Loading /HOME/DEVELOPMENT/INTERLOGIC/ZILLIB/PARSER/GRAM.ZIL and compiling it.
+Loading abstract /HOME/DEVELOPMENT/ZORK0/TOP.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ZORK0/MISC.ZABSTR.
+VERB-ALL-TEST  changed; recompiling.
+Loading /HOME/DEVELOPMENT/ZORK0/MISC.ZIL and compiling it.
+Start segment 0
+Compiling routine: PROB
+Compiling routine: PICK-ONE
+Compiling routine: DPRINT
+Compiling routine: APRINT
+Compiling routine: TPRINT
+Compiling routine: TPRINT-PRSO
+Compiling routine: TPRINT-PRSI
+Compiling routine: ARPRINT
+Compiling routine: TRPRINT
+Compiling routine: IS-ARE-PRINT
+Compiling routine: VERB-ALL-TEST
+Compiling routine: THIS-IS-IT
+Compiling routine: DONT-IT
+Compiling routine: PERFORM-PRSA
+Compiling routine: DEQUEUE
+Compiling routine: QUEUED?
+Compiling routine: RUNNING?
+Compiling routine: QUEUE
+Compiling routine: C-PIXELS
+Compiling routine: L-PIXELS
+Compiling routine: CCURSET
+End segment 0
+Abstracting MISC to /HOME/DEVELOPMENT/ZORK0/MISC.
+Loading abstract /HOME/DEVELOPMENT/ZORK0/INPUT.ZABSTR.
+Start segment 0
+End segment 0
+Start segment SOFT
+End segment SOFT
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ZORK0/SYNTAX.ZABSTR.
+CAPITAL-NOUN?  changed; recompiling.
+Loading /HOME/DEVELOPMENT/ZORK0/SYNTAX.ZIL and compiling it.
+Start segment HINTS
+Compiling routine: V-HINT
+Compiling routine: LIT?
+End segment HINTS
+Start segment 0
+Compiling routine: V-$REFRESH
+Compiling routine: CAPITAL-NOUN?
+End segment 0
+Abstracting SYNTAX to /HOME/DEVELOPMENT/ZORK0/SYNTAX.
+Loading abstract /HOME/DEVELOPMENT/ZORK0/VERBS.ZABSTR.
+Start segment 0
+End segment 0
+Start segment STARTUP
+End segment STARTUP
+Start segment STARTUP
+End segment STARTUP
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ZORK0/GLOBALS.ZABSTR.
+Start segment 0
+End segment 0
+Start segment CASTLE
+End segment CASTLE
+Start segment 0
+End segment 0
+Start segment CASTLE
+End segment CASTLE
+Start segment 0
+Start segment HINTS
+End segments 0 HINTS
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ZORK0/PIC.ZABSTR.
+Start segment STARTUP
+End segment STARTUP
+Start segment 0
+End segment 0
+Loading /HOME/DEVELOPMENT/ZORK0/PICDEF.ZIL and compiling it.
+Loading /HOME/DEVELOPMENT/ZORK0/PROLOGUE.ZIL and compiling it.
+Start segment STARTUP
+Compiling routine: SETUP-SCREEN
+Compiling routine: GO
+Compiling routine: CLEAR-CRCNT
+Compiling routine: SLIDE-SHOW-HANDLER
+Compiling routine: SLIDE-SHOW
+Compiling routine: READ-DEMO
+Compiling routine: INPUT-DEMO
+Compiling routine: END-DEMO
+End segment STARTUP
+Start segment CASTLE
+Compiling routine: BANQUET-FOOD-F
+Compiling routine: SMOKE-PS
+Compiling routine: BANQUET-HALL-F
+Compiling routine: KITCHEN-F
+Compiling routine: SCULLERY-F
+Start segment 0
+Compiling routine: STRAW-F
+End segments 0 CASTLE
+Start segment LAKE
+Compiling routine: TOUCH-ELIXIR
+End segment LAKE
+Start segment 0
+Compiling routine: I-FINGER-OFF-STRAW
+End segment 0
+Start segment CASTLE
+Start segment 0
+Compiling routine: UNOPENED-NUT-F
+Compiling routine: NUT-SHELL-F
+Compiling routine: NUT-F
+End segments 0 CASTLE
+Start segment CASTLE
+Start segment STARTUP
+Compiling routine: I-PROLOGUE
+Compiling routine: I-TAKE-OBJECT
+Compiling routine: I-GIVE-OBJECT
+Compiling routine: SERVANT-ITEM-F
+End segments CASTLE STARTUP
+Start segment 0
+Compiling routine: PARCHMENT-F
+Compiling routine: DIMWIT-F
+Compiling routine: G-DIMWIT-F
+End segment 0
+Start segment STARTUP
+Compiling routine: TABLES-F
+End segment STARTUP
+Start segment CASTLE
+Compiling routine: CAULDRON-F
+Compiling routine: PUT-ITEM-IN-CAULDRON
+Compiling routine: I-CAULDRON
+End segment CASTLE
+Start segment STARTUP
+Compiling routine: MEGABOZ-F
+Start segment CASTLE
+End segments CASTLE STARTUP
+Abstracting PROLOGUE to /HOME/DEVELOPMENT/ZORK0/PROLOGUE.
+Loading abstract /HOME/DEVELOPMENT/ZORK0/CASTLE.ZABSTR.
+Start segment CASTLE
+Start segment 0
+End segments 0 CASTLE
+Start segment CASTLE
+End segment CASTLE
+Start segment VILLAGE
+Start segment 0
+End segments 0 VILLAGE
+Start segment VILLAGE
+Start segment 0
+End segments 0 VILLAGE
+Start segment VILLAGE
+End segment VILLAGE
+Start segment CASTLE
+Start segment 0
+End segments 0 CASTLE
+Start segment CASTLE
+Start segment 0
+End segments 0 CASTLE
+Start segment CASTLE
+Start segment 0
+End segments 0 CASTLE
+Start segment CASTLE
+Start segment ORACLE
+Start segment LAKE
+Start segment VILLAGE
+End segments CASTLE LAKE ORACLE VILLAGE
+Start segment 0
+End segment 0
+Start segment CASTLE
+End segment CASTLE
+Start segment SECRET
+Start segment 0
+End segments 0 SECRET
+Start segment SECRET
+Start segment 0
+End segments 0 SECRET
+Start segment SECRET
+Start segment 0
+End segments 0 SECRET
+Start segment SECRET
+End segment SECRET
+Start segment 0
+End segment 0
+Start segment SECRET
+Start segment 0
+End segments 0 SECRET
+Start segment SECRET
+Start segment 0
+End segments 0 SECRET
+Start segment SECRET
+Start segment 0
+End segments 0 SECRET
+Start segment SECRET
+End segment SECRET
+Start segment WEST
+End segment WEST
+Start segment CASTLE
+Start segment WEST
+End segments CASTLE WEST
+Start segment WEST
+Start segment 0
+End segments 0 WEST
+Start segment WEST
+End segment WEST
+Start segment EAST
+Start segment 0
+End segments 0 EAST
+Start segment EAST
+End segment EAST
+Start segment LOWER
+Start segment 0
+End segments 0 LOWER
+Start segment LOWER
+Start segment 0
+End segments 0 LOWER
+Start segment LOWER
+Start segment 0
+End segments 0 LOWER
+Start segment LOWER
+Start segment 0
+End segments 0 LOWER
+Start segment LOWER
+End segment LOWER
+Loading abstract /HOME/DEVELOPMENT/ZORK0/LIBRARY.ZABSTR.
+Start segment CASTLE
+End segment CASTLE
+Loading abstract /HOME/DEVELOPMENT/ZORK0/VILLAGE.ZABSTR.
+Start segment VILLAGE
+Start segment 0
+End segments 0 VILLAGE
+Start segment VILLAGE
+End segment VILLAGE
+Start segment 0
+End segment 0
+Start segment VILLAGE
+Start segment 0
+End segments 0 VILLAGE
+Start segment 0
+End segment 0
+Start segment VILLAGE
+End segment VILLAGE
+Start segment LAKE
+End segment LAKE
+Start segment VILLAGE
+Start segment 0
+End segments 0 VILLAGE
+Loading abstract /HOME/DEVELOPMENT/ZORK0/LAKE.ZABSTR.
+Start segment LAKE
+Start segment 0
+End segments 0 LAKE
+Start segment LAKE
+Start segment 0
+End segments 0 LAKE
+Start segment LAKE
+Start segment 0
+End segments 0 LAKE
+Start segment LAKE
+Start segment 0
+End segments 0 LAKE
+Start segment LAKE
+Start segment 0
+End segments 0 LAKE
+Start segment LAKE
+End segment LAKE
+Loading abstract /HOME/DEVELOPMENT/ZORK0/HIGHWAY.ZABSTR.
+Start segment LOWER
+End segment LOWER
+Start segment FOOZLE
+Start segment 0
+End segments 0 FOOZLE
+Start segment FOOZLE
+Start segment 0
+End segments 0 FOOZLE
+Start segment FOOZLE
+Start segment 0
+End segments 0 FOOZLE
+Start segment FOOZLE
+End segment FOOZLE
+Loading abstract /HOME/DEVELOPMENT/ZORK0/ORACLE.ZABSTR.
+Start segment SECRET
+End segment SECRET
+Start segment CASTLE
+End segment CASTLE
+Start segment SECRET
+End segment SECRET
+Start segment 0
+End segment 0
+Start segment ORACLE
+Start segment CASTLE
+End segments CASTLE ORACLE
+Start segment ORACLE
+Start segment 0
+End segments 0 ORACLE
+Start segment ORACLE
+Start segment 0
+End segments 0 ORACLE
+Start segment ORACLE
+Start segment 0
+End segments 0 ORACLE
+Start segment LAKE
+Start segment SECRET
+Start segment ORACLE
+End segments LAKE ORACLE SECRET
+Start segment ORACLE
+Start segment 0
+End segments 0 ORACLE
+Start segment ORACLE
+Start segment 0
+End segments 0 ORACLE
+Start segment ORACLE
+Start segment 0
+End segments 0 ORACLE
+Start segment ORACLE
+Start segment 0
+End segments 0 ORACLE
+Start segment ORACLE
+Start segment 0
+End segments 0 ORACLE
+Start segment ORACLE
+Start segment 0
+End segments 0 ORACLE
+Start segment ORACLE
+End segment ORACLE
+Loading abstract /HOME/DEVELOPMENT/ZORK0/CHESS.ZABSTR.
+Start segment FENSHIRE
+Start segment 0
+End segments 0 FENSHIRE
+Start segment LOWER
+Start segment 0
+End segments 0 LOWER
+Start segment LOWER
+Start segment 0
+End segments 0 LOWER
+Start segment LOWER
+Start segment FENSHIRE
+Start segment VILLAGE
+End segments FENSHIRE LOWER VILLAGE
+Loading abstract /HOME/DEVELOPMENT/ZORK0/JESTER.ZABSTR.
+Start segment 0
+Start segment EAST
+End segments 0 EAST
+Start segment 0
+End segment 0
+Start segment WEST
+End segment WEST
+Start segment EAST
+Start segment 0
+End segments 0 EAST
+Start segment EAST
+Start segment 0
+End segments 0 EAST
+Start segment EAST
+End segment EAST
+Start segment 0
+End segment 0
+Start segment FENSHIRE
+End segment FENSHIRE
+Loading abstract /HOME/DEVELOPMENT/ZORK0/FENSHIRE.ZABSTR.
+Start segment FENSHIRE
+Start segment 0
+End segments 0 FENSHIRE
+Start segment FENSHIRE
+Start segment 0
+End segments 0 FENSHIRE
+Start segment FENSHIRE
+End segment FENSHIRE
+Loading abstract /HOME/DEVELOPMENT/ZORK0/PRARE.ZABSTR.
+Start segment 0
+End segment 0
+Start segment HINTS
+End segment HINTS
+Start segment 0
+End segment 0
+XFLOAD /HOME/DEVELOPMENT/INTERLOGIC/ZILLIB/CLUES.XFLOAD.
+Loading abstract /HOME/DEVELOPMENT/ZORK0/CLUES.ZABSTR.
+Start segment HINTS
+End segment HINTS
+Start segment CLUES
+Distinguished segment HINTS
+Distinguished segment CLUES
+End segment CLUES
+Loading /HOME/DEVELOPMENT/ZORK0/HINTS.ZIL and compiling it.
+Start segment HINTS
+End segment HINTS
+ ** Warning: Never defined - BORPHBELLY-TEXT
+ ** Warning: Never defined - KLUDGEBIT
+ ** Warning: Never defined - PLURALBIT
+ ** Warning: Never defined - ACTORBIT
+
+Warnings: 4
+ ** Note: OBJECT has no properties: INTQUOTE
+ ** Note: OBJECT has no properties: ROOMS
+ ** Note: OBJECT has no properties: GLOBAL-OBJECTS
+ ** Note: OBJECT has no properties: LOCAL-GLOBALS
+Vocabulary: 1624
+
+Verbs: 154
+
+Real globals: 232
+
+ACTIVE-MOUSE		   HOLEY-SLAB		      P-OFLAG
+ALLIGATOR		   HUNGER-COUNT		      P-OLEN
+ARCHWAY-OPEN		   HUNGER-SPELL-CAST	      P-PRSA-WORD
+ARMOR-TOUCH		   INQ-NUMBER		      P-PRSI
+AWAITING-REPLY		   INQ-SCORE		      P-PRSO
+BAT-SWINGS		   IRON-MINE-OPEN	      P-RESPONDED
+BEEN-IN-FR-UPPER-FLOORS	   J-APPEAR-PROB	      P-RUNNING
+BG-COLOR		   J-CARDS		      P-THEM-OBJECT
+BLINK-TBL		   J-DISCARD-FROMP-PROB	      P-WALK-DIR
+BORDER-ON		   J-DISPOSED		      P-WON
+BOTTOM-HINT-NUM		   J-INQ-SCENE		      P-WORD-NUMBER
+C-INTS			   J-ON-RAFT		      P-WORDS-AGAIN
+C-MAXINTS		   J-SCORE		      PARSE-SENTENCE-ACTIVATION
+
+CAMEL-THIRSTY		   JUMP-X		      PARSER-RESULT
+CAULDRON-MUNGED		   JUMP-Y		      PEG-MOVE-NUMBER
+CHANGE-MAP		   LANTERN-COUNTER	      PEG-PASSAGE-OPENED
+CHANGED-MAP-WARNING	   LARGE-VIAL-GLOOPS	      PIECE-DROWNED
+CLOAK-LOC		   LARGE-VIAL-IMPRECISE	      PIT-BOMB-LOC
+CLOCK-HAND		   LARGE-VIAL-TAINTED	      PLAIN-LOC
+CLOCK-WAIT		   LAST-PSEUDO-LOC	      PLANT-TALKER
+CLOCKER-RUNNING		   LIT			      PMEM-STORE-POINTER
+COLOR-NOTE		   MACHINE		      PMEM-STORE-WORDS
+COMPASS-CHANGED		   MAP-BOX-HEIGHT	      PMEM-WORDS-USED
+CONSTRUCTION-LOC	   MAP-BOX-WIDTH	      POTION-GULPS
+CURRENT-BORDER		   MAP-ELEMENT-HEIGHT	      PREVARICON-DOOR
+CURRENT-REDUCTION	   MAP-ELEMENT-WIDTH	      PROLOGUE-COUNTER
+CURRENT-SPLIT		   MAP-NOTE		      PROLOGUE-NOVICE-COUNTER
+D-BIT			   MAP-SPACE-HEIGHT	      PRSA
+DB-CONTROLS-DESCRIBED	   MAP-SPACE-WIDTH	      PRSI
+DB-DEPTH		   MAP-TOP-LEFT-X	      PRSI-NP
+DB-DIRECTION		   MAP-TOP-LEFT-Y	      PRSO
+DEBUG			   MENU-SPACE		      PRSO-NP
+DEFAULT-BG		   METRONOME-COUNTER	      QCONTEXT
+DEFAULT-FG		   METRONOME-LOC	      RANK
+DEMO-VERSION?		   METRONOME-ON		      REMOVED-PERCH-LOC
+DESCRIBED-TANK-AS-LARGE	   MID-NAME-NUM		      ROOSTER-BURP
+DESCRIBED-TANK-AS-SMALL	   MIRROR-SCORE		      ROOSTER-PROB
+DESERT-DEATH		   MOUSE-LOC-X		      ROPE-PLACED
+DESTINATION		   MOUSE-LOC-Y		      ROSE-NEEDS-UPDATING
+DIAL-NUMBER		   MOVES		      RUBBLE-SCORE
+DIR-CNT			   N-S-PASSAGE-DIR	      SACRED-WORD-NUMBER
+DIRIGIBLE-COUNTER	   N-S-PASSAGE-LOC	      SCORE
+DO-J			   NARROW?		      SCROLL-PROB
+DONE-DEFINE?		   NEW-COMPASS		      SEARCH-FLAGS
+DONT-KNOW-ABOUT-XRAY	   NOTIFICATION-ON	      SECRET-PASSAGE-DISCOVERED
+
+EAR-PASSAGE-OPEN	   NOTIFICATION-WARNING	      SECRET-PASSAGE-OPEN
+EARWAX-GIVEN		   NOW-PRSI		      SECRET-PASSAGE-SCORE
+ELIXIR-TRAPPED		   NUMBER-OF-ITEMS	      SECRET-ROOM-REVEALED
+ENCHANTED-ORB		   NUMBER-ON-LINE	      SEEN-HOLEY-SLAB
+END-GAME-COUNTER	   NUMBER-TAKEN		      SL-SCORE
+ERROR-PRIORITY		   NUT-EATEN		      SLATE-PROB
+ERROR-STRING		   NUT-OPENED		      SMALL-VIAL-GLOOPS
+F-PLAYS			   NUT-SHOWN		      SMALL-VIAL-IMPRECISE
+F-WIN-COUNT		   NW-SE-PASSAGE-DIR	      SMALL-VIAL-TAINTED
+FG-COLOR		   NW-SE-PASSAGE-LOC	      SPACE-WIDTH
+FILE			   OBJ-SWAP		      STEPPING-STONES-VISIBLE
+FINGER-ON-STRAW		   OLD-HERE		      STUMP-X
+FLICKERING-TORCH-COUNT	   OLD-REGION		      STUMP-Y
+FLIES-EATEN		   OPRSO		      SUFFOCATE-COUNTER
+FLOOR-NUMBER		   ORACLE-EXIT-NUMBER	      TIME-STOPPED
+FLY-IN-TRUNK		   ORACLE-SCORE		      TLEXV
+FONT-X			   ORACLE-USED		      TOWER-BEATEN
+FONT-Y			   ORB-FOUND		      TOWER-CHANGED
+FOX-BURP		   ORBS-EXAMINED	      TURNED-INTO
+FOX-PROB		   OTLEXV		      UNDER-TABLE
+FUNGUS-NUMBER		   OTTO-NAME-COUNTER	      VERBOSITY
+FUNNY-PAPER-PROB	   OUBLIETTE-SCORE	      VERITASSI-DOOR
+GET-HINT-ROUTINE	   P-CAN-UNDO		      VIAL-GIVEN
+GLOVE-COMMENT		   P-CONT		      VOLUME-USED
+GUESSES			   P-DIRECTION		      WAND-LIFE
+GUTTERING-TORCH-COUNT	   P-ERRS		      WIDTH
+H-CHAPT-NUM		   P-HER-OBJECT		      WINNER
+H-OR-USE-MOUSE-WID	   P-HIM-OBJECT		      WISHYFOO-DOOR
+H-QUEST-NUM		   P-IT-OBJECT		      WRITING-CHANGED
+HAND-IN-WALDO		   P-LEN		      YACHT-DESTINATION
+HERE			   P-MULT		      YOUR-SCORE
+HINT-COUNTER		   P-NOT-HERE
+HINTS-OFF		   P-NUMBER
+
+Objects: 573
+
+1-WEIGHT	       G-U-DESERT	      PLAIN
+2-WEIGHT	       G-U-HIGHWAY	      PORTCULLIS
+3-WEIGHT	       G-U-MOUNTAIN	      PORTHOLE
+4-WEIGHT	       G-U-SAVANNAH	      POST-OFFICE
+5-WEIGHT	       G-U-WOODS	      POSTER
+6-WEIGHT	       GALLERY		      POTHOLES
+AERIE		       GAMING-ROOM	      POTION
+ALTAR		       GARRISON		      PRECIPICE
+AMONGST-THE-CLOUDS     GENERIC-OBJECTS	      PRICKLY-WITCH
+AMULET		       GIANT-SPIDERS	      PROCLAMATION
+ARCH		       GLACIER		      PROTAGONIST
+ARMOR		       GLITTERY-ORB	      PSEUDO-OBJECT
+ATTIC		       GLOBAL-BLDG	      PYRAMID
+ATTIC-REBUS-BUTTON     GLOBAL-HERE	      PYRAMID-L
+AUDIENCE-CHAMBER       GLOBAL-HOLE	      PYRAMID-R
+AVALANCHE	       GLOBAL-OBJECTS	      QUARRY
+BACK-ALLEY	       GLOBAL-PASSAGE	      QUARRYS-EDGE
+BAG		       GLOBAL-SLEEP	      QUILBOZZA-BEACH
+BALCONY		       GLOVE		      QUILL-PEN
+BANNER		       GNARLED-ELM	      REBUS
+BANQUET-FOOD	       GOGGLES		      REBUS-CAMEL
+BANQUET-HALL	       GONDOLA		      REBUS-FISH
+BAR-OF-FOOD	       GONDOLA-CONTROLS	      REBUS-GOOSE
+BARBICAN	       GRANOLA		      REBUS-MOUSE
+BASE-OF-MOUNTAIN       GRANOLA-MINE	      REBUS-SLIME-MONSTER
+BASE-OF-MOUNTAINS      GRAVEL		      REBUS-SNAKE
+BASEMENT-REBUS-BUTTON  GRAY-MOUNTAINS	      RECIPE
+BASKET		       GREAT-HALL	      REFLECTION
+BASTION		       GROTTO		      REST-STOP
+BAT		       GROTTO-REBUS-BUTTON    RIGHT-BOOTH
+BATS-LAIR	       GROUND		      RIGHT-BOOTH-BUTTON
+BEDBUG		       GRUE		      RIGHT-DOOR
+BEND		       GUEST-ROOMS	      RIGHT-GONDOLA-BUTTON
+BICKERING-TORCH	       GUMBOZ-SHACK	      RIGHT-PEG
+BIRCH		       GUTTERING-TORCH	      RIGHT-SHELL
+BLACK-BISHOP	       GYM		      RING
+BLACK-KING	       HAMMER		      RING-OF-DUNES
+BLACK-KING-CROWN       HAND-HOLE	      RIPPLED-SANDS
+BLACK-KING-ROBE	       HANDS		      RIVERS-END
+BLACK-KNIGHT	       HANGING-FROM-ROOTS     ROBE
+BLACK-PAWN	       HARDHAT		      ROC-TERIYAKI
+BLACK-QUEEN	       HARMONICA	      ROOF
+BLUEPRINT	       HEAD		      ROOM-OF-THREE-DOORS
+BODIES		       HEART-OF-MINE	      ROOMS
+BONES		       HELLHOUND-BONES	      ROOSTER
+BOOKKEEPER	       HER		      ROOT-CELLAR
+BOTTOM-OF-STAIR	       HEXAGONAL-BLOCK	      ROOTS
+BOULDER		       HEXAGONAL-HOLE	      ROYAL-ZOO
+BOWL		       HIM		      RUBBLE-ROOM
+BOX		       HOLD		      RUBY
+BRIDGE		       HOLLOW		      RUINED-HALL
+BROGMOID	       HOTHOUSE		      RUNES
+BROGMOIDISM	       ICKY-CAVE	      RUSTY-KEY
+BROOM		       IDOL		      SACRED-WORD-OBJ
+CACTI		       INNER-BAILEY	      SADDLE
+CACTUS-PATCH	       INNER-EAR	      SAILOR
+CAGE		       INQUISITION	      SAINTS
+CAIRN		       INSTRUCTION-BOOKLET    SALTY-SMELL
+CAIRN-OBJECT	       INTDIR		      SANDBAR
+CAKE		       INTNUM		      SAPPHIRE
+CALENDAR	       INTQUOTE		      SCALE-MODEL
+CALENDAR-ITEMS	       IRON-MAIDEN	      SCEPTRE
+CAMEL		       IRON-MINE	      SCREWDRIVER
+CANDLE		       IT		      SCROLL
+CANNONBALL	       J-HAT		      SCULLERY
+CARD-TABLE	       J-POCKET		      SEAMANS-CAP
+CARPET		       J-SHOE		      SECRET-PASSAGE
+CASINO		       J-SUIT		      SECRET-ROOM
+CAULDRON	       JESTER		      SERVANTS-QUARTERS
+CAUSEWAY	       JESTERS-QUARTERS	      SET-OF-INSTRUCTIONS
+CAVE-IN		       KEG		      SHADY-PARK
+CAVE-OBJECT	       KENNELS		      SHELL-TABLE
+CEILING		       KITCHEN		      SHOULDER
+CELL		       KORBOZ-HOVEL	      SHOVEL
+CENTER-DOOR	       LABORATORY	      SHRINE
+CENTER-PEG	       LADDER		      SICKLY-WITCH
+CENTER-SHELL	       LAKE-BOTTOM	      SIGN
+CHALET		       LAKE-FLATHEAD	      SILK-TIE
+CHAPEL		       LANCE		      SLATE
+CHAPEL-ALTAR	       LANDSCAPE	      SLIME
+CHURCH		       LANTERN		      SLOPING-CAVE
+CLIFF-BOTTOM	       LARGE-DOOR	      SMALL-DOOR
+CLOAK		       LARGE-FLY	      SMALL-ELM
+CLOSET		       LARGE-LILY-PAD	      SMALL-LILY-PAD
+CLOSET-REBUS-BUTTON    LARGE-THRONE	      SMALL-THRONE
+CLOTHES-CLOSET	       LARGE-VIAL	      SMALL-VIAL
+CLOWN-NOSE	       LARGE-VIAL-WATER	      SMALL-VIAL-WATER
+COAST-ROAD	       LARGER-FLY	      SMALLER-HANGAR
+COBWEBS		       LARGEST-FLY	      SMOKY-ORB
+COMFY-CHAIR	       LEDGE-IN-PIT	      SNAKE
+CONDUCTOR-PIT	       LEFT-BOOTH	      SNAKE-PIT
+CONDUCTOR-STAND	       LEFT-BOOTH-BUTTON      SOLAR
+CONSTRUCTION	       LEFT-DOOR	      SOUTH-DOCK
+COOKFIRE	       LEFT-GONDOLA-BUTTON    SOUTH-OF-MIRROR
+COOKPOT		       LEFT-PEG		      SOUTH-SHORE
+COURTROOM	       LEFT-RIGHT	      SPENSEWEED
+COURTYARD	       LEFT-SHELL	      SPYGLASS
+CRAG		       LETTER-Y		      SQUID-REPELLENT
+CRAG-REBUS-BUTTON      LEVER		      STABLE
+CRATE		       LIBRARY		      STAIRS
+CRAWL		       LINEN		      STARFISH
+CRAWL-REBUS-BUTTON     LIQUID		      STATUE
+CROSSROADS	       LITTLE-FUNGUS	      STEAM-BATH
+CROWN		       LOBSTER		      STOCK-CERTIFICATE
+CRYPT		       LOCAL-GLOBALS	      STONE-TOADS
+CUP		       LOCK-OBJECT	      STRAW
+DB		       LOCKER		      STREAM
+DB-CONTROLS	       LOCKET-MOOSE	      STREAM-OBJECT
+DB-PLAQUE	       LOWER-HALL	      SWAMP
+DEAD-END	       LOWER-LEDGE	      T-OF-B
+DELTA-1		       LOWEST-HALL	      T-SQUARE
+DELTA-2		       LULLABY		      TABLES
+DELTA-3		       MACHICOLATION	      TALL-DUNES
+DELTA-4		       MAGIC-SHOP	      TAX-OFFICE
+DELTA-5		       MANUSCRIPT	      TEE
+DELTA-6		       MARSH		      TENET
+DELTA-7		       ME		      TESTING-ROOM
+DEPRESSION	       MEGABOZ		      THEATRE
+DESERT-PLAIN	       MEGABOZ-HUT	      THEM
+DESERTED-CASTLE	       MEGABOZ-TRAP-DOOR      THOUSAND-ZORKMIDS
+DIAL		       MEMO		      THOUSANDS-OF-SNAKES
+DIMWIT		       METRONOME	      THRONE-ROOM
+DIMWIT-STATUE	       MID-NAME		      TICKET
+DIMWITS-BED	       MIGHTY-ELM	      TIGHT-SQUEEZE
+DIMWITS-ROOM	       MILKY-ORB	      TIMBERLINE
+DIPLOMA		       MINE-ENTRANCE	      TIME-OBJECT
+DIRIGIBLE	       MIRROR		      TIRED-PINE
+DIRIGIBLE-HANGAR       MIRROR-LAKE	      TOBOGGAN
+DONJON		       MOAT		      TOE-FUNGUS
+DOORBELL	       MORE-GRAVEL	      TOLL-GATE
+DOUBLE-FANUCCI	       MOUTH		      TOLL-PLAZA
+DRAWBRIDGE	       MOUTH-OF-CAVE	      TOP-OF-STAIR
+DUMBBELL	       MURDER-HOLE	      TOP-OF-WELL
+DUNGEON		       MUSIC		      TORCH-ROOM
+DUNGEON-HOLE	       MUTTERING-TORCH	      TORTURE-CHAMBER
+EAR		       N-S-PASSAGE	      TRAP-DOOR
+EAR-FUNGUS	       NATURAL-ARCH	      TREASURE-CHEST
+EARWAX		       NATURAL-ARCH-OBJECT    TREE-STUMP
+EASLE		       NEST		      TRIPLET
+EAST-DOCK	       NICE-LUNCH-SPOT	      TRUNK
+EAST-DOOR	       NORTH-DOCK	      UNDER-THE-WORLD
+EAST-HALL	       NORTH-OF-ANTHAR	      UNDERWATER
+EAST-KEY	       NORTH-OF-MIRROR	      UNGNARLED-ELM
+EAST-OF-MIRROR	       NORTH-SHORE	      UNICORNS
+EAST-SHORE	       NOSE		      UNOPENED-NUT
+EAST-WING	       NOT-HERE-OBJECT	      UPPER-BARBICAN
+EDGE-OF-BOG	       NOTEBOOK		      UPPER-LEDGE
+EDGE-OF-DESERT	       NOTICE		      VASE
+ELIXIR		       NUT		      VAULT
+ENCHANTED-CAVE	       NUT-SHELL	      VAULT-DOOR
+ENCYCLOPEDIA	       NW-SE-PASSAGE	      VIEW-OF-STATUE
+ENTRANCE-HALL	       OASIS		      VILLAGE
+EVEN-LARGER-FLY	       OASIS-OBJECT	      VILLAGE-CENTER
+EVEN-MORE-GRAVEL       OCEANS-EDGE	      VILLAGE-GATE
+EXECUTIONER	       OFFICES-EAST	      VIOLIN
+EXIT		       OFFICES-NORTH	      WALDO
+EXTERIOR-LIGHT	       OFFICES-SOUTH	      WALL
+EYES		       OFFICES-WEST	      WALL-HANGINGS
+FAN		       ON-TOP-OF-THE-WORLD    WAND
+FEET		       ORACLE		      WARNING-ROOM
+FIELD-OFFICE	       ORACLE-OBJECT	      WATER
+FIERY-ORB	       ORB-ROOM		      WATER-CHAMBER
+FISH-TANK	       OTHER-FLATHEADS	      WEIRD
+FISHING-VILLAGE	       OTHER-J-NAMES	      WEST-DOCK
+FISHY-ODOR	       OTTO		      WEST-DOOR
+FISSURE-EDGE	       OUBLIETTE	      WEST-HALL
+FIXED-LADDER	       OUTER-BAILEY	      WEST-KEY
+FJORD		       OUTER-GATE	      WEST-OF-HOUSE
+FLAMINGO	       OUTSIDE-CRYPT	      WEST-OF-MIRROR
+FLASK		       OUTSIDE-HOVEL	      WEST-SHORE
+FLATHEAD-MOUNTAINS     OUTSIDE-HUT	      WEST-WING
+FLATHEAD-OCEAN	       OUTSIDE-SHACK	      WHARF
+FLATHEAD-STADIUM       PACKAGE		      WHITE-CASTLE
+FLATHEADIA	       PAINTINGS-1	      WHITE-KING
+FLICKERING-TORCH       PAINTINGS-2	      WHITE-KING-CROWN
+FLORA		       PAN		      WHITE-KING-ROBE
+FLOWER		       PARAPET		      WHITE-KNIGHT
+FOOT-OF-STATUE	       PARCHMENT	      WHITE-PAWN
+FOOTHILLS	       PARLOR		      WHITE-QUEEN
+FOREBLDG	       PASSAGE-STORAGE-ROOM   WINDBLOWN-SANDS
+FORK		       PBOZ-OBJECT	      WINDOW
+FORMAL-GARDEN	       PEG-ROOM		      WINE-CELLAR
+FOUR-FLIES	       PEGBOARD		      WISHYFOO-TERRITORY
+FOX		       PEGBOARD-PEGS	      WIZARD-OF-FROBOZZ
+FR-BASEMENT	       PERCH		      WORM
+FR-BLDG		       PERIMETER-WALL	      YACHT
+FR-HQ		       PHIL-HALL	      YACHT-CONTROLS
+FR-OFFICES	       PIGEON		      ZILBEETHA
+FR-PENTHOUSE	       PIT-BOMB		      ZORBEL-PASS
+FRIGID-RIVER	       PITS		      ZORKMID-BILL
+FUNNY-PAPER	       PITS-OBJECT	      ZORKMID-COIN
+
+Properties: 40
+
+P?ACTION	   P?FDESC	      P?NW		 P?SIZE
+P?ADJACENT	   P?GENERIC	      P?OUT		 P?SOUTH
+P?ADJECTIVE	   P?GLOBAL	      P?OWNER		 P?SW
+P?ANIMATE-ROUTINE  P?ICON	      P?PICTURE		 P?SYNONYM
+P?APPLE-DESC	   P?IN		      P?PLURAL		 P?TEXT
+P?CAPACITY	   P?INANIMATE-DESC   P?REGION		 P?THINGS
+P?CONTFCN	   P?LDESC	      P?RESEARCH	 P?UP
+P?DESCFCN	   P?MAP-LOC	      P?RIDDLE		 P?VALUE
+P?DOWN		   P?NE		      P?SDESC		 P?WAND-TEXT
+P?EAST		   P?NORTH	      P?SE		 P?WEST
+
+Flags: 47
+
+ACTORBIT	FEMALEBIT	NALLBIT		PLURALBIT	UNDERGROUNDBIT
+ANIMATEDBIT	FLAMEBIT	NARTICLEBIT	READBIT		VEHBIT
+BEYONDBIT	INBIT		NDESCBIT	REDESCBIT	VOWELBIT
+BLACKBIT	INTEGRALBIT	ONBIT		RLANDBIT	WATERBIT
+BURNBIT		INVISIBLE	OPENBIT		SEARCHBIT	WEARBIT
+CONTBIT		KEYBIT		ORBBIT		SURFACEBIT	WHITEBIT
+DELTABIT	KLUDGEBIT	OUTSIDEBIT	TAKEBIT		WORNBIT
+DESERTBIT	LIGHTBIT	PARTBIT		TOUCHBIT
+DOORBIT		LOCKEDBIT	PLANTBIT	TRANSBIT
+DROPBIT		MAGICBIT	PLURAL		TRYTAKEBIT

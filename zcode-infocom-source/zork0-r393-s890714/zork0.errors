@@ -1,0 +1,62 @@
+zap of 6/13/89 15:17.
+Release: 393
+     0  Inserting zork0.zap.
+    64  Inserting zork0freq.xzap.
+   674  Inserting zork0dat.zap.
+ 51858  Inserting zork0pur.zap.
+"zork0pur.zap", line 246: P-W-WORDS::	.TABLE
+   -- symbol "P-W-WORDS" is multiply defined
+"zork0pur.zap", line 266: 	.ENDT
+   -- warning - .endt not in a table
+"zork0pur.zap", line 271: P-Q-WORDS1::	.TABLE
+   -- symbol "P-Q-WORDS1" is multiply defined
+"zork0pur.zap", line 300: 	.ENDT
+   -- warning - .endt not in a table
+"zork0pur.zap", line 361: P-Q-WORDS::	.TABLE
+   -- symbol "P-Q-WORDS" is multiply defined
+"zork0pur.zap", line 379: 	.ENDT
+   -- warning - .endt not in a table
+ 59948  Inserting defs.zap.
+ 60122  Inserting pstack.zap.
+ 60158  Inserting pmem.zap.
+ 60254  Inserting parser.zap.
+ 65792  Inserting find.zap.
+ 68153  Inserting reds.zap.
+ 74444  Inserting top.zap.
+ 75627  Inserting misc.zap.
+ 76566  Inserting input.zap.
+ 78786  Inserting syntax.zap.
+ 79635  Inserting verbs.zap.
+106716  Inserting globals.zap.
+116971  Inserting pic.zap.
+117353  Inserting prologue.zap.
+127526  Inserting castle.zap.
+148026  Inserting library.zap.
+149820  Inserting village.zap.
+155003  Inserting lake.zap.
+165542  Inserting highway.zap.
+176649  Inserting oracle.zap.
+192731  Inserting chess.zap.
+196568  Inserting jester.zap.
+208568  Inserting fenshire.zap.
+215014  Inserting prare.zap.
+219708  Inserting clues.zap.
+222170  Inserting zork0str.zap.
+Unreferenced table: PT?6025
+Unreferenced table: RT?25010
+Unreferenced table: RT?24510
+Unreferenced table: PT?607
+Unreferenced table: PT?707
+Unreferenced table: PT?907
+Unreferenced table: STRBEG
+Unreferenced global: P-DIRECTION
+Data from 57868 to 59952 not in segment 0.
+
+Lexical buffer space allocated:  1376344
+Max lexical space allocated at any one time: 48012
+Object buffer space allocated:  304000
+Source bytes read:  1300053
+Object bytes written:  300032
+Preload: 51858; 573 objects; 234 globals; 1624 words.
+Used 4:38
+Elapsed time 5:31

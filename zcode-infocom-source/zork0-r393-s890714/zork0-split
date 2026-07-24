@@ -1,0 +1,2 @@
+#
+zsplit -a 2 -d 4 -c clues -h hints -g ~curpix/zork0-apple.g -p 108 -e 23 zork0 270 > zork0.split

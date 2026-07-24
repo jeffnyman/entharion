@@ -1,0 +1,40 @@
+Release: 69
+     0  Inserting zork0.zap.
+     0  Inserting /usr/development/zork0/zork0freq.xzap.
+     0  Inserting /usr/development/zork0/zork0dat.zap.
+     0  Inserting /usr/development/zork0/zork0pur.zap.
+     0  Inserting /usr/development/zork0/defs.zap.
+     0  Inserting /usr/development/zork0/pstack.zap.
+     0  Inserting /usr/development/zork0/pmem.zap.
+     0  Inserting /usr/development/zork0/parser.zap.
+     0  Inserting /usr/development/zork0/find.zap.
+     0  Inserting /usr/development/zork0/reds.zap.
+     0  Inserting /usr/development/zork0/top.zap.
+     0  Inserting /usr/development/zork0/misc.zap.
+     0  Inserting /usr/development/zork0/input.zap.
+     0  Inserting /usr/development/zork0/syntax.zap.
+     0  Inserting /usr/development/zork0/verbs.zap.
+     0  Inserting /usr/development/zork0/globals.zap.
+     0  Inserting /usr/development/zork0/pic.zap.
+     0  Inserting /usr/development/zork0/prologue.zap.
+     0  Inserting /usr/development/zork0/castle.zap.
+     0  Inserting /usr/development/zork0/library.zap.
+     0  Inserting /usr/development/zork0/village.zap.
+     0  Inserting /usr/development/zork0/lake.zap.
+     0  Inserting /usr/development/zork0/highway.zap.
+     0  Inserting /usr/development/zork0/oracle.zap.
+     0  Inserting /usr/development/zork0/chess.zap.
+     0  Inserting /usr/development/zork0/jester.zap.
+     0  Inserting /usr/development/zork0/fenshire.zap.
+     0  Inserting /usr/development/zork0/prare.zap.
+     0  Inserting /usr/development/zork0/clues.zap.
+     0  Inserting /usr/development/zork0/zork0str.zap.
+
+Lexical buffer space allocated:  1360340
+Max lexical space allocated at any one time: 176044
+Object buffer space allocated:  0
+Source bytes read:  1277206
+Object bytes written:  0
+Preload: 0; 573 objects; 226 globals; 0 words.
+Used 3:38
+Elapsed time 3:48

@@ -1,0 +1,8 @@
+200,202c200,202
+< <TERMINALS VERB NOUN ADJ	;"keep these three in order! -- SWG"
+< 	   DIR
+< 	   PARTICLE PREP	;"keep these two in order! -- SWG"
+---
+> <TERMINALS (VERB 6) (NOUN 4) (ADJ 5)	;"keep these three in order! -- SWG"
+> 	   (DIR 1)
+> 	   (PARTICLE 3) (PREP 2)	;"keep these two in order! -- SWG"
