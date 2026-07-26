@@ -4,3 +4,6 @@
 [submodule "ztools"]
 	path = ztools
 	url = https://github.com/jeffnyman/ztools.git
+[submodule "reform6"]
+	path = reform6
+	url = https://github.com/jeffnyman/reform6.git
