@@ -1,3 +1,6 @@
 [submodule "frotz"]
 	path = frotz
 	url = https://gitlab.com/DavidGriffith/frotz.git
+[submodule "ztools"]
+	path = ztools
+	url = https://github.com/jeffnyman/ztools.git
