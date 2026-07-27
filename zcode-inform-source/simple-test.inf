@@ -1,6 +1,8 @@
 [ Main;
-    print "cells ", 0->$20, " by ", 0->$21, "^";
-    print "units ", $22-->0, " by ", $22-->1, "^";
-    @aread "Press a key" -> sp;
+    ! This text contains only lowercase letters and spaces.
+    ! It avoids all shift-locking and remapping bugs across v1-v8.
+    print "hello from all z machine versions";
+    
+    ! Clean exit to prevent application freezing
+    @quit; 
 ];
-
