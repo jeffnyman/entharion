@@ -1,0 +1,394 @@
+! Z-Tornado - Two player weather action game
+!
+! Tornado is copyright (C) 2000-2002  Oliver Feiler
+! http://www.lionking.org/~kiza/linux/tornado
+! Inform version copyright (c) 2003  Sophie Frühling (sfruehling@aon.at)
+! 
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 2 of the License, or
+! (at your option) any later version.
+!
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program; if not, write to the Free Software
+! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+! Next Generation Weather Function
+! rain (strength 1) and hail (strength 2)
+Array weather_array -> 13;
+[ DrawWeather x shift ch strength  tmp i num_moved num_destroyed xx starty yy;
+  num_destroyed = 0;
+  yy = 5; xx = x;
+  starty = 5;
+  ! Init weather_array
+  for (i = 0: i < 13: i++) {
+    if (i%3 == 0)
+      weather_array->i = ch;
+    else
+      weather_array->i = ' ';
+  }
+  num_moved = 1;
+  while (num_moved > 0) {
+    num_moved = 0;
+    ! move each character
+    for (i = 0: i < 13: i++) {
+      ! bottom, left, or right border
+      if ((yy >= house1_y + 10) || (xx >= screen_width) || (xx <= 1))
+        weather_array->i = strength;
+      ! skip if this object has disappeared (weather_array->i >= strength)
+      if ((weather_array->i ~= ' ' or ch) && weather_array->i >= strength) {
+        xx++; continue;
+      }
+      num_moved++;
+      ! did we hit something?
+      ! no hit (there is a space character at xx yy)
+      if (CountDestroyed(' ', xx, yy, 1, 1) == 1) {
+        if (weather_array->i == ' ' or ch) {
+          @set_cursor yy xx;
+          print (char) weather_array->i;
+        }
+      }
+      ! we have hit something
+      else {
+        if (weather_array->i == ' ' or ch)
+          weather_array->i = 1;
+        else
+           (weather_array->i)++;
+        ! if ch == hail and we've hit snow, don't delete
+        if ((ch == ':') && (CountDestroyed('*', xx, yy, 1, 1) == 1))
+          ! "expire" the object
+          weather_array->i = strength;
+        else {
+          ! draw the object
+          @set_cursor yy xx;
+          print (char) ch;
+          ChangeSnowWorld(' ', xx, yy);
+          num_destroyed++;
+        }
+      }
+      xx++;
+    }
+    yy++;
+    xx = x + shift*(yy - 5);
+    @set_cursor screen_height 1;
+    Pause(2);
+  }
+  @set_cursor screen_height 1;
+  Pause(10);
+  ! delete the rain/hail/whatever (whatever ?)
+  xx = x;
+  num_moved = 1;
+  while (num_moved > 0) {
+    num_moved = 0;
+    for (i = 0: i < 13: i++) {
+      if (starty >= yy || starty >= house1_y + 10)
+        break;
+      if (xx + 13 < 1 || xx > screen_width)
+        continue;
+      tmp = GetLoc(xx, starty);
+      if (tmp < fields && snow_world->tmp == ' ') {
+        @set_cursor starty xx;
+        print (char) ' ';
+      }
+      xx++;
+      num_moved++;
+    }
+    starty++;
+    xx = x + shift*(starty - 5);
+    @set_cursor screen_height 1;
+    Pause(1);
+  }
+  return num_destroyed;
+];
+
+! Kianga's Next Generation Snow Machine
+! Includes Special SnowLogic(tm)
+Array snow_x -> 13;
+Array snow_y -> 13;
+Array snow_startx -> 13;
+Array snow_starty -> 13;
+[ DrawSnow x shift  xx yy i num_moved tmp;
+  yy = 5; xx = x;
+  ! Put snow in array
+  for (i = 0: i < 13: i++) {
+    if (i%3 == 0)
+      weather_array->i = '*';
+    else 
+      weather_array->i = ' ';
+    snow_x->i = x + i;
+    snow_startx->i = x + i;
+    snow_y->i = yy;
+    snow_starty->i = yy;
+  }
+  num_moved = 1;
+  while (num_moved > 0) {
+    num_moved = 0;
+    ! move each character
+    for (i = 0: i < 13: i++) {
+      ! bottom, left, or right border
+      if ((snow_y->i >= house1_y + 10)
+      || (snow_x->i >= screen_width) || (snow_x->i <= 1))
+        weather_array->i = 1;
+      ! skip if this object has disappeared (weather_array->i >= strength)
+      if ((weather_array->i ~= ' ' or '*') && weather_array->i >= 1)
+        continue;
+      num_moved++;
+      ! did we hit something?
+      ! no hit
+      if (CountDestroyed(' ', snow_x->i, snow_y->i, 1, 1) == 1) {
+        if (weather_array->i == ' ' or '*') {
+          xx = snow_x->i;
+          yy = snow_y->i;
+          @set_cursor yy xx;
+          print (char) weather_array->i;
+        }
+      }
+      ! we've hit something
+      else {
+        weather_array->i = 1;
+        if (snow_y->i > 5) {
+          xx = snow_x->i - shift;
+          yy = snow_y->i - 1;
+          @set_cursor yy xx;
+          print (char) '*';
+          ChangeSnowWorld('*', xx, yy);
+        }
+      }
+      ! bottom
+      if (snow_y->i == screen_height - 1) {
+        weather_array->i = 1;
+        xx = snow_x->i;
+        yy = snow_y->i;
+        if (CountDestroyed(' ', xx, yy, 1, 1) == 1) {
+          @set_cursor yy xx;
+          print (char) '*';
+          ChangeSnowWorld('*', xx, yy);
+        }
+      }		
+      ! move the object
+      (snow_y->i)++;
+      snow_x->i = snow_x->i + shift;
+    }
+    @set_cursor screen_height 1;
+    Pause(2);
+  }
+  @set_cursor screen_height 1;
+  Pause(10);
+  ! delete the snow
+  num_moved = 1;
+  while (num_moved > 0) {
+    num_moved = 0;
+    for (i = 0: i < 13: i++) {
+      if (snow_starty->i >= snow_y->i)
+        continue;
+      xx = snow_startx->i;
+      yy = snow_starty->i;
+      tmp = GetLoc(xx, yy);
+      if ((tmp < fields) && (snow_world->tmp == ' ')) {
+        @set_cursor yy xx;
+        print (char) ' ';
+      }
+      num_moved++;
+      (snow_starty->i)++;
+      snow_startx->i = snow_startx->i + shift;
+    }
+    @set_cursor screen_height 1;
+    Pause(1);
+  }
+];
+
+! Probably the ugliest function in the whole program.
+[ DrawLightning x  xx y num_destroyed;
+  ! Is needed if screen_width is smaller than 80, maybe due to some
+  ! bug somewhere else
+  DrawStatusLine();
+  xx = x + 6; y = 5;
+  if (player1)
+    num_destroyed = CountDestroyed(' ', house2_x, house2_y, 17, 10);
+  else
+    num_destroyed = CountDestroyed(' ', house1_x, house1_y, 17, 10);
+  ! draw it...
+  @set_cursor  5 xx; print "||";
+  ChangeWorld(xx, 5, 2);
+  @set_cursor  6 xx; print "//";
+  ChangeWorld(xx, 6, 2); xx--;
+  @set_cursor  7 xx; print "//@@92@@92";
+  ChangeWorld(xx, 7, 4); xx--;
+  @set_cursor  8 xx; print "//";
+  ChangeWorld(xx, 8, 2); xx = x + 7;
+  @set_cursor  8 xx; print "@@92@@92";
+  ChangeWorld(xx, 8, 2); xx = x + 3;
+  @set_cursor  9 xx; print "||";
+  ChangeWorld(xx, 9, 2); xx = x + 8;
+  @set_cursor  9 xx; print "@@92@@92";
+  ChangeWorld(xx, 9, 2); xx++;
+  @set_cursor 10 xx; print "@@92@@92";
+  ChangeWorld(xx, 10, 2); xx--;
+  @set_cursor 11 xx; print "//@@92@@92";
+  ChangeWorld(xx, 11, 4); xx--;
+  @set_cursor 12 xx; print "//";
+  ChangeWorld(xx, 12, 2); xx = x + 11;
+  @set_cursor 12 xx; print "@@92@@92";
+  ChangeWorld(xx, 12, 2); xx = x + 7;
+  @set_cursor 13 xx; print "||";
+  ChangeWorld(xx, 13, 2); xx--;
+  @set_cursor screen_height 1;
+  Pause(2);
+  @set_cursor 14 xx; print "//@@92@@92";
+  ChangeWorld(xx, 14, 4); xx--;
+  @set_cursor 15 xx; print "//";
+  ChangeWorld(xx, 15, 2); xx = x + 9;
+  @set_cursor 15 xx; print "@@92@@92";
+  ChangeWorld(xx, 15, 2); xx = x + 4;
+  @set_cursor 16 xx; print "//";
+  ChangeWorld(xx, 16, 2); xx = x + 10;
+  @set_cursor 16 xx; print "@@92@@92";
+  ChangeWorld(xx, 16, 2);
+  @set_cursor 17 xx; print "||";
+  ChangeWorld(xx, 17, 2); xx--;
+  @set_cursor 18 xx; print "//@@92@@92";
+  ChangeWorld(xx, 18, 4); xx--;
+  @set_cursor 19 xx; print "//";
+  ChangeWorld(xx, 19, 2); xx = x + 12;
+  @set_cursor 19 xx; print "@@92@@92";
+  ChangeWorld(xx, 19, 2); xx = x + 7;
+  @set_cursor 20 xx; print "//";
+  ChangeWorld(xx, 20, 2);
+  @set_cursor 21 xx; print "@@92@@92";
+  ChangeWorld(xx, 21, 2); xx++;
+  @set_cursor 22 xx; print "@@92@@92";
+  ChangeWorld(xx, 22, 2); xx++;
+  @set_cursor 23 xx; print "@@92@@92";
+  ChangeWorld(xx, 23, 2);
+  @set_cursor screen_height 1;
+  Pause(10);
+  ! ...and delete it again
+  xx = x + 6;
+  @set_cursor  5 xx; print "  ";
+  @set_cursor  6 xx; print "  ";   xx--;
+  @set_cursor  7 xx; print "    "; xx--;
+  @set_cursor  8 xx; print "  ";   xx = x + 7;
+  @set_cursor  8 xx; print "  ";   xx = x + 3;
+  @set_cursor  9 xx; print "  ";   xx = x + 8;
+  @set_cursor  9 xx; print "  ";   xx++;
+  @set_cursor 10 xx; print "  ";   xx--;
+  @set_cursor 11 xx; print "    "; xx--;
+  @set_cursor 12 xx; print "  ";   xx = x + 11;
+  @set_cursor 12 xx; print "  ";   xx = x + 7;
+  @set_cursor 13 xx; print "  ";   xx--;
+  @set_cursor 14 xx; print "    "; xx--;
+  @set_cursor 15 xx; print "  ";   xx = x + 9;
+  @set_cursor 15 xx; print "  ";   xx = x + 4;
+  @set_cursor 16 xx; print "  ";   xx = x + 10;
+  @set_cursor 16 xx; print "  ";
+  @set_cursor 17 xx; print "  ";   xx--;
+  @set_cursor 18 xx; print "    ";   xx--;
+  @set_cursor 19 xx; print "  ";   xx = x + 12;
+  @set_cursor 19 xx; print "  ";   xx = x + 7;
+  @set_cursor 20 xx; print "  ";
+  @set_cursor 21 xx; print "  ";   xx++;
+  @set_cursor 22 xx; print "  ";   xx++;
+  @set_cursor 23 xx; print "  ";
+  @set_cursor screen_height 1;
+  if (player1)
+    return CountDestroyed(' ', house2_x, house2_y, 17, 10) - num_destroyed;
+  return CountDestroyed(' ', house1_x, house1_y, 17, 10) - num_destroyed;
+];
+
+[ DrawTornado x shift  xx y shift_right tmp_x tmp_y width width_tmp
+  num_destroyed;
+  xx = 0; y = 4;
+  shift_right = 0;
+  tmp_x = x; tmp_y = y;
+  width = 29;
+  if (player1)
+    num_destroyed = CountDestroyed(' ', house2_x, house2_y, 17, 10);
+  else
+    num_destroyed = CountDestroyed(' ', house1_x, house1_y, 17, 10);
+  while (tmp_y < 24) {
+    if (width > 3) {
+      width = width - 2;
+      shift_right++;
+    }
+    if (tmp_y == 18) width = 2;
+    if (tmp_y == 21) width = 1;
+    if (tmp_y == 23) {
+      width = 7;
+      shift_right = shift_right - 3;
+    }
+    xx = tmp_x + shift_right;
+    ChangeWorld(xx, tmp_y, width);
+    for (width_tmp = 0: width_tmp < width: width_tmp++) {
+      xx = tmp_x + shift_right + width_tmp;
+      if (xx > 0 && xx <= screen_width) {
+        @set_cursor tmp_y xx; print "#";
+      }
+    }
+    tmp_y++;
+    tmp_x = tmp_x + shift;
+    if (xx > 0 && xx <= screen_width) {
+      @set_cursor screen_height 1;
+      Pause(2);
+    }
+  }
+  @set_cursor screen_height 1;
+  Pause(10);
+  tmp_x = x; tmp_y = y;
+  shift_right = 0;
+  width = 29;
+  while (tmp_y < 24) {
+    if (width > 3) {
+      width = width - 2;
+      shift_right++;
+    }
+    if (tmp_y == 18) width = 2;
+    if (tmp_y == 21) width = 1;
+    if (tmp_y == 23) {
+      width = 7;
+      shift_right = shift_right - 3;
+    }
+    for (width_tmp = 0: width_tmp < width: width_tmp++) {
+      xx = tmp_x + shift_right + width_tmp;
+      if (xx > 0 && xx <= screen_width) {
+        @set_cursor tmp_y xx;
+        print " ";
+      }
+    }
+    tmp_y++;
+    tmp_x = tmp_x + shift;
+    if (xx > 0 && xx <= screen_width)
+      @set_cursor screen_height 1;
+      Pause(1);
+  }
+  if (player1)
+    return CountDestroyed(' ', house2_x, house2_y, 17, 10) - num_destroyed;
+  return CountDestroyed(' ', house1_x, house1_y, 17, 10) - num_destroyed;
+];
+
+! This *does* look like a cloud in real life ;)
+! @{B0} is a degree character on decent interpreters
+[ DrawCloud x;
+  if (x ~= 0) cloud_x = x;
+  else cloud_x = random(screen_width - 29);
+  @set_cursor 1 cloud_x; print ",/+++*++***+****++++++***+@@92,";
+  @set_cursor 2 cloud_x; print "(*+++*****+++++***+++****++)";
+  @set_cursor 3 cloud_x; print "`@@92++******+*++*++*****+++*/'";
+  @set_cursor 4 cloud_x; print " `@{B0}*,.,*@{B0}'`@{B0}*,.,",
+                               "*@{B0}`@{B0}*,.,*@{B0}'";
+  @set_cursor screen_height 1;
+];
+
+! Replace the normal cloud with a bigger one
+[ DrawTornadoCloud  i;
+  for (i = 1: i <= screen_width: i++) {
+    @set_cursor 1 i; print (string) random("+", "*");
+    @set_cursor 2 i; print (string) random("+", "*");
+    @set_cursor 3 i; print (string) random("+", "*");
+  }
+];
+

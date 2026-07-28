@@ -1,0 +1,211 @@
+! Z-Tornado - Two player weather action game
+!
+! Tornado is copyright (C) 2000-2002  Oliver Feiler
+! http://www.lionking.org/~kiza/linux/tornado
+! Inform version copyright (c) 2003  Sophie Frühling (sfruehling@aon.at)
+! 
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 2 of the License, or
+! (at your option) any later version.
+!
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program; if not, write to the Free Software
+! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Array hghscr_arr -> 7;
+Array hghscr_tmparr -> 7;
+[ InitHighScores  i j tmp;
+  print "^^[Trying to read highscore file]^";
+  @restore highscore_array 220 highscore_file -> i;
+  ! We couldn't read in the highscore file so we set up a new
+  ! highscore
+  if (i < 220) {
+    print "^[Couldn't read highscore file]^^";
+    print "[Please press a key]^"; Read();
+    tmp = 11000;
+    Nullify(hghscr_arr);
+    Nullify(hghscr_tmparr);
+    for (i = 0: i < 10: i++) {
+      for (j = i*22: j < i*22 + 15: j++)
+        highscore_array->j = '-';
+      tmp = tmp - 1000;
+      AddShort(hghscr_arr, hghscr_tmparr, tmp);
+      for (: j < (i+1)*22: j++)
+        highscore_array->j = hghscr_arr->(j - (i*22 + 15));
+    }
+  }
+];
+
+Array tmp_hscr -> 7;
+[ AddToHighScore player_name scr_arr  i;
+  for (i = 0: i < 10: i++) {
+    LookUpHighScore(tmp_hscr, i);
+    if (CompareLongs(scr_arr, tmp_hscr) > 0) {
+      InsertScoreTable(player_name, scr_arr, i);
+      rtrue;
+    }
+  }
+];
+
+! Copies the score at num into hs_array
+[ LookUpHighScore hs_array num  i tmp;
+  tmp = num*22 + 15;
+  for (i = 0: i < 7: i++, tmp++)
+    hs_array->i = highscore_array->tmp;
+];
+
+[ InsertScoreTable pl_nm scr_arr num  i tmp;
+  ! Shift all lower scores by 22
+  for (i = 219: i >= (num + 1)*22: i--)
+    highscore_array->i = highscore_array->(i - 22);
+  ! Insert the name
+  for (i = num*22, tmp = 2: tmp < 17: i++, tmp++)
+    highscore_array->i = pl_nm->tmp;
+  ! Insert the score
+  for (i = num*22 + 15, tmp = 0: tmp < 7: i++, tmp++)
+    highscore_array->i = scr_arr->tmp;
+];
+
+[ ShowCurrentScores;
+  DrawCurrentScores();
+  DrawStatusLine();
+  Read();
+  ClearDialogWindow();
+  DrawSnowWorld();
+];
+
+! The high score window may overlap
+! with some part of a house or snow
+[ ShowHighScores;
+  ClearHighScoreWindow();
+  DrawHighScores();
+  DrawStatusLine();
+  Read();
+  ClearHighScoreWindow();
+  DrawSnowWorld();
+];
+
+[ PrintHighScoreName num  i;
+  for (i = num*22 : i < num*22 + 15: i++)
+    print (char) highscore_array->i;
+];
+
+[ PrintHighScoreNumber num  i;
+  i = num*22 + 15;
+  ! Right-align numbers
+  while (i < (num+1)*22 - 1 && highscore_array->i == 0) {
+    print (char) ' '; i++;
+  }
+  for (: i < (num+1)*22: i++)
+    print highscore_array->i;
+];
+
+!------------------ Numbers Juggling -----------------
+! Long numbers for calculating and printing out scores
+! The long numbers can have up to 7 digits.
+
+[ Nullify num_array  i;
+  for (i = 0: i < 7: i++)
+    num_array->i = 0;
+];
+
+[ CopyArray dest_array src_array  i;
+  for (i = 0: i < 7: i++)
+    dest_array->i = src_array->i;
+];
+
+! This appears not to work if dest_array is one of the source arrays
+[ AddLongs dest_array array1 array2  i tmp plus;
+  for (i = 6, plus = 0: i >= 0: i--) {
+    tmp = array1->i + array2->i;
+    if (plus) tmp++;
+    if (tmp > 9) {
+      plus = 1;
+      tmp = tmp%10;
+    }
+    else plus = 0;
+    dest_array->i = tmp;
+  }
+];
+
+Array short_array -> 7;
+[ AddShort dest_array num_array num;
+  ShortToArray(short_array, num);
+  AddLongs(dest_array, num_array, short_array);
+];
+
+[ ShortToArray num_array num  i tmp;
+  num_array->0 = 0;
+  num_array->1 = 0;
+  for (i = 2, tmp = 10000: i < 7: i++, tmp = tmp/10) {
+    num_array->i = num/tmp;
+    num = num%tmp;
+  }
+];
+
+Array mult_array -> 7;
+Array culm_array -> 7;
+Array multitmp_array -> 7;
+[ Multiply dest_array num_array num  i j tmp plus;
+  if (num == 0) {
+    Nullify(dest_array);
+    rtrue;
+  }
+  Nullify(culm_array);
+  ShortToArray(short_array, num);
+  i = 0;
+  while (short_array->i == 0) i++;
+  for (: i < 7: i++) {
+    Nullify(mult_array);
+    Nullify(multitmp_array);
+    for (j = 6: j >= 0: j--) {
+      tmp = num_array->j * short_array->i;
+      if (plus) tmp = tmp + plus;
+      if (tmp > 9) {
+        plus = tmp/10;
+        tmp = tmp%10;
+      }
+      else plus = 0;
+      mult_array->j = tmp;
+    }
+    Shift(mult_array, 6 - i);
+    AddLongs(multitmp_array, culm_array, mult_array);
+    Nullify(mult_array);
+    AddLongs(culm_array, multitmp_array, mult_array);
+  }
+  CopyArray(dest_array, culm_array);
+];
+
+Array shift_array -> 7;
+[ Shift the_array num  i;
+  Nullify(shift_array);
+  for (i = num: i < 7: i++)
+    shift_array->(i-num) = the_array->i;
+  CopyArray(the_array, shift_array);
+];
+ 
+[ CompareLongs array1 array2  i;
+  for (i = 0: i < 7: i++) {
+    if (array1->i < array2->i)
+      return -1;
+    if (array1->i > array2->i)
+      return 1;
+  }
+  return 0;
+];
+
+[ longnr num_array  i;
+  i = 0;
+  ! Don't print out leading zeroes
+  while (i < 6 && num_array->i == 0)
+    i++;
+  for (: i < 7: i++)
+    print num_array->i;
+];
+

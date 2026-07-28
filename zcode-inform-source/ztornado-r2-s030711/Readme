@@ -1,0 +1,25 @@
+Z-Tornado: A ZSCII-graphics two player weather action game.
+
+This is a port of Tornado (http://www.lionking.org/~kiza/linux/tornado)
+
+Z-Tornado is released under the terms of the GNU General Public License.
+For details, see the file COPYING, which should be part of this source
+distribution.
+
+To build it, you need Inform 6.x (I only tried 6.21, so I don't know about
+other versions). Just compile tornado.inf, which includes all other files.
+You can get Inform at the IF-Archive. See: 
+
+http://mirror.ifarchive.org/indexes/if-archiveXinfocomXcompilersXinform6Xexecutables.html
+
+For details on how to compile Inform sources on your platform, please look
+at the documentation of your compiler.
+
+To play it, you need a Z-code interpreter that supports timed input. Look
+at the IF-Archive for an interpreter for your platform:
+
+http://mirror.ifarchive.org/indexes/if-archiveXinfocomXinterpreters.html
+
+You can mail me at sfruehling@aon.at.
+
+Enjoy!

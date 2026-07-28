@@ -1,0 +1,495 @@
+! Z-Tornado - Two player weather action game
+!
+! Tornado is copyright (C) 2000-2002  Oliver Feiler
+! http://www.lionking.org/~kiza/linux/tornado
+! Inform version copyright (c) 2003  Sophie Frühling (sfruehling@aon.at)
+! 
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 2 of the License, or
+! (at your option) any later version.
+!
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program; if not, write to the Free Software
+! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Release 2;
+
+! Screen stuff
+Global screen_height;
+Global screen_width;
+Global dialog_x; ! dialog box cursor for player input 
+Global cloud_x;
+! Can be switched off in terps where colour doesn't work properly
+! (For all I know only useful in Unix Frotz 2.32, where timed input
+! doesn't work like it should either)
+Global colour = 1;
+
+! Player stuff
+! 1 if current player, otherwise 0
+Global player1;
+Global player2;
+Array player1_name -> 18;
+Array player2_name -> 18;
+Global player1_ai = 0;
+Global player2_ai = 0;
+Global player1_left = 100;
+Global player2_left = 100;
+! Can handle scores up to 9999999, which should be more than enough
+Array player1_score -> 7;
+Array player2_score -> 7;
+
+! House stuff
+! Position relative to screen
+Global house1_x;
+Global house1_y;
+Global house2_x;
+Global house2_y;
+! How many spaces does the house initially contain?
+Constant SPACES = 32;
+
+! Weather stuff
+Global windspeed;
+Global randseed = 0;
+! 80 x 24 grid, discounting 1 row for statusline and 4 for cloud
+Array snow_world -> 1520;
+! Actual entries of snow_world
+Global fields = 0;
+
+! Highscores
+Array highscore_file string "ZTORNADO.HGH";
+Array highscore_array -> 220;
+
+! Add degree character to Zcharacter table
+Zcharacter table + '@{B0}';
+
+Include "draw.inf";
+Include "erwin.inf";
+Include "scores.inf";
+Include "weather.inf";
+
+[ Main  input;
+  if (TestTerp() == 0) return;
+  DrawTitleScreen();
+  InitHighScores();
+  while ((input = Menu()) ~= 'Q') {
+    switch (input) {
+      'A':
+        About();
+      'C':
+        if (colour) colour = 0;
+        else colour = 1;
+      'I':
+        Instructions();
+      'P':
+        Game();
+    }
+  }
+  Quit();
+];
+
+[ Menu  ch;
+  @erase_window -1;
+  print "^^^";
+  Banner();
+  print "----------------------^";
+  print "(A) About Z-Tornado^",
+        "(C) Toggle colour (currently ";
+        if (colour) print "on";
+        else print "off";
+  print ")^",
+        "(I) Instructions^",
+        "(P) Play Z-Tornado^",
+        "(Q) Quit^^";
+  while (1) {
+    ch = Read();
+    switch (ch) {
+      'A', 'C', 'I', 'P', 'Q':
+        return ch;
+    }
+  }
+];
+
+[ Game; Init(); Tornado(); Bye(); ];
+
+Array score_array->7;
+[ Tornado  quitting tmp_score;
+  while (1) {
+    InitGame();
+    while (1) {
+      @erase_window 1;
+      DrawSnowWorld();
+      DrawCloud(0);
+      windspeed = random(11) - 6;
+      if (player1) {
+        player1 = 0; player2 = 1;
+        quitting = Play(player2_ai);
+      } else {
+        player2 = 0; player1 = 1;
+        quitting = Play(player1_ai);
+      }
+      if (player1_left <= 0) {
+        tmp_score = 100
+          - ((CountDestroyed(' ', house2_x, house2_y, 17, 10) - SPACES)*100)/138;
+        CopyArray(score_array, player2_score);
+        Multiply(player2_score, score_array, tmp_score);
+        break;
+      }
+      if (player2_left <= 0) {
+        tmp_score = 100
+          - ((CountDestroyed(' ', house1_x, house1_y, 17, 10) - SPACES)*100)/138;
+        CopyArray(score_array, player1_score);
+        Multiply(player1_score, score_array, tmp_score);
+        break;
+      }
+      if (quitting) return;
+    }
+    DrawStatusLine();
+    AddToHighScore(player1_name, player1_score);
+    AddToHighScore(player2_name, player2_score);
+    if (ContinueGame() == 'N')
+      return;
+  }
+];
+
+[ Play ai  x input aim destroyed;
+  DrawStatusLine();
+  ! We have a human player
+  if (ai == 0) {
+    while (1) {
+      input = PlayerChoice();
+      if (input == 'Q')
+        rtrue;
+      ! lightning: player doesn't have to aim
+      ! tornado: we'll draw the tornado cloud before aiming
+      if (input == 'L' or 'T')
+        break;
+      if (input == 'H' or 'R' or 'S') {
+        aim = GetAim();
+        break;
+      }
+      if (input == 'C')
+        ShowCurrentScores();
+      else if (input == 'O')
+        ShowHighScores();
+    } 
+  } else { ! The computer chooses
+    if (player1)
+      input = ErwinChoice(player1_left);
+    else
+      input = ErwinChoice(player2_left);
+    aim = ErwinAim(input);
+  }
+  destroyed = 0;
+  switch (input) {
+    'H':
+      x = cloud_x + random(14) - 1;
+      destroyed = DrawWeather(x, windspeed + aim, ':', 2);
+    'R':
+      x = cloud_x + random(14) - 1;
+      destroyed = DrawWeather(x, windspeed + aim, '/', 1);
+    'S':
+      x = cloud_x + random(14) - 1;
+      DrawSnow(x, windspeed + aim);
+    'L':
+      destroyed = DrawLightning(cloud_x - 7 + random(25));
+    'T':
+      DrawTornadoCloud();
+      if (ai == 0) aim = GetAim();
+      else Pause(2); ! So the player can see the cloud for a while
+      destroyed = DrawTornado(cloud_x, windspeed + aim);
+  }
+  player2_left = 100
+    - ((CountDestroyed(' ', house2_x, house2_y, 17, 10)
+    + CountSnow(house2_x, house2_y, 17, 10) - SPACES)*100)/138;
+  player1_left = 100
+    - ((CountDestroyed(' ', house1_x, house1_y, 17, 10)
+    + CountSnow(house1_x, house1_y, 17, 10) - SPACES)*100)/138;
+  ! (You get points for destroying your own house, too)
+  if (player1) {
+    CopyArray(score_array, player1_score);
+    AddShort(player1_score, score_array, destroyed*destroyed);
+  } else {
+    CopyArray(score_array, player2_score);
+    AddShort(player2_score, score_array, destroyed*destroyed);
+  }
+  DrawStatusLine();
+  rfalse;
+];
+
+[ PlayerChoice  ch;
+  DrawUserInterface();
+  DrawStatusLine();
+  while (1) {
+    ch = Read();
+    switch (ch) {
+      'S', 'H', 'T', 'Q', 'R', 'L', 'C', 'O':
+        ClearUserInterface();
+        DrawSnowWorld();
+        return ch;
+    }
+  }
+];
+
+[ GetAim  num;
+  DrawDialogWindow();
+  DrawStatusLine();
+  @set_cursor 8 dialog_x;
+  print "Aim?";
+  @set_cursor 9 dialog_x;
+  num = ReadNumber();
+  @set_cursor screen_height 1;
+  ClearDialogWindow();
+  DrawSnowWorld();
+  return num;
+];
+
+! Get the position of x y in snow_world array
+[ GetLoc x y;
+  if (x < 1 || x > screen_width || y < 5 || y > screen_height)
+    rfalse;
+  if (y == 5) x--;
+  return (y - 5)*screen_width + x;
+];
+
+[ CountDestroyed ch x y wid hgt  i j n count;
+  for (i = x: i < x + wid: i++) {
+    for (j = y: j < y + hgt: j++) {
+       n = GetLoc(i, j);
+       if (snow_world->n == ch)
+         count++;
+    }
+  }
+  return count;
+];
+
+[ CountSnow xx yy wid hgt;
+  return CountDestroyed('*', xx, yy, wid, hgt);
+];
+
+[ ChangeWorld x y num  i;
+  for (i = 0: i < num: i++)
+    ChangeSnowWorld(' ', x + i, y);
+];
+
+[ ChangeSnowWorld ch xx yy  x;
+  x = GetLoc(xx, yy);
+  if (x < fields)
+    snow_world->x = ch;
+];
+
+! ----------- Initialising and game ending stuff -------------
+
+[ TestTerp;
+  screen_width = 0->33;
+  screen_height = 0->32;
+  if (screen_width < 64)
+    print "Your interpreter detected a screen width of only ",
+          screen_width, ".^";
+  if (screen_height < 24)
+    print "Your interpreter detected a screen height of only ",
+          screen_height, ".^";
+  if (screen_width < 64 || screen_height < 24) {
+    print "To play Tornado you need at least 64 x 24.^^";
+    rfalse;
+  }
+  if (screen_width > 80) screen_width = 80;
+  screen_height = 24;
+  if ((0->1) & 128 == 0) {
+    print "Your interpreter apparently doesn't support timed events.",
+          " This game should be pretty tiresome to play without, sorry.^";
+    Read();
+  }
+  if ($32-->0 == 0) {
+    print "Your interpreter doesn't obey the Z-Machine standard. Z-Tornado",
+          " will probably not work correctly on such an interpreter.^";
+    Read();
+  }
+];
+
+[ Init  y;
+  y = 0->32;
+  dialog_x = screen_width/2 - 16;
+  @split_window y;
+  @set_window 1;
+  if (colour) @set_colour 9 2;
+  house1_x = 5;
+  house1_y = screen_height - 10;
+  house2_x = screen_width - 21;
+  house2_y = screen_height - 10;
+  fields = screen_height*screen_width - 5*screen_width;
+  InitSnowWorld();
+  @erase_window 1;
+  DrawSnowWorld();
+  DrawCloud(10);
+  player1_ai = 0;
+  player2_ai = 0;
+  GetNames();
+];
+
+! There might be some bug in there, because Windows Frotz 2002 doesn't draw
+! the dialog window correctly after asking for the first player's name
+[ GetNames  i;
+  DrawDialogWindow();
+  for (i = 2: i < 17: i++) {
+    player1_name->i = ' ';
+    player2_name->i = ' ';
+  }
+  @set_cursor 8 dialog_x;
+  print "Please enter your name Player 1";
+  @set_cursor 9 dialog_x;
+  player1_name->0 = 15;
+  read player1_name 0;
+  if (player1_name->1 == 0) {
+    ("Computer").print_to_array(player1_name);
+    player1_ai = 1;
+  }
+  @set_cursor 8 dialog_x;
+  print "Please enter your name Player 2";
+  @set_cursor 9 dialog_x;
+  print "               ";
+  @set_cursor 9 dialog_x;
+  player2_name->0 = 15;
+  read player2_name 0;
+  if (player2_name->1 == 0) {
+    ("Computer").print_to_array(player2_name);
+    player2_ai = 1;
+  }
+  @set_cursor screen_height 1;
+];
+
+[ InitGame;
+  @erase_window 1;
+  player1_left = 100;
+  player2_left = 100;
+  player1 = 0;
+  player2 = 1;
+  Nullify(player1_score);
+  Nullify(player2_score);
+  InitSnowWorld();
+  DrawSnowWorld();
+  DrawCloud(10);
+];
+
+[ InitSnowWorld  i;
+  for (i = 0: i < fields: i++)
+    snow_world->i = ' ';
+  InitHouse(0);
+  InitHouse(1);
+];
+
+Array building table
+  "          ___    "
+  "          |||    "
+  "  /-------'|`-@@92  "
+  "/'/////////////`@@92"
+  "|---------------|"
+  "|-,_____,--,__,-|"
+  "|-|__|__|--|++|-|"
+  "|-|__|__|--|o+|-|"
+  "|----------|++|-|"
+  "|__________|__|_|";
+
+Array temp_array -> 20;
+[ InitHouse nr  i j x y tmp;
+  if (nr) {
+    x = house1_x;
+    y = house1_y;
+  } else {
+    x = house2_x;
+    y = house2_y;
+  }
+  temp_array->0 = 17;
+  for (j = 1: j <= 10: j++) {
+    tmp = GetLoc(x, y + j - 1);
+    (building-->j).print_to_array(temp_array);
+    for (i = 2: i < 19: i++)
+      snow_world->tmp++ = temp_array->i;
+  }
+];
+  
+[ ContinueGame  yesno;
+  DrawDialogWindow();
+  DrawWinningScreen();
+  yesno = Read();
+  while (yesno ~= 'Y' && yesno ~= 'N')
+    yesno = Read();
+  ClearDialogWindow();
+  return yesno;
+];
+
+[ Bye  y;
+  @erase_window 1;
+  y = screen_height - 2;
+  @set_cursor y 1;
+  @set_colour 1 1;
+  style roman;
+  @erase_window -1;
+];
+
+[ Quit  x;
+  @erase_window -1;
+  print "^^[Trying to save highscore file]^";
+  @save highscore_array 220 highscore_file -> x;
+  if (x == 0)
+    print "^[Couldn't save the highscore file, sorry.]^";
+  print "^^Thanks for playing Tornado!^^";
+];
+
+! ---------------- Low level routines ---------------------
+
+! Read in a character/digit from the keyboard
+[ Read  x k;
+  if (randseed > 0)
+    @read_char 1 x;
+  else {
+    ! This should make the random function more random.
+    @read_char 1 1 SeedRand -> k; 
+    for (k = 0: k < randseed: k++)
+      random(1); 
+  }
+  ! Convert lower case to upper case so we only have to test
+  ! for half of the cases
+  if ('a' <= x && x <= 'z')
+    return x - ('a' - 'A');
+  return x;
+];
+
+[ SeedRand; randseed++; rfalse; ];
+
+! Read in numbers from -99 to 999 (We really only need -9 to 9)
+! If the player doesn't type a number, or anything, we return 0.
+Array num_array->6;
+[ ReadNumber  x y neg tens sum;
+  num_array->0 = 3;
+  read num_array 0;
+  if (num_array->1 == 0)
+    return 0;
+  x = 2;
+  if (num_array->2 == '-') {
+    x++;
+    neg = 1;
+  }
+  for (sum = 0: x < num_array->1 + 2: x++) {
+    if (num_array->x >= '0' && num_array->x <= '9') {
+      for (tens = 1, y = num_array->1: y + 1 > x: y--)
+        tens = tens * 10;
+      sum = sum + (num_array->x - '0') * tens;
+    }
+    else break;
+  }
+  if (neg) sum = -sum;
+  return sum;
+];
+
+! Pauses for x/10 seconds
+[ Pause x  t;
+  @read_char 1 x Interrupt -> t;
+];
+
+[ Interrupt; rtrue; ];

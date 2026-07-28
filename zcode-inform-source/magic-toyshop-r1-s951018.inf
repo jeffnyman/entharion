@@ -1,0 +1,2845 @@
+!--------------------------------------------------------------------------
+!                            THE MAGIC TOYSHOP
+!                    Copyright (c) 1995 by Gareth Rees
+!                               July 1995
+!--------------------------------------------------------------------------
+! INTRODUCTION
+! 
+! This was an entry for the 1995 short interactive fiction contest, though
+! not really a serious piece of fiction.  It is instead a gratuitous
+! sequence of puzzles purely for puzzles' sake.  Some of the puzzles
+! pastiche famous puzzles from other adventure games: the gnomon and
+! sundial from Trinity; the robot mouse and the featureless mahogany rod
+! from Curses; the egg from the Unnkulia series.  Others are well-known
+! games and puzzles with silly twists (towers of Hanoi, noughts and
+! crosses).  Still others are games that were fun to code up (mostly highly
+! derivative).
+! 
+! As of July 1995 my electronic mail address was <gdr11@cl.cam.ac.uk>, but
+! if you have trouble getting hold of me, try the Usenet newsgroups
+! rec.arts.int-fiction and rec.games.int-fiction.
+!--------------------------------------------------------------------------
+! LICENCE
+! 
+! This program is free software; you can redistribute it and/or modify it
+! under the terms of the GNU General Public License as published by the
+! Free Software Foundation; either version 2 of the License, or (at your
+! option) any later version.
+! 
+! This program is distributed in the hope that it will be useful, but
+! without any warranty; without even the implied warranty of merchant-
+! ability or fitness for a particular purpose.  See the GNU General Public
+! License for more details.
+!--------------------------------------------------------------------------
+! CONTENTS
+! 
+! 1.1 About the game
+! 1.2 Attributes, properties, actions and grammar
+! 1.3 Asking questions
+! 1.4 Entry points
+! 1.5 Plot & scoring system
+! 1.6 The toyshop
+! 
+! 2.1 Making the robot mouse
+! 2.2 Noughts and crosses
+! 2.3 The gnomon
+! 2.4 The towers of Hanoi
+! 2.5 Dots and boxes
+! 2.6 The robot mouse
+! 2.7 Tea-time
+! 2.8 Dodgems
+! 2.9 The infernal machine
+!--------------------------------------------------------------------------
+
+Constant Story "THE MAGIC TOYSHOP";
+Constant Headline "^A fun game for all the family^by Gareth Rees^New \
+    players should type ~help~^";
+Replace FullScoreSub;
+Constant MAX_SCORE 20;
+Constant TASKS_PROVIDED;
+
+Include "parser";
+[ FullScoreSub; MyFullScore(); ];
+Include "verblib";
+Include "grammar";
+
+
+!--------------------------------------------------------------------------
+! 1.1 ABOUT THE GAME
+!--------------------------------------------------------------------------
+
+[ HelpSub;
+    "~The Magic Toyshop~ is an entry in the 1995 interactive fiction \
+    programming competition. It isn't a serious story by any means, but \
+    you might have fun playing with some of the gadgets herein. Thanks to \
+    Michael Kinyon for finding bugs and offering suggestions.^^~The Magic \
+    Toyshop~ is copyright (c) 1995 by Gareth Rees, and may be freely \
+    distributed and used under the terms of version 2 of the GNU General \
+    Public Licence or, at your option, any later version.^^Some of the \
+    ASCII graphics can be turned off using the command ~plain~ and on \
+    again using ~pretty~. There are hints provided in the game.";
+];
+
+Verb meta "help" * -> Help;
+
+
+!--------------------------------------------------------------------------
+! 1.2 ATTRIBUTES, PROPERTIES, ACTIONS AND GRAMMAR
+!--------------------------------------------------------------------------
+
+Attribute is_disk;     ! identifies disks for the Towers of Hanoi game
+Attribute is_peg;      ! identifies pegs on the Towers of Hanoi board
+Attribute sticky;      ! if an object has had glue added to it
+
+Property next;         ! next object in a linked list
+Property stuck_to;     ! which other disk a disk is stuck to
+Property state;        ! general state property
+Property prev_num;     ! previous number property (for Hanoi board)
+Property puzzle_state; ! 0 unseen; 1 seen; 2 attempted; 3 solved
+Property puzzle_pre;   ! prerequisites for the puzzle to be available
+Property puzzle_name;  ! name of a puzzle (for fullscore command)
+
+Fake_Action Reset;     ! reset a puzzle to its initial state
+Fake_Action Invoke;    ! start up a new puzzle
+Fake_Action Display;   ! print a display
+
+Global pretty = 1;     ! 1 iff ASCII graphics are used by preference
+Global help = 0;       ! 1 iff game boards print help information
+
+[ PlainSub; pretty = 0; "Special effects turned off."; ];
+[ PrettySub; pretty = 1; "Special effects turned on."; ];
+[ HelpOnSub; help = 1; "Help turned on."; ];
+[ HelpOffSub; help = 0; "Help turned off."; ];
+
+Verb meta "plain" * -> Plain;
+Verb meta "pretty" * -> Pretty;
+Extend "help"
+    * "on" -> HelpOn
+    * "off" -> HelpOff;
+
+
+!--------------------------------------------------------------------------
+! 1.3 ASKING QUESTIONS
+!--------------------------------------------------------------------------
+! Here are some replacements for the various conversational grammar entries
+! that allow conversation topics to be parsed as objects within some scope
+! (namely the AskQuestions object); thus "ask catharine about noughts and
+! crosses" will work.  Topics representing puzzles are moved into this
+! scope when they are seen for the first time, so that clues aren't
+! available before the puzzle has been encountered.
+! 
+! This approach is somewhat tricky to make correct in general; here, it's
+! ok for "ask catharine about and" to reply "Which do you mean, the noughts
+! and crosses, or the dots and boxes?", but in a less frivolous game
+! identification of conversational subjects in this way might be frowned
+! upon.  There may be problems if there are several people to talk to; thus
+! "say noughts" might produce "Who do you want to say the noughts and
+! crosses to?" whereas "say aardvark" would produce "Who do you want to say
+! that to?" (if there were no topic for aardvarks).  You could give the
+! noughts and crosses topic the name "that", so that this error message
+! wouldn't reveal the valid topics, but then you'd have to make sure that
+! no word appeared in two topics, otherwise you'd get error messages of the
+! form "Which do you mean, that or that?".
+! 
+! See my example game "Encyclopedia Frobozzica" (look in the /programming/
+! inform/examples/ directory at the IF-archive) for more details about
+! talking to characters in Inform games.
+!--------------------------------------------------------------------------
+
+[ AskScope;
+    if (scope_stage == 1) rfalse;
+    if (scope_stage == 2) {
+        ScopeWithin(AskQuestions);
+        rtrue;
+    }
+    "** Error: that input should have matched a later line in grammar **";
+];
+
+[ QuestionSub; if (RunLife(noun,##Ask)~=0) rfalse; "No reply."; ];
+[ RQuestionSub; <<Question second noun>>; ];
+[ NoQuestionSub; <<Question noun 0>>; ];
+
+[ ConTopicPrep prep w; consult_from = wn;
+  do w=NextWordStopped(); until (w==prep or -1); if (w==-1) return -1;
+  wn--; consult_words = wn-consult_from;
+  if (consult_words==0) return -1; return 0; ];
+[ ConTopicTo; return ConTopicPrep('to'); ];
+[ ConTopicAt; return ConTopicPrep('at'); ];
+
+Extend "ask" replace
+    * creature "about" scope=AskScope   -> Question
+    * creature "for" scope=AskScope     -> Question
+    * creature scope=AskScope           -> Question
+    * creature ConTopic                 -> NoQuestion;
+
+Extend "say" replace
+    * scope=AskScope "to" creature      -> RQuestion
+    * scope=AskScope "at" creature      -> RQuestion
+    * ConTopicTo "to" creature          -> NoQuestion
+    * ConTopicAt "at" creature          -> NoQuestion
+    * ConTopic "to" creature            -> NoQuestion;
+
+Extend "tell" replace
+    * creature "about" scope=AskScope   -> Question
+    * creature "about" ConTopic         -> NoQuestion
+    * creature scope=AskScope           -> Question
+    * creature ConTopic                 -> NoQuestion;
+
+Object  AskQuestions "questions";
+
+Nearby  QHello "that" has proper
+ with   name "hello" "good" "morning" "afternoon" "day" "hi";
+Nearby  QToyshop "that" has proper
+ with   name "toy" "shop" "toyshop" "store";
+Nearby  QExit "that" has proper
+ with   name "exit" "way" "out" "door" "help";
+Nearby  QNiece "that" has proper
+ with   name "niece" "isabelle" "present" "gift" "birthday";
+
+
+!--------------------------------------------------------------------------
+! 1.4 ENTRY POINTS
+!--------------------------------------------------------------------------
+
+[ Initialise;
+    location = Toyshop;
+    StartDaemon(Toyshop);
+
+    "^^You were looking for a birthday present for your niece Isabelle, \
+    that was it. The toy stores along Regent Street were blaring out pop \
+    music and the window displays were garish scenes of animated computer \
+    violence. But down a dim Victorian arcade you came across a different \
+    kind of toyshop, with a peeling rocking-horse behind a grimy \
+    window. Perhaps in here, you thought...^^";
+];
+
+
+!--------------------------------------------------------------------------
+! 1.5 PLOT & SCORING SYSTEM
+!--------------------------------------------------------------------------
+! Each puzzle is associated with an object by the `Puzzles' array.  The
+! state of the puzzle can be
+! 
+!   0 puzzle not yet seen
+!   1 puzzle has been seen but not really attempted yet
+!   2 player attempted the puzzle and encountered the difficulty
+!   3 puzzle has been solved
+! 
+! The distinction between 1 and 2 is so that Catharine doesn't give away
+! hints until the player has at least had a go.
+! 
+! Each puzzle can have prerequisites, that is, puzzles which need to be
+! solved before this one can be seen: for example, the dots and boxes
+! puzzle can't be seen until the noughts and crosses puzzle has been solved
+! (to prevent there being confusion over the two pieces of paper).
+! 
+! The `NewPuzzle' function picks a new puzzle, but also prevents there
+! being too many puzzles available at once.  The puzzles appear in the
+! order they are given in the `Puzzles' array, subject to preconditions
+! being satisfied.
+! 
+! The graph of puzzles follows (a puzzle depends for its solution on the
+! puzles above it).  Some of the connections are enforced by the
+! proconditions to ensure that there isn't too much happening at once; some
+! other connections are enforced by objects needing to be present that
+! result from the solution of previous puzzles.  The dotted connections
+! show that a puzzle only needs to be present, not solved, in order to
+! solve another.
+! 
+!                             Start
+!                 ._____________|___________.
+!                 |                         |
+!             Assembling                 Noughts
+!             the mouse                 & crosses
+!         ._______|_____________________.   |
+!         |       |          |          |   |
+!         |       |        Towers       |   |
+!         |       |       of Hanoi      |   |
+!         |       |  . . . . |          |   |
+!         |       |  |                  |   |
+!         |     Gnomon &                Dots &
+!         |     sundial                 boxes
+!         |       |__________________.    |
+!         |       |                  |    |
+!         |      Egg                 Dodgems
+!         |   . . |
+!         |   |
+!         Robot
+!         mouse
+!           |
+!           |
+!         Chest
+! 
+! It will be seen that it isn't necessary to solve the Egg, the Towers of
+! Hanoi, Dodgems or Dots and Boxes to win.  It is necessary to solve
+! Noughts and Crosses, because of constraints on which puzzles are present.
+!--------------------------------------------------------------------------
+
+Constant NPUZZLES 9;
+Array Puzzles --> CardboardBox OXPaper Gnomon RobotMouse DBPaper HanoiBoard
+    DodgemsPaper Hamper PuzzleChest;
+
+[ NewPuzzle
+    reply  ! 1 iff Catharine should comment (INPUT)
+    a      ! count of puzzles in progress
+    b      ! count of available puzzles
+    c      ! first available puzzle to be found
+    i j;   ! loop counters
+
+    ! count the puzzle in progress and available; pick first available
+    for (: i < NPUZZLES: i++) {
+        if ((Puzzles-->i).puzzle_state == 1 or 2) a++;
+        if ((Puzzles-->i).puzzle_state == 0) {
+            for (j = 0: j < ((Puzzles-->i).#puzzle_pre)/2: j++)
+                if ((((Puzzles-->i).&puzzle_pre)-->j).puzzle_state ~= 3)
+                    jump NextPuzzle;
+            b ++;
+            if (b == 1) c = i;
+            .NextPuzzle;
+        }
+    }
+    if (reply == 1) {
+        if (a >= 3)
+            print_ret "~I think that ", (EnglishNumber) a, " puzzles on \
+                the go at once is plenty,~ says Catharine.";
+        if (b == 0)
+            "~I'm right out of puzzles at the moment,~ says Catharine.";
+    }
+    if (a >= 3 || b == 0) rtrue;
+    <<Invoke Puzzles-->c>>;
+];
+
+[ MyFullScore
+    a   ! count of solved puzzles
+    b   ! count of puzzle in progress
+    i;  ! loop counter
+
+    for (i = 0: i < NPUZZLES: i++) {
+        switch ((Puzzles-->i).puzzle_state) {
+         1,2: b ++;
+         3: a ++;
+        }
+    }
+
+    ScoreSub();
+    if (score == 0) rfalse;
+
+    if (a > 0) {
+        print "^You ";
+        if (deadflag == 0) print "have ";
+        print "solved ", (EnglishNumber) a, " puzzle";
+        if (a > 1) print "s";
+        print ":^^";
+        for (i = 0: i < NPUZZLES: i++)
+            if ((Puzzles-->i).puzzle_state == 3)
+                print "    ", (string) (Puzzles-->i).puzzle_name, "^";
+    }
+    if (b > 0) {
+        print "^You ";
+        if (deadflag == 0) print "are";
+        else print "were";
+        print " still working on ", (EnglishNumber) b, " puzzle";
+        if (b > 1) print "s";
+        print ":^^";
+        for (i = 0: i < NPUZZLES: i++)
+            if ((Puzzles-->i).puzzle_state == 1 or 2)
+                print "    ", (string) (Puzzles-->i).puzzle_name, "^";
+    }
+];
+
+
+!--------------------------------------------------------------------------
+! 1.6 THE TOYSHOP
+!--------------------------------------------------------------------------
+
+Object  Toyshop "Toyshop"
+ has    light
+ with   name "toyshop" "emporium" "shop" "store",
+        description "Who knows what might be hidden in the dark rafters \
+            and shadowy corners of this emporium?",
+        state 0,
+        daemon [;
+            self.state = self.state + 1;
+            switch (self.state) {
+             1: give Catharine proper;
+                "^~Welcome,~ says the young woman, ~My father usually \
+                runs the store, but I'm afraid he isn't here today and \
+                I'm looking after the store. My name is Catharine.~";
+             2: NewPuzzle();
+             9: self.state = 1;
+            }
+        ],
+        before [;
+         Exit: <<Go out_obj>>;
+        ],
+        cant_go "You turn to leave, but alarmingly you are unable to find \
+            a way out.";
+
+Nearby  ToyChest "oak chest"
+ has    container openable lockable locked static
+ with   name "oak" "chest" "oaken",
+        article "an",
+        describe [;
+            if (self has open) print "^An oak chest stands open";
+            else print "^There's a closed oak chest";
+            print_ret " in the ", (DirectionName) self.state, " corner.";
+        ],
+        before [;
+         Unlock:
+            if (second ~= BrassKey) rfalse;
+            <<Invoke PuzzleChest>>;
+        ],
+        state ne_to,
+        each_turn [;
+            if (random(5) ~= 1) rtrue;
+            switch(random(4)) {
+             1: self.state = ne_to;
+             2: self.state = nw_to;
+             3: self.state = se_to;
+             4: self.state = sw_to;
+            }
+        ];
+
+Nearby  Catharine "Catharine"
+ has    animate female transparent
+ with   name "catharine" "girl" "woman" "hair" "pigtail" "young" "catherine",
+        describe [;
+            if (self has proper) print "^Catharine ";
+            else print "^A young woman ";
+            switch (self.state) {
+             0: "stands attentively nearby.";
+             1: "sits on the floor nearby.";
+            }
+        ],
+        short_name [;
+            if (self has proper) print "Catharine";
+            else print "young woman";
+            rtrue;
+        ],
+        description "She is a young woman, in her late teens perhaps. She \
+            is wearing a white crinoline dress with a hoop skirt, and her \
+            long black hair is tied into a pigtail.",
+        state 0,
+        life [;
+         Kiss: "~You are a sweet thing,~ she says.";
+         Attack:
+            deadflag = 1;
+            "You punch her in the face. She screams and falls to the \
+            floor. One hand shielding her cheek, she looks up with \
+            frightened eyes at you towering over her. ~I thought -~ she \
+            starts, and then you want no more of this, and turn to \
+            flee. Your foot catches on the open chest, which wasn't at \
+            all where you were expecting it to be, and you tumble into \
+            it. The lid shuts with a reassuringly final thud.";
+         Ask:
+            if (second == 0 || self hasnt proper)
+                print_ret (The) self, " doesn't reply.";
+            if (second.next ~= 0) {
+                if (second.next.puzzle_state == 1)
+                    "~But you haven't even tried to solve that puzzle on \
+                    your own!~ exclaims Catharine. ~I think you ought to \
+                    have a go first, and then if you get stuck, maybe I \
+                    can help you.~";
+                if (second.next.puzzle_state == 3)
+                    "~You've already solved that,~ says Catharine. ~I \
+                    don't think you need any help from me.~";
+                if (second.state >= (second.#description)/2)
+                    "~I don't think I should give you any more help with \
+                    that,~ says Catharine. ~If I gave the game away, it \
+                    would only spoil your fun!~";
+                print (string) ((second.&description)-->(second.state));
+                second.state = second.state + 1;
+                new_line;
+                rtrue;
+            }
+            switch (second) {
+             QHello: "~Good afternoon,~ says Catharine.";
+             QExit: "~Looking to leave, already?~ says Catharine. ~But \
+                you only just arrived!~";
+             QNiece: "~I'm sure that we have just the thing for your \
+                niece,~ says Catharine.";
+             QToyshop: "~A lovely shop, isn't it?~ says Catharine. ~My \
+                father and I, we do feel under pressure to modernise, but \
+                we're resisting as much as we can. We feel that the best \
+                puzzles and games are the ones you have to work at; ones \
+                which don't give instant gratification. Yes, I know \
+                that's a bit patronising, but there you are.~";
+            }
+        ],
+        before [;
+         Shake: "~Pleased to meet you,~ says Catharine, shaking your \
+             hand.";
+        ];
+
+Object  Dress "crinoline dress" Catharine
+ has    concealed worn
+ with   name "crinoline" "dress" "hoop" "skirt",
+        before [;
+         Take,Remove: print_ret "That seems to belong to ", (the)
+            Catharine, ".";
+         ! Added after testing. Poor Catharine, to suffer this ignominy:
+         LookUnder: "You get down on hands and knees to attempt this \
+            task, when Catharine stamps on your hand and you yelp in \
+            pain. ~I'm sorry,~ she says. ~What are you doing down there? \
+            Have you lost your cuff-link?~ You stand up, shame-faced.";
+        ];
+
+
+!--------------------------------------------------------------------------
+! 2.1 MAKING THE ROBOT MOUSE
+!--------------------------------------------------------------------------
+! This is just here to provide a decent excuse for the glue to be present
+! (because it is needed for the Towers of Hanoi puzzle).
+!--------------------------------------------------------------------------
+
+Object  BoxQuestion "Airfix model"
+ with   name "airfix" "model" "card" "cardboard" "box" "glue" "gadget" "wheel",
+        next CardboardBox,
+        state 0,
+        description "~It's a little trifle, I admit,~ says Catharine, \
+            ~but you might like it, and so might your niece. I don't want \
+            to tell you what it is until you've made it, as that would \
+            spoil the surprise~."
+            "~I did say it would need some assembly,~ says \
+            Catharine. ~Doesn't glue usually come with these models? I \
+            wonder where it's got to?~";
+
+Object  CardboardBox "cardboard box"
+ has    container openable
+        ! general if found the glue
+ with   name "card" "cardboard" "box",
+        puzzle_name "The Airfix model",
+        puzzle_state 0,
+        capacity 3,
+        description "The box is very faded, perhaps as a result of lying \
+            unpurchased on a shelf for too many years. You can make out \
+            the words ~Airfix~ and ~voice activated~, and a picture of \
+            something that might be a model car.",
+        invent [;
+            if (inventory_stage == 2) {
+                if (self has open) print " (which is open)";
+                else print " (which is closed)";
+                rtrue;
+            }
+        ],
+        before [;
+         Examine: PrintOrRun(self,description); rtrue;
+         Empty:
+            if (self notin player)
+                "You should try picking it up first.";
+         Search:
+            if (self has open)
+                "You can't make out much inside the box. Maybe you could \
+                just try to empty it.";
+         Shake:
+            if (children(self) > 0)
+                "Something rattles inside the box.";
+            if (self hasnt general) {
+                give self general;
+                move Glue to self;
+                "You give the box a vigourous shake, and you hear a \
+                satisfactory rattle.";
+            }
+         Invoke:
+            move self to player;
+            move BoxQuestion to AskQuestions;
+            self.puzzle_state = 1;
+            score ++;
+            "^Catharine opens the chest and roots around inside it. ~I \
+            wonder if your niece would like something like this?~ she \
+            says. ~It's quite old, but I think it still works.~ She \
+            closes the chest and shows you a small cardboard box. She \
+            holds it up to her ear and shakes it. ~Sounds like it's all \
+            there. It does require some assembly, though,~ she adds, and \
+            hands the box to you.";
+        ],
+        after [;
+         Open: print_ret "You open the cardboard box.";
+        ];
+
+Class   MousePartClass
+ with   parse_name [ w n ok i len;
+            do {
+                ok = 0;
+                w = NextWord();
+                if (w == 'gadgets') {
+                    ok = 1;
+                    parser_action=##PluralFound;
+                } else {
+                    len = (self.#name)/2;
+                    for (i = 0: ok == 0 && i < len: i++)
+                        if ((self.&name)-->i == w)
+                            ok = 1;
+                }
+                if (ok == 1) n++;
+            } until (ok == 0);
+            return n;
+        ],
+        before [;
+         PutOn,Tie,Insert:
+            if (second ~= self.next) rfalse;
+            if (self hasnt sticky && second hasnt sticky)
+                "You bring the two gadgets together, and after a bit of \
+                fiddling you make them fit, but without you to hold them \
+                together they immediately fall apart again.";
+            remove MousePartA;
+            remove MousePartB;
+            CardboardBox.puzzle_state = 3;
+            score ++;
+            print "You bring the two gadgets together, and they \
+                adhere. The resulting object looks not at all like a car, \
+                and quite a lot like a mouse.^";
+            <<Invoke RobotMouse>>;
+        ],
+        each_turn [;
+            if (self in CardboardBox) rfalse;
+            self.each_turn = NULL;
+            CardboardBox.puzzle_state = 2;
+        ];
+
+Nearby  MousePartA "grey gadget"
+ class  MousePartClass
+ with   name "grey" "gray" "gadget",
+        description "It's a piece of metal, covered on one side with what \
+            looks like a piece of grey carpet. Who knows what it could be \
+            for?",
+        next MousePartB;
+
+Nearby  MousePartB "wheeled gadget"
+ class  MousePartClass
+ with   name "wheel" "wheeled" "gadget" "wheels" "rubber",
+        description "It's a piece of metal with four rubber wheels. Who \
+            knows what it could be for?",
+        next MousePartA;
+
+Object  Glue "tube of glue"
+        ! general if seen the instructions
+ with   name "tube" "of" "glue",
+        description "A little tube with a nozzle on one end. Writing \
+            along the side reads ~Super Safe Wonder Glue! Sticks only \
+            metal. Completely non-toxic and safe for all other \
+            materials.~",
+        before [;
+         Squeeze,PutOn:
+            if (second == 0) 
+                "[To apply the glue to an object, use ~squeeze glue onto \
+                thing~.]";
+            if (second == Catharine)
+                "~Keep that stuff off me!~ says Catharine. ~I know it's \
+                supposed to be non-toxic, but you never know with these \
+                things, and I'd rather be safe than sorry.~";
+            if (second hasnt is_disk && second ~= MousePartA or MousePartB
+                or Gnomon)
+                print_ret "You squeeze some glue onto ", (the) second, " \
+                    and in seconds it evaporates. It looks like the \
+                    description of the amazing properties of the glue was \
+                    accurate.";
+            if (second has is_disk && children(second) > 0)
+                print_ret "There would be little point in doing that, \
+                    because ", (the) child(second), " is already on ",
+                        (the) second, ".";
+            give second sticky;
+            print_ret "You squeeze some glue onto ", (the) second, " and \
+                it spreads out to form a sticky film.";
+        ],
+        after [;
+         Examine:
+            if (self hasnt general) {
+                give self general;
+                "^[To apply the glue to an object, use ~squeeze glue onto \
+                thing~.]";
+            }
+        ];
+
+[ ShakeSub; "Nothing happens."; ];
+
+Verb "shake"
+    * noun -> Shake
+    * "hands" "with" noun -> Shake;
+
+Extend "squeeze"
+    * noun "onto" noun -> Squeeze
+    * noun "at" noun -> Squeeze
+    * noun "on" noun -> Squeeze;
+
+Verb "stick"
+    * noun "to" noun -> Tie;
+
+
+!--------------------------------------------------------------------------
+! 2.2 NOUGHTS AND CROSSES
+!--------------------------------------------------------------------------
+! The noughts & crosses code uses a standard trick to simplify    1 8 3
+! the programming, which is to use a magic square to find the     6 4 2
+! rows of three (see diagram at right).                           5 0 7
+! 
+! Given two board positions, i and j say, the position that makes up a row
+! of three is given by looking up i and j in the magic square and
+! subracting the values there from 12.  (The result must be checked for
+! bounds and that it doesn't equal i or j).
+! 
+! Catharine's strategy is the simplest unbeatable strategy I could devise,
+! which is (1) play in the centre on the first move; (2) win if possible;
+! (3) block an opponent's win if necessary; (4) play a random corner if
+! possible; (5) play a random edge.
+! 
+! It is left as an exercise for the reader to show that the simpler
+! strategy which deletes steps (4) and (5) and substitutes "(5') play a
+! random vacant square" can be beaten in 2/35 games.
+!--------------------------------------------------------------------------
+
+Array MagicSquare   -> 1 8 3 6 4 2 5 0 7;  ! see above
+Array OXBoard       -> 0 0 0 0 0 0 0 0 0;  ! the entries in the board
+Array OXCorners     -> 0 2 6 8;            ! the four corners
+Array OXEdges       -> 1 3 5 7;            ! the four edges
+Array OXDisplay -> " OX";                  ! characters to display
+
+Object  OXQuestion "noughts and crosses"
+ with   name "noughts" "and" "crosses" "tic" "tac" "toe" "tic-tac-toe",
+        next OXPaper,
+        state 0,
+        description "~I told you I was unbeatable at noughts and crosses,~
+            says Catharine."
+            "~It's such a simple game to master,~ says Catharine, ~that \
+            you have no chance of beating me without cheating.~";
+
+Object  OXPaper "piece of paper"
+        ! general if seen instructions
+ with   name "paper" "piece" "of",
+        puzzle_state 0,
+        puzzle_name "Noughts and crosses",
+        description [ i j k;
+            font off;
+            new_line;
+            for (i = 2: i >= 0: i--) {
+                for (j = 0: j < 3: j++) {
+                    k = OXBoard->(i*3+j);
+                    spaces 1;
+                    if (k ~= 0)
+                        print char (OXDisplay->k);
+                    else {
+                        if (help == 0)
+                            spaces 1;
+                        else
+                            print i*3+j+1;
+                    }
+                    spaces 1;
+                    if (j ~= 2) print "|";
+                }
+                new_line;
+                if (i ~= 0) print "---+---+---^";
+            }
+            font on;
+            if (self hasnt general) {
+                give self general;
+                "^[The squares are numbered from 1 to 9, with 1 at the \
+                bottom left and 9 at the top right. To play, type ~play o \
+                at 1~, or just ~play 1~ for short. To see the numbers, \
+                type ~help on~; to turn them off, type ~help off~.]";
+            }
+            rtrue;
+        ],
+        before [ i;
+         Take,Remove:
+            "~But we're in the middle of a game!~ Catharine exclaims.";
+         Invoke:
+            move self to Toyshop;
+            move OXQuestion to AskQuestions;
+            <Reset self>;
+            OXBoard->4 = 2;
+            self.puzzle_state = 1;
+            Catharine.state = 1;
+            score ++;
+            "^Catharine extracts a piece of paper from the chest, places \
+            it on the floor, and sits by it. She draws a three by three \
+            grid of squares, and carefully writes an ~X~ into the centre \
+            square. ~Try playing me at noughts and crosses,~ she says to \
+            you. ~But I warn you, I'm unbeatable!~";
+         Reset:
+            for (i = 0: i < 9: i++)
+                OXBoard->i = 0;
+        ];
+
+! returns 1 if play didn't happen.
+! returns 2 if play happened and the game continues.
+! returns 3 if play happened and the player won.
+! returns 4 if play happened and game over (a draw).
+
+[ OXPlay
+    what  ! the value being played (1 = O, 2 = X) (INPUT)
+    where ! the board position to be played (INPUT)
+    who   ! who is playing it (Catharine or player) (INPUT)
+    i j;  ! loop counters
+
+    if (who ~= player or Catharine ||
+        where < 0 || where > 8 ||
+        what ~= 1 or 2)
+        "** Error: call to `OXPlay' with bad arguments **";
+    if (OXBoard->where ~= 0) {
+        if (who == Catharine)
+            "** Error: Catharine tried to play in non-empty location **";
+        "~You can't play there,~ Catharine gently admonishes you. ~That \
+        square's already occupied.~";
+    }
+    OXBoard->where = what;
+    for (i = 0: i < 9: i++) {
+        if (i ~= where && OXBoard->i == what) {
+            j = 12 - MagicSquare->where - MagicSquare->i;
+            if (j >= 0 && j < 9) {
+                j = MagicSquare->(8-j);
+                if (j ~= where && j ~= i && OXBoard->j == what)
+                    return 3;
+            }
+        }
+    }
+    for (i = 0: i < 9: i++)
+        if (OXBoard->i == 0)
+            return 2;
+    return 4;
+];
+
+[ OXPlayPlayer
+    what ! The value being played (1 = O, 2 = X) (INPUT)
+    move ! The move decided upon for the player and for Catharine
+    i j k l a;
+
+    if (DBPaper in Toyshop)
+        "Use a letter to indicate which edge to draw: ~play a~, for \
+        example.";
+    if (OXPaper notin Toyshop)
+        "You're not playing a game at the moment.";
+    if (special_number < 1 || special_number > 9)
+        "Try using a number from one to nine.";
+    switch (OXPlay(what, special_number - 1, player)) {
+     1: rtrue;
+     2: ; ! fall through to Catharine's move
+     3: <Examine OXPaper>;
+        remove OXPaper;
+        OXPaper.puzzle_state = 3;
+        Catharine.state = 0;
+        score ++;
+        "^~Well done,~ says Catharine. ~You appear to have won. That's \
+        definitely three in a row you have there. And to think that I \
+        considered myself unbeatable! It just goes to show that you can \
+        always learn something new about a game.~ She tidies the paper \
+        away.";
+     4: <Examine OXPaper>;
+        jump Drawn;
+    }
+
+    ! Catharine's strategy
+    ! --------------------
+
+    ! (1) Check that the centre has an X in it.
+    if (OXBoard->4 ~= 2)
+        "** Error: centre square not played in **";
+
+    ! (2) See if there's a win for X; (3) then a blockable win for O
+    for (i = 2: i >= 1: i--) {
+        for (j = 0: j < 9: j++) {
+            for (k = 0: k < 9: k++) {
+                if (j ~= k && OXBoard->j == i && OXBoard->k == i) {
+                    l = 12 - MagicSquare->j - MagicSquare->k;
+                    if (l >= 0 && l < 9) {
+                        l = MagicSquare->(8-l);
+                        if (l ~= j && l ~= k && OXBoard->l == 0) {
+                            move = l;
+                            jump FoundOXMove;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    ! (4) Select a corner if possible, (5) otherwise an edge
+    for (i = 0: i < 2: i++) {
+        if (i == 0) a = OXCorners;
+        else a = OXEdges;
+        for (j = 0, k = 0: j < 4: j++)
+            if (OXBoard->(a->j) == 0)
+                k++;
+        if (k > 0) {
+            l = random(k);
+            for (j = 0, k = 0: j < 4: j++) {
+                if (OXBoard->(a->j) == 0) {
+                    k++;
+                    if (l == k) {
+                        move = a->j;
+                        jump FoundOXMove;
+                    }
+                }
+            }
+        }
+    }
+
+    ! No move was found (this shouldn't happen)
+    "** Error: Catharine couldn't find a move **";
+
+    .FoundOXMove;
+    i = OXPlay(2, move, Catharine);
+    if (i < 2) rtrue;
+    print "Catharine plays square number ", (EnglishNumber) (move+1), ".^";
+    <Examine OXPaper>;
+    if (i == 2) "^~Your move,~ she says.";
+    if (i == 3)
+        print "^~I won!~ exclaims Catharine. ~You see, I'm unbeatable at \
+            noughts and crosses! But ";
+    if (i == 4) {
+        .Drawn;
+        print "^~It's a draw,~ says Catharine. ~You don't play so \
+            badly. But you'll need to play better than that to beat me! ";
+    }
+    print "I'll give you another chance.~ She clears away the old piece \
+        of paper, brings out a new one, and marks her X in the centre \
+        square.^";
+    OXPaper.puzzle_state = 2;
+    <Reset OXPaper>;
+    OXBoard->4 = 2;
+    <Examine OXPaper>;
+    "^~Your move,~ she says.";
+];
+
+[ XMoveSub; OXPlayPlayer(2); ];
+[ OMoveSub; OXPlayPlayer(1); ];
+
+Verb "play"
+    * "at" number     -> OMove
+    * number          -> OMove
+    * "o" "at" number -> OMove
+    * "x" "at" number -> XMove;
+
+
+!--------------------------------------------------------------------------
+! 2.3 THE GNOMON
+!--------------------------------------------------------------------------
+! The gnomon pastiches a puzzle in Brian Moriarty's game "Trinity",
+! although Moriarty never used the word "chirality".
+!--------------------------------------------------------------------------
+
+Object  GnomonQuestion "gnomon and the sundial"
+ with   name "gnomon" "sundial",
+        next Gnomon,
+        state 0,
+        description "~The word `chirality' means handedness,~ says \
+            Catharine. ~It refers to the sense in which a spiral coils, \
+            clockwise or anticlockwise.~"
+            "~The only thing stopping you is the screw thread on the \
+            gnomon,~ says Catharine. ~If it weren't for that, it would be \
+            easy.~"
+            "~Can you find a way to reflect the gnomon?~ asks \
+            Catharine. ~Remember, a reflection in three dimensions is a \
+            rotation in four dimensions.~ She giggles."
+            "~If you can't reflect the screw thread,~ says Catharaine, \
+            ~maybe you could find a way to file down the gnomon so it \
+            fits?~";
+
+Object  Sundial "sundial"
+ has    static supporter
+        ! general if you've seen it
+ with   name "sundial" "sun" "dial",
+        capacity 4,
+        description [ i;
+            if (self hasnt general)
+                print "You're not quite sure why you never noticed the \
+                    sundial before. ";
+            print "It's a square pedestal of stone, with markings for the \
+                hours. The gnomon ";
+            if (Gnomon in self)
+                print "casts a shadow over the flat surface";
+            else
+                print "is missing, and there is a small hole in the \
+                    centre of the flat surface";
+            if (children(self)>1 || (Gnomon notin self && children(self)>0)) {
+                objectloop(i in self) give i workflag;
+                give Gnomon ~workflag;
+                print ". On the sundial";
+                WriteListFrom(child(self), ISARE_BIT + ENGLISH_BIT +
+                    WORKFLAG_BIT);
+            }
+            ".";
+        ],
+        before [;
+         Receive,Tie:
+            if (noun ~= Gnomon) rfalse;
+            if (Gnomon hasnt general) {
+                Gnomon.puzzle_state = 2;
+                "You attempt to screw the gnomon into the sundial, but it \
+                won't fit. After some examination, you realise that this \
+                is because the screw threads of the gnomon and the \
+                sundial have opposite chirality.";
+            }
+            if (Gnomon hasnt sticky)
+                "The filed-down gnomon fits into the hole, but the fit \
+                isn't good, and it wobbles. You take it out, dissatisfied \
+                with your efforts.";
+            give Gnomon static ~sticky;
+            move Gnomon to self;
+            move Shadow to Toyshop;
+            Gnomon.puzzle_state = 3;
+            score ++;
+            "The filed-down gnomon fits into the hole and adheres.";
+        ];
+
+Object  Gnomon "gnomon"
+        ! general if filed down
+        ! static if glued to sundial
+ with   name "gnomon",
+        puzzle_state 0,
+        puzzle_name "The gnomon and the sundial",
+        puzzle_pre CardboardBox,
+        description [;
+            print "It's the part of a sundial that casts the shadow. Made \
+                of metal, there is a long screw on one end";
+            if (self has general)
+                print ". The screw thread has been filed off";
+            ".";
+        ],
+        before [;
+         Tie:
+            if (second == Sundial) <<PutOn self Sundial>>;
+         Invoke:
+            move self to player;
+            move GnomonQuestion to AskQuestions;
+            move Sundial to Toyshop;
+            self.puzzle_state = 1;
+            score ++;
+            "^~You might like to have a go at this problem,~ says \
+            Catharine. She reaches into a pocket and extracts a strange \
+            metal object. ~It's a gnomon,~ she says, handing it to \
+            you. ~It's the missing part of that sundial over there. Can \
+            you repair it?~";
+        ];
+
+Object  Shadow "shadow"
+ has    scenery
+ with   name "shade" "shadow",
+        description "The gnomon casts a shadow across the sundial. The \
+            tip of the shadow just reaches the marking for tea-time.",
+        before [;
+         Examine: ;
+         Receive:
+            if (noun ~= Mushroom || Mushroom has general)
+                <<PutOn noun Sundial>>;
+            give Mushroom general;
+            move Mushroom to Sundial;
+            move Rod to Sundial;
+            "You place the mushroom on the sundial. As the tip of the \
+            shadow falls across the mushroom, a white door appears in the \
+            mushroom's stalk. An inch-high man in shorts and t-shirt \
+            walks through the door and stares up at you, aghast, before \
+            turning on his heels and exiting through the door, which \
+            vanishes as soon as it closes. He left something behind, \
+            though.";
+         default: "You can't do that to a shadow.";
+        ];
+
+[ FileWithSub;
+    if (second hasnt is_disk)
+        print_ret (The) second, " won't make a good file.";
+    if (noun has animate)
+        "That seems rather a dangerous thing to attempt.";
+    if (noun ~= Gnomon)
+        "Futile.";
+    if (Gnomon has general)
+        "You've already filed down the gnomon.";
+    give Gnomon general;
+    "The disk from the Towers of Hanoi set isn't a particularly good \
+    file, but you make do, and with a lot of effort you manage to file \
+    down the gnomon's screw thread.";
+];
+
+Verb "file"
+    * noun "with" held -> FileWith
+    * "down" noun "with" held -> FileWith;
+
+Extend "screw"
+    * held "into" noun -> Insert;
+
+
+!--------------------------------------------------------------------------
+! 2.4 THE TOWERS OF HANOI
+!--------------------------------------------------------------------------
+
+Object  HanoiQuestion "towers of Hanoi"
+ with   name "hanoi" "towers" "of" "peg" "disk" "disc" "disks" "discs"
+            "pegs",
+        next HanoiBoard,
+        state 0,
+        description "~The usual solution is recusive,~ says Catharine. \
+            ~For example, to move a stack of three disks from the left \
+            peg to the right peg, first move a stack of two disks to the \
+            middle peg, then move the big disk, then move the stack of \
+            two again."
+            "~I said the usual solution is recursive,~ says Catharine, \
+            ~but you'll see if you take the trouble to work it out that \
+            three disks take seven moves to transport. So you'll have to \
+            be cleverer than that to move them in six."
+            "~The usual recursive solution is in fact minimal,~ says \
+            Catharine. ~So you'll have to cheat to do better than that.~"
+            "~If you could move two disks at a time,~ says Catharine, ~it \
+            would be easy, but the rules only allow you to pick up the \
+            top disk from a stack.~";
+
+Object  HanoiBoard "Towers of Hanoi board"
+ has    supporter
+        ! general if explained the names of the components
+ with   name "tower" "towers" "of" "hanoi" "board" "wooden" "wood",
+        number 0,     ! counts the number of moves made
+        state 0,      ! counts number of times play tried to cheat
+        prev_num 0,   ! previous value of number, so C can announce change
+        puzzle_state 0,
+        puzzle_name "The towers of Hanoi",
+        puzzle_pre CardboardBox,
+        description [ i j k l;
+            ! We can provide a text-only description
+            if (pretty == 0) {
+                print "A wooden board, bearing three pegs.^";
+                <Examine LeftPeg>;
+                <Examine MiddlePeg>;
+                <Examine RightPeg>;
+                give self general;
+                rtrue;
+            }
+
+            ! Alternatively, draw a picture
+            new_line;
+            font off;
+            for (i = 0: i < 3: i++) {
+                for (j = LeftPeg: j ~= 0: j = j.next) {
+                    for (k = 0, l = j: l ~= 0 && k < 3 - i: k++) {
+                        if (l ~= 0 && children(l) ~= 0)
+                            l = child(l);
+                        else l = 0;
+                    }
+                    if (l ~= 0) l = l.number;
+                    spaces(6-l*2);
+                    for (k = 0: k < l: k++) print "==";
+                    print "|";
+                    for (k = 0: k < l: k++) print "==";
+                    spaces(8-l*2);
+                }
+                new_line;
+            }
+            print "------+--------------+--------------+------^";
+            font on;
+            if (self hasnt general) {
+                give self general;
+                "^[The disks are called ~small~, ~medium~ and ~big~; the \
+                pegs are ~left~, ~middle~ and ~right~.]";
+            }
+            rtrue;
+        ],
+        capacity 3,
+        before [;
+         Take,Remove:
+            "It's easier to play with the Towers of Hanoi when they're on \
+            the floor.";
+         Receive:
+            if (noun has is_disk)
+                "You should say which peg you want to put it on.";
+            "There's only room for the three pegs.";
+         Invoke:
+            move self to Toyshop;
+            move HanoiQuestion to AskQuestions;
+            <Reset self>;
+            self.puzzle_state = 1;
+            score ++;
+            "^Catharine rummages around in the chest and extracts a large \
+            wooden board on which three pegs are set. Three metal disks, \
+            each with a hole in the middle, are threaded onto the left \
+            peg. ~This puzzle is called the Towers of Hanoi,~ she says. \
+            ~The idea is to move the three disks from the left peg to the \
+            right peg in only six moves, without putting a disk on top of \
+            a smaller one, and only picking up the top disk from a \
+            peg. Here, have a go.~";
+         Reset:
+            remove BigDisk;
+            remove MediumDisk;
+            remove SmallDisk;
+            move BigDisk to LeftPeg;
+            move MediumDisk to BigDisk;
+            move SmallDisk to MediumDisk;
+            self.state = 0;
+            self.number = 0;
+            self.prev_num = 0;
+        ],
+        each_turn [;
+            if (BigDisk in RightPeg && MediumDisk in BigDisk &&
+                SmallDisk in MediumDisk) {
+                self.puzzle_state = 3;
+                self.each_turn = NULL;
+                score ++;
+                "^~You did it!~ says Catharine excitedly. ~And there was \
+                me thinking that it took two to the power of n moves, \
+                less one, to move a stack of n disks from one peg to \
+                another!~";
+            }
+            if (self.number >= 6) {
+                <Reset self>;
+                self.puzzle_state = 2;
+                "^~You've had your six moves,~ says Catharine, ~and it \
+                doesn't look as though you've managed to move the stack \
+                successfully. It's back to the beginning for you.~ She \
+                collects up the disks and puts them back on the left \
+                peg.";
+            }
+            if (self.state >= 3) {
+                self.state = 0;
+                switch (random(3)) {
+                 1: "^~You don't seem to be getting the hang of this,~ \
+                    she says. ~Perhaps you should try a different game.~";
+                 2: "^~The rules are really very simple,~ she says, ~One \
+                    disk at a time, and never put a larger disk on a \
+                    smaller one.~";
+                 3: "^~There's nothing to be gained from cheating like
+                    that,~ she says.";
+                }
+            }
+            if (self.number ~= self.prev_num) {
+                self.prev_num = self.number;
+                print "^~That's ", (EnglishNumber) self.number, " move";
+                if (self.number > 1) print "s";
+                ",~ says Catharine.";
+            }
+        ];
+
+Class   PegClass
+ has    concealed static supporter is_peg
+ with   name "peg",
+        capacity 1,
+        description [ i;
+            if (children(self) == 0) print_ret (The) self, " is empty.";
+            print "On ", (the) self;
+            if (children(child(self)) == 0) print " is ";
+            else print " are ";
+            for (i = self: children(i) ~= 0:) {
+                i = child(i);
+                print (a) i;
+                if (children(i) ~= 0) {
+                    if (children(child(i)) == 0)
+                        print " and ";
+                    else print ", ";
+                }
+            }
+            ".";
+        ],
+        before [;
+         Take,Remove,Push,Pull,Turn:
+            print_ret (The) self, " is fixed to the board.";
+         Receive:
+            if (noun hasnt is_disk)
+                "You can only put disks on the peg.";
+            if (children(self) ~= 0)
+                <<PutOn noun child(self)>>;
+        ];
+
+Object  LeftPeg "left peg" HanoiBoard
+ class  PegClass
+ with   name "left",
+        next MiddlePeg;
+
+Object  MiddlePeg "middle peg" HanoiBoard
+ class  PegClass
+ with   name "middle",
+        next RightPeg;
+
+Object  RightPeg "right peg" HanoiBoard
+ class  PegClass
+ with   name "right",
+        next 0;
+
+Global MovingStuckDisk = 0;
+
+Class   DiskClass
+ has    supporter is_disk
+ with   name "disk" "disc" "metal",
+        capacity 1,
+        stuck_to 0,
+        description [ i;
+            for (i = self: i ~= 0 && i hasnt is_peg: i = parent(i));
+            print (The) self, " is made of metal, with a very rough \
+                surface: it is painful to run your finger across \
+                it. There is a hole in the middle";
+            if (i hasnt is_peg) ".";
+            print ". It is on ", (the) i;
+            if (parent(self) == i && children(self) == 0) ".";
+            print ". It ";
+            if (parent(self) ~= i) {
+                print "rests on ", (the) parent(self);
+                if (children(self) ~= 0) print " and ";
+            }
+            if (children(self) ~= 0)
+                print "supports ", (the) child(self);
+            ".";
+        ],
+        before [ i;
+         Take,Remove:
+            if (self.stuck_to ~= 0) {
+                i = parent(self.stuck_to);
+                if (i hasnt is_disk && i hasnt is_peg)
+                    print_ret (The) self, " appears to be firmly stuck to ",
+                        (the) self.stuck_to, ".";
+            }
+            if (HanoiBoard.puzzle_state < 3 && children(self) ~= 0 && 
+              MovingStuckDisk == 0) {
+                HanoiBoard.state = HanoiBoard.state + 1;
+                "~You can only take the top disk from a peg,~ says \
+                Catharine.";
+            }
+            if (parent(self) hasnt is_disk && parent(self) hasnt is_peg)
+                rfalse;
+            if (HanoiBoard.puzzle_state < 3) {
+                for (i = BigDisk: i ~= 0: i = i.next)
+                    if (parent(i) hasnt is_disk && parent(i) hasnt is_peg) {
+                        HanoiBoard.state = HanoiBoard.state + 1;
+                        "~You can only have one disk at a time,~ says \
+                        Catharine.";
+                }
+            }
+            if (self.stuck_to ~= 0) {
+                i = parent(self.stuck_to);
+                if (i has is_disk || i has is_peg) {
+                    MovingStuckDisk = 1;
+                    <(action) self.stuck_to second>;
+                    ResetVagueWords(self.stuck_to);
+                    MovingStuckDisk = 0;
+                    rtrue;
+                }
+                "** Error: disk came unstuck **";
+            }
+         Receive:
+            if (noun hasnt is_disk)
+                print_ret "You can't put ",(the)noun," on ",(the)self,".";
+            if (parent(self) hasnt is_peg && parent(self) hasnt is_disk)
+                print_ret "It would be better to put ", (the) self, " on \
+                    a peg first.";
+            if (HanoiBoard.puzzle_state < 3 && noun.number > self.number) {
+                HanoiBoard.state = HanoiBoard.state + 1;
+                print_ret "~You could put ", (the) self, " on ", (the) noun,
+                    ",~ says Catharine, ~but putting ", (the) noun, " on \
+                    ", (the) self, " is not allowed.~";
+            }
+            if (children(self) > 0)
+                <<PutOn noun child(self)>>;
+        ],
+        after [;
+         Take,Remove:
+            if (MovingStuckDisk == 1)
+                print_ret "Taken. ", (The) self, " comes with it.";
+         PutOn:
+            if (second hasnt is_disk && second hasnt is_peg) rfalse;
+            HanoiBoard.number = HanoiBoard.number + 1;
+            if (noun has sticky || second has sticky) {
+                give noun ~sticky;
+                give second ~sticky;
+                noun.stuck_to = second;
+                print (The) noun, " adheres to ", (the) second, ".^";
+            }
+            if (pretty == 1)
+                <<Examine HanoiBoard>>;
+        ];
+
+Object  BigDisk "big disk" LeftPeg
+ class  DiskClass
+ with   name "big" "large",
+        number 3,
+        next MediumDisk;
+
+Object  MediumDisk "medium disk" BigDisk
+ class  DiskClass
+ with   name "medium",
+        number 2,
+        next SmallDisk;
+
+Object  SmallDisk "small disk" MediumDisk
+ class  DiskClass
+ with   name "small",
+        number 1,
+        next 0;
+
+
+!--------------------------------------------------------------------------
+! 2.5 DOTS AND BOXES
+!--------------------------------------------------------------------------
+! Catharine's strategy is remarkably simple, and is adapted from the
+! discussion in "Winning Ways" volume 2 (Conway, Berlekamp and Guy).  It
+! is, (1) capture any available boxes; (2) if the position is in the
+! dictionary, play the dictionary move; (3) if the play that is
+! rotationally symmetrical to the player's last move is available, play
+! that; (4) play randomly.  Only 2 essentially different dictionary
+! positions are needed.
+! 
+! Dots and boxes on a 2x2 board is a win for the first player, but I
+! believe that this second-player strategy is `optimal' in the sense that
+! it wins if the first player makes a single mistake.
+! 
+! `DBBoxes' is really a 4x4 array; it contains the numbers of the four
+! edges for each of the four boxes (to make it easy to check which boxes
+! have been closed by a move).
+! 
+! `DBInput' maps edge number to the word specifying that edge.  The
+! slightly strange orders of lettering of the edges on the board is to
+! prevent the sequence of plays `abcd' from being a win (I think that would
+! be too obvious).
+! 
+! `DBDictionary' contains 16 positions (really 2 positions in each of 8
+! orientations - it seemed simpler to extend the dictionary than add code
+! to do the rotations and reflections); the board is encoded by a 12-bit
+! binary number and is followed by the correct move in that position.
+! 
+! We need the global variable `NoBoxes' because the `DBPlay' function has
+! to return two pieces of information: the game status, and the number of
+! boxes captured.
+!--------------------------------------------------------------------------
+
+Global NoBoxes; ! number of boxes captured in the most recent move
+Array DBBoard -> 0 0 0 0 0 0 0 0 0 0 0 0; ! the edges of the board
+Array DBOwner -> 0 0 0 0;                 ! box owner (0=none, 1=P, 2=C)
+Array DBDisplay --> " " "Z" "C";          ! components of display
+Array DBBoxes -> 0 2 3 5 1 3 4 6 5 7 8 10 6 8 9 11;
+Array DBInput --> n$a n$b n$g n$h n$i n$c n$d n$j n$k n$l n$e n$f;
+Array DBDictionary -->
+    $$111000000101  4    $$111000010111  4
+    $$101010000101  1    $$101010010111  1
+    $$101000010101 10    $$111010010101 10
+    $$101000000111  7    $$111010000111  7
+    $$110010010010  2    $$110010010111  2
+    $$011010010010  0    $$011010010111  0
+    $$010010010110 11    $$111010010110 11
+    $$010010010011  9    $$111010010011  9;
+
+Object  DBQuestion "dots and boxes"
+ with   name "dots" "and" "boxes",
+        next DBPaper,
+        state 0,
+        description "~Did you never play dots and boxes when you were a \
+            child?~ asks Catharine. ~Many children play it, but few \
+            continue to have any interest in it when they grow up, which \
+            I think is a shame, because it's full of interesting tricks: \
+            struggles for control, sacrifices and lots of game theory.~";
+
+Object  DBPaper "piece of paper"
+        ! general if seen instructions
+ with   name "piece" "of" "paper",
+        puzzle_state 0,
+        puzzle_pre OXPaper CardboardBox,
+        puzzle_name "Dots and boxes",
+        description [ i j k;
+            if (self hasnt general) {
+                give self general;
+                font off;
+                print "^+ a + b +^g   h   i^+ c + d +^j   k   l^+ e + f +^";
+                font on;
+                "^[The edges are labelled with letters from A to L. To \
+                fill in an edge, type for example ~play A~. Type ~help \
+                on~ to see the letters; type ~help off~ to turn them \
+                off.]";
+            }
+            new_line;
+            font off;
+            for (i = 0: i < 3: i++) {
+                for (j = 0: j < 2: j++) {
+                    k = DBBoard->(i*5+j);
+                    print "+";
+                    if (k == 1)
+                        print "---";
+                    else {
+                        if (help == 1)
+                            print " ", (address) DBInput-->(i*5+j), " ";
+                        else
+                            spaces 3;
+                    }
+                }
+                print "+^";
+                if (i ~= 2) {
+                    for (j = 0: j < 3: j++) {
+                        k = DBBoard->(i*5+j+2);
+                        if (k == 1)
+                            print "|";
+                        else {
+                            if (help == 1)
+                                print (address) DBInput-->(i*5+j+2);
+                            else
+                                spaces 1;
+                        }
+                        if (j ~= 2) {
+                            print " ", (string)
+                                (DBDisplay-->(DBOwner->(i*2+j))), " ";
+                        }
+                    }
+                    new_line;
+                }
+            }
+            font on;
+            rtrue;
+        ],
+        before [ i;
+         Take,Remove:
+            "~But we're in the middle of a game!~ Catharine exclaims.";
+         Invoke:
+            move self to Toyshop;
+            move DBQuestion to AskQuestions;
+            <Reset self>;
+            self.puzzle_state = 1;
+            Catharine.state = 1;
+            score ++;
+            "^Catharine extracts a piece of paper from the chest, sits \
+            down by it, and draws nine dots in three rows of three. ~Do \
+            you know how to play dots and boxes?~ she asks. ~We take \
+            turns to draw an edge between two dots. Whoever draws the \
+            last edge around one of the four boxes captures that box and \
+            writes their initial in it - that's `Z' for you and `C' for \
+            me. I'll let you start, but since it's an advantage to start, \
+            if we get two boxes apiece then I win. And I warn you, I'm \
+            unbeatable.~";
+         Reset:
+            for (i = 0: i < 12: i++)
+                DBBoard->i = 0;
+            for (i = 0: i < 4: i++)
+                DBOwner->i = 0;
+        ];
+
+! returns 1 if play didn't happen
+! returns 2 if move as normal
+! returns 3 if game over
+! returns 4 if complimenting move
+
+[ DBPlay
+    where ! edge to be drawn (0 to 11) (INPUT)
+    who   ! who is drawing the edge (Catharine or player) (INPUT)
+    i j;  ! loop counters
+
+    if (who ~= player or Catharine ||
+        where < 0 || where >= 12)
+        "** Error: call to `DBPlay' with bad arguments **";
+    if (DBBoard->where ~= 0) {
+        if (who == Catharine)
+            "** Error: Catharine tried to play in non-empty location **";
+        "~You can't play there,~ Catharine gently admonishes you. ~That \
+        edge has already been drawn.~";
+    }
+    DBBoard->where = 1;
+
+    ! search for filled-in boxes
+    for (NoBoxes = 0, i = 0: i < 4: i++) {
+        if (DBOwner->i == 0) {
+            for (j = 0: j < 4: j++)
+                if (DBBoard->(DBBoxes->(i*4+j)) == 0)
+                    jump NextBox;
+            if (who == player)
+                DBOwner->i = 1;
+            else
+                DBOwner->i = 2;
+            NoBoxes ++;
+            .NextBox;
+        }
+    }
+
+    ! check for game end
+    for (i = 0: i < 12: i++)
+        if (DBBoard->i == 0) {
+            if (NoBoxes > 0)
+                return 4;
+            return 2;
+        }
+    return 3;
+];
+
+[ DBMoveSub
+    pmove ! move selected by the player
+    cmove ! move selected by Catharine
+    i j k ! loop counters
+    sq    ! counts the number of boxes captured by Catharine in her moves
+    c     ! counts number of boxes owned by Catharine at end of game
+    end;  ! set to 1 iff game is over
+
+    if (OXPaper in Toyshop)
+        "The squares are numbered from 1 to 9, with 1 at the bottom left \
+        and 9 at the top right. To play, type ~play o at 1~, or just \
+        ~play 1~ for short.";
+    if (DBPaper notin Toyshop)
+        "You're not playing a game at the moment.";
+    for (pmove = 0: pmove < 12: pmove++)
+        if (special_word == DBInput-->pmove)
+            jump DecodedMove;
+    "Try using a letter from A to L.";
+
+    .DecodedMove;
+    give DBPaper general;
+    switch (DBPlay(pmove, player)) {
+     1: rtrue;
+     2: ;
+     3: end = 1; jump DisplayBoard;
+     4: <Examine DBPaper>; "^~You get another move,~ says Catharine.";
+    }
+
+    ! Catharine's strategy
+    ! --------------------
+
+    ! (1) Complete any boxes
+    do {
+        k = 0; ! set to 1 if any boxes were captured
+        for (i = 0: i < 4: i++) {
+            for (c = 0, j = 0: j < 4: j++) {
+                if (DBBoard->(DBBoxes->(i*4+j)) == 1)
+                    c ++;
+                else
+                    cmove = DBBoxes->(i*4+j);
+            }
+            if (c == 3) {
+                switch (DBPlay(cmove, Catharine)) {
+                 1: rtrue;
+                 2: "** Error: Catharine closed a box but got no \
+                     complimenting move **";
+                 3: sq = sq + NoBoxes; cmove = -1; end = 1; jump DoneMove;
+                 4: sq = sq + NoBoxes; k = 1;
+                }
+            }
+        }
+    } until (k == 0); ! loop until no more boxes can be captured
+
+    ! (2) See if the position is in the dictionary
+    for (k = 0, i = 0: i < 12: i++)
+        k = k * 2 + DBBoard->i;
+    for (i = 0: i < 16: i++)
+        if (k == DBDictionary-->(i*2)) {
+            cmove = DBDictionary-->(i*2+1);
+            jump FoundDBMove;
+        }
+
+    ! (3) See if the symmetry move is available
+    if (DBBoard->(11 - pmove) == 0) {
+        cmove = 11 - pmove;
+        jump FoundDBMove;
+    }
+
+    ! (4) Play randomly
+    for (j = 0, i = 0: i < 12: i++)
+        if (DBBoard->i == 0)
+            j++;
+    if (j > 0) {
+        k = random(j);
+        for (j = 0, i = 0: i < 12: i++) {
+            if (DBBoard->i == 0) {
+                j ++;
+                if (k == j) {
+                    cmove = i;
+                    jump FoundDBMove;
+                }
+            }
+        }
+    }
+
+    ! No move was found (shouldn't happen)
+    "** Error: unable to find move for Catharine **";
+
+    ! Catharine can't end the game or capture a box here, because if either
+    ! were possible, it would have happened at stage (1).
+    .FoundDBMove;
+    switch (DBPlay(cmove, Catharine)) {
+     1: rtrue;
+     2: ;
+     3: "** Error: Catharine ended the game with symmetry/random move **";
+     4: "** Error: Catharine closed a box with the symmetry/random move **";
+    }
+
+    .DoneMove;
+    print "Catharine ";
+    if (sq > 0) {
+        print "closes ", (EnglishNumber) sq, " box";
+        if (sq > 1) print "es";
+        if (cmove >= 0) print " and ";
+    }
+    if (cmove >= 0)
+        print "draws the line ~", (address) DBInput-->cmove, "~";
+    print ".^";
+
+    .DisplayBoard;
+    <Examine DBPaper>;
+    if (end == 1) {
+        for (c = 0, i = 0: i < 4: i++)
+            if (DBOwner->i == 2)
+                c++;
+        print "^~The game is over,~ says Catharine. ~You scored ",
+            (EnglishNumber) (4-c), " box";
+        if (c ~= 3) print "es";
+        ! Catharine scores at least one box always, so no problem here:
+        print " to my ", (EnglishNumber) c, ".";
+        if (c >= 2) {
+            <Reset DBPaper>;
+            DBPaper.puzzle_state = 2;
+            if (c == 2)
+                print " Two boxes apiece, which means that, as second \
+                    player,";
+            " I won! I told you I was unbeatable! But I'll give you \
+            another chance.~ She tidies away the finished game and brings \
+            out a new piece of paper, and draws a grid of nine dots on \
+            it. ~I'll let you start again.~";
+        }
+        remove DBPaper;
+        DBPaper.puzzle_state = 3;
+        Catharine.state = 0;
+        score ++;
+        " It seems that you won. Well, my. I was sure that Mister Conway \
+        said that my symmetry strategy would never fail. Still, we live \
+        and learn.~ She tidies away the finished game.";
+    }
+    "^~Your move,~ she says.";
+];
+
+Extend "play"
+    * special -> DBMove;
+
+
+!--------------------------------------------------------------------------
+! 2.6 THE ROBOT MOUSE
+!--------------------------------------------------------------------------
+! This puzzle pastiches one in "Curses" by Graham Nelson.  My version is
+! easier in some ways, such as "put mouse in hole" being recognised, and
+! harder in others...
+!--------------------------------------------------------------------------
+
+Object  MouseQuestion "robot mouse"
+ with   name "robot" "mouse" "hole" "cat" "maze" "key" "mousehole",
+        next RobotMouse,
+        state 0,
+        description "~I can offer you a few hints about how the cat \
+            works,~ says Catharine. ~First, the cat only moves after \
+            the mouse has moved successfully.~"
+            "~The cat's strategy,~ says Catharine, ~is always to move so \
+            as to minimise the distance between it and the mouse.~"
+            "~If the cat's strategy doesn't provide a unique move,~ says \
+            Catharine, ~then it moves to the intersection occupied by the \
+            mouse at the end of the last turn, if possible. Otherwise, it \
+            chooses randomly among the moves that bring it closest to the \
+            mouse.~"
+            "~If you think about what I've said,~ says Catharine, ~and \
+            play with some counters on paper, you'll realise that it's \
+            just a parity problem. The cat is always an even number of \
+            moves away from the mouse at the end of its turn, and the cat \
+            can always reduce this number if the mouse doesn't \
+            retreat.~"
+            "~Now, if the mouse didn't start an even number of moves away \
+            from the cat,~ says Catharine, ~the game would be a very \
+            different thing altogether.~";
+
+Object  Maze "maze";
+        ! general if mouse has the key
+
+Global mouse_x;
+Global mouse_y;
+Global cat_x;
+Global cat_y;
+Global last_mouse_x;
+Global last_mouse_y;
+Global key_x = 1;
+Global key_y = 1;
+
+Object  Mousehole "mousehole"
+ has    concealed talkable container open static
+ with   name "hole" "mousehole",
+        description "A little hole in the wainscot of the west wall, such \
+            as might have been made by mice.",
+        life [;
+         Order:
+            if (RobotMouse notin Maze)
+                "You feel silly talking to the hole.";
+            RunLife(RobotMouse,##Order);
+            rtrue;
+        ],
+        before [;
+         Examine: PrintOrRun(self,description); rtrue;
+         Search: "The hole is dark inside.";
+         Receive:
+            switch(noun) {
+             Baguette:
+                print "You push the baguette into the mousehole";
+                if (RobotMouse in Maze && mouse_x == 4 && mouse_y == 4) {
+                    mouse_x = 3;
+                    ". The loaf encounters an obstacle, which you push as \
+                    far into the hole as you can.";
+                }
+                if (RobotMouse in Maze && cat_x == 4 && cat_y == 4)
+                    ". The loaf encounters an obstacle, and there is an \
+                    angry hiss. Alarmed, you retrieve your bread.";
+                ", but you encounter no obstruction, and retrieve your \
+                bread.";
+             RobotMouse:
+                <Reset RobotMouse>;
+                "You put the robot mouse into the hole.";
+             default: "Nothing is to be gained by this.";
+            }
+        ];
+
+Object  RobotMouse "robot mouse"
+ has    talkable
+        ! general if Catharine's explained about cat
+ with   name "robot" "mouse" "grey" "fur" "wheel" "wheels" "rubber" "gray",
+        description "A little mouse clad in fake grey fur, with four \
+            rubber wheels.",
+        puzzle_state 0,
+        puzzle_pre CardboardBox,
+        puzzle_name "The robot mouse",
+        life [ dx dy sx sy;
+         Order:
+            if (action ~= ##Enter or ##Go || noun notin compass)
+                "The mouse emits a querulous, unhappy bleep.";
+            if (noun ~= n_obj or s_obj or e_obj && noun ~= w_obj)
+                "The mouse bleeps with annoyance.";
+            if (parent(self) ~= Toyshop or Maze)
+                "The mouse wheels spin, but can't get a good enough grip \
+                to move.";
+            if (self in Toyshop && noun ~= w_obj)
+                "The mouse emits a low-pitched bleep.";
+            if (self in Toyshop) {
+                <Reset self>;
+                "The mouse just squeezes through the hole, and disappears \
+                from view. Unfortunately you can't very easily talk to it \
+                now...";
+            }
+            if (mouse_x == 4 && mouse_y == 4 && noun == e_obj) {
+                move self to Toyshop;
+                print "The mouse runs back out of the hole, looking \
+                    dustier but none the worse for its adventure";
+                if (Maze has general) {
+                    give Maze ~general;
+                    move BrassKey to Toyshop;
+                    RobotMouse.puzzle_state = 3;
+                    score ++;
+                    ", and then almost looks proud as a magnet cuts out \
+                    and something metal drops off the underside of the \
+                    mouse onto the floor. The lost key is found!"
+                }
+                ".";
+            }
+            if ((mouse_x == 1 && noun == w_obj) ||
+                (mouse_x == 4 && noun == e_obj) ||
+                (mouse_y == 1 && noun == n_obj) ||
+                (mouse_y == 4 && noun == s_obj))
+                "From somewhere inside the hole, you hear a disconsolate \
+                bleep.";
+            print "From somewhere inside the hole, you hear tiny wheels \
+                spin";
+
+            last_mouse_x = mouse_x;
+            last_mouse_y = mouse_y;
+            switch (noun) {
+             n_obj: mouse_y = mouse_y - 1;
+             s_obj: mouse_y = mouse_y + 1;
+             e_obj: mouse_x = mouse_x + 1;
+             w_obj: mouse_x = mouse_x - 1;
+            }
+            ! See if the mouse has picked up the key.
+            if (mouse_x == key_x && mouse_y == key_y) {
+                key_x = 0;
+                key_y = 0;
+                give Maze general;
+                print ", followed by an excitable high-pitched beep and a \
+                    dull clanging noise";
+            }
+            print ".^";
+            if (mouse_x == cat_x && mouse_y == cat_y)
+                jump MouseDead;
+
+            ! Now the cat. First see if it can chase to the last posn
+            ! occupied by the mouse. If it can do this, it can't catch the
+            ! mouse (by parity), so no need to check that first.
+            dx = last_mouse_x - cat_x;
+            dy = last_mouse_y - cat_y;
+            if (dx * dx + dy * dy == 1) {
+                cat_x = last_mouse_x;
+                cat_y = last_mouse_y;
+                rtrue;
+            }
+
+            ! Now see if it can catch the mouse
+            dx = mouse_x - cat_x;
+            dy = mouse_y - cat_y;
+            if (dx * dx + dy * dy == 1)
+                jump MouseDead;
+
+            ! Find out which way it needs to go.
+            sx = Sign(dx);
+            sy = Sign(dy);
+            if (sx ~= 0 && sy ~= 0) {
+                if (Abs(dx) > Abs(dy)) sy = 0;
+                else {
+                    if (Abs(dy) > Abs(dx)) sx = 0;
+                    else {
+                        switch (random(2)) {
+                         1: sx = 0;
+                         2: sy = 0;
+                        }
+                    }
+                }
+            }
+            cat_x = cat_x + sx;
+            cat_y = cat_y + sy;
+            rtrue;
+
+            .MouseDead;
+            move self to Toyshop;
+            if (Maze has general) {
+                key_x = mouse_x;
+                key_y = mouse_y;
+                give Maze ~general;
+            }
+            print "^From somewhere inside the hole, you hear a sharp hiss, \
+                and a long drawn-out high-pitched squeal, and then the \
+                robot mouse comes flying out of the hole at high speed, \
+                looking somewhat the worse for wear.^";
+            if (self hasnt general) {
+                give self general;
+                if (self.puzzle_state == 1)
+                    self.puzzle_state = 2;
+                print "^~Ah, I should have explained some things,~ says \
+                    Catharine. ~There's a maze inside the wainscot in the \
+                    form of a four-by-four grid of intersections, and my \
+                    key is at the northwest corner. There's a robot cat \
+                    in the maze too. When the robot mouse starts at the \
+                    southeast corner, the robot cat goes to the northwest \
+                    corner. Every time you give an instruction to the \
+                    mouse and it moves from one intersection to the next, \
+                    the robot cat moves too. I hope this helps.~^";
+            }
+            rtrue;
+        ],
+        before [;
+         Reset:
+            move self to Maze;
+            mouse_x = 4;
+            mouse_y = 4;
+            last_mouse_x = 4;
+            last_mouse_y = 4;
+            cat_x = 1;
+            cat_y = 1;
+         Invoke:
+            move Mousehole to Toyshop;
+            move MouseQuestion to AskQuestions;
+            move self to Toyshop;
+            self.puzzle_state = 1;
+            score ++;
+            "^~That's a pretty robot mouse you have there,~ says \
+            Catharine. ~Looks like just what I need. You see, I dropped \
+            my key through the floorboards from the attic, and it's \
+            fallen into the wainscot somewhere. Perhaps if you could send \
+            the mouse into that mousehole over there, then it could find \
+            my key.~";
+        ];
+
+[ Sign x;
+    if (x < 0) return -1;
+    if (x > 0) return 1;
+    return 0;
+];
+
+[ Abs x;
+    if (x < 0) return -x;
+    return x;
+];
+
+Object  BrassKey "small brass key"
+ with   name "small" "brass" "key",
+        initial "Lying where the mouse dropped it is a small \
+            brass-coloured key.",
+        description "Brass is of course a non-magnetic copper-zinc alloy, \
+            so presumably this key also contains iron.";
+
+
+!--------------------------------------------------------------------------
+! 2.7 TEA-TIME
+!--------------------------------------------------------------------------
+! The egg puzzle is a reference to Adventions' Unnkulia series, in which
+! every game has a puzzle that involves cooking or otherwise manipulating
+! an egg, usually for the benefit of Duhdist monks.  The inclusion of food
+! is a useful excuse to have a mushroom (another Trinity reference) and a
+! baguette with which to solve the robot mouse puzzle.
+!--------------------------------------------------------------------------
+
+Object  EggQuestion "egg"
+ with   name "egg" "boiled" "fried" "raw" "hamper",
+        article "an",
+        next Hamper,
+        state 0,
+        description "~This isn't really a puzzle,~ says Catharine. ~It's \
+            just tea-time. If you want to make a puzzle out of it, try \
+            eating the egg.~"
+            "Catharine says, ~If you haven't played Infocom's wonderful \
+            game `Trinity' by Brian Moriarty, you're going to have \
+            problems with this puzzle.~"
+            "~In the game `Trinity',~ says Catharine, ~part of the action \
+            takes place on the surface of a giant sundial covered with \
+            mushrooms, each mushroom representing a mushroom cloud from \
+            the explosion of an atomic bomb.~"
+            "~The shadow from the gnomon was important too,~ says \
+            Catharine. ~When it touched a mushroom, magical things would \
+            happen.~"
+            "Catharine says, ~You need to have played Graham Nelson's \
+            marvellous game `Curses' too, or else you'll struggle.~"
+            "~In the game `Curses',~ says Catharine, ~There are a number \
+            of magic wands that can be charged by striking and discharged \
+            by pointing them at things.~";
+
+Object  Hamper "hamper"
+ has    container open
+ with   name "hamper" "picnic" "basket" "wicker" "wickerwork" "wicker-work",
+        capacity 5,
+        puzzle_state 0,
+        puzzle_name "The egg",
+        puzzle_pre Gnomon,
+        description "A wicker picnic hamper.",
+        before [;
+         Invoke:
+            move self to Toyshop;
+            self.puzzle_state = 1;
+            move EggQuestion to AskQuestions;
+            score ++;
+            "^Catharine looks at the shadow on the sundial. ~It looks \
+            like it's tea-time,~ she says. ~Perhaps you would care to \
+            join me in some food?~ She opens the chest, picks up a wicker \
+            hamper, and closes the chest again.";
+        ];
+
+Nearby  Baguette "baguette"
+ has    edible
+ with   name "bread" "stick" "french" "baguette" "loaf" "breadstick",
+        description "A long, thin loaf of French bread.";
+
+Nearby  RawEgg "egg"
+        ! general if you know it's raw
+ with   name "egg" "shell" "eggshell",
+        article "an",
+        before [;
+         Eat,Attack,Cut:
+            if (self has general)
+                "You've never really been fond of raw egg.";
+            "You're not certain if the egg is raw or cooked, and it would \
+            be nice to find out before you broke it.";
+         Shake,Turn:
+            give self general;
+            Hamper.puzzle_state = 2;
+            "The egg wobbles distinctly in your hand; it's clearly raw.";
+        ],
+        after [;
+         Drop: "You put the egg down gently.";
+        ];
+
+Nearby  Mushroom "mushroom"
+ has    edible
+ with   name "mushroom" "fungus";
+
+Object  Rod "featureless mahogany rod"
+        ! general if struck
+ with   name "featureless" "mahogany" "rod",
+        description "A featureless mahogany rod, whose purpose is \
+            oblique. It is about the size of a matchstick.",
+        before [;
+         PointAt:
+            if (self hasnt general) rfalse;
+            give self ~general;
+            print "A tiny gout of fire leaps out from the tip of the rod, ";
+            switch (second) {
+             Baguette: "lightly toasting the baguette.";
+             RawEgg:
+                move CookedEgg to parent(RawEgg);
+                StartTimer(CookedEgg,3);
+                remove RawEgg;
+                print "neatly cooking the egg";
+                if (CookedEgg in player) {
+                    move CookedEgg to Toyshop;
+                    print ", which is now too hot to hold, and you drop \
+                        it";
+                }
+                ".";
+             Catharine: "but Catharine leaps backwards to avoid it. ~Mind \
+                where you point that thing!~ she says.";
+             Mushroom: "gently frying the mushroom.";
+             selfobj: "making you uncomfortably hot.";
+             default: print_ret "but ", (the) second, " seems unaffected.";
+            }
+         Strike:
+            if (self has general) {
+                remove self;
+                "The already-charged rod explodes! Your hand is somewhat \
+                singed.";
+            }
+            give self general;
+            "The rod charges with etherial power, drawn up from the earth \
+            through ley lines...";
+        ];
+
+Object  CookedEgg "egg"
+ has    edible general
+        ! general if too hot
+ with   name "egg" "shell" "eggshell",
+        article "an",
+        before [;
+         Take,Remove,Touch:
+            if (self has general) "The egg is still too hot too to hold.";
+         Shake,Turn: "The egg doesn't wobble at all: it's clearly \
+            hard-boiled.";
+        ],
+        after [;
+         Eat: Hamper.puzzle_state = 3; score++;
+        ],
+        time_left 0,
+        time_out [;
+            give self ~general;
+        ];
+
+[ PointAtSub; "Nothing happens."; ];
+
+Verb "point"
+    * held "at" noun -> PointAt;
+
+[ StrikeSub; <<Attack noun>>; ];
+
+Verb "strike"
+    * noun -> Strike;
+
+Verb "spin"
+    * noun -> Turn;
+
+
+!--------------------------------------------------------------------------
+! 2.8 DODGEMS
+!--------------------------------------------------------------------------
+! This implementation of "Dodgems" uses a brute-force strategy: it encodes
+! the result for every position (the table is copied from "Winning Ways",
+! page 686).  The table takes up about half a kilobyte, so this approach
+! doesn't seem too wasteful.
+! 
+! The array `DodgemsPositions' is a 45 by 45 array of 2-bit outcomes:
+! 
+!     0 = not possible or win for player
+!     1 = win for first player
+!     2 = win for second player
+!     3 = win for Catharine
+! 
+! Each row is padded out to 48 so that it will fit in 6 words.  Catharine's
+! position is looked up in the columns, the players position in the rows.
+! 
+! The `CLookup' and `PLookup' arrays translate from the position of one
+! player's two pieces (encoded as a number from 0 to 99) to rows and
+! columns, respectively, in the `DodgemsPositions' table.
+! 
+! Catharine's strategy when she can't win is to choose the move that
+! maximises the chance that the player will make a fatal blunder on his or
+! her next move.  I'm not altogether happy with the way this works: for one
+! thing, it makes her strategy too deterministic, and it misses flaws that
+! are beyond this one-move horizon.  An alternative would be to move
+! randomly, but with a bias towards the move selected by this strategy.
+! 
+! If you compile with `Constant DEBUG' at the top of the source, and turn
+! tracing on with `trace 1', then some information about Catharine's
+! strategy is printed.
+!--------------------------------------------------------------------------
+
+Array DodgemsPositions --> [;
+    $0000 $0000 $0000 $0000 $0000 $0500;
+    $0000 $0000 $0000 $0000 $0000 $0540;
+    $0000 $0000 $0000 $0000 $0000 $0540;
+    $0000 $0000 $0000 $0000 $0051 $0f00;
+    $0000 $0000 $0000 $0000 $0051 $0f00;
+    $0000 $0000 $0000 $0000 $0051 $5fc0;
+    $0000 $0000 $0001 $0010 $1644 $ccc0;
+    $0000 $0000 $0000 $0410 $414d $5fc0;
+    $0000 $0000 $1041 $0800 $0055 $5fc0;
+    $0000 $0000 $0000 $4510 $00d8 $0c00;
+    $0000 $0000 $0000 $4104 $00c7 $0f00;
+    $0000 $0000 $0000 $4145 $00f7 $0f00;
+    $0000 $0000 $0014 $4100 $3cd0 $ccc0;
+    $0000 $0000 $0000 $4104 $10c3 $ffc0;
+    $0000 $0000 $0000 $4545 $14f3 $ffc0;
+    $0000 $0014 $0014 $4110 $3dd4 $ccc0;
+    $0000 $0010 $0000 $4134 $d3cf $ffc0;
+    $0000 $0000 $0000 $4155 $55ff $ffc0;
+    $0001 $4114 $07d7 $4407 $fd9c $33c0;
+    $0407 $c504 $5145 $1cf3 $cf3f $ffc0;
+    $0c13 $4d00 $f3cf $3555 $55ff $ffc0;
+    $0001 $0044 $0740 $100f $c074 $0300;
+    $0000 $0000 $4100 $14d3 $403f $0f00;
+    $0041 $0040 $d340 $37df $40ff $0f00;
+    $0001 $0040 $075d $100f $3c70 $33c0;
+    $0000 $0000 $4104 $10c3 $0c33 $ffc0;
+    $0041 $0040 $d34d $37cf $3cf3 $ffc0;
+    $0001 $147c $071c $100f $ff7c $33c0;
+    $0000 $040c $4104 $10f3 $cf3f $ffc0;
+    $0041 $0c54 $c30c $33ff $ffff $ffc0;
+    $0000 $1411 $003d $d710 $33cc $ccc0;
+    $0000 $1115 $0033 $c750 $3ffc $ccc0;
+    $0010 $1231 $1451 $cf3c $f3cf $ffc0;
+    $0044 $559c $003f $5400 $3ffc $00c0;
+    $0000 $1504 $503f $1cf0 $0f3c $ccc0;
+    $00d1 $0554 $d00f $3ff0 $3ffc $ccc0;
+    $1410 $3d30 $0fff $440c $f3cc $33c0;
+    $0400 $1f01 $d75d $0430 $c30f $ffc0;
+    $04d0 $0d30 $f3cf $1f3c $f3cf $ffc0;
+    $0014 $537c $0cf3 $4c0f $fffc $33c0;
+    $0000 $c10d $34d3 $ccf3 $cf3f $ffc0;
+    $0030 $c3fc $30c3 $0fff $ffff $ffc0;
+    $1405 $7f0c $0fff $1c03 $cf3c $33c0;
+    $04f3 $4ffc $03cf $3c0f $fffc $33c0;
+    $0c03 $cf0c $f3cf $3cf3 $cf3f $ffc0;
+];
+
+Array CLookup ->
+    99 26 38 44 25 37 43 24 36 42 26 99 11 23  2  8 20  1  5 17
+    38 11 99 35 10 14 32  9 13 29 44 23 35 99 22 34 41 21 33 40
+    25  2 10 22 99  7 19  0  4 16 37  8 14 34  7 99 31  6 12 28
+    43 20 32 41 19 31 99 18 30 39 24  1  9 21  0  6 18 99  3 15
+    36  5 13 33  4 12 30  3 99 27 42 17 29 40 16 28 39 15 27 99;
+
+Array PLookup ->
+    99  2  1  0  8  7  6 20 19 18  2 99  5  4 17 16 15 29 28 27
+     1  5 99  3 14 13 12 26 25 24  0  4  3 99 11 10  9 23 22 21
+     8 17 14 11 99 32 31 41 40 39  7 16 13 10 32 99 30 38 37 36
+     6 15 12  9 31 30 99 35 34 33 20 29 26 23 41 38 35 99 44 43
+    19 28 25 22 40 37 34 44 99 42 18 27 24 21 39 36 33 43 42 99;
+
+Array Dodgems -> 12;                 ! three deep stack of board posns
+Array DodgemsDisplay -> "12AB";      ! characters to print
+Array Directions --> -1 -3 1 3;      ! directions to move pieces
+Array DirectionNames --> "left" "up" "right" "down";
+Array Mask --> $c000 $3000 $0c00 $0300 $00c0 $0030 $000c $0003;
+Array Shift --> $4000 $1000 $0400 $0100 $0040 $0010 $0004 $0001;
+Array MoveScore -> 6;
+
+! Find the value of the position in the `DodgemsCopy' array.
+[ Value
+    a  ! row address, encoded from Catharine's pieces
+    b  ! column address, encoded from player's pieces
+    c; ! byte from table containing result
+
+    a = CLookup->((Dodgems->0) * 10 + (Dodgems->1));
+    b = PLookup->((Dodgems->2) * 10 + (Dodgems->3));
+    c = DodgemsPositions-->(b * 6 + (a / 8));
+    return ((c & (Mask-->(a % 8))) / (Shift-->(a % 8)));
+];
+
+! Manipulate the stack of positions
+[ PushPosition i; for (i = 11: i > 3: i--) Dodgems->i = Dodgems->(i - 4); ];
+[ PopPosition i; for (i = 0: i < 8: i++) Dodgems->i = Dodgems->(i + 4); ];
+
+Object  DodgemsQuestion "game of dodgems"
+ with   name "game" "dodgems" "dodgem",
+        next DodgemsPaper,
+        state 0,
+        description "~Dodgems was invented by mathematician Colin Vout,~ \
+            says Catharine. ~It's one of the more interesting games that \
+            can be played on a noughts and crosses board.~"
+            "~I can't offer you much in the way of strategy,~ says \
+            Catharine, ~except that it isn't always wise to move a piece \
+            off the board when it can be blocking your opponent's pieces \
+            instead.~"
+            "~A final hint,~ says Catharine. ~The northeast corner of the \
+            board is a good square to aim for.~";
+
+Object  DodgemsPaper "piece of paper"
+        ! general if seen instructions
+ with   name "piece" "of" "paper" "pieces",
+        puzzle_state 0,
+        puzzle_name "Dodgems",
+        puzzle_pre DBPaper Gnomon,
+        description [ i j k l;
+            new_line;
+            font off;
+            for (i = 0: i < 3: i++) {
+                for (j = 0: j < 3: j++) {
+                    k = i * 3 + j + 1;
+                    spaces 1;
+                    for (l = 0: l < 4: l++) {
+                        if (k == Dodgems->l) {
+                            print char DodgemsDisplay->l;
+                            jump FoundPiece;
+                        }
+                    }
+                    spaces 1;
+                    .FoundPiece;
+                    spaces 1;
+                    if (j ~= 2) print "|";
+                }
+                new_line;
+                if (i ~= 2) print "---+---+---^";
+            }
+            font on;
+            if (self hasnt general) {
+                give self general;
+                "^[To move piece A to the left, type ~move a left~. The \
+                allowable directions are ~left~, ~right~ and ~up~.]";
+            }
+        ],
+        before [;
+         Take,Remove:
+            "~But we're in the middle of a game!~ Catharine exclaims.";
+         Invoke:
+            move self to Toyshop;
+            move DodgemsQuestion to AskQuestions;
+            <Reset self>;
+            self.puzzle_state = 1;
+            Catharine.state = 1;
+            score ++;
+            "^Catharine open the chest and extracts another piece of \
+            paper and four small pieces. The paper has a three-by-three \
+            grid of squares on it, like a noughts and crosses \
+            game. Catharine places two pieces at the left and two pieces \
+            at the bottom.^^~This is a game called Dodgems,~ she \
+            says. ~You have the pieces at the bottom, and I have the \
+            pieces at the left. You can move your pieces up, left or \
+            right, and I can move mine up, down, or right. Your aim is to \
+            get both your pieces off the top of the board before I get \
+            mine off the right hand side.~";
+         Reset:
+            Dodgems->0 = 1;
+            Dodgems->1 = 4;
+            Dodgems->2 = 8;
+            Dodgems->3 = 9;
+        ];
+
+! returns 1 if play was illegal
+! returns 2 if play happened and game continues
+! returns 3 if play happened and player won
+
+[ DodgemsPlay
+    what   ! the piece being moved (0 to 3) (INPUT)
+    dir    ! direction of piece (0 to 3) (INPUT)
+    who    ! who's moving the piece (Catharine, player or 0) (INPUT)
+    new    ! new position of piece
+    i;     ! loop counter
+
+    ! Basic sanity check on input
+    if (who ~= player or Catharine or 0 ||
+        what < 0 || what > 3 ||
+        dir < 0 || dir > 3 ||
+        (who == player or 0 && dir == 3) ||
+        (who == Catharine && dir == 0))
+        "** Error: call to DodgemsPlay with bad arguments **";
+
+    ! Illegal moves:
+    switch (who) {
+     Catharine:
+        if ((dir == 3 && (Dodgems->what) > 6) ||
+            (dir == 1 && (Dodgems->what) < 4) || Dodgems->what == 0)
+            rtrue;
+     0:
+        if ((dir == 0 && (Dodgems->what) % 3 == 1) ||
+            (dir == 2 && (Dodgems->what) % 3 == 0) || Dodgems->what == 0)
+            rtrue;
+     player:
+        if (dir == 0 && (Dodgems->what) % 3 == 1)
+            "~You can't move your pieces left off the edge of the board,~ \
+            says Catharine.";
+        if (dir == 2 && (Dodgems->what) % 3 == 0)
+            "~You can't move your pieces right off the edge of the \
+            board,~ says Catharine.";
+        if (Dodgems->what == 0)
+            "~You can't move a piece any more once it's left the board,~ \
+            says Catharine.";
+    }
+
+    ! Check for pieces moving off board (legally, that is)
+    new = Dodgems->what + Directions-->dir;
+    if (dir == 2 && new % 3 == 1) new = 0;
+    if (dir == 1 && new < 1) new = 0;
+
+    ! Check for a piece running into another piece
+    if (new ~= 0) {
+        for (i = 0: i < 4: i++) {
+            if (Dodgems->i == new) {
+                if (who == Catharine or 0) rtrue;
+                "~You're not allowed to move a piece onto another piece,~ \
+                says Catharine. ~There's no capturing in dodgems.~";
+            }
+        }
+    }
+    Dodgems->what = new;
+
+    ! Check for a win
+    if ((Dodgems->0 == 0 && Dodgems->1 == 0) ||
+        (Dodgems->2 == 0 && Dodgems->3 == 0))
+        return 3;
+    return 2;
+];
+
+[ DodgemsPlayer
+    what     ! which piece (2 or 3) (INPUT)
+    dir      ! which direction to move it in (INPUT)
+    a        ! count of available moves for Catharine
+    b        ! count of available moves which win for her
+    c        ! another count of moves which win
+    move     ! the move selected
+    s        ! number of opportunities for player to make a mistake
+    max      ! best chance for player to make a mistake
+    n        ! number of moves with the maximum score
+    r        ! result of playing a move
+    i j k l; ! loop counters
+
+    switch (DodgemsPlay(what,dir,player)) {
+     1: rtrue;
+     2: ;
+     3: .DodgemsPlayerWins;
+        DodgemsPaper.puzzle_state = 3;
+        Catharine.state = 0;
+        score ++;
+        remove DodgemsPaper;
+        "^~You win!~ says Catharine. ~A splendid performance.~ She clears \
+        away the paper and the pieces.";
+    }
+
+    ! Count available moves and available winnning moves; work out scores
+    ! for moves that don't win.
+    .DodgemStart;
+    for (i = 0: i < 6: i++)
+        MoveScore->i = 0;
+    for (n = 0, max = 0, a = 0, b = 0, i = 0: i < 2: i++) {
+        for (j = 1: j < 4: j++) {
+            if (parser_trace >= 1)
+                print "Catharine considering moving ", i+1, " ",
+                    (string)DirectionNames-->j,"wards.^";
+            PushPosition();
+            r = DodgemsPlay(i, j, Catharine);
+            if (r > 1) {
+                a++;
+                if (r == 3 || Value() >= 2) {
+                    ! The move was winning; put 99 in the MoveScore array.
+                    if (parser_trace >= 1)
+                        print "  Move is winning^";
+                    b++;
+                    MoveScore->(i*3+j-1) = 99;
+                }
+                else {
+                    ! The move was not winning, so count up how many of the
+                    ! followups are losing.
+                    if (parser_trace >= 1)
+                        print "  Move is losing, considering responses:^";
+                    for (s = 1, k = 2: k < 4: k++) {
+                        for (l = 0: l < 3: l++) {
+                            PushPosition();
+                            r = DodgemsPlay(k, l, 0);
+                            if (r == 2 && Value() == 1 or 3) {
+                                s ++;
+                                if (parser_trace >= 1)
+                                    print "    losing response: ", s, ": ",
+                                        char DodgemsDisplay->k, " ",
+                                        (string) DirectionNames-->l,
+                                        "wards^";
+                            }
+                            PopPosition();
+                        }
+                    }
+                    MoveScore->(i*3+j-1) = s;
+                    if (s == max) n ++;
+                    if (s > max) {
+                        n = 1;
+                        max = s;
+                    }
+                }
+            }
+            PopPosition();
+        }
+    }
+
+    if (parser_trace >= 1) {
+        print "Result: MoveScores looks like: ";
+        for (i = 0: i < 6: i++)
+            print MoveScore->i, ", ";
+        new_line;
+    }
+
+    ! It's possible that Catharine has no moves available
+    if (a == 0) {
+        print "~I'm stuck,~ says Catharine. ~Which means that you \
+            lose.~^";
+        r = 3;
+        jump DodgemsDisplayBoard;
+    }
+
+    ! If there were any winning moves, pick one at random.  Otherwise,
+    ! choose randomly among the moves that maximised the player's chance of
+    ! making a mistake
+    if (b > 0) {
+        move = random(b);
+        max = 99;
+    } else {
+        if (n >= 1)
+            move = random(n);
+        else
+            move = -1; ! should never happen
+    }
+    for (c = 0, i = 0: i < 2: i++) {
+        for (j = 1: j < 4: j++) {
+            if (MoveScore->(i*3+j-1) == max)
+                c ++;
+            if (c == move) {
+                if (parser_trace >= 1)
+                    print "[Picked i = ", i, "; j = ", j, "]^";
+                r = DodgemsPlay(i, j, Catharine);
+                jump DodgemsDoneMove;
+            }
+        }
+    }
+
+    ! This should never happen:
+    "** Error: unable to find a move for Catharine **";
+
+    .DodgemsDoneMove;
+    print "Catharine moves piece ", i + 1, " ", (string) DirectionNames-->j,
+        "wards";
+    if (Dodgems->i == 0)
+        print " off the board";
+    print ".^";
+
+    .DodgemsDisplayBoard;
+    <Examine DodgemsPaper>;
+    if (r == 3) {
+        <Reset DodgemsPaper>;
+        if (DodgemsPaper.puzzle_state == 1)
+            DodgemsPaper.puzzle_state = 2;
+        print "^~I win!~ she says. ~However, I am feeling generous today \
+            and I shall give you another chance.~ She rearranges the \
+            pieces to their starting positions.^";
+        <Examine DodgemsPaper>;
+    }
+
+    ! Check that player has a move
+    for (i = 2: i < 4: i++) {
+        for (j = 0: j < 3: j++) {
+            PushPosition();
+            r = DodgemsPlay(i,j,0);
+            PopPosition();
+            if (r > 1) jump DodgemEnd;
+        }
+    }
+
+    ! If player has no move, then they win (this shouldn't happen with
+    ! Catharine's strategy, but better safe than sorry).
+    print "^~Oops. I appear to have boxed you in,~ she says.^";
+    jump DodgemsPlayerWins;
+
+    .DodgemEnd;
+    "^~Your move,~ she says.";
+];
+
+[ DALeftSub; DodgemsPlayer(2,0); ];
+[ DBLeftSub; DodgemsPlayer(3,0); ];
+[ DARightSub; DodgemsPlayer(2,2); ];
+[ DBRightSub; DodgemsPlayer(3,2); ];
+[ DAUpSub; DodgemsPlayer(2,1); ];
+[ DBUpSub; DodgemsPlayer(3,1); ];
+[ DDownSub;
+    "~You're not allowed to move your pieces downwards,~ says Catharine.";
+];
+
+Extend "move" first
+    * "a" "left" -> DALeft
+    * "b" "left" -> DBLeft
+    * "a" "right" -> DARight
+    * "b" "right" -> DBRight
+    * "a" "up" -> DAUp
+    * "b" "up" -> DBUp
+    * "a" "down" -> DDown
+    * "b" "down" -> DDown;
+
+
+!--------------------------------------------------------------------------
+! 2.9 THE INFERNAL MACHINE
+!--------------------------------------------------------------------------
+! The idea for this puzzle is shamelessly stolen from Raymond Smullyan's
+! "Monte Carlo Lock" puzzle in his book "The Lady or the Tiger?"  That book
+! has a machine which operated on strings of digits by the following rules:
+! 
+!     2X2 -> X
+!     if X -> Y then 3X -> 2Y
+!     if X -> Y then 4X -> YY
+!     if X -> Y then 5X -> the reverse of Y
+! 
+! The puzzle was to find a string of digits that produced itself.  Here, we
+! go for a more complicated system, based on Smullyan's.  People who have
+! read the Smullyan book will find it an interesting, but not difficult,
+! challenge.  People who haven't will have to resort to asking Catharine
+! for advice.  The rules are:
+! 
+!     1X -> X + 1
+!     if X -> Y then 2X -> Y with first character chopped off
+!     if X -> Y then 3X -> 1Y
+!     if X -> Y then 4X -> YY
+!     if X -> Y then 5X -> the reverse of Y
+! 
+! I believe that the shortest self-replicating string is 543251543251, but
+! I would be glad to be proved wrong.  (I decided that the simpler machine
+! in which 1X generates X was too easy, since 4141 was self-replicating).
+!--------------------------------------------------------------------------
+
+Constant MAX_OUTPUT 200;             ! max number characters in output
+Global input_n = 0;                  ! number of characters in input.
+Array input_string -> 20;            ! stores strings of digits from 0 to 9.
+Global output_n = 0;                 ! number of characters in output
+Array output_string -> MAX_OUTPUT;   ! what comes out of the machine.
+
+Object  ChestQuestion "oak chest"
+ with   name "oak" "oaken" "panel" "screen" "keypad" "chest" "code"
+            "combination" "lock",
+        article "an",
+        next PuzzleChest,
+        state 0,
+        description "~The first rule,~ says Catharine, ~is that the \
+            number 1X - by which I mean the number consisting of 1 \
+            followed by the string of digits denoted by the letter X, not \
+            1 multiplied by X - generates the number X plus 1. For \
+            example, the number 12345 generates the number 2346.~"
+            "~The second rule,~ says Catharine, ~is that if the number X \
+            generates the number Y, then the number 2X generates the \
+            number Y, but with its first digit removed. For example, \
+            since we know that 123 generates 24, then 2123 generates 4.~"
+            "~The third rule,~ says Catharine, ~is that if X generates Y, \
+            then 3X generates 1Y, for example, since 123 generates 24, \
+            then 3123 generates 124.~"
+            "~The fourth rule,~ says Catharine, ~is that if X generates \
+            Y, then 4X generates YY, that is, Y repeated. For example, \
+            since 123 generates 24, then 4123 generates 2424.~"
+            "~The fifth and final rule,~ says Catharine, ~is that if X \
+            generates Y, the 5X generates the reversal of Y. For example, \
+            since 1234 generates 235, then 51234 generates 532.~";
+
+Object  PuzzleChest "oak chest"
+ has    static openable lockable locked
+        ! general if read instructions
+ with   name "chest" "screen" "keypad" "oak" "oaken",
+        article "an",
+        puzzle_name "The infernal machine",
+        puzzle_state 0,
+        puzzle_pre PuzzleChest, ! make sure it doesn't happen too soon
+        state 0, ! 0 = in input mode
+                 ! 1 = displaying output
+        capacity 100,
+        name "oak" "chest" "oaken",
+        article "an",
+        describe [;
+            if (self has open) print "^An oak chest stands open";
+            else print "^There's a closed oak chest";
+            print_ret " in the ", (DirectionName) ToyChest.state, " corner.";
+        ],
+        description [;
+            print "There's a little screen and keypad on the side of the \
+                chest. ";
+            <Display self>;
+            if (self hasnt general) {
+                give self general;
+                "^[Type for example ~press 1~ to press the button marked \
+                ~1~. Type ~press send~ to press the ~send~ button. Use \
+                for example ~type 123~ to type a sequence of digits and \
+                then press ~send~.]";
+            }
+            rtrue;
+        ],
+        before [ i;
+         Display:
+            print "The screen reads ~";
+            switch (self.state) {
+             0: print "Input: ";
+                if (input_n == 0) print "none";
+                for (i = 0: i < input_n: i++)
+                    print input_string->i;
+             1: print "Output: ";
+                if (output_n == 0) print "none";
+                for (i = 0: i < output_n: i++)
+                    print output_string->i;
+            }
+            print "~.^";
+         Enter:
+            if (self hasnt open) rfalse;
+            if (score >= 18)
+                score = 20;
+            deadflag = 2;
+            "You climb into the chest, which turns out to be full of \
+            drapery: large engulfing folds of cloth. You struggle to be \
+            free of them, and pulling the last one aside, you find \
+            yourself walking down a Victorian arcade. Looking around, you \
+            see no sign of the toyshop, but clutched in your hands, you \
+            find a wrapped parcel with a tag saying ~To Isabelle, on her \
+            birthday.~ You are unsure of how you acquired it, but you are \
+            somehow sure that Isabelle will enjoy it...";
+         Lock, Unlock:
+            if (second ~= BrassKey) rfalse;
+            "Nothing happens.";
+         Invoke:
+            remove ToyChest;
+            move self to Toyshop;
+            move ChestQuestion to AskQuestions;
+            self.puzzle_state = 1;
+            score ++;
+            "You turn the brass key in the lock, and with a click, a \
+            panel in the side of the chest slides away, revealing a \
+            little LCD screen and a keypad with six keys: ~1~ to ~5~ and \
+            ~send~.^^~Aha!~ says Catharine, ~You've found the combination \
+            lock to the chest. You probably won't get very far with it \
+            unless I give you some hints, so here goes.^^~Some \
+            combinations are said to generate other combinations \
+            according to certain rules. When you enter a combination, the \
+            chest either beeps, or displays the generated combination on \
+            the screen. If a combination generates itself, then the chest \
+            opens.~";
+        ];
+
+! returns 1 if unsuccessful
+! returns 0 if successful
+
+[ InputNumberSub
+    nodisp;   ! 1 if the screen shouldn't be redisplayed (INPUT)
+
+    if (PuzzleChest notin Toyshop)
+        "You can't see any such thing.";
+    if (special_number < 1 || special_number > 5)
+        "The keys are ~1~ to ~5~ and ~send~.";
+    if (input_n >= 20)
+        "The chest beeps, but your digit doesn't appear on \
+        screen. Perhaps you've reached the limit on the size of input.";
+    input_string->input_n = special_number;
+    input_n ++;
+    PuzzleChest.state = 0;
+    if (nodisp == 0)
+        <Display PuzzleChest>;
+    rfalse;
+];
+
+[ InputSendSub i;
+    if (PuzzleChest notin Toyshop)
+        "You can't see any such thing.";
+    PuzzleChest.state = 1;
+    if (PuzzleChest.puzzle_state == 1)
+        PuzzleChest.puzzle_state = 2;
+    switch(Decode(input_string,input_n)) {
+     0: output_n = 0;
+        input_n = 0;
+        print "The chest beeps at you. ";
+        <Display PuzzleChest>;
+        rtrue;
+     1: <Display PuzzleChest>;
+        i = Compare();
+        if (i == 0) {
+            if (PuzzleChest hasnt open)
+                print "^There's a series of clicks from somewhere inside \
+                    the chest, and the lid pops open.^";
+            if (PuzzleChest.puzzle_state < 3) {
+                PuzzleChest.puzzle_state = 3;
+                score ++;
+            }
+            give PuzzleChest open ~locked enterable container;
+        }
+        input_n = 0;
+        rtrue;
+    }
+];
+
+! Returns -1 if input less than output
+! Returns 0 if input equals output
+! Returns 1 if input greater than output
+[ Compare i;
+    if (output_n < input_n) return 1;
+    if (input_n < output_n) return -1;
+    for (i = 0: i < input_n: i++) {
+        if (output_string->i < input_string->i) return 1;
+        if (input_string->i < output_string->i) return -1;
+    }
+    return 0;
+];
+
+! Decodes from the array p to the output_string
+! returns 1 if decoding was successful.
+! returns 0 if it failed.
+[ Decode
+    p    ! pointer to a string to decode (INPUT)
+    n    ! number of characters in the string (INPUT)
+    i j; ! loop counters & miscellaneous
+
+    if (n < 2) rfalse;
+    switch (p->0) {
+     1: ! copy the remainder of the input string, and add 1 to final digit
+        ! (we know there will be no carry, since the maximum digit is 5).
+        for (i = 1: i < n - 1: i++)
+            output_string->(i-1) = p->i;
+        output_string->(n-2) = p->(n-1) + 1;
+        output_n = n - 1;
+        rtrue;
+
+     2: ! decode the remainder, chop the first character
+        if (Decode(p+1,n-1) == 0) rfalse;
+        if (output_n <= 0) rfalse;
+        for (i = 1: i < output_n: i++)
+            output_string->(i-1) = output_string->i;
+        output_n --;
+        rtrue;
+
+     3: ! decode the remainder; put a 1 in front
+        if (Decode(p+1,n-1) == 0) rfalse;
+        if (output_n >= MAX_OUTPUT) rfalse;
+        for (i = output_n: i > 0: i--)
+            output_string->i = output_string->(i - 1);
+        output_string->0 = 1;
+        output_n ++;
+        rtrue;
+
+     4: ! decode the remainder, duplicate it
+        if (Decode(p+1,n-1) == 0) rfalse;
+        if (output_n > MAX_OUTPUT / 2) rfalse;
+        for (i = 0: i < output_n: i++)
+            output_string->(i+output_n) = output_string->i;
+        output_n = output_n * 2;
+        rtrue;
+
+     5: ! decode the remainder, reverse it
+        if (Decode(p+1,n-1) == 0) rfalse;
+        for (i = 0: i < output_n / 2: i++) {
+            j = output_string->i;
+            output_string->i = output_string->(output_n-i-1);
+            output_string->(output_n-i-1) = j;
+        }
+        rtrue;
+
+     default: rfalse;
+    }
+];
+
+[ TypeInputSub
+    loc     ! location of word in parse table
+    point   ! location of word in text buffer
+    length  ! length of the word
+    l       ! letter in word
+    i;      ! loop counter
+
+    if (PuzzleChest notin Toyshop)
+        "You can't see anything to type on.";
+    if (consult_words > 1)
+        "Use for example ~type 123~ to type a string of digits and press \
+        ~send~.";
+
+    ! Check the input consists only of numbers from 1 to 5.
+    loc = consult_from * 4 + 1;
+    point = buffer+(parse->loc);
+    length = parse->(loc-1);
+
+    for (i = 0: i < length: i++) {
+        l = point->i;
+        if (l < '1' || l > '5')
+            "The only numbers on the keypad are ~1~ to ~5~.";
+    }
+
+    for (i = 0: i < length: i++) {
+        special_number = point->i - '0';
+        if (InputNumberSub(1) == 1)
+            jump PressSend;
+    }
+
+    .PressSend;
+    InputSendSub();
+];
+
+Extend "press"
+    * number -> InputNumber
+    * "send" -> InputSend;
+
+Verb "type"
+    * ConTopic -> TypeInput;
+
+End;

@@ -1,0 +1,314 @@
+! Z-Tornado - Two player weather action game
+!
+! Tornado is copyright (C) 2000-2002  Oliver Feiler
+! http://www.lionking.org/~kiza/linux/tornado
+! Inform version copyright (c) 2003  Sophie Frühling (sfruehling@aon.at)
+! 
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 2 of the License, or
+! (at your option) any later version.
+!
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program; if not, write to the Free Software
+! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+! Grafix except weather
+
+[ DrawSnowWorld  i;
+  @set_cursor 5 1;
+  for (i = 0: i < fields: i++) {
+    print (char) snow_world->i;
+    if (i && i%screen_width == 0) new_line;
+  }
+];
+
+[ DrawUserInterface  x;
+  x = dialog_x - 2;
+  @set_cursor  6 x; print ",___________________________________,";
+  @set_cursor  7 x; print "|            Z - Tornado            |";
+  @set_cursor  8 x; print "|  s = Snow               r = Rain  |";
+  @set_cursor  9 x; print "|  h = Hail          l = Lightning  |";
+  @set_cursor 10 x; print "|  t = Tornado  c = Current Scores  |";
+  @set_cursor 11 x; print "|  q = Quit         o = Highscores  |";
+  @set_cursor 12 x; print "+-----------------------------------+";   
+  @set_cursor screen_height 1;
+];
+
+[ ClearUserInterface  x y;
+  x = dialog_x - 2;
+  for (y = 6: y <= 12: y++) {
+    @set_cursor y x; spaces (37);
+  }
+];
+
+[ DrawDialogWindow  x;
+  x = dialog_x - 2;
+  @set_cursor  6 x; print ",___________________________________,";
+  @set_cursor  7 x; print "|                                   |";
+  @set_cursor  8 x; print "|                                   |";
+  @set_cursor  9 x; print "|                                   |";
+  @set_cursor 10 x; print "|                                   |";
+  @set_cursor 11 x; print "+-----------------------------------+";
+];
+
+[ ClearDialogWindow  x y;
+  x = dialog_x - 2; y = 6;
+  for (y = 6: y <= 11: y++) {
+    @set_cursor y x; spaces (37);
+  }
+];  
+
+[ DrawStatusLine  x y;
+  y = screen_height;
+  @set_cursor y 1;
+  PrintPlayerName(player1, player1_name);
+  x = screen_width/2 - 13;
+  @set_cursor y x;
+  if (player1_left < 100) print " ";
+  if (player1_left < 10) print " ";
+  print player1_left; print "%";
+  print " | Windspeed: ";
+  if (windspeed >= 0) print " ";
+  print windspeed; print " | ";
+  if (player2_left < 100) print " ";
+  if (player2_left < 10) print " ";
+  print player2_left; print "%";
+  x = screen_width - 16;
+  @set_cursor y x;
+  PrintPlayerName(player2, player2_name);
+  @set_cursor screen_height 1;
+];
+
+[ PrintPlayerName current_player the_array  i;
+  if (current_player) print "*";
+  else print " ";
+  for (i = 2: i <= the_array->1 + 1: i++)
+    print (char) the_array->i;
+];
+
+[ DrawCurrentScores  x;
+  x = dialog_x - 1;
+  DrawDialogWindow();
+  @set_cursor 7 x;
+  PrintPlayerName(0, player1_name);
+  @set_cursor 8 dialog_x;
+  print (longnr) player1_score;
+  @set_cursor 9 x;
+  PrintPlayerName(0, player2_name);
+  @set_cursor 10 dialog_x;
+  print (longnr) player2_score;
+];
+
+[ DrawHighScores  x y;
+  x = dialog_x - 2;
+  @set_cursor 5 x; print ",___________________________________,";
+  @set_cursor 6 x; print "|             Highscores            |";
+  for (y = 7: y < 17: y++) {
+    x = dialog_x - 2;
+    @set_cursor y x; print "|";
+    @set_cursor y dialog_x;
+    PrintHighScoreName(y - 7);
+    x = dialog_x + 26;
+    @set_cursor y x;
+    PrintHighScoreNumber(y - 7);
+    x = dialog_x + 34;
+    @set_cursor y x; print "|";
+  }
+  x = dialog_x - 2;
+  @set_cursor 17 x; print "+-----------------------------------+";   
+];
+
+[ ClearHighScoreWindow  x y;
+  x = dialog_x - 2;
+  for (y = 5: y <= 17: y++) {
+    @set_cursor y x;
+    spaces (37);
+  }	  
+];
+
+[ DrawWinningScreen  x;
+  x = dialog_x + 9;
+  @set_cursor 7 x; print "Player ";
+  if (player1_left) print 1; else print 2;
+  print " wins!";
+  x = dialog_x + 8;
+  @set_cursor 8 x; print "Your score is ";
+  if (player1_left) print (longnr) player1_score;
+  else print (longnr) player2_score;
+  print ".";
+  x = dialog_x + 3;
+  @set_cursor 9 x; print "Do you want to play again?";
+  x = dialog_x + 13;
+  @set_cursor 10 x; print "(y/n)";
+  @set_cursor screen_height 1;
+];
+
+! ----------- Extra-game information ---------------
+
+[ InfoTitle x;
+  @split_window 1; @set_window 1;
+  @set_cursor 1 1; style reverse;
+  spaces (0->33); x = (0->33)/2 - 10;
+  @set_cursor 1 x;
+  print "Z - T O R N A D O";
+  style roman; @set_window 0;
+];
+
+[ About;
+  @erase_window -1;
+  InfoTitle();
+  print "^^This is a fairly straight port of the C version of ~Tornado~,",
+        " release 1.2, written by Oliver Feiler and Rene Puls in or about",
+        " 2000, which in turn appears to be the port of a C64 game of the",
+        " same name.^^";
+  print "The screen is something between 64 and 80 by 24, instead of 80 x 25.",
+        " There is, of course, no network support, and no demo version. (But",
+        " you can emulate the latter by having the computer play against",
+        " itself. See (I)nstructions for details.)^";
+  print "Apart from that, it should work just like the C version, except that",
+        " it is a little slower, because I can't pause the game for less than",
+        " 1/10 of a second.^^";
+  print "Release 2 features a few cosmetic changes -- it now puts the cursor",
+        " outside the playfield while drawing the weather, which looks a lot",
+        " better -- and bugfixes: most importantly, the tornado used to erase",
+        " completely wrong stuff; there were also a few bugs that crept up when",
+        " piling up snow too high.^^";
+  print "Z-Tornado was written using Inform (http://www.inform-fiction.org),",
+        " and mainly tested on Unix Frotz 2.43.^^";
+  print "Thanks to Kevin Bracey (SameGame.inf), Torbj@:orn Andersson (robots.",
+        "inf) and Julian Arnold (z-life.inf) for inspiration and",
+        " encouragement. (To quote from ~SameGame.inf~, ~Anyone looking at",
+        " this source file for inspiration probably needs their head",
+        " examined.~) Thank you. ;) There are numerous other Z-Machine abuse",
+        " source files, but these were the ones I looked at.^^";
+  print "Thanks to Jim Fisher (http://www.onyxring.org) for the tip on",
+        " randomising random().^^";
+  print "Since the original code was released under GPL, this game is",
+        " released under GPL as well, which means there is ABSOLUTELY NO",
+        " WARRANTY OF ANY KIND, and you can get the messy source code,",
+        " too, from the games/source/inform directory of http://www.",
+        "ifarchive.org or (preferably) one of its mirrors.^^";
+  print "For more information about ~Tornado~, have a look at the webpage at",
+        " http://www.lionking.org/@@126kiza/linux/tornado/.^^";
+  print "[Hit any key]^";
+  Read();
+];
+
+! This is pretty much copy + paste from the man page, plus some more
+[ Instructions;
+  @erase_window -1;
+  InfoTitle();
+  print "^From the "; style bold; print "Tornado"; style roman;
+  print " man page:^^";
+  print "~The object of the game "; style bold; print "tornado"; style roman;
+  print " is to destroy your opponent's house with the powers of rain, snow,",
+        " hail, lightning and the tornado.^^"; 
+  print "~After the game is started the two players enter their names. If you",
+        " leave the field blank the computer will take the player's part. You",
+        " can see two houses with each player's name in the corner below it and",
+        " a cloud on top of the screen, the sky. The player whose turn it is",
+        " has an asterisk "; style bold; print "*"; style roman;
+  print " next to his name.^^";
+  print "~From the menu in the center of the screen each player now picks a",
+        " weather phenomenon. A second box will appear where you can enter",
+        " the aim you would like to use. You may have noticed the value ";
+  style underline; print "Windspeed"; style roman;
+  print " in the mid bottom of the screen by now. Ideally you would take aim ";
+  style bold; print "2"; style roman;
+  print " if windspeed is "; style bold; print "-2"; style roman;
+  print " for example and then your rain/hail/snow/tornado would go straight",
+        " down the cloud. However, it's chosen randomly if the rain appears on",
+        " the left side of the cloud or the right side, so aiming might be not",
+        " that easy as it looks like.^^";
+  print "~If you hit your opponent's house (or your own) the percentage counter",
+        " will decrease depending on how much damage you did. If the counter is",
+        " down to "; style bold; print "0%"; style roman;
+  print " the player loses the game.^^";
+  print "~The keys you can use in the game are:^";
+  style bold; print "s"; style roman; print "  selects snow^";
+  print "      Snow is a defensive weapon. If you hit a house with^",
+        "      snow, it creates a coating that hail cannot destroy.^",
+        "      Only rain can be used to destroy that layer of snow.^",
+        "      Lightning and tornado are not effected.^";
+  style bold; print "r"; style roman; print "  selects rain^";
+  print "      Destroys one row of the house. Can be used to melt a^",
+        "      row of snow.^";
+  style bold; print "h"; style roman; print "  selects hail^";
+  print "      This will destroy two rows of the house, but cannot^",
+        "      destroy a snow coating.^";
+  style bold; print "l"; style roman; print "  selects lightning^";
+  print "      Splits the house into two pieces. Not influenced by^",
+        "      wind.^";
+  style bold; print "t"; style roman; print "  selects tornado^";
+  print "      Not as effective as lightning but the tornado goes^",
+        "      straight to the bottom of the house as well.^";
+  style bold; print "q"; style roman; print "  quits the game^";
+  style bold; print "o"; style roman; print "  show the highscores^";
+  style bold; print "c"; style roman; print "  show current player scores~^";
+  print "[End of quote.]^^";
+  print "To run the game in ~demo~ mode, just don't fill in the players'",
+        " names, so the computer has to play against itself. (It can still",
+        " get a highscore.) There is currently no way to stop it during a",
+        " game, though, short of quitting the interpreter. Sorry for the",
+        " inconvenience.^^";
+  print "The ~colour~ referred to by the menu is white on black. If your",
+        " interpreter doesn't support colour like it should (e.g. Unix Frotz",
+        " 2.32) just toggle it off. If your interpreter doesn't support",
+        " colour at all, you won't notice.^^";
+  print "If your interpreter doesn't support timed input properly, I can't",
+        " help you, sorry. You can hit some key repeatedly to make the game",
+        " go on, but it won't be very much fun, I guess.^^";
+  print "Note that you can't change the screen size after starting up, so",
+        " don't do that.^^";
+  print "Enjoy!^^";
+  print "[Hit any key]^";
+  Read();
+];
+
+[ Banner  i;
+  style bold;
+  print "Z - T O R N A D O";
+  style roman;
+  print "^A two-player weather action game^";
+  print "Yet another abuse of the Z-Machine^";
+  print "Copyright (c) 2003 by Sophie Fr@:uhling (sfruehling@@64aon.at)^";
+  print "A port of the C port of the C64 game ~Tornado~^";
+  print "The C version is copyright (c) 2000-2002 by Oliver Feiler^";
+  print "Release ", (0-->1) & $03ff, " / Serial number ";
+  for (i = 18: i < 24: i++) print (char) 0->i;
+  print " / Inform v"; inversion; new_line;
+];
+
+[ DrawTitleScreen  i;
+  @erase_window -1;
+  print "^^^^^^^^^^^^^^^^^^^";
+  i = 0->33; if (i > 30) i = (i - 30)/2;
+  style bold; font off; spaces(i);
+  print "      Z - T O R N A D O^";
+  style roman; new_line; spaces(i);
+  print "     [Please press a key]^";
+  font on;
+  box
+  "           ,/+++*++***+****++++++***+@@92, "
+  "           (*+++*****+++++***+++****++)"
+  "           `@@92++******+*++*++*****+++*/'"
+  "            `@{B0}*,.,*@{B0}'`@{B0}*,.,*@{B0}`@{B0}*,.,*@{B0}'"
+  "             ___         /  /  /  /  /"
+  "             |||          /  /  /  /  /"
+  "     /-------'|`-@@92         /  /  /  /  /"
+  "   /'/////////////`@@92        /  /  /  /  /"
+  "   |---------------|         /  /  /  /  /"
+  "   |-,_____,--,__,-|          /  /  /  /  /"
+  "   |-|__|__|--|++|-|           /  /  /  /  /"
+  "   |-|__|__|--|o+|-|            /  /  /  /  /"
+  "   |__________|__|_|              /  /  /  /  /";
+  Read();
+  @erase_window -1;
+];
+

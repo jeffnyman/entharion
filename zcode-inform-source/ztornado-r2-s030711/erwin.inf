@@ -1,0 +1,96 @@
+! Z-Tornado - Two player weather action game
+!
+! Tornado is copyright (C) 2000-2002  Oliver Feiler
+! http://www.lionking.org/~kiza/linux/tornado
+! Inform version copyright (c) 2003  Sophie Frühling (sfruehling@aon.at)
+! 
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 2 of the License, or
+! (at your option) any later version.
+!
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+! GNU General Public License for more details.
+!
+! You should have received a copy of the GNU General Public License
+! along with this program; if not, write to the Free Software
+! Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+! (The AI is called Erwin for unknown reasons.)
+
+! The new improved AI (for the old, non-improved version, have a look at
+! the C source :)
+[ ErwinChoice;
+  ! Choose snow randomly from time to time.
+  if (random(5) == 1) return 'S';
+  ! If the cloud is right above the enemy house and it has >75%
+  ! then we strike with lightning to do most damage.
+  ! If the cloud is close to the enemy house and it has >75%
+  ! then we strike with tornado.
+  ! If the cloud is far away from the enemy house
+  ! then we strike with hail.
+  ! If the place where we would like to hit is covered with snow
+  ! then we use rain to get rid of it.
+  if (player1) {
+    if (((CountDestroyed(' ', house2_x, house2_y, 17, 10) - SPACES) < 25)
+    && (cloud_x >= 40))
+      return 'L';
+    else if (((CountDestroyed(' ', house2_x, house2_y, 17, 10) - SPACES) < 25)
+    && (cloud_x >= 30))
+      return 'T';
+    else if (CountSnow(house2_x, house2_y, 17, 10) > 5)
+      return 'R';
+    else
+      return 'H';
+  } else {
+    if (((CountDestroyed(' ', house1_x, house1_y, 17, 10) - SPACES) < 25)
+    && (cloud_x <= 15))
+      return 'L';
+    if (((CountDestroyed(' ', house1_x, house1_y, 17, 10) - SPACES) < 25)
+    && (cloud_x <= 25))
+      return 'T';
+    else if (CountSnow(house1_x, house1_y, 17, 10) > 5)
+      return 'R';
+    else
+      return 'H';
+  }
+];
+
+[ ErwinAim input;
+  ! For lightning, we don't need to aim and can return immediately
+  if (input == 'L')	return 0;
+  ! In case of snow, we aim at our own house
+  if (input == 'S') {
+    if (player1) {
+      if (windspeed <= 0)
+        return (Abs(windspeed * 20) + (-3 - cloud_x)) / 20;
+      else
+        return (-Abs(windspeed * 20) + (-3 - cloud_x)) / 20;
+    } else {
+      if (windspeed <= 0)
+        return (Abs(windspeed * 20) + (69 - cloud_x)) / 20;
+      else
+        return (-Abs(windspeed * 20) + (60 - cloud_x)) / 20;
+    }
+  }
+  ! Otherwise, we aim at the opponent's house
+  else if (player1) {
+    if (windspeed <= 0)
+      return (Abs(windspeed * 20) + (69 - cloud_x)) / 20;
+    else
+      return (-Abs(windspeed * 20) + (60 - cloud_x)) / 20;
+  } else {
+    if (windspeed <= 0)
+      return (Abs(windspeed * 20) + (-3 - cloud_x)) / 20;
+    else
+      return (-Abs(windspeed * 20) + (-3 - cloud_x)) / 20;
+  }
+];
+
+[ Abs num;
+  if (num < 0)
+    return -num;
+  return num;
+];
