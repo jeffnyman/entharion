@@ -1,0 +1,76 @@
+zap of 6/13/89 15:17.
+Release: 74
+     0  Inserting arthur.zap.
+    64  Inserting arthurfreq.zap.
+   662  Inserting arthurdat.zap.
+ 36607  Inserting arthurpur.zap.
+ 40044  Inserting pstack.zap.
+ 40082  Inserting pmem.zap.
+ 40178  Inserting parser.zap.
+ 48096  Inserting find.zap.
+ 50278  Inserting reds.zap.
+ 57188  Inserting breds.zap.
+ 59488  Inserting top.zap.
+ 60927  Inserting prare.zap.
+ 65764  Inserting macros.zap.
+ 65904  Inserting misc.zap.
+ 70058  Inserting util.zap.
+ 75163  Inserting verbs.zap.
+ 92056  Inserting transfrm.zap.
+ 95375  Inserting be.zap.
+ 96534  Inserting food.zap.
+ 99108  Inserting window.zap.
+103492  Inserting cell.zap.
+111468  Inserting boar.zap.
+114742  Inserting sword.zap.
+120808  Inserting password.zap.
+129673  Inserting endgame.zap.
+132870  Inserting eel.zap.
+138907  Inserting badger.zap.
+140330  Inserting basil.zap.
+141703  Inserting dragon.zap.
+145758  Inserting raven.zap.
+150964  Inserting castle.zap.
+156769  Inserting rednite.zap.
+160087  Inserting lady.zap.
+162902  Inserting forest.zap.
+163513  Inserting joust.zap.
+171147  Inserting demon.zap.
+177246  Inserting ice-hot.zap.
+179692  Inserting chestnut.zap.
+181280  Inserting tower.zap.
+187217  Inserting bog.zap.
+193604  Inserting leprchan.zap.
+197670  Inserting merlin.zap.
+204759  Inserting tavern.zap.
+207449  Inserting kitchen.zap.
+213615  Inserting iknight.zap.
+217529  Inserting town.zap.
+219557  Inserting idiot.zap.
+226118  Inserting church.zap.
+231077  Inserting places.zap.
+231543  Inserting global.zap.
+234423  Inserting clues.zap.
+237214  Inserting hints.zap.
+238008  Inserting arthurstr.zap.
+"arthurstr.zap", line 100: STR?47,"brush"
+   -- Undefined symbol V?DO? in fixup
+   -- "V?DO?" undefined.
+Unreferenced global: GL-SCR-WID
+Unreferenced table: PT?643
+Unreferenced table: STRBEG
+Unreferenced table: PT?436
+Unreferenced table: RT?40911
+Unreferenced table: RT?41411
+Unreferenced global: P-DIRECTION
+Unreferenced table: RT?36211
+Data from 38840 to 40048 not in segment 0.
+
+Lexical buffer space allocated:  1280320
+Max lexical space allocated at any one time: 48012
+Object buffer space allocated:  272000
+Source bytes read:  1235385
+Object bytes written:  269312
+Preload: 36607; 311 objects; 167 globals; 1059 words.
+Used 4:45
+Elapsed time 5:45

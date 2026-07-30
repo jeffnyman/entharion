@@ -1,0 +1,181 @@
+Thu Jun 22 18:10:35 EDT 1989
+zsplit of 5/1/89 10:27.
+2 disks active
+5 disks allowed
+Hint segment is called HINTS
+Picture information from /home/development/curpix/arthurapple.d; pictures from /home/development/curpix/arthur.apple.1.
+Output files will be named arthur.
+Preload size 107
+Extra preload 23
+Segment 0 pictures go with segment 0.
+Splitting arthur.seg...
+Segments: 10
+Pages: 530
+Generated global picture directory:  1 pages.
+Segment 0:  0
+Pages 0-75 78-205 210-213 218 225-227 248 257-258 275-276 278-279 288 295 303 305 317-319 323 330 335-337 346-350 365 367-370 375 387-388 400-402 418-421 427 454-462 466-475 
+271 pages, 9581 picture bytes
+Segment 1:  STARTUP
+Pages 
+0 pages, 45516 picture bytes
+Segment 2:  TOWN
+Pages 215-216 219-220 260-262 274 277 389-399 403-417 422-426 428-453 479-483 
+71 pages, 47249 picture bytes
+Segment 3:  HINTS
+Pages 75-79 136 141-142 461-468 484-529 
+62 pages, 0 picture bytes
+Segment 4:  CASTLE
+Pages 206-209 214-217 238-247 249-256 263 297-302 304 306-308 476-477 
+39 pages, 29715 picture bytes
+Segment 5:  TOWER
+Pages 220-224 287 289-294 296-297 321-322 324-329 331-334 354-364 366 381-386 389 479 483-484 
+48 pages, 52202 picture bytes
+Segment 6:  BOG
+Pages 228-238 277 371-374 376-380 
+21 pages, 21477 picture bytes
+Segment 7:  OWL
+Pages 238 262 274 292-293 308-309 380-381 428 431 479 
+12 pages, 2883 picture bytes
+Segment 8:  LAKE
+Pages 249-253 256 259-274 309-316 320-321 477-479 
+35 pages, 52821 picture bytes
+Segment 9:  DEMON
+Pages 277 280-287 338-345 351-354 477-478 
+23 pages, 35757 picture bytes
+Object bytes read in: 271360
+Putting pages 0 - 71 and 78 - 112 in preload.
+Putting pages 113 - 135 in extra preload.
+Adding segment 0 to disk 2; total size now 164.
+Adding hint segment HINTS to disk 1; total size now 167.
+Adding segment 0 pictures to 2; total size now 183.
+Adding global picture directory to 2; total size now 184.
+Adding unused segment STARTUP to disk 3; total size now 89.
+Adding unused segment TOWN (adjacent to STARTUP) to disk 3; total size now 253.
+Adding unused segment OWL to disk 3; total size now 265.
+Adding unused segment TOWER to disk 4; total size now 150.
+Adding unused segment CASTLE to disk 4; total size now 246.
+Moving 11 pages to 2.
+16 (67) left on 3.
+35 (75) left on 4.
+270 (0) left on 5.
+75 left on 2.
+Adding unused segment LAKE to disk 5; total size now 138.
+Adding unused segment DEMON to disk 5; total size now 229.
+Moving 6 pages to 2.
+22 (61) left on 3.
+35 (75) left on 4.
+47 (49) left on 5.
+69 left on 2.
+Moving 11 pages to 2.
+22 (61) left on 3.
+46 (64) left on 4.
+58 (38) left on 5.
+58 left on 2.
+Moving page 206 from 4 (47 (63) left) to 2 (57 left).
+Moving page 207 from 4 (48 (62) left) to 2 (56 left).
+Moving page 208 from 4 (49 (61) left) to 2 (55 left).
+Moving page 209 from 4 (50 (60) left) to 2 (54 left).
+Moving page 214 from 4 (51 (59) left) to 2 (53 left).
+Moving page 217 from 4 (52 (58) left) to 2 (52 left).
+Moving page 221 from 4 (53 (57) left) to 2 (51 left).
+Moving page 222 from 4 (54 (56) left) to 2 (50 left).
+Moving page 223 from 4 (55 (55) left) to 2 (49 left).
+Moving page 224 from 4 (56 (54) left) to 2 (48 left).
+Moving page 239 from 4 (57 (53) left) to 2 (47 left).
+Moving page 240 from 4 (58 (52) left) to 2 (46 left).
+Moving page 241 from 4 (59 (51) left) to 2 (45 left).
+Moving page 242 from 4 (60 (50) left) to 2 (44 left).
+Moving page 243 from 4 (61 (49) left) to 2 (43 left).
+Adding unused segment BOG to disk 4; total size now 270.
+Moving 1 pages to 2.
+23 (60) left on 3.
+1 (67) left on 4.
+58 (38) left on 5.
+42 left on 2.
+Split successful.
+Map size: 1 page; 252 words.
+Making disk map...
+Disk 1: Pages 0 to 71 starting on disk page 1.
+Disk 1: Pages 78 to 112 starting on disk page 73.
+Disk 1: Pages 75 to 77 starting on disk page 108.
+Disk 1: Pages 136 to 136 starting on disk page 111.
+Disk 1: Pages 141 to 142 starting on disk page 112.
+Disk 1: Pages 461 to 468 starting on disk page 114.
+Disk 1: Pages 484 to 529 starting on disk page 122.
+Disk 2: Pages 113 to 135 starting on disk page 0.
+Disk 2: Pages 72 to 75 starting on disk page 23.
+Disk 2: Pages 136 to 218 starting on disk page 27.
+Disk 2: Pages 220 to 227 starting on disk page 110.
+Disk 2: Pages 238 to 243 starting on disk page 118.
+Disk 2: Pages 248 to 253 starting on disk page 124.
+Disk 2: Pages 256 to 258 starting on disk page 130.
+Disk 2: Pages 260 to 263 starting on disk page 133.
+Disk 2: Pages 274 to 279 starting on disk page 137.
+Disk 2: Pages 287 to 288 starting on disk page 143.
+Disk 2: Pages 292 to 293 starting on disk page 145.
+Disk 2: Pages 295 to 295 starting on disk page 147.
+Disk 2: Pages 303 to 303 starting on disk page 148.
+Disk 2: Pages 305 to 305 starting on disk page 149.
+Disk 2: Pages 308 to 309 starting on disk page 150.
+Disk 2: Pages 317 to 319 starting on disk page 152.
+Disk 2: Pages 321 to 321 starting on disk page 155.
+Disk 2: Pages 323 to 323 starting on disk page 156.
+Disk 2: Pages 330 to 330 starting on disk page 157.
+Disk 2: Pages 335 to 337 starting on disk page 158.
+Disk 2: Pages 346 to 350 starting on disk page 161.
+Disk 2: Pages 354 to 354 starting on disk page 166.
+Disk 2: Pages 365 to 365 starting on disk page 167.
+Disk 2: Pages 367 to 370 starting on disk page 168.
+Disk 2: Pages 375 to 375 starting on disk page 172.
+Disk 2: Pages 380 to 381 starting on disk page 173.
+Disk 2: Pages 387 to 389 starting on disk page 175.
+Disk 2: Pages 400 to 402 starting on disk page 178.
+Disk 2: Pages 418 to 421 starting on disk page 181.
+Disk 2: Pages 427 to 427 starting on disk page 185.
+Disk 2: Pages 454 to 462 starting on disk page 186.
+Disk 2: Pages 466 to 475 starting on disk page 195.
+Disk 2: Pages 477 to 477 starting on disk page 205.
+Disk 2: Pages 479 to 479 starting on disk page 206.
+Disk 2: Pages 483 to 483 starting on disk page 207.
+Disk 3: Pages 219 to 219 starting on disk page 0.
+Disk 3: Pages 390 to 399 starting on disk page 1.
+Disk 3: Pages 403 to 417 starting on disk page 11.
+Disk 3: Pages 422 to 426 starting on disk page 26.
+Disk 3: Pages 428 to 453 starting on disk page 31.
+Disk 3: Pages 480 to 482 starting on disk page 57.
+Disk 4: Pages 228 to 237 starting on disk page 0.
+Disk 4: Pages 244 to 247 starting on disk page 10.
+Disk 4: Pages 254 to 255 starting on disk page 14.
+Disk 4: Pages 289 to 291 starting on disk page 16.
+Disk 4: Pages 294 to 294 starting on disk page 19.
+Disk 4: Pages 296 to 302 starting on disk page 20.
+Disk 4: Pages 304 to 304 starting on disk page 27.
+Disk 4: Pages 306 to 307 starting on disk page 28.
+Disk 4: Pages 322 to 322 starting on disk page 30.
+Disk 4: Pages 324 to 329 starting on disk page 31.
+Disk 4: Pages 331 to 334 starting on disk page 37.
+Disk 4: Pages 355 to 364 starting on disk page 41.
+Disk 4: Pages 366 to 366 starting on disk page 51.
+Disk 4: Pages 371 to 374 starting on disk page 52.
+Disk 4: Pages 376 to 379 starting on disk page 56.
+Disk 4: Pages 382 to 386 starting on disk page 60.
+Disk 4: Pages 476 to 476 starting on disk page 65.
+Disk 4: Pages 484 to 484 starting on disk page 66.
+Disk 5: Pages 259 to 259 starting on disk page 0.
+Disk 5: Pages 264 to 273 starting on disk page 1.
+Disk 5: Pages 280 to 286 starting on disk page 11.
+Disk 5: Pages 310 to 316 starting on disk page 18.
+Disk 5: Pages 320 to 320 starting on disk page 25.
+Disk 5: Pages 338 to 345 starting on disk page 26.
+Disk 5: Pages 351 to 353 starting on disk page 34.
+Disk 5: Pages 478 to 478 starting on disk page 37.
+74 blocks (444 bytes).
+Writing disk 1.
+Writing disk 2.
+Added 19 pages of pictures to file.  Total size 228.
+Writing disk 3.
+Added 187 pages of pictures to file.  Total size 247.
+Writing disk 4.
+Added 202 pages of pictures to file.  Total size 269.
+Writing disk 5.
+Added 174 pages of pictures to file.  Total size 212.

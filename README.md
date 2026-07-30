@@ -41,6 +41,8 @@ txd -agn file.z3 > file_txd.txt
 
 ## Infocom
 
+Note that some of these games had various resources, like graphics or sound. The general places to get these is at the [infocom/media/blorb](https://ifarchive.org/indexes/if-archive/infocom/media/blorb/) section of the IFArchive. However, this is a little muddled. Some of these resources were updated for specific interpreters and it's not always clear if it matters what specific zcode binary is used. I have added what I think are the correct files to this repo, naming the resource files the same as the zcode binary they are associated with.
+
 ### Zork
 
 There are a lot of _Zork_ versions and they run the gamut from version 1 to version 6, with the exception of verison 4. It's worth it to include some z1 and z2 files even though they are extremely rare. Any interpreter that is specification complete, or even accurate, should be able to play these. Beyond that, these are some of the earliest creation of of _Zork_. It's worth noting that the "r2" file wa apparently pulled from a disk for the TRS-80 Model I.
@@ -58,20 +60,24 @@ There are a lot of _Zork_ versions and they run the gamut from version 1 to vers
 ### Other Games
 
 - amfv-r77-s850814.z4 (MP; source included)
+- arthur-r54-s890606.z6 (MP, Mac)
+- arthur-r74-s890714.z6 (MP, PC; source included; resource blorb provided)
 - borderzone-r9-s871008.z5 (MP; source included)
 - bureaucracy-r116-s870602.z4 (MP)
 - bureaucracy-r160-s880521.z4 (FD; source included)
 - cutthroats-r23-s840809.z3 (MP; source included)
-- lurkinghorror-r203-s870506.z3 (MP; source included)
-- lurkinghorror-r219-s870912.z3 (LTOI1; Amiga)
+- journey-r26-s890316.z6 (MP, Mac)
+- journey-r83-s890706.z6 (MP, PC; source included; resource blorb provided)
+- lurkinghorror-r203-s870506.z3 (MP; source included; resource blorb provided)
+- lurkinghorror-r219-s870912.z3 (LTOI1; Amiga; resource blorb provided)
 - minizork-r2-s840207.z3 (source included)
 - minizork-r34-s871124.z3 (source included)
 - minizork2-r2-s871123.z3 (source included)
 - seastalker-r16-s850603.z3 (MP)
 - seastalker-r18-s850919.z3 (FD; source included)
-- sherlock-r26-s880127.z5 (MP, Mac; source included)
+- sherlock-r26-s880127.z5 (MP, Mac; source included; resource blorb provided)
 - shogun-r292-s890314.z6 (LTOI2, Mac)
-- shogun-r322-s890706.z6 (LTOI2, PC; source included)
+- shogun-r322-s890706.z6 (LTOI2, PC; source included; resource blorb provided)
 - trinity-r12-s860926.z4 (MP; source included)
 - witness-r22-s840924.z3 (MP)
 - witness-r23-s840925.z3 (FD; source included)

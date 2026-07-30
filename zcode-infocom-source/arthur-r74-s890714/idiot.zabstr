@@ -1,0 +1,43 @@
+
+<BEGIN-SEGMENT TOWN> 
+<ROOM RM-TOWN-SQUARE (LOC ROOMS) (DESC "town square") (FLAGS FL-LIGHTED) (
+SYNONYM SQUARE) (ADJECTIVE TOWN) (NORTH TO RM-CHURCHYARD IF LG-CHURCH-GATE IS
+OPEN) (WEST TO RM-VILLAGE-GREEN) (EAST TO RM-CASTLE-GATE) (SOUTH TO RM-TAVERN)
+(IN TO RM-TAVERN) (UP PER RT-FLY-UP) (ADJACENT <TABLE (LENGTH BYTE PURE)
+RM-CHURCHYARD T>) (GLOBAL LG-THATCH LG-CHURCH-GATE LG-TOWN LG-CASTLE RM-TAVERN
+RM-CHURCHYARD RM-CHURCH RM-VILLAGE-GREEN) (ACTION RT-RM-TOWN-SQUARE) (THINGS
+TAVERN (WINDOW WINDOWS) RT-PS-WINDOW)> 
+<DEFINE-ROUTINE RT-RM-TOWN-SQUARE> 
+<OBJECT CH-IDIOT (LOC RM-TOWN-SQUARE) (DESC "idiot") (FLAGS FL-ALIVE FL-NO-LIST
+FL-OPEN FL-PERSON FL-SEARCH FL-VOWEL) (SYNONYM IDIOT PERSON MAN FLOYD) (
+ADJECTIVE VILLAGE) (CONTFCN RT-CH-IDIOT) (ACTION RT-CH-IDIOT)> 
+<CONSTANT K-IDIOT-TRADE-MSG "\"We could trade if you want.\""> 
+<CONSTANT K-IDIOT-DIRECTION-MSG
+"\"Go out to where the gate used to be and turn right. Then go to where the
+big tree used to be and turn left. When you get to the place where the
+whatsis was until they moved it to the spot where it was before they put it
+where it is now, then take two quick rights. After that, go straight for
+about twice as far, and when you hit the trees, you're almost there. You
+can't miss it.\"|"> 
+<GLOBAL GL-IDIOT-STUFF <>> 
+<DEFINE-ROUTINE RT-CH-IDIOT> 
+<DEFINE-ROUTINE RT-IDIOT-PLAY-MSG> 
+<DEFINE-ROUTINE RT-IDIOT-WHISPERS-MSG> 
+<GLOBAL GL-IDIOT-MSG:FLAG T <> BYTE> 
+<CONSTANT K-IDIOT-MSG-TBL <TABLE (PATTERN (BYTE WORD)) <BYTE 1> <TABLE (PURE
+LENGTH) " \"Beware the Invisible Knight.\""
+" \"I'm not as dumb as you look. Go ahead. Ask me about anything.\""
+" \"Wherever I go, there I am.\"" " \"King Lot is a greedy goat.\""
+" \"I'm not really an idiot. I'm just extremely stupid.\""
+" \"Sometimes my invisible playmate gives me things.\""
+"|   \"Roses are red,|    Violets are blue.|    I'm schizophrenic,|    And so am I.\""
+" \"When the tough get tough, the going get going.\"">>> 
+<GLOBAL GL-IDIOT-WAIT:FLAG <> <> BYTE> 
+<DEFINE-ROUTINE RT-I-IDIOT-MSG> 
+<CONSTANT K-IDIOT-OBJ-MAX 5> 
+<CONSTANT K-IDIOT-BYTE-MAX <* ,K-IDIOT-OBJ-MAX 2>> 
+<CONSTANT K-IDIOT-OBJ-TBL <TABLE 1 TH-DEAD-MOUSE 0 0 0 0>> 
+<DEFINE-ROUTINE RT-IDIOT-TRADE> 
+<DEFINE-ROUTINE RT-IDIOT-TAKE> 
+<DEFINE-ROUTINE RT-IDIOT-GIVE> 
+<END-SEGMENT> 

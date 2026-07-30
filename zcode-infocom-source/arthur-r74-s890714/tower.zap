@@ -1,0 +1,820 @@
+
+	.SEGMENT "TOWER"
+
+
+	.FUNCT	RT-RM-TOW-PATH:ANY:0:1,CONTEXT
+	EQUAL?	CONTEXT,M-F-LOOK,M-V-LOOK,M-LOOK \?CCL3
+	PRINTI	"You are"
+	ICALL2	RT-WALK-MSG,TRUE-VALUE
+	PRINTI	" along a dark path that runs from north to south.
+"
+	RFALSE	
+?CCL3:	EQUAL?	CONTEXT,M-ENTER \?CCL5
+	SET	'GL-PICTURE-NUM,K-PIC-FOREST-PATH
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \FALSE
+	ICALL1	RT-UPDATE-PICT-WINDOW
+	RFALSE	
+?CCL5:	ZERO?	CONTEXT \FALSE
+	RFALSE	
+
+
+	.FUNCT	RT-RM-TOW-CLEARING:ANY:0:1,CONTEXT
+	EQUAL?	CONTEXT,M-F-LOOK,M-V-LOOK,M-LOOK \?CCL3
+	EQUAL?	CONTEXT,M-LOOK \?CCL6
+	FSET	LG-TOWER,FL-SEEN
+	PRINTI	"You are"
+	ICALL1	RT-STANDING-MSG
+	PRINTI	" in a clearing in the forest, at the base of an ivory tower which rises out of the ground to your east. There is a path here that leads south into the woods.
+"
+	RFALSE	
+?CCL6:	EQUAL?	OHERE,RM-CIRC-ROOM \?CCL8
+	PRINTI	"You emerge from the ivory tower and look around the clearing. The path leads south back into the woods.
+"
+	RFALSE	
+?CCL8:	FSET	LG-TOWER,FL-SEEN
+	FSET	LG-IVORY-DOOR,FL-SEEN
+	PRINTI	"The path ends in a clearing. To the east is an amazing tower, built entirely of ivory. There is a wooden door set into the wall nearest you.
+"
+	RFALSE	
+?CCL3:	EQUAL?	CONTEXT,M-ENTER \?CCL10
+	SET	'GL-PICTURE-NUM,K-PIC-TOWER-CLEARING
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \FALSE
+	ICALL1	RT-UPDATE-PICT-WINDOW
+	RFALSE	
+?CCL10:	ZERO?	CONTEXT \FALSE
+	RFALSE	
+
+
+	.FUNCT	RT-RM-CIRC-ROOM:ANY:0:1,CONTEXT
+	EQUAL?	CONTEXT,M-F-LOOK,M-V-LOOK,M-LOOK \?CCL3
+	PRINTI	"You "
+	EQUAL?	CONTEXT,M-LOOK \?CCL6
+	PRINTI	"are"
+	ICALL1	RT-STANDING-MSG
+	PRINTI	" in"
+	JUMP	?CND4
+?CCL6:	PRINTI	"enter"
+?CND4:	PRINTI	" the circular room. There are stairs that lead up and down from here, and an exit to the west.
+"
+	RFALSE	
+?CCL3:	EQUAL?	CONTEXT,M-ENTER \?CCL8
+	SET	'GL-PICTURE-NUM,K-PIC-CIRCULAR-STAIRS
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \FALSE
+	ICALL1	RT-UPDATE-PICT-WINDOW
+	RFALSE	
+?CCL8:	ZERO?	CONTEXT \FALSE
+	RFALSE	
+
+
+	.FUNCT	RT-LG-IVORY-DOOR:ANY:0:1,CONTEXT
+	CALL	NOUN-USED?,LG-IVORY-DOOR,W?KEYHOLE,W?LOCK
+	ZERO?	STACK /?CCL3
+	EQUAL?	PRSA,V?LISTEN \FALSE
+	ICALL	RT-PRINT-OBJ,WINNER,K-ART-THE,TRUE-VALUE
+	PRINTR	" can't hear anything."
+?CCL3:	EQUAL?	PRSA,V?EXAMINE \?CCL8
+	FSET	LG-IVORY-DOOR,FL-SEEN
+	PRINTR	"It is a wooden door, with an ivory keyhole set into it."
+?CCL8:	EQUAL?	PRSA,V?KNOCK \FALSE
+	ZERO?	GL-PLAYER-FORM \FALSE
+	PRINTR	"No one answers."
+
+
+	.FUNCT	RT-RM-STAIRS-1:ANY:0:1,CONTEXT
+	EQUAL?	CONTEXT,M-F-LOOK,M-V-LOOK,M-LOOK \?CCL3
+	PRINTI	"You "
+	EQUAL?	CONTEXT,M-LOOK \?CCL6
+	PRINTI	"are"
+	ICALL1	RT-STANDING-MSG
+	PRINTI	" on"
+	JUMP	?CND4
+?CCL6:	EQUAL?	OHERE,RM-CIRC-ROOM \?CCL9
+	EQUAL?	GL-PLAYER-FORM,K-FORM-OWL \?CCL12
+	PRINTI	"fly up"
+	JUMP	?CND4
+?CCL12:	PRINTI	"climb"
+	JUMP	?CND4
+?CCL9:	EQUAL?	GL-PLAYER-FORM,K-FORM-OWL \?CCL15
+	PRINTI	"fly down"
+	JUMP	?CND4
+?CCL15:	PRINTI	"descend"
+?CND4:	PRINTI	" the stairs. They continue up and down from here.
+"
+	RFALSE	
+?CCL3:	EQUAL?	CONTEXT,M-ENTER \?CCL17
+	SET	'GL-PICTURE-NUM,K-PIC-CIRCULAR-STAIRS
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \FALSE
+	ICALL1	RT-UPDATE-PICT-WINDOW
+	RFALSE	
+?CCL17:	ZERO?	CONTEXT \FALSE
+	EQUAL?	PRSA,V?CLIMB-UP \?CCL23
+	CALL2	RT-DO-WALK,P?UP
+	RSTACK	
+?CCL23:	EQUAL?	PRSA,V?CLIMB-DOWN \FALSE
+	CALL2	RT-DO-WALK,P?DOWN
+	RSTACK	
+
+
+	.FUNCT	RT-RM-LANDING:ANY:0:1,CONTEXT
+	EQUAL?	CONTEXT,M-F-LOOK,M-V-LOOK,M-LOOK \?CCL3
+	EQUAL?	CONTEXT,M-LOOK \?CCL6
+	PRINTI	"You are"
+	ICALL1	RT-STANDING-MSG
+	PRINTI	" on a"
+	JUMP	?CND4
+?CCL6:	EQUAL?	OHERE,RM-STAIRS-1 \?CCL9
+	PRINTI	"The stairs end in a"
+	JUMP	?CND4
+?CCL9:	EQUAL?	OHERE,RM-TOWER-ROOM \?CCL11
+	PRINTI	"You leave the company of the strange man for the"
+	JUMP	?CND4
+?CCL11:	PRINTI	"You crawl back through the crack to the"
+?CND4:	PRINTI	" landing at the top of the tower. "
+	FSET	LG-WOODEN-DOOR,FL-SEEN
+	FSET	LG-CRACK,FL-SEEN
+	EQUAL?	CONTEXT,M-LOOK \?CCL14
+	PRINTI	"There is a wooden door set into the northern wall, a crack in the wall to your west, and a set of circular stairs leading downwards."
+	JUMP	?CND12
+?CCL14:	EQUAL?	OHERE,RM-TOWER-ROOM \?CCL16
+	PRINTI	"The door through which you just came is set into the northern wall. There is a crack in the west wall, and a set of circular stairs leading downwards."
+	JUMP	?CND12
+?CCL16:	EQUAL?	OHERE,RM-CRACK-ROOM \?CCL18
+	PRINTI	"The crack through which you just crawled is in the west wall. There is a door to your north, and a set of circular stairs leading downwards."
+	JUMP	?CND12
+?CCL18:	PRINTI	"There is a wooden door set into the northern wall, and a crack in the west wall."
+?CND12:	CRLF	
+	RFALSE	
+?CCL3:	EQUAL?	CONTEXT,M-ENTER \?CCL20
+	SET	'GL-PICTURE-NUM,K-PIC-LANDING
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \FALSE
+	ICALL1	RT-UPDATE-PICT-WINDOW
+	RFALSE	
+?CCL20:	EQUAL?	CONTEXT,M-END \?CCL24
+	EQUAL?	PRSA,V?TRANSFORM \FALSE
+	EQUAL?	GL-PLAYER-FORM,GL-OLD-FORM /FALSE
+	EQUAL?	GL-PLAYER-FORM,K-FORM-SALAMANDER \FALSE
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-MAP \FALSE
+	CALL1	RT-UPDATE-MAP-WINDOW
+	RSTACK	
+?CCL24:	ZERO?	CONTEXT \FALSE
+	RFALSE	
+
+
+	.FUNCT	RT-ENTER-CRACK:ANY:0:1,QUIET
+	ZERO?	QUIET /?CCL3
+	EQUAL?	GL-PLAYER-FORM,K-FORM-SALAMANDER /?CCL6
+	FSET?	RM-CRACK-ROOM,FL-TOUCHED \FALSE
+?CCL6:	RETURN	RM-CRACK-ROOM
+?CCL3:	EQUAL?	GL-PLAYER-FORM,K-FORM-SALAMANDER \?CCL10
+	RETURN	RM-CRACK-ROOM
+?CCL10:	PRINT	K-TOO-BIG-CRACK-MSG
+	CRLF	
+	RFALSE	
+
+
+	.FUNCT	RT-IN-LANDING:ANY:0:1,QUIET
+	EQUAL?	GL-PLAYER-FORM,K-FORM-SALAMANDER \?CCL3
+	ZERO?	QUIET \FALSE
+	ICALL1	V-WALK-AROUND
+	RFALSE	
+?CCL3:	FSET?	LG-WOODEN-DOOR,FL-OPEN \?CCL7
+	RETURN	RM-TOWER-ROOM
+?CCL7:	ZERO?	QUIET \FALSE
+	ICALL	RT-PRINT-OBJ,LG-WOODEN-DOOR,K-ART-THE,TRUE-VALUE,STR?25
+	PRINTI	"n't open."
+	CRLF	
+	RFALSE	
+
+
+	.FUNCT	RT-RM-TOWER-ROOM:ANY:0:1,CONTEXT
+	EQUAL?	CONTEXT,M-F-LOOK,M-V-LOOK,M-LOOK \?CCL3
+	FSET	CH-RHYMER,FL-SEEN
+	EQUAL?	CONTEXT,M-LOOK \?CCL6
+	PRINTI	"The tower room is empty, save for some furniture and the withered old man.
+"
+	RFALSE	
+?CCL6:	PRINTI	"You"
+	ICALL1	RT-WALK-MSG
+	PRINTI	" into the sparsely-furnished room at the top of the tower. In it sits a withered old man.
+"
+	RFALSE	
+?CCL3:	EQUAL?	CONTEXT,M-ENTER \?CCL8
+	SET	'GL-PICTURE-NUM,K-PIC-TOWER-ROOM
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \FALSE
+	ICALL1	RT-UPDATE-PICT-WINDOW
+	RFALSE	
+?CCL8:	EQUAL?	CONTEXT,M-ENTERED \?CCL12
+	FSET?	CH-RHYMER,FL-LOCKED /FALSE
+	ZERO?	GL-PLAYER-FORM \FALSE
+	CRLF	
+	CALL1	RT-RHYMER-MSG
+	RSTACK	
+?CCL12:	EQUAL?	CONTEXT,M-BEG \?CCL19
+	ZERO?	GL-PLAYER-FORM \FALSE
+	EQUAL?	PRSA,V?SAY \?CCL25
+	CALL2	RT-CHECK-RHYMER-NAME,PRSO
+	RSTACK	
+?CCL25:	EQUAL?	PRSA,V?BE \FALSE
+	EQUAL?	PRSO,TH-NAME,CH-RHYMER \FALSE
+	CALL2	RT-CHECK-RHYMER-NAME,PRSI
+	RSTACK	
+?CCL19:	EQUAL?	CONTEXT,M-END \?CCL31
+	EQUAL?	PRSA,V?TRANSFORM \FALSE
+	EQUAL?	GL-PLAYER-FORM,GL-OLD-FORM /FALSE
+	PRINTI	"
+The old man notices your transformation and shrugs indifferently."
+	ZERO?	GL-PLAYER-FORM \?CCL39
+	FSET?	CH-RHYMER,FL-LOCKED /?CCL39
+	PRINTC	32
+	CALL1	RT-RHYMER-MSG
+	RSTACK	
+?CCL39:	CRLF	
+	RTRUE	
+?CCL31:	ZERO?	CONTEXT \FALSE
+	RFALSE	
+
+
+	.FUNCT	RT-PS-WINDOW:ANY:0:3,CONTEXT,ART,CAP?
+	FCLEAR	PSEUDO-OBJECT,FL-PLURAL
+	FCLEAR	PSEUDO-OBJECT,FL-VOWEL
+	EQUAL?	CONTEXT,M-OBJDESC \?CCL3
+	ZERO?	ART /?CND4
+	ICALL	PRINT-ARTICLE,PSEUDO-OBJECT,ART,CAP?
+?CND4:	EQUAL?	ART,FALSE-VALUE,K-ART-THE,K-ART-A /?CCL8
+	EQUAL?	ART,K-ART-ANY \FALSE
+?CCL8:	ZERO?	ART /?CND11
+	PRINTC	32
+?CND11:	PRINTI	"window"
+	RTRUE	
+?CCL3:	ZERO?	CONTEXT \FALSE
+	EQUAL?	PRSA,V?LOOK-THRU,V?EXAMINE \?CCL16
+	ICALL2	THIS-IS-IT,PSEUDO-OBJECT
+	EQUAL?	HERE,RM-TOWER-ROOM \?CCL19
+	PRINTR	"The window looks out onto the forest below."
+?CCL19:	PRINTR	"You can't see much from here."
+?CCL16:	EQUAL?	PRSA,V?EXIT,V?ENTER \FALSE
+	EQUAL?	HERE,RM-TOWER-ROOM \?CCL24
+	EQUAL?	GL-PLAYER-FORM,K-FORM-OWL \?CCL27
+	CALL2	RT-GOTO,RM-ABOVE-FOREST
+	RSTACK	
+?CCL27:	PRINTR	"You would fall and hurt yourself."
+?CCL24:	EQUAL?	HERE,RM-MOOR,RM-TOWN-SQUARE \FALSE
+	ICALL2	RT-YOU-CANT-MSG,STR?322
+	CALL2	RT-AUTHOR-MSG,STR?323
+	RSTACK	
+
+
+	.FUNCT	RT-CH-RUMPLESTILTSKIN:ANY:0:1,CONTEXT
+	ZERO?	CONTEXT \FALSE
+	PRINTR	"Wasn't he in a fairy tale?"
+
+
+	.FUNCT	RT-CHECK-RHYMER-NAME:ANY:1:1,OBJ,NP,PTR,END,N,Q?,C?,S
+	FSET?	CH-RHYMER,FL-LOCKED \?CCL3
+	PRINTR	"
+""Now that you've guessed my appellation.
+ Continue your quest to rule this nation."""
+?CCL3:	EQUAL?	INTQUOTE,OBJ \?CCL5
+	SET	'Q?,TRUE-VALUE
+	CALL2	GET-NP,INTQUOTE >NP
+	ZERO?	NP /?CND1
+	GET	NP,7 >PTR
+	ZERO?	PTR /?CND1
+	GET	PTR,0
+	EQUAL?	STACK,W?QUOTE \?CND10
+	ADD	PTR,8 >PTR
+?CND10:	GET	NP,8 >END
+	GET	PTR,0
+	EQUAL?	STACK,W?THOMAS \?CCL14
+	SET	'S,5
+	ADD	PTR,4 >PTR
+	GET	PTR,0
+	EQUAL?	STACK,W?THE \?CND15
+	ADD	PTR,4 >PTR
+?CND15:	GET	PTR,0
+	EQUAL?	STACK,W?RHYMER \?CND1
+	ZERO?	END \?CCL21
+	SET	'C?,TRUE-VALUE
+	JUMP	?CND1
+?CCL21:	EQUAL?	PTR,END \?CCL23
+	SET	'C?,TRUE-VALUE
+	JUMP	?CND1
+?CCL23:	ADD	PTR,4 >PTR
+	EQUAL?	PTR,END \?CND1
+	GET	PTR,0
+	EQUAL?	STACK,W?QUOTE \?CND1
+	SET	'C?,TRUE-VALUE
+	JUMP	?CND1
+?CCL14:	GET	PTR,0
+	EQUAL?	STACK,W?RHYMER \?CCL28
+	SET	'S,5
+	JUMP	?CND1
+?CCL28:	GET	PTR,0
+	EQUAL?	STACK,W?MOTHER \?CCL30
+	SET	'S,1
+	JUMP	?CND1
+?CCL30:	GET	PTR,0
+	EQUAL?	STACK,W?RUMPLESTILTSKIN \?CCL32
+	SET	'S,2
+	JUMP	?CND1
+?CCL32:	GET	PTR,0
+	EQUAL?	STACK,W?AMU,W?AMHTIR,W?SMOTUS \?CCL34
+	SET	'S,3
+	JUMP	?CND1
+?CCL34:	GET	PTR,0
+	EQUAL?	STACK,W?RIOTHAMUS \?CND1
+	SET	'S,4
+	JUMP	?CND1
+?CCL5:	EQUAL?	OBJ,TH-MOTHER \?CCL37
+	SET	'S,1
+	JUMP	?CND1
+?CCL37:	EQUAL?	OBJ,TH-RIOTHAMUS \?CCL39
+	SET	'S,4
+	JUMP	?CND1
+?CCL39:	EQUAL?	PRSI,OBJ \?CCL42
+	SET	'NP,PRSI-NP
+	JUMP	?CND40
+?CCL42:	SET	'NP,PRSO-NP
+?CND40:	CALL	NOUN-USED?,CH-RHYMER,W?RHYMER
+	ZERO?	STACK /?CCL45
+	CALL	ADJ-USED?,CH-RHYMER,W?THOMAS
+	ZERO?	STACK /?CCL45
+	SET	'C?,TRUE-VALUE
+	JUMP	?CND1
+?CCL45:	CALL	NOUN-USED?,CH-RHYMER,W?THOMAS,W?RHYMER
+	ZERO?	STACK /?CND1
+	SET	'S,5
+?CND1:	ZERO?	C? /?CCL51
+	FSET	CH-RHYMER,FL-LOCKED
+	PRINTI	"The old man jumps up and claps his hands with glee."
+	CRLF	
+	CRLF	
+	PRINTI	"""You win! You win! To thee I sing."
+	CRLF	
+	PRINTI	" And give to you this magic ring."
+	CRLF	
+	PRINTI	" When unseen forces you surprise,"
+	CRLF	
+	PRINTI	" Just rub this ring to clear your eyes."""
+	CRLF	
+	CRLF	
+	PRINTI	"He gives you a ring."
+	CRLF	
+	CALL	RT-DO-TAKE,TH-MAGIC-RING,TRUE-VALUE
+	ZERO?	STACK /TRUE
+	ICALL2	RT-SCORE-OBJ,TH-MAGIC-RING
+	RTRUE	
+?CCL51:	EQUAL?	S,1 \?CCL55
+	PRINTR	"
+""These guesses often greatly vex.
+ At least please try to match my sex!"""
+?CCL55:	EQUAL?	S,2 \?CCL57
+	PRINTR	"
+""If Rumplestiltskin were my name,
+ Then this would be a wimpy game."""
+?CCL57:	EQUAL?	S,3 \?CCL59
+	PRINTR	"
+""I guess you've seen my secret room,
+ But that is not my nom de plume."""
+?CCL59:	EQUAL?	S,4 \?CCL61
+	PRINTR	"
+""Riothamus means 'the king most high,'
+ A height to which you'll one day fly."""
+?CCL61:	EQUAL?	S,5 \?CCL63
+	PRINTR	"
+""I'd have to say you're on the track,
+ But still there's something else you lack."""
+?CCL63:	DIROUT	K-D-TBL-ON,K-DIROUT-TBL
+	ZERO?	Q? /?CCL66
+	ICALL1	PRINT-INTQUOTE
+	JUMP	?CND64
+?CCL66:	ICALL2	NP-PRINT,NP
+?CND64:	DIROUT	K-D-TBL-OFF
+	CRLF	
+	PRINTC	34
+	GETB	K-DIROUT-TBL,2 >N
+	LESS?	N,97 /?CND67
+	GRTR?	N,122 /?CND67
+	SUB	N,32
+	PUTB	K-DIROUT-TBL,2,STACK
+?CND67:	GET	K-DIROUT-TBL,0
+	PRINTT	K-DIROUT-TBL+2,STACK
+	PRINTR	" is not my name,
+ As a guess, that's pretty lame."""
+
+
+	.FUNCT	RT-CH-RHYMER:ANY:0:1,CONTEXT
+	EQUAL?	PRSA,V?THANK,V?GOODBYE,V?HELLO \?CCL3
+	EQUAL?	CONTEXT,M-WINNER,FALSE-VALUE \?CCL3
+	EQUAL?	PRSA,V?HELLO \?CCL8
+	PRINTR	"
+""Hello is such a friendly greeting.
+ 'Specially when it's friends you're meeting."""
+?CCL8:	EQUAL?	PRSA,V?GOODBYE \?CCL10
+	PRINTR	"
+""Goodbyes are always filled with sorrow.
+ 'Til we say hello tomorrow."""
+?CCL10:	EQUAL?	PRSA,V?THANK \FALSE
+	PRINTI	"
+""You're kind to give your thanks to me,
+ It speaks well of your chivalry."""
+	CRLF	
+	FSET?	CH-PLAYER,FL-AIR /TRUE
+	FSET	CH-PLAYER,FL-AIR
+	ICALL	RT-SCORE-MSG,10,0,0,0
+	RTRUE	
+?CCL3:	EQUAL?	CONTEXT,M-WINNER \?CCL16
+	EQUAL?	PRSA,V?TELL-ABOUT \?CCL19
+	EQUAL?	PRSO,CH-PLAYER /FALSE
+?CCL19:	EQUAL?	PRSA,V?WHAT,V?WHO /FALSE
+	EQUAL?	PRSA,V?BE,V?SAY /FALSE
+	PRINTR	"
+""I cannot do the thing you ask.
+ I'm busy with another task."""
+?CCL16:	ZERO?	CONTEXT \FALSE
+	ZERO?	NOW-PRSI \FALSE
+	EQUAL?	PRSA,V?TELL \?CCL31
+	ZERO?	P-CONT \FALSE
+?CCL31:	EQUAL?	PRSA,V?ASK-ABOUT \?CCL35
+	EQUAL?	PRSI,CH-I-KNIGHT \?CCL38
+	PRINTR	"
+""You speak of him who robs you blind
+ I tell you, 'See, and ye shall find.'"""
+?CCL38:	EQUAL?	PRSI,CH-MERLIN \?CCL40
+	PRINTR	"
+""A wizard better versed than I
+ In magic arts that mystify."""
+?CCL40:	EQUAL?	PRSI,TH-MAGIC-RING \?CCL42
+	FSET?	TH-MAGIC-RING,FL-TOUCHED \?CCL45
+	PRINTR	"
+""The ring has magic potency,
+ To clear your eyes and help you see."""
+?CCL45:	PRINTR	"The old man cocks his head at you and winks.
+
+""You must have played this game before,
+ And used the magic of restore.
+ For knowledge of the ring is privit,
+ And known to none until I give it."""
+?CCL42:	EQUAL?	PRSI,CH-RHYMER \?CCL47
+	FSET?	TH-MAGIC-RING,FL-TOUCHED \?CCL50
+	PRINTR	"
+""Perhaps you've never heard of me,
+ But I truly lived in history."""
+?CCL50:	PRINTR	"
+""I speak in rhymes, and riddles too.
+ And even there's a little clue."""
+?CCL47:	EQUAL?	PRSI,TH-NAME \?CCL52
+	FSET?	TH-MAGIC-RING,FL-TOUCHED \?CCL55
+	PRINTR	"
+""I'm called the Rhymer, it's plain to see,
+ Because I so love poetry."""
+?CCL55:	PRINTR	"
+""It's mine to know, and yours to guess,
+ To bring to you much happiness."""
+?CCL52:	EQUAL?	PRSI,TH-MASTER \?CCL57
+	PRINTR	"
+""I have no boss, and well I know it,
+ I'd rather stay a freelance poet."""
+?CCL57:	EQUAL?	PRSI,TH-RHYME \?CCL59
+	PRINTR	"""I dunno. I've always talked like dis."""
+?CCL59:	EQUAL?	PRSI,TH-RIOTHAMUS \?CCL61
+	PRINTR	"
+""One day you'll earn all England's trust,
+ And you'll be called Riothamus."""
+?CCL61:	EQUAL?	PRSI,TH-MOTHER \?CCL63
+	PRINTR	"
+""'Tis good to think of mother dear,
+ However, that won't help you here."""
+?CCL63:	EQUAL?	PRSI,CH-LOT \?CCL65
+	PRINTR	"
+""The man's our king, alack, alas
+ But nevertheless, he's still an ass."""
+?CCL65:	EQUAL?	PRSI,CH-DEMON \?CCL67
+	PRINTR	"
+""His wickedness will stay restrained
+ As long as to his throne he's chained."""
+?CCL67:	EQUAL?	PRSI,LG-TOWER \?CCL69
+	PRINTR	"
+""This tower has become my home
+ And from it I quite seldom roam."""
+?CCL69:	EQUAL?	PRSI,RM-CELLAR,RM-CRACK-ROOM \?CCL71
+	PRINTR	"
+""The room contains a little clue
+ A token gift from me to you."""
+?CCL71:	EQUAL?	PRSI,TH-EXCALIBUR \?CCL73
+	PRINTR	"
+""The sword that's now within the stone
+ Is destined for your hand alone."""
+?CCL73:	EQUAL?	PRSI,TH-CHIVALRY \?CCL75
+	PRINTR	"
+""Be nice. Be kind. And do your duty,
+ That's how to get a sweet patootie."""
+?CCL75:	EQUAL?	PRSI,TH-UTHER \?CCL77
+	PRINTR	"
+""Uther was your dad, it's true,
+ But proving it is up to you."""
+?CCL77:	EQUAL?	PRSI,CH-PLAYER \?CCL79
+	CRLF	
+	PRINTI	"""You're Britain's pride, and Britain's glory,"
+	CRLF	
+	PRINTI	" Your deeds writ large in England's story."
+	CRLF	
+	PRINTI	" And all the world will one day sing,"
+	CRLF	
+	PRINTR	" Of you, our Once and Future King."
+?CCL79:	PRINTR	"
+""I have no knowledge of what you speak.
+ In fact to me, it all sounds greek."""
+?CCL35:	EQUAL?	PRSA,V?EXAMINE \FALSE
+	PRINTR	"The old man has a twinkle in his eye, and he is smiling to himself at some private joke."
+
+
+	.FUNCT	RT-RHYMER-MSG:ANY:0:0
+	ICALL2	SETUP-ORPHAN,STR?110
+	PRINTI	"""Welcome,"" he says:
+
+"
+	FSET?	CH-RHYMER,FL-BROKEN \?CCL3
+	PRINTR	"""I see that you have ventured back
+ To claim the loot which now you lack
+ But first I must make truly sure
+ That you have learned my moniker."""
+?CCL3:	FSET	CH-RHYMER,FL-BROKEN
+	PRINTR	"""You come in search of gold and loot.
+ I have all that, and more to boot.
+ To get it you must play my game.
+ Just say to me my secret name."""
+
+	.ENDSEG
+
+	.SEGMENT "0"
+
+
+	.FUNCT	RT-GN-OLD-MAN:ANY:2:2,TBL,FINDER
+	RETURN	CH-RHYMER
+
+	.ENDSEG
+
+	.SEGMENT "TOWER"
+
+
+	.FUNCT	RT-TH-TOWER-TABLE:ANY:0:1,CONTEXT
+	ZERO?	CONTEXT \FALSE
+	EQUAL?	PRSA,V?CLIMB-OVER,V?CLIMB-ON,V?CLIMB-UP \FALSE
+	PRINTI	"It's not polite to "
+	PRINTB	P-PRSA-WORD
+	PRINTR	" on tables."
+
+
+	.FUNCT	RT-LG-WOODEN-DOOR:ANY:0:1,CONTEXT
+	ZERO?	CONTEXT \FALSE
+	EQUAL?	PRSA,V?KNOCK \FALSE
+	ZERO?	GL-PLAYER-FORM \FALSE
+	EQUAL?	HERE,RM-LANDING \FALSE
+	PRINTI	"A voice calls out:"
+	CRLF	
+	CRLF	
+	PRINTI	"""Come in, come in. I'm all alone."
+	CRLF	
+	PRINTR	" And you don't need a chaperone."""
+
+
+	.FUNCT	RT-RM-CRACK-ROOM:ANY:0:1,CONTEXT
+	EQUAL?	CONTEXT,M-F-LOOK,M-V-LOOK,M-LOOK \?CCL3
+	EQUAL?	CONTEXT,M-LOOK \?CCL6
+	PRINTI	"You are"
+	JUMP	?CND4
+?CCL6:	PRINTI	"You crawl up the crack until it widens just enough for you to squirm through. You find yourself"
+?CND4:	PRINTI	" in an abandoned room in the tower. "
+	PRINT	K-WALL-LETTERS-MSG
+	PRINTI	" The crack through which you entered is in the east wall.
+"
+	RFALSE	
+?CCL3:	EQUAL?	CONTEXT,M-ENTER \?CCL8
+	SET	'GL-PICTURE-NUM,K-PIC-ABANDONED-ROOM
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \FALSE
+	ICALL1	RT-UPDATE-PICT-WINDOW
+	RFALSE	
+?CCL8:	ZERO?	CONTEXT \FALSE
+	RFALSE	
+
+
+	.FUNCT	RT-LEAVE-CRACK:ANY:0:1,QUIET
+	ZERO?	QUIET \?CTR2
+	EQUAL?	GL-PLAYER-FORM,K-FORM-SALAMANDER \?CCL3
+?CTR2:	RETURN	RM-LANDING
+?CCL3:	PRINT	K-TOO-BIG-CRACK-MSG
+	CRLF	
+	RFALSE	
+
+
+	.FUNCT	RT-LG-CRACK:ANY:0:1,CONTEXT
+	ZERO?	CONTEXT \FALSE
+	ZERO?	NOW-PRSI /?CCL5
+	EQUAL?	PRSA,V?PUT-IN \FALSE
+	GETPT	PRSO,P?SIZE
+	GETB	STACK,K-SIZE
+	GRTR?	STACK,1 \?CCL11
+	ICALL	RT-PRINT-OBJ,PRSO,K-ART-THE,TRUE-VALUE,STR?25
+	PRINTR	" too big to fit in the crack."
+?CCL11:	EQUAL?	HERE,RM-LANDING \?CCL14
+	MOVE	PRSO,RM-CRACK-ROOM
+	JUMP	?CND12
+?CCL14:	MOVE	PRSO,RM-LANDING
+?CND12:	BOR	GL-UPDATE-WINDOW,K-UPD-INVT >GL-UPDATE-WINDOW
+	ICALL	RT-PRINT-OBJ,WINNER,K-ART-THE,TRUE-VALUE,STR?40
+	ICALL	RT-PRINT-OBJ,PRSO,K-ART-THE
+	PRINTI	" into the crack. "
+	ICALL	RT-PRINT-OBJ,PRSO,K-ART-HE,TRUE-VALUE,STR?211
+	PRINTR	" out on the other side."
+?CCL5:	EQUAL?	PRSA,V?LOOK-THRU \?CCL16
+	EQUAL?	HERE,RM-LANDING \?CCL19
+	PRINTR	"You can see into a sealed room. There is some writing on the opposite wall, but you can't quite make it out."
+?CCL19:	PRINTR	"You peer through the crack at the landing, but see nothing of interest."
+?CCL16:	EQUAL?	PRSA,V?EXAMINE \?CCL21
+	FSET	LG-CRACK,FL-SEEN
+	PRINTR	"The crack is just a small hole in the mortar between two stones."
+?CCL21:	EQUAL?	PRSA,V?ENTER \FALSE
+	EQUAL?	HERE,RM-CRACK-ROOM \?CCL26
+	CALL2	RT-DO-WALK,P?EAST
+	RSTACK	
+?CCL26:	EQUAL?	HERE,RM-LANDING \FALSE
+	CALL2	RT-DO-WALK,P?WEST
+	RSTACK	
+
+
+	.FUNCT	RT-RM-STAIRS-2:ANY:0:1,CONTEXT
+	EQUAL?	CONTEXT,M-F-LOOK,M-V-LOOK,M-LOOK \?CCL3
+	PRINTI	"You "
+	EQUAL?	CONTEXT,M-LOOK \?CCL6
+	PRINTI	"are"
+	ICALL1	RT-STANDING-MSG
+	PRINTI	" on"
+	JUMP	?CND4
+?CCL6:	EQUAL?	OHERE,RM-CIRC-ROOM \?CCL9
+	PRINTI	"descend"
+	JUMP	?CND4
+?CCL9:	PRINTI	"climb"
+?CND4:	PRINTI	" the circular stairs. Below you, the stairs disappear into total darkness. You may either descend, or go return to the safety of the circular room.
+"
+	RFALSE	
+?CCL3:	EQUAL?	CONTEXT,M-ENTER \?CCL11
+	SET	'GL-PICTURE-NUM,K-PIC-CIRCULAR-STAIRS
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \FALSE
+	ICALL1	RT-UPDATE-PICT-WINDOW
+	RFALSE	
+?CCL11:	ZERO?	CONTEXT \FALSE
+	EQUAL?	PRSA,V?CLIMB-UP \?CCL17
+	CALL2	RT-DO-WALK,P?UP
+	RSTACK	
+?CCL17:	EQUAL?	PRSA,V?CLIMB-DOWN \FALSE
+	CALL2	RT-DO-WALK,P?DOWN
+	RSTACK	
+
+
+	.FUNCT	RT-RM-CELLAR:ANY:0:1,CONTEXT
+	EQUAL?	CONTEXT,M-F-LOOK,M-V-LOOK,M-LOOK \?CCL3
+	PRINTI	"This is a small damp room, with two lines of letters written on the wall.
+"
+	RFALSE	
+?CCL3:	EQUAL?	CONTEXT,M-END \?CCL5
+	EQUAL?	PRSA,V?TRANSFORM \FALSE
+	EQUAL?	GL-PLAYER-FORM,GL-OLD-FORM /FALSE
+	EQUAL?	GL-PLAYER-FORM,K-FORM-OWL \?CCL14
+	ICALL2	RT-CELLAR-MSG,TRUE-VALUE
+	SET	'GL-PICTURE-NUM,K-PIC-CELLAR
+	JUMP	?CND12
+?CCL14:	SET	'GL-PICTURE-NUM,K-PIC-BLACK
+?CND12:	BOR	GL-UPDATE-WINDOW,K-UPD-DESC >GL-UPDATE-WINDOW
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-DESC \?CCL17
+	CALL1	RT-UPDATE-DESC-WINDOW
+	RSTACK	
+?CCL17:	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \FALSE
+	CALL1	RT-UPDATE-PICT-WINDOW
+	RSTACK	
+?CCL5:	EQUAL?	CONTEXT,M-ENTER \?CCL21
+	EQUAL?	GL-PLAYER-FORM,K-FORM-OWL \?CCL24
+	SET	'GL-PICTURE-NUM,K-PIC-CELLAR
+	JUMP	?CND22
+?CCL24:	SET	'GL-PICTURE-NUM,K-PIC-BLACK
+?CND22:	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \FALSE
+	ICALL1	RT-UPDATE-PICT-WINDOW
+	RFALSE	
+?CCL21:	EQUAL?	CONTEXT,M-ENTERED \?CCL28
+	EQUAL?	GL-PLAYER-FORM,K-FORM-OWL \FALSE
+	FSET?	RM-CELLAR,FL-LOCKED \FALSE
+	FCLEAR	RM-CELLAR,FL-LOCKED
+	CALL	RT-SCORE-MSG,0,4,0,1
+	RSTACK	
+?CCL28:	ZERO?	CONTEXT \FALSE
+	RFALSE	
+
+
+	.FUNCT	RT-PS-LETTERS:ANY:0:3,CONTEXT,ART,CAP?
+	FSET	PSEUDO-OBJECT,FL-PLURAL
+	FCLEAR	PSEUDO-OBJECT,FL-VOWEL
+	EQUAL?	CONTEXT,M-OBJDESC \?CCL3
+	ZERO?	ART /?CND4
+	ICALL	PRINT-ARTICLE,PSEUDO-OBJECT,ART,CAP?
+?CND4:	EQUAL?	ART,FALSE-VALUE,K-ART-THE,K-ART-A /?CCL8
+	EQUAL?	ART,K-ART-ANY \FALSE
+?CCL8:	ZERO?	ART /?CND11
+	PRINTC	32
+?CND11:	PRINTI	"letters"
+	RTRUE	
+?CCL3:	ZERO?	CONTEXT \FALSE
+	EQUAL?	PRSA,V?READ,V?EXAMINE \FALSE
+	ICALL2	THIS-IS-IT,PSEUDO-OBJECT
+	EQUAL?	HERE,RM-CELLAR \?CCL19
+	CALL1	RT-CELLAR-MSG
+	RSTACK	
+?CCL19:	EQUAL?	HERE,RM-CRACK-ROOM \FALSE
+	PRINT	K-WALL-LETTERS-MSG
+	CRLF	
+	RTRUE	
+
+
+	.FUNCT	RT-CELLAR-MSG:ANY:0:1,CR?
+	ZERO?	CR? /?CND1
+	CRLF	
+?CND1:	PRINTI	"With your improved night-vision, you can see that this is a small damp room, with two lines of letters written on the wall:
+   SAYMOTHER
+   RIOTHAMUS"
+	CRLF	
+	FSET?	RM-CELLAR,FL-LOCKED \TRUE
+	FCLEAR	RM-CELLAR,FL-LOCKED
+	ICALL	RT-SCORE-MSG,0,4,0,1
+	RTRUE	
+
+	.ENDSEG
+
+	.SEGMENT "0"
+
+
+	.FUNCT	RT-TH-MAGIC-RING:ANY:0:1,CONTEXT
+	EQUAL?	PRSA,V?RUB \?CCL3
+	IN?	TH-MAGIC-RING,WINNER /?CCL6
+	ICALL	RT-PRINT-OBJ,WINNER,K-ART-THE,TRUE-VALUE,STR?31
+	PRINTI	"n't have"
+	ICALL	RT-PRINT-OBJ,TH-MAGIC-RING,K-ART-THE
+	PRINTR	"."
+?CCL6:	EQUAL?	HERE,RM-MEADOW,RM-PAVILION \?CCL8
+	FSET?	RM-PAVILION,FL-LOCKED \?CCL8
+	FCLEAR	RM-PAVILION,FL-LOCKED
+	FSET	RM-PAVILION,FL-INDOORS
+	FCLEAR	CH-I-KNIGHT,FL-INVISIBLE
+	FCLEAR	TH-COUNTER,FL-INVISIBLE
+	FSET	TH-GLITTER,FL-INVISIBLE
+	EQUAL?	HERE,RM-PAVILION \?CCL13
+	FCLEAR	RM-PAVILION,FL-TOUCHED
+	FCLEAR	RM-PAVILION,FL-SEEN
+	ICALL1	INIT-STATUS-LINE
+	ICALL1	UPDATE-STATUS-LINE
+	SET	'GL-PICTURE-NUM,K-PIC-PAVILION
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-PICT \?CND14
+	ICALL1	RT-UPDATE-PICT-WINDOW
+?CND14:	ICALL2	RT-RM-PAVILION,M-F-LOOK
+	FSET	RM-PAVILION,FL-TOUCHED
+	FSET	RM-PAVILION,FL-SEEN
+	JUMP	?CND11
+?CCL13:	PRINTI	"As you rub the ring, the air to the east begins to shimmer. Moments later, a knight's pavilion appears where before there had been nothing."
+	CRLF	
+?CND11:	ICALL2	RT-SCORE-OBJ,RM-PAVILION
+	BOR	GL-UPDATE-WINDOW,K-UPD-DESC >GL-UPDATE-WINDOW
+	EQUAL?	GL-WINDOW-TYPE,K-WIN-MAP \?CCL18
+	ICALL1	RT-UPDATE-MAP-WINDOW
+	RTRUE	
+?CCL18:	EQUAL?	GL-WINDOW-TYPE,K-WIN-DESC \TRUE
+	ICALL1	RT-UPDATE-DESC-WINDOW
+	RTRUE	
+?CCL8:	PRINTR	"Nothing happens here."
+?CCL3:	EQUAL?	PRSA,V?EXAMINE \FALSE
+	PRINTR	"The ring is a simple band made of a dull metal that is unfamiliar to you."
+
+	.ENDSEG
+
+	.SEGMENT "TOWER"
+
+
+	.FUNCT	RT-LG-TOWER:ANY:0:1,CONTEXT
+	ZERO?	CONTEXT \FALSE
+	EQUAL?	PRSA,V?LOOK-ON,V?EXAMINE \?CCL5
+	FSET	LG-TOWER,FL-SEEN
+	PRINTR	"It's a tall round tower with sheer ivory walls."
+?CCL5:	EQUAL?	PRSA,V?ENTER \?CCL7
+	EQUAL?	HERE,RM-TOW-CLEARING \FALSE
+	CALL2	RT-DO-WALK,P?EAST
+	RSTACK	
+?CCL7:	EQUAL?	PRSA,V?EXIT \?CCL12
+	EQUAL?	HERE,RM-CIRC-ROOM \FALSE
+	CALL2	RT-DO-WALK,P?WEST
+	RSTACK	
+?CCL12:	EQUAL?	PRSA,V?CLIMB-UP \FALSE
+	PRINTI	"The ivory walls are too smooth to climb"
+	EQUAL?	GL-PLAYER-FORM,K-FORM-SALAMANDER \?CND18
+	PRINTI	", even for a salamander"
+?CND18:	PRINTR	"."
+
+	.ENDSEG
+
+	.ENDI

@@ -1,0 +1,2 @@
+#
+zsplit -a 2 -d 5 -h hints -v ~curpix/arthurapple.d ~curpix/arthur.apple.1 -n arthur -p 107 -e 23 -0 arthur 270

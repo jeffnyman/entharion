@@ -1,0 +1,604 @@
+ZILCH of 6/30/89 14:41
+
+Combined ZIL Compiler Ver 2.0 (MIM)
+-----------------------------------
+ ** Warning: Can't make copy of old strings file: #FALSE (File already exists
+/HOME/DEVELOPMENT/ARTHUR/ARTHURSTR.ZAP~ 17)
+Input file: /HOME/DEVELOPMENT/ARTHUR/ARTHUR.ZIL
+[YZIP instructions]
+
+[Object numbers assigned rooms first]
+
+First segment STARTUP
+Loading /HOME/DEVELOPMENT/ARTHUR/DEFS.ZIL and compiling it.
+XFLOAD /HOME/DEVELOPMENT/INTERLOGIC/ZILLIB/PARSER/PARSER.REST.
+Loading /HOME/DEVELOPMENT/INTERLOGIC/ZILLIB/CONSTANTS.ZIL and compiling it.
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/PSTACK.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/PMEM.ZABSTR.
+Start segment 0
+End segment 0
+Loading /HOME/DEVELOPMENT/INTERLOGIC/ZILLIB/PARSER/PDEFS.ZIL and compiling it.
+Loading /HOME/DEVELOPMENT/ARTHUR/DEFS2.ZIL and compiling it.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/PARSER.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/FIND.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/REDS.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/BREDS.ZABSTR.
+Start segment 0
+End segment 0
+Loading /HOME/DEVELOPMENT/INTERLOGIC/ZILLIB/PARSER/GRAM.ZIL and compiling it.
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/TOP.ZABSTR.
+Start segment 0
+End segment 0
+Loading /HOME/DEVELOPMENT/INTERLOGIC/ZILLIB/PARSER/PRARE.ZIL and compiling it.
+
+Start segment 0
+Compiling routine: TOO-MANY-NEW
+Compiling routine: NAKED-OOPS
+Compiling routine: CANT-OOPS
+Compiling routine: CANT-AGAIN
+Compiling routine: CANT-USE-MULTIPLE
+Compiling routine: MAKE-ROOM-FOR-TOKENS
+Compiling routine: REPLACE-ONE-TOKEN
+Compiling routine: V-$REFRESH
+Compiling routine: PRINT-INTQUOTE
+Compiling routine: PRINT-LEXV
+Compiling routine: COPY-INPUT
+End segment 0
+Start segment 0
+Compiling routine: BUFFER-PRINT
+Compiling routine: CAPITALIZE
+Compiling routine: PRINT-PARSER-FAILURE
+Compiling routine: NAKED-ADJECTIVE?
+Compiling routine: CHANGE-AND-TO-THEN?
+Compiling routine: DONT-UNDERSTAND
+Compiling routine: MISSING
+Compiling routine: CANT-FIND-OBJECT
+Compiling routine: NP-CANT-SEE
+Compiling routine: WINNER-SAYS-WHICH?
+Compiling routine: WHICH-LIST?
+Compiling routine: WHICH-PRINT
+Compiling routine: NP-PRINT
+Compiling routine: ADJS-PRINT
+Compiling routine: TOO-MANY-NOUNS
+Compiling routine: INBUF-ADD
+Compiling routine: INBUF-PRINT
+Compiling routine: YES?
+Compiling routine: SETUP-ORPHAN
+Compiling routine: SETUP-ORPHAN-NP
+Compiling routine: INSERT-ADJS
+Compiling routine: INSERT-ADJS-WD
+End segment 0
+Abstracting PRARE to /HOME/DEVELOPMENT/ARTHUR/PRARE.
+Loading /HOME/DEVELOPMENT/ARTHUR/PICDEF.ZIL and compiling it.
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/MACROS.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/MISC.ZABSTR.
+Start segment 0
+Start segment STARTUP
+End segments 0 STARTUP
+Start segment 0
+End segment 0
+Loading /HOME/DEVELOPMENT/ARTHUR/SYNTAX.ZIL and compiling it.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/UTIL.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/VERBS.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/TRANSFRM.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/BE.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/FOOD.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/WINDOW.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/CELL.ZABSTR.
+Start segment CASTLE
+End segment CASTLE
+Start segment 0
+End segment 0
+Start segment CASTLE
+End segment CASTLE
+Start segment 0
+End segment 0
+Start segment CASTLE
+End segment CASTLE
+Start segment 0
+End segment 0
+Start segment CASTLE
+End segment CASTLE
+Start segment 0
+End segment 0
+Start segment TOWN
+End segment TOWN
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/BOAR.ZABSTR.
+Start segment TOWER
+End segment TOWER
+Start segment 0
+End segment 0
+Start segment TOWER
+End segment TOWER
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/SWORD.ZABSTR.
+Start segment 0
+End segment 0
+Start segment BOG
+End segment BOG
+Start segment OWL
+End segment OWL
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/PASSWORD.ZABSTR.
+Start segment CASTLE
+Start segment LAKE
+End segments CASTLE LAKE
+Start segment CASTLE
+End segment CASTLE
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/ENDGAME.ZABSTR.
+Start segment LAKE
+Start segment TOWN
+Start segment STARTUP
+End segments LAKE STARTUP TOWN
+Start segment TOWN
+Start segment LAKE
+End segments LAKE TOWN
+Start segment OWL
+End segment OWL
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/EEL.ZABSTR.
+Start segment LAKE
+End segment LAKE
+Start segment OWL
+End segment OWL
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/BADGER.ZABSTR.
+Start segment TOWN
+End segment TOWN
+Start segment 0
+End segment 0
+Start segment TOWN
+End segment TOWN
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/BASIL.ZABSTR.
+Start segment DEMON
+End segment DEMON
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/DRAGON.ZABSTR.
+Start segment DEMON
+End segment DEMON
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/RAVEN.ZABSTR.
+Start segment TOWER
+End segment TOWER
+Start segment 0
+End segment 0
+Start segment TOWER
+Start segment OWL
+End segments OWL TOWER
+Start segment TOWER
+End segment TOWER
+Start segment 0
+End segment 0
+Start segment TOWER
+End segment TOWER
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/CASTLE.ZABSTR.
+Start segment CASTLE
+End segment CASTLE
+Start segment 0
+End segment 0
+Start segment CASTLE
+End segment CASTLE
+Start segment 0
+End segment 0
+Start segment CASTLE
+End segment CASTLE
+Start segment OWL
+End segment OWL
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/REDNITE.ZABSTR.
+Start segment LAKE
+End segment LAKE
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/LADY.ZABSTR.
+Start segment LAKE
+End segment LAKE
+Start segment 0
+End segment 0
+Start segment LAKE
+End segment LAKE
+Start segment 0
+End segment 0
+Start segment LAKE
+End segment LAKE
+Start segment 0
+End segment 0
+Start segment LAKE
+End segment LAKE
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/FOREST.ZABSTR.
+Start segment TOWER
+End segment TOWER
+Loading /HOME/DEVELOPMENT/ARTHUR/JOUST.ZIL and compiling it.
+Start segment TOWER
+Compiling routine: RT-RM-EDGE-OF-WOODS
+End segment TOWER
+Start segment 0
+Compiling routine: RT-GN-LANCE
+Compiling routine: RT-TH-LANCE
+Compiling routine: RT-TAKE-LANCE
+End segment 0
+Start segment TOWER
+Compiling routine: RT-JOUST
+Compiling routine: RT-JOUST-STATUS-MSG
+Compiling routine: RT-TARGET-MSG
+Compiling routine: RT-JOUST-READ
+Compiling routine: RT-TH-TREE
+Compiling routine: RT-TH-HORN
+Compiling routine: RT-TH-HORN-CHAIN
+Compiling routine: RT-TH-BLUE-HORSE
+Compiling routine: RT-TH-HORSE
+Compiling routine: RT-HORSE-TIED
+End segment TOWER
+Start segment 0
+Compiling routine: RT-GN-HORSE
+End segment 0
+Start segment TOWER
+Compiling routine: RT-CH-BLUE-KNIGHT
+Compiling routine: RT-TH-BLUE-PAVILION
+Compiling routine: RT-ENTER-BLUE-PAVILION
+End segment TOWER
+Start segment 0
+Compiling routine: RT-TH-SHIELD
+Compiling routine: RT-TH-ARMOUR
+Compiling routine: RT-GN-ARMOUR
+End segment 0
+Start segment OWL
+Compiling routine: RT-RM-ABOVE-EDGE-OF-WOODS
+End segment OWL
+Abstracting JOUST to /HOME/DEVELOPMENT/ARTHUR/JOUST.
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/DEMON.ZABSTR.
+Start segment DEMON
+End segment DEMON
+Start segment 0
+End segment 0
+Start segment DEMON
+End segment DEMON
+Start segment 0
+End segment 0
+Start segment DEMON
+End segment DEMON
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/ICE-HOT.ZABSTR.
+Start segment DEMON
+End segment DEMON
+Start segment 0
+End segment 0
+Start segment DEMON
+End segment DEMON
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/CHESTNUT.ZABSTR.
+Start segment TOWER
+End segment TOWER
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/TOWER.ZABSTR.
+Start segment TOWER
+End segment TOWER
+Start segment 0
+End segment 0
+Start segment TOWER
+End segment TOWER
+Start segment 0
+End segment 0
+Start segment TOWER
+End segment TOWER
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/BOG.ZABSTR.
+Start segment BOG
+End segment BOG
+Start segment 0
+End segment 0
+Start segment BOG
+End segment BOG
+Start segment 0
+End segment 0
+Start segment BOG
+End segment BOG
+Start segment 0
+End segment 0
+Start segment BOG
+End segment BOG
+Start segment OWL
+End segment OWL
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/LEPRCHAN.ZABSTR.
+Start segment TOWER
+End segment TOWER
+Start segment 0
+End segment 0
+Start segment TOWER
+End segment TOWER
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/MERLIN.ZABSTR.
+Start segment TOWN
+End segment TOWN
+Start segment 0
+End segment 0
+Start segment TOWN
+End segment TOWN
+Start segment 0
+End segment 0
+Start segment TOWN
+End segment TOWN
+Start segment OWL
+End segment OWL
+Start segment TOWN
+End segment TOWN
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/TAVERN.ZABSTR.
+Start segment TOWN
+End segment TOWN
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/KITCHEN.ZABSTR.
+Start segment TOWN
+End segment TOWN
+Start segment 0
+End segment 0
+Start segment TOWN
+End segment TOWN
+Start segment 0
+End segment 0
+Start segment TOWN
+End segment TOWN
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/IKNIGHT.ZABSTR.
+Start segment TOWN
+End segment TOWN
+Start segment 0
+End segment 0
+Start segment TOWN
+End segment TOWN
+Start segment 0
+End segment 0
+Start segment OWL
+End segment OWL
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/TOWN.ZABSTR.
+Start segment TOWN
+End segment TOWN
+Start segment OWL
+End segment OWL
+Start segment TOWN
+End segment TOWN
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/IDIOT.ZABSTR.
+Start segment TOWN
+End segment TOWN
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/CHURCH.ZABSTR.
+Start segment TOWN
+End segment TOWN
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/PLACES.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/GLOBAL.ZABSTR.
+Start segment 0
+End segment 0
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/CLUES.ZABSTR.
+Start segment HINTS
+End segment HINTS
+Distinguished segment HINTS
+Start segment HINTS
+End segment HINTS
+Loading abstract /HOME/DEVELOPMENT/ARTHUR/HINTS.ZABSTR.
+Start segment 0
+End segment 0
+Start segment HINTS
+End segment HINTS
+ ** Warning: Never defined - FL-TRY-TAKE
+ ** Warning: Never defined - FL-TRANSPARENT
+ ** Warning: Never defined - FL-TOUCHED
+ ** Warning: Never defined - FL-TAKEABLE
+ ** Warning: Never defined - FL-SURFACE
+ ** Warning: Never defined - FL-SEEN
+ ** Warning: Never defined - FL-SEARCH
+ ** Warning: Never defined - FL-ROOMS
+ ** Warning: Never defined - FL-PLURAL
+ ** Warning: Never defined - FL-PERSON
+ ** Warning: Never defined - FL-OPEN
+ ** Warning: Never defined - FL-LIGHTED
+ ** Warning: Never defined - FL-NO-ARTICLE
+ ** Warning: Never defined - FL-INVISIBLE
+ ** Warning: Never defined - FL-FEMALE
+ ** Warning: Never defined - FL-CONTAINER
+
+Warnings: 17
+ ** Note: OBJECT has no properties: INTQUOTE
+ ** Note: OBJECT has no properties: ROOMS
+ ** Note: OBJECT has no properties: TH-CLOTHES-BIN
+Vocabulary: 1059
+
+Verbs: 131
+
+Real globals: 165
+
+BOTTOM-HINT-NUM		   GL-MACHINE		      GL-WIN-Y
+CLOCK-WAIT		   GL-MAP-GRID-X	      GL-WINDOW-TYPE
+CLOCKER-RUNNING		   GL-MAP-GRID-Y	      H-CHAPT-NUM
+CURRENT-REDUCTION	   GL-MEN-NUM		      H-OR-USE-MOUSE-WID
+DEMO-VERSION?		   GL-MEN-START		      H-QUEST-NUM
+ERROR-PRIORITY		   GL-MEN-TALK?		      HERE
+ERROR-STRING		   GL-MOUSE-X		      LAST-PSEUDO-LOC
+GET-HINT-ROUTINE	   GL-MOUSE-Y		      LIT
+GL-ANGRY-CNT		   GL-MOVES		      ME
+GL-AUTHOR-SIZE		   GL-NEW-TIME		      NOW-PRSI
+GL-B-COLOR		   GL-NEXT-WINNER	      OBJ-SWAP
+GL-BANNER-X		   GL-NOTIFY-SCORE?	      OHERE
+GL-BANNER-Y		   GL-OFF-Y		      OPRSO
+GL-BELL-WAIT		   GL-OLD-FORM		      OTLEXV
+GL-BLACK-FIGHT		   GL-OLD-KRAKEN-LOC	      P-CAN-UNDO
+GL-BOAR-NUM		   GL-PIC-HIGH		      P-CONT
+GL-BOG-POS		   GL-PIC-WIDE		      P-DIRECTION
+GL-BOG-START		   GL-PICT-SILVER-DOOR?	      P-HER-OBJECT
+GL-BR-X			   GL-PICTURE-NUM	      P-HIM-OBJECT
+GL-BR-Y			   GL-PLAYER-FORM	      P-IT-OBJECT
+GL-CALLED-GUARD?	   GL-POEM-LINE		      P-LEN
+GL-CLK-RUN		   GL-PUPPY		      P-MULT
+GL-COLOR-NOTE		   GL-Q-MAX		      P-NOT-HERE
+GL-CONKERS-DONE		   GL-Q-TBL		      P-NUMBER
+GL-CONKERS-RUNNING	   GL-QUESTION		      P-OFLAG
+GL-COOK-NUM		   GL-RAV-P-CNT		      P-OLEN
+GL-CRYSTAL-HINT		   GL-RAVEN-OBJ		      P-PRSA-WORD
+GL-DOOR-DIR		   GL-ROSE-X		      P-PRSI
+GL-DRAGON-CNT		   GL-ROSE-Y		      P-PRSO
+GL-DROP-HERE		   GL-SC-CHV		      P-RESPONDED
+GL-EGG-IN-NEST?		   GL-SC-EXP		      P-RUNNING
+GL-F-COLOR		   GL-SC-QST		      P-THEM-OBJECT
+GL-FIGHT-CNT		   GL-SC-WIS		      P-WALK-DIR
+GL-FONT-X		   GL-SCR-WID		      P-WON
+GL-FONT-Y		   GL-SH		      P-WORD-NUMBER
+GL-FORM-ABORT		   GL-SHIELD-CONKERS	      P-WORDS-AGAIN
+GL-GHOST-CNT		   GL-SL-FORM		      PARSE-SENTENCE-ACTIVATION
+
+GL-GIFT-COUNT		   GL-SL-HERE		      PARSER-RESULT
+GL-GUARD-CNT		   GL-SL-HIDE		      PMEM-STORE-POINTER
+GL-HIDING		   GL-SL-TIME		      PMEM-STORE-WORDS
+GL-HINT-WARNING		   GL-SL-VEH		      PMEM-WORDS-USED
+GL-HINTS-OFF		   GL-SLEEP		      PRSA
+GL-HORN-CNT		   GL-SOLDIER-CNT	      PRSI
+GL-HORSE-CNT		   GL-SPACE-WIDTH	      PRSI-NP
+GL-HUNGER		   GL-TAKEOFF-ROOM	      PRSO
+GL-ICE-TEMP		   GL-TEMP		      PRSO-NP
+GL-ICE-TEXT		   GL-TIME-WIDTH	      PRSQ
+GL-IDIOT-MSG		   GL-TL-X		      PRSS
+GL-IDIOT-STUFF		   GL-TL-Y		      QCONTEXT
+GL-IDIOT-WAIT		   GL-TUNNEL-NUM	      SEARCH-FLAGS
+GL-ISLAND-DIR		   GL-UPDATE-WINDOW	      TLEXV
+GL-K-LN			   GL-VOICE?		      VERBOSITY
+GL-K-SH			   GL-WHISKY-DRINK	      WINDOW-2-X
+GL-LN			   GL-WIN-N		      WINDOW-2-Y
+GL-LOC-TRAIL		   GL-WIN-X		      WINNER
+
+Objects: 311
+
+CH-BASILISK		 RM-DEMON-HALL		  TH-CRYSTAL-BALL
+CH-BLACK-KNIGHT		 RM-EAST-OF-FORD	  TH-CUPBOARD
+CH-BLUE-KNIGHT		 RM-EDGE-OF-BOG		  TH-CUPBOARD-KEY
+CH-CELL-GUARD		 RM-EDGE-OF-WOODS	  TH-DEAD-MOUSE
+CH-COOK			 RM-ENCHANTED-FOREST	  TH-DEMON-THRONE
+CH-COURTIERS		 RM-END-OF-CAUSEWAY	  TH-DIRECTIONS
+CH-DEMON		 RM-END-OF-HALL		  TH-DRAGON-BODY
+CH-DRAGON		 RM-FIELD-OF-HONOR	  TH-DRAGON-HAIR
+CH-FARMERS		 RM-FOOT-OF-MOUNTAIN	  TH-DROPPING
+CH-GIRL			 RM-FORD		  TH-ENGLAND
+CH-I-KNIGHT		 RM-FORK-IN-ROAD	  TH-EXCALIBUR
+CH-IDIOT		 RM-GLADE		  TH-EXCALIBUR-JEWELS
+CH-KRAKEN		 RM-GREAT-HALL		  TH-FEET
+CH-LEPRECHAUN		 RM-GROVE		  TH-FLEECE
+CH-LOT			 RM-HALL		  TH-FUTURE-OBJECT
+CH-MERLIN		 RM-HOLE		  TH-GAUNTLET
+CH-NIMUE		 RM-HOT-ROOM		  TH-GHOSTS
+CH-PEASANT		 RM-ICE-ROOM		  TH-GLASS
+CH-PLAYER		 RM-INLET		  TH-GLITTER
+CH-PRISONER		 RM-ISLAND		  TH-GOD
+CH-RAVEN		 RM-LAKE-WINDOW		  TH-GOLD-KEY
+CH-RED-KNIGHT		 RM-LANDING		  TH-GRAVESTONE
+CH-RHYMER		 RM-LEDGE		  TH-GREEN-LANCE
+CH-RUMPLESTILTSKIN	 RM-LEP-PATH		  TH-GROUND
+CH-SOLDIERS		 RM-MEADOW		  TH-GUARD-CLOTHES
+ENCHANTER		 RM-MERPATH		  TH-HANDS
+GENERIC-OBJECTS		 RM-MID-LAKE		  TH-HAWTHORN
+GLOBAL-HERE		 RM-MOOR		  TH-HEAD
+GLOBAL-OBJECTS		 RM-NORTH-OF-CHASM	  TH-HELMET
+HER			 RM-OUTSIDE-CRYSTAL-CAVE  TH-HOLE
+HIM			 RM-PARADE-AREA		  TH-HORN
+INFOCOM			 RM-PASSAGE-1		  TH-HORN-CHAIN
+INTADJ			 RM-PASSAGE-2		  TH-HORSE
+INTDIR			 RM-PASSAGE-3		  TH-HUMAN-BODY
+INTNUM			 RM-PAVILION		  TH-ICE
+INTPP			 RM-RAV-PATH		  TH-IVORY-KEY
+INTQUOTE		 RM-RAVEN-NEST		  TH-JOUST
+IT			 RM-RAVEN-TREE		  TH-LADY-NOSE
+LG-BADGER-TAPESTRY	 RM-RIVER-1		  TH-LEFT-MANACLE
+LG-CASTLE		 RM-RIVER-2		  TH-LEGS
+LG-CASTLE-GATE		 RM-RIVER-3		  TH-LOT-SWORD
+LG-CELL-DOOR		 RM-ROAD		  TH-LOT-THRONE
+LG-CHASM		 RM-SHALLOWS		  TH-MAGIC
+LG-CHESTNUT-TREES	 RM-SMALL-CHAMBER	  TH-MAGIC-RING
+LG-CHURCH-GATE		 RM-SMITHY		  TH-MANACLES
+LG-COTTAGE-DOOR		 RM-SOUTH-OF-CHASM	  TH-MASTER
+LG-CRACK		 RM-STAIRS-1		  TH-MASTER-KEY
+LG-ENCHANTED-TREES	 RM-STAIRS-2		  TH-MERETZKY
+LG-FOREST		 RM-TAV-KITCHEN		  TH-MIDGES
+LG-HILL			 RM-TAVERN		  TH-MINNOW
+LG-HOT-DOOR		 RM-THORNEY-ISLAND	  TH-MOTHER
+LG-IVORY-DOOR		 RM-TOW-CLEARING	  TH-MOUTH
+LG-KITCHEN-DOOR		 RM-TOW-PATH		  TH-NAME
+LG-LAKE			 RM-TOWER-ROOM		  TH-OAK
+LG-MOUNTAIN		 RM-TOWN-GATE		  TH-OAK-HOLE
+LG-OWL-TAPESTRY		 RM-TOWN-SQUARE		  TH-PADLOCK
+LG-PATH			 RM-UG-CHAMBER		  TH-PALLET
+LG-PEAT			 RM-VILLAGE-GREEN	  TH-PASSWORD
+LG-RIVER		 RM-WEST-OF-FORD	  TH-PEAT-BRICK
+LG-SILVER-DOOR		 ROOMS			  TH-PEDESTAL
+LG-STAIRS		 TH-ALTAR		  TH-PLAYER-BODY
+LG-THATCH		 TH-ANIMAL-BODY		  TH-POLLAXE
+LG-TOWER		 TH-ANYTHING		  TH-PUMICE
+LG-TOWN			 TH-APPLE		  TH-RAVEN-BODY
+LG-TOWN-GATE		 TH-APPLETREE		  TH-RAVEN-EGG
+LG-VILLAGE-HUTS		 TH-ARMOUR		  TH-RED-LANCE
+LG-WALL			 TH-ARMOURY-TABLE	  TH-RHYME
+LG-WINDOW		 TH-BAG			  TH-RHYMER-CHAIR
+LG-WOODEN-DOOR		 TH-BARREL		  TH-RIGHT-MANACLE
+LOCAL-GLOBALS		 TH-BARREL-WATER	  TH-RIOTHAMUS
+NOT-HERE-OBJECT		 TH-BATES		  TH-ROCK
+PSEUDO-OBJECT		 TH-BECK		  TH-SCROLL
+RM-ABOVE-BOG		 TH-BEER		  TH-SHELL
+RM-ABOVE-CASTLE		 TH-BEHIND-DOOR		  TH-SHERLOCK
+RM-ABOVE-EDGE-OF-WOODS	 TH-BEHIND-G-STONE	  TH-SHIELD
+RM-ABOVE-FIELD		 TH-BEHIND-ROCK		  TH-SILVER-KEY
+RM-ABOVE-FORD		 TH-BELLS		  TH-SKY
+RM-ABOVE-FOREST		 TH-BIER		  TH-SLEAN
+RM-ABOVE-LAKE		 TH-BIRD		  TH-SMITH-HEARTH
+RM-ABOVE-MEADOW		 TH-BLACK-ARMOUR	  TH-SPICE
+RM-ABOVE-MERCAVE	 TH-BLACK-MEDALLION	  TH-SPICE-BOTTLE
+RM-ABOVE-MOOR		 TH-BLACK-SWORD		  TH-SPLINT
+RM-ABOVE-TOWN		 TH-BLUE-HORSE		  TH-STATIONFALL
+RM-ARMOURY		 TH-BLUE-PAVILION	  TH-STONE
+RM-BADGER-TUNNEL	 TH-BOAR		  TH-SWORD
+RM-BAS-LAIR		 TH-BOAT		  TH-SYMBOLS
+RM-BEHIND-FIRE		 TH-BRACELET		  TH-TANKARDS
+RM-BEHIND-THRONE	 TH-BRASS-EGG		  TH-TAVERN-FIRE
+RM-BOAT-ROOM		 TH-BREECHES		  TH-TAVERN-TABLE
+RM-BOG			 TH-BROKEN-DAGGER	  TH-TIME
+RM-BOTTOM-OF-STAIRS	 TH-CAGE		  TH-TORQUE
+RM-CAS-KITCHEN		 TH-CASTLE-FIRE		  TH-TOWER-TABLE
+RM-CASTLE-GATE		 TH-CASTLE-TABLE	  TH-TREE
+RM-CAUSEWAY		 TH-CELL-STONE		  TH-TUNIC
+RM-CAVE			 TH-CELTIC-GODS		  TH-TUSK
+RM-CELL			 TH-CHAINS		  TH-UTHER
+RM-CELLAR		 TH-CHEESE		  TH-WATER
+RM-CHESTNUT-PATH	 TH-CHIVALRY		  TH-WEEDS
+RM-CHURCH		 TH-CLOTHES-BIN		  TH-WHISKY
+RM-CHURCHYARD		 TH-CONKERS		  TH-WHISKY-JUG
+RM-CIRC-ROOM		 TH-COTTAGE-FIRE	  THEM
+RM-COTTAGE		 TH-COUNTER		  YOU
+RM-CRACK-ROOM		 TH-CRUTCH		  ZORK
+RM-CRYSTAL-CAVE		 TH-CRYSTAL
+
+Properties: 26
+
+P?ACTION     P?DOWN	  P?IN	       P?OWNER	    P?SW	 P?WEST
+P?ADJACENT   P?EAST	  P?NE	       P?SCORE	    P?SYNONYM
+P?ADJECTIVE  P?FDESC	  P?NORTH      P?SE	    P?TEXT
+P?CAPACITY   P?GENERIC	  P?NW	       P?SIZE	    P?THINGS
+P?CONTFCN    P?GLOBAL	  P?OUT	       P?SOUTH	    P?UP
+
+Flags: 47
+
+FL-AIR		FL-COLLECTIVE	FL-LAMP		FL-PLURAL	FL-TRY-TAKE
+FL-ALIVE	FL-CONTAINER	FL-LIGHTED	FL-READABLE	FL-VEHICLE
+FL-ASLEEP	FL-DOOR		FL-LOCKED	FL-ROOMS	FL-VOWEL
+FL-AUTO-ENTER	FL-FEMALE	FL-NO-ALL	FL-SEARCH	FL-WATER
+FL-AUTO-OPEN	FL-FOOD		FL-NO-ARTICLE	FL-SEEN		FL-WEAPON
+FL-BODY-PART	FL-HAS-SDESC	FL-NO-DESC	FL-SURFACE	FL-WORN
+FL-BROKEN	FL-INDOORS	FL-NO-LIST	FL-TAKEABLE	FL-YOUR
+FL-BURNABLE	FL-INVISIBLE	FL-OPEN		FL-TOOL
+FL-BY-HAND	FL-KEY		FL-OPENABLE	FL-TOUCHED
+FL-CLOTHING	FL-KNIFE	FL-PERSON	FL-TRANSPARENT
