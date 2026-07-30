@@ -68,6 +68,8 @@ There are a lot of _Zork_ versions and they run the gamut from version 1 to vers
 - cutthroats-r23-s840809.z3 (MP; source included)
 - deadline-r27-s831005.z3 (MP; source included)
 - enchanter-r29-s860820.z3 (MP; source included)
+- hitchhiker-r59-s851108.z3 (LTOI1, Mac; BBC version)
+- hitchhiker-invclues-r31-s871119.z5 (LTOI1, PC; Solid Gold; source included)
 - infidel-r22-s830916.z3 (MP; sourec included)
 - journey-r26-s890316.z6 (MP, Mac)
 - journey-r83-s890706.z6 (MP, PC; source included; resource blorb provided)
