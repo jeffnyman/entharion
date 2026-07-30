@@ -1,0 +1,596 @@
+
+<ROOM MARTIAN-DESERT (LOC ROOMS) (DESC "Martian Desert") (LDESC
+"As you wander amidst these towering dunes of red Martian sand, you notice
+three distinct pathways: north, east, and west.") (NORTH TO RUINED-CASTLE-1) (
+EAST TO RUINED-CASTLE-2) (WEST TO RUINED-CASTLE-3) (FLAGS RLANDBIT ONBIT) (
+GLOBAL DUNES)> 
+<GLOBAL CASTLES-SEEN 0 %<> WORD> 
+<DEFINE-ROUTINE NAME-CASTLE> 
+<DEFINE-ROUTINE CASTLE-NOTE> 
+<ROOM RUINED-CASTLE-1 (LOC ROOMS) (DESC "Ruined Castle") (SDESC "") (SOUTH TO
+MARTIAN-DESERT) (OUT TO MARTIAN-DESERT) (NORTH TO THRONE-ROOM) (IN TO
+THRONE-ROOM) (FLAGS RLANDBIT ONBIT) (ACTION RUINED-CASTLE-1-F)> 
+<DEFINE-ROUTINE RUINED-CASTLE-1-F> 
+<ROOM THRONE-ROOM (LOC ROOMS) (DESC "Throne Room") (SOUTH TO RUINED-CASTLE-1) (
+OUT TO RUINED-CASTLE-1) (NORTH TO ROYAL-DOCKS) (FLAGS RLANDBIT ONBIT INDOORSBIT
+) (ACTION THRONE-ROOM-F)> 
+<OBJECT MITRE-CROWN (LOC THRONE-ROOM) (DESC "Mitre's crown") (SYNONYM CROWN) (
+ADJECTIVE ROYAL MITRE\'S KING\'S) (FLAGS NDESCBIT) (ACTION MITRE-CROWN-F)> 
+<OBJECT GOWN (LOC THRONE-ROOM) (DESC "flowing white gown") (SYNONYM HAIR GOWN)
+(ADJECTIVE GOLDEN FLOWING WHITE) (FLAGS NDESCBIT) (ACTION GOWN-F)> 
+<DEFINE-ROUTINE THRONE-ROOM-F> 
+<DEFINE-ROUTINE MITRE-CROWN-F> 
+<DEFINE-ROUTINE GOWN-F> 
+<OBJECT MITRE (LOC THRONE-ROOM) (DESC "King Mitre") (DESCFCN MITRE-F) (SYNONYM
+KING MITRE) (ADJECTIVE KING) (FLAGS ACTORBIT NARTICLEBIT) (ACTION MITRE-F)> 
+<DEFINE-ROUTINE MITRE-F> 
+<OBJECT THETA (LOC THRONE-ROOM) (SDESC "different-looking angle") (LDESC
+"Princess Theta stands demurely by her father's throne, buried up
+to her thighs in forty-five degree angles.") (SYNONYM ANGLE PRINCE DAUGHTER
+THETA) (ADJECTIVE HIS DIFFERENT FORTY DEGREE NUMBER KING\'S DAUGHTER PRINCE) (
+GENERIC GENERIC-ANGLE-F) (FLAGS NDESCBIT MUNGBIT) (ACTION THETA-F)> 
+<DEFINE-ROUTINE THETA-F> 
+<DEFINE-ROUTINE WANT-CHILDREN> 
+<OBJECT EIGHTY-TWO-DEGREE-ANGLE (DESC "eighty-two degree angle") (NO-T-DESC
+"eighy-wo degree angle") (SYNONYM ANGLE) (ADJECTIVE EIGHTY EIGHY DEGREE NUMBER)
+(FLAGS TAKEBIT VOWELBIT) (GENERIC GENERIC-ANGLE-F) (ACTION
+EIGHTY-TWO-DEGREE-ANGLE-F)> 
+<DEFINE-ROUTINE EIGHTY-TWO-DEGREE-ANGLE-F> 
+<DEFINE-ROUTINE NO-X-DEGREE-ANGLE> 
+<DEFINE-ROUTINE GENERIC-ANGLE-F> 
+<OBJECT PILE-OF-ANGLES (LOC THRONE-ROOM) (DESC "pile of angles") (SYNONYM PILE
+ANGLES) (ADJECTIVE FORTY DEGREE NUMBER) (FLAGS NDESCBIT) (ACTION
+PILE-OF-ANGLES-F)> 
+<DEFINE-ROUTINE PILE-OF-ANGLES-F> 
+<ROOM RUINED-CASTLE-2 (LOC ROOMS) (DESC "Ruined Castle") (SDESC "") (WEST TO
+MARTIAN-DESERT) (EAST TO MARTIAN-DESSERT) (FLAGS RLANDBIT ONBIT) (GLOBAL
+DULL-DUST) (ACTION RUINED-CASTLE-2-F)> 
+<OBJECT DULL-DUST (LOC LOCAL-GLOBALS) (DESC "dust") (SYNONYM DUST) (FLAGS
+NDESCBIT) (ACTION UNIMPORTANT-THING-F)> 
+<OBJECT FROG-CROWN (LOC RUINED-CASTLE-2) (DESC "small gold crown") (SYNONYM
+CROWN) (ADJECTIVE SMALL GOLD FROG\'S) (FLAGS NDESCBIT) (ACTION FROG-CROWN-F)> 
+<DEFINE-ROUTINE FROG-CROWN-F> 
+<DEFINE-ROUTINE RUINED-CASTLE-2-F> 
+<DEFINE-ROUTINE UNCHARTABLE-DESERT> 
+<OBJECT FROG (LOC RUINED-CASTLE-2) (DESC "frog") (LDESC
+"Sitting on one of the stone blocks is a large green frog. Something about
+it catches your eye.") (SYNONYM FROG PRINCE) (ADJECTIVE ENCHANTED LARGE GREEN)
+(ACTION FROG-F)> 
+<DEFINE-ROUTINE FROG-F> 
+<DEFINE-ROUTINE FROG-SEX-SCENE> 
+<OBJECT BLENDER (DESC "common household blender") (SYNONYM BLENDER MIXER
+ENGRAVING) (ADJECTIVE COMMON HOUSEHOLD) (FLAGS TAKEBIT LIGHTBIT READBIT) (SIZE
+8) (ACTION BLENDER-F)> 
+<DEFINE-ROUTINE BLENDER-F> 
+<ROOM RUINED-CASTLE-3 (LOC ROOMS) (DESC "Ruined Castle") (SDESC "") (EAST TO
+MARTIAN-DESERT) (NW TO HICKORY-AND-DICKORY-DOCK) (FLAGS RLANDBIT ONBIT) (GLOBAL
+HOLE) (HOLE-DESTINATION BASEMENT) (ACTION RUINED-CASTLE-3-F)> 
+<DEFINE-ROUTINE RUINED-CASTLE-3-F> 
+<ROOM HICKORY-AND-DICKORY-DOCK (LOC ROOMS) (DESC "Hickory & Dickory Dock") (
+LDESC "This dock, which extends north into a broad canal, is crafted of fine
+woods from across the solar system: hickory wood from the forests of
+Earth, and dickory wood from the jungles of Venus. A path leads south.") (SOUTH
+TO RUINED-CASTLE-3) (NORTH SORRY "If you want to jump in the canal, say so.") (
+NE SORRY "If you want to jump in the canal, say so.") (NW SORRY
+"If you want to jump in the canal, say so.") (FLAGS RLANDBIT ONBIT) (GLOBAL
+CANAL-OBJECT DOCK-OBJECT WATER)> 
+<OBJECT MOUSE (LOC HICKORY-AND-DICKORY-DOCK) (DESC "mouse") (FDESC
+"You spot a little white marsmouse running along the dock.") (SYNONYM MOUSE
+MARSMOUSE) (ADJECTIVE SMALL WHITE) (SIZE 3) (FLAGS TAKEBIT TRYTAKEBIT) (ACTION
+MOUSE-F)> 
+<DEFINE-ROUTINE MOUSE-F> 
+<DEFINE-ROUTINE I-MOUSE> 
+<ROOM ROYAL-DOCKS (LOC ROOMS) (DESC "Royal Docks") (SOUTH TO THRONE-ROOM) (
+NORTH SORRY "If you want to jump in the canal, say so.") (NE SORRY
+"If you want to jump in the canal, say so.") (NW SORRY
+"If you want to jump in the canal, say so.") (IN TO THRONE-ROOM) (FLAGS
+RLANDBIT ONBIT) (GLOBAL CANAL-OBJECT DOCK-OBJECT WATER) (ACTION ROYAL-DOCKS-F)>
+
+<DEFINE-ROUTINE ROYAL-DOCKS-F> 
+<OBJECT BARGE (LOC ROYAL-DOCKS) (DESC "royal barge") (DESCFCN BARGE-F) (SYNONYM
+BARGE BOAT GONDOLA CONTROL CONTROLS BUTTONS) (ADJECTIVE ROYAL WOODEN CEDAR
+CEDARWOOD SIMPLE) (GENERIC GENERIC-BARGE-F) (FLAGS INBIT VEHBIT CONTBIT
+SEARCHBIT OPENBIT) (CAPACITY 200) (ACTION BARGE-F)> 
+<DEFINE-ROUTINE BARGE-F> 
+<DEFINE-ROUTINE GENERIC-BARGE-F> 
+<DEFINE-ROUTINE SHAKE-BOAT> 
+<OBJECT ORANGE-BUTTON (LOC GLOBAL-OBJECTS) (DESC "huge orange button") (SYNONYM
+BUTTON) (ADJECTIVE LARGE ORANGE) (FLAGS NDESCBIT) (ACTION ORANGE-BUTTON-F)> 
+<DEFINE-ROUTINE ORANGE-BUTTON-F> 
+<DEFINE-ROUTINE CHECK-BARGE-LOC> 
+<OBJECT PURPLE-BUTTON (LOC GLOBAL-OBJECTS) (DESC "huge purple button") (SYNONYM
+BUTTON) (ADJECTIVE LARGE PURPLE) (FLAGS NDESCBIT) (ACTION PURPLE-BUTTON-F)> 
+<DEFINE-ROUTINE PURPLE-BUTTON-F> 
+<DEFINE-ROUTINE BARGE-FORGES-AHEAD> 
+<GLOBAL MOORING-ON T %<> WORD> 
+<GLOBAL BARGE-UNDER-POWER <> %<> WORD> 
+<GLOBAL BARGE-LOC-NUM 1 %<> WORD> 
+<GLOBAL RAFT-LOC-NUM 10 %<> WORD> 
+<GLOBAL BARGE-WAIT <> %<> WORD> 
+<GLOBAL RAFT-WAIT <> %<> WORD> 
+<GLOBAL NEARER-DOCK <> %<> WORD> 
+<DEFINE-ROUTINE CANAL-LOC> 
+<DEFINE-ROUTINE SET-RAFT-LOC> 
+<OBJECT CANAL-OBJECT (LOC LOCAL-GLOBALS) (DESC "canal") (SYNONYM CANAL) (
+ADJECTIVE MARTIAN SMALL WIDE) (ACTION CANAL-OBJECT-F)> 
+<DEFINE-ROUTINE CANAL-OBJECT-F> 
+<OBJECT DOCK-OBJECT (LOC LOCAL-GLOBALS) (DESC "dock") (SYNONYM DOCK PIER) (
+ADJECTIVE SAND-COVERED SMALL BABY ABANDONED ROYAL) (ACTION DOCK-OBJECT-F)> 
+<DEFINE-ROUTINE DOCK-OBJECT-F> 
+<GLOBAL DONT-PRINT-VEHICLE <> %<> WORD> 
+<OBJECT DUNES (LOC LOCAL-GLOBALS) (DESC "sand dunes") (SYNONYM DUNE DUNES SAND)
+(ADJECTIVE SAND RED REDDISH TOWERING SCULPTED MARTIAN IMPASSABLE) (FLAGS
+NARTICLEBIT PLURALBIT) (ACTION DUNES-F)> 
+<DEFINE-ROUTINE DUNES-F> 
+<ROOM CANAL (LOC ROOMS) (DESC "Martian Canal") (NORTH SORRY
+"If you want to jump in the canal, say so.") (NE SORRY
+"If you want to jump in the canal, say so.") (EAST SORRY
+"If you want to jump in the canal, say so.") (SE SORRY
+"If you want to jump in the canal, say so.") (SOUTH SORRY
+"If you want to jump in the canal, say so.") (SW SORRY
+"If you want to jump in the canal, say so.") (WEST SORRY
+"If you want to jump in the canal, say so.") (NW SORRY
+"If you want to jump in the canal, say so.") (FLAGS ONBIT) (GLOBAL CANAL-OBJECT
+DOCK-OBJECT WATER DUNES SIGN BUOY) (ACTION CANAL-F)> 
+<DEFINE-ROUTINE CANAL-F> 
+<OBJECT BARGE-FROM-RAFT (LOC CANAL) (DESC "royal barge") (SYNONYM BARGE BUTTONS
+) (ADJECTIVE ROYAL WOODEN) (GENERIC GENERIC-BARGE-F) (FLAGS NDESCBIT) (ACTION
+BARGE-FROM-RAFT-F)> 
+<DEFINE-ROUTINE BARGE-FROM-RAFT-F> 
+<DEFINE-ROUTINE BARGE-VISIBLE-AT-DOCK> 
+<OBJECT BUOY (LOC LOCAL-GLOBALS) (DESC "red warning buoy") (SYNONYM BUOY) (
+ADJECTIVE SWAYING RED WARNING) (FLAGS NDESCBIT) (ACTION BUOY-F)> 
+<DEFINE-ROUTINE BUOY-F> 
+<DEFINE-ROUTINE I-CANAL> 
+<OBJECT POWER-TRANSMITTER (LOC CANAL) (SDESC "") (SYNONYM GLINT STRUCTURE
+MACHINE TOWER) (ADJECTIVE LARGE METAL METALLIC POWER LOOMING RUSTED MARTIAN) (
+FLAGS NDESCBIT) (GENERIC GENERIC-MACHINE-F) (ACTION POWER-TRANSMITTER-F)> 
+<DEFINE-ROUTINE POWER-TRANSMITTER-F> 
+<DEFINE-ROUTINE DESCRIBE-POWER-TRANSMITTER> 
+<CONSTANT ION-TABLE <TABLE "" "slight" "worsening" "splitting"
+"fantastically unbelievable ultra-awesome migraine">> 
+<GLOBAL ION-DEATH-COUNTER 0 %<> WORD> 
+<GLOBAL SIDEKICK-IONIZED <> %<> WORD> 
+<DEFINE-ROUTINE I-ION-DEATH> 
+<DEFINE-ROUTINE BARGE-DOCKS> 
+<DEFINE-ROUTINE SET-DOCK-ROOM> 
+<DEFINE-ROUTINE SET-DOCK-DIR> 
+<ROOM BABY-DOCK (LOC ROOMS) (DESC "Baby Dock") (LDESC
+"This tiny dock, partly buried by drifting sand, extends south into the canal.
+A break in the sand forms a trail to the north.") (SOUTH SORRY
+"If you want to jump in the canal, say so.") (SE SORRY
+"If you want to jump in the canal, say so.") (SW SORRY
+"If you want to jump in the canal, say so.") (NORTH TO AMONG-THE-DUNES) (FLAGS
+ONBIT) (GLOBAL CANAL-OBJECT DOCK-OBJECT WATER DUNES)> 
+<ROOM AMONG-THE-DUNES (LOC ROOMS) (DESC "Among the Dunes") (LDESC
+"You are in a tiny basin, protected by dunes from the fierce Martian winds.
+The dunes are impassable, except to the south.") (SOUTH TO BABY-DOCK) (FLAGS
+RLANDBIT ONBIT NARTICLEBIT) (GLOBAL DUNES) (ACTION AMONG-THE-DUNES-F)> 
+<GLOBAL WIFE-NUMBER 0 %<> WORD> 
+<DEFINE-ROUTINE AMONG-THE-DUNES-F> 
+<DEFINE-ROUTINE PALINDROME-NUMBER?> 
+<OBJECT LIP-BALM (LOC AMONG-THE-DUNES) (DESC "stick of lip balm") (NO-T-DESC
+"sick of lip balm") (FDESC
+"The alien may have died of acute chapped lips (a perennial problem in the
+arid Martian climate). If so, it was a sudden death, for the lip balm near
+the body is completely unused.") (SYNONYM STICK BALM CHAPSTICK GLOSS) (
+ADJECTIVE LIP SICK) (FLAGS TAKEBIT) (SIZE 2) (ACTION LIP-BALM-F)> 
+<DEFINE-ROUTINE LIP-BALM-F> 
+<OBJECT CODED-MESSAGE (LOC AMONG-THE-DUNES) (DESC "coded message") (FDESC
+"Lying next to the body, partially buried in the sand,
+is a strange coded message.") (SYNONYM MESSAGE CODE) (ADJECTIVE STRANGE CODED)
+(FLAGS TAKEBIT READBIT BURNBIT) (SIZE 2) (ACTION CODED-MESSAGE-F)> 
+<DEFINE-ROUTINE CODED-MESSAGE-F> 
+<DEFINE-ROUTINE REVERSE-NUMBER> 
+<OBJECT MESSENGER (LOC AMONG-THE-DUNES) (DESC "dead alien") (FDESC
+"A strange alien, probably a member of one of the ancient warrior
+races of Mars, lies dead at the base of a dune.") (SYNONYM ALIEN SPY BODY) (
+ADJECTIVE STRANGE ALIEN DEAD) (ACTION MESSENGER-F)> 
+<DEFINE-ROUTINE MESSENGER-F> 
+<ROOM DONALD-DOCK (LOC ROOMS) (DESC "Donald Dock") (LDESC
+"This dock, on the south shore of the canal, is named after Don Donald, the
+first resident of Mars. There are no paths leading inland, but a tall dune
+to the south is less steep than the others.") (NORTH SORRY
+"If you want to jump in the canal, say so.") (NE SORRY
+"If you want to jump in the canal, say so.") (NW SORRY
+"If you want to jump in the canal, say so.") (SOUTH TO DUNETOP) (UP TO DUNETOP)
+(FLAGS RLANDBIT ONBIT) (GLOBAL CANAL-OBJECT DOCK-OBJECT WATER DUNES)> 
+<ROOM DUNETOP (LOC ROOMS) (DESC "Dunetop") (LDESC
+"From this vantage, you can see the canal curving south, a bit downstream from
+here. Just after this bend, two docks flank the canal: an opulent dock on the
+east bank, and a dilapidated one on the closer shore.|
+   You could slide down the dune to the north or the east.") (NORTH TO
+DONALD-DOCK) (EAST TO CANALVIEW-MALL) (DOWN SORRY "East or north?") (FLAGS
+RLANDBIT ONBIT) (GLOBAL DUNES CANAL-OBJECT DOCK-OBJECT) (ACTION DUNETOP-F)> 
+<DEFINE-ROUTINE DUNETOP-F> 
+<GLOBAL TITS-COUNTER 0 %<> WORD> 
+<DEFINE-ROUTINE I-TITS> 
+<ROOM ABANDONED-DOCK (LOC ROOMS) (DESC "Abandoned Dock") (LDESC
+"This dock is in remarkably good shape, considering that it hasn't been painted
+in fifteen thousand years. A wide canal, flowing south, lies to the east, and
+an opening between the dunes leads west.") (WEST TO CANALVIEW-MALL) (EAST SORRY
+"If you want to jump in the canal, say so.") (NE SORRY
+"If you want to jump in the canal, say so.") (SE SORRY
+"If you want to jump in the canal, say so.") (FLAGS RLANDBIT ONBIT) (GLOBAL
+CANAL-OBJECT DOCK-OBJECT WATER DUNES)> 
+<ROOM CANALVIEW-MALL (LOC ROOMS) (DESC "Canalview Mall") (LDESC
+"As with all Martian civilization, this once-fashionable shopping center has
+fallen upon hard times; the only store to have endured the fifteen-millenia
+recession lies to the south. The canal is still as visible as it was when
+scheming marketeers misnamed the mall generations ago -- in other words, not
+at all. A path leads east, and a dune to the west seems mountable.") (EAST TO
+ABANDONED-DOCK) (WEST TO DUNETOP) (UP TO DUNETOP) (SOUTH TO EXIT-SHOP) (GLOBAL
+DUNES) (FLAGS RLANDBIT ONBIT)> 
+<OBJECT OUTSIDE-SHOP (LOC CANALVIEW-MALL) (DESC "shop") (SYNONYM SHOP STORE) (
+ADJECTIVE EXIT) (FLAGS NDESCBIT) (ACTION OUTSIDE-SHOP-F)> 
+<DEFINE-ROUTINE OUTSIDE-SHOP-F> 
+<DEFINE-ROUTINE INSIDE-SHOP-F> 
+<ROOM EXIT-SHOP (LOC ROOMS) (DESC "Exit Shop") (LDESC
+"This store is in good shape only relative to the other shops in the mall; for
+example, the last time it was vacuumed, humans were just inventing writing. The
+dust nearly covers the proprietor, who sits forlornly in the corner beneath a
+faded sign. An exit is barely visible through the dust to the north.") (NORTH
+TO CANALVIEW-MALL) (OUT TO CANALVIEW-MALL) (FLAGS RLANDBIT ONBIT INDOORSBIT) (
+GLOBAL SIGN) (ACTION EXIT-SHOP-F)> 
+<OBJECT INSIDE-SHOP (LOC EXIT-SHOP) (DESC "shop") (SYNONYM STORE SHOP) (
+ADJECTIVE EXIT) (FLAGS NDESCBIT) (ACTION INSIDE-SHOP-F)> 
+<DEFINE-ROUTINE EXIT-SHOP-F> 
+<OBJECT PROPRIETOR (LOC EXIT-SHOP) (DESC "proprietor") (SYNONYM PROPRIETOR
+OWNER) (ADJECTIVE FORLORN DROWSY) (FLAGS ACTORBIT NDESCBIT) (ACTION
+PROPRIETOR-F)> 
+<DEFINE-ROUTINE PROPRIETOR-F> 
+<OBJECT EXIT-OBJECT (LOC GLOBAL-OBJECTS) (DESC "exit") (SYNONYM EXIT EGRESS) (
+FLAGS VOWELBIT) (ACTION EXIT-OBJECT-F)> 
+<DEFINE-ROUTINE EXIT-OBJECT-F> 
+<OBJECT DUST (LOC EXIT-SHOP) (DESC "dust") (SYNONYM DUST) (FLAGS NDESCBIT
+NARTICLEBIT) (ACTION DUST-F)> 
+<DEFINE-ROUTINE DUST-F> 
+<OBJECT TUBE (DESC "tube") (NO-T-DESC "ube") (SYNONYM TUBE UBE) (ADJECTIVE
+CARDBOARD MAILING NARROW) (FLAGS CONTBIT SEARCHBIT TAKEBIT BURNBIT) (CAPACITY 2
+)> 
+<OBJECT FLEXIBLE-HOLE (LOC TUBE) (DESC "flexible black circle") (SYNONYM CIRCLE
+HOLE EXIT) (ADJECTIVE FLEXIBLE BLACK PORTABLE) (FLAGS TAKEBIT) (SIZE 1) (ACTION
+FLEXIBLE-HOLE-F)> 
+<DEFINE-ROUTINE FLEXIBLE-HOLE-F> 
+<DEFINE-ROUTINE MEANT-OTHER-HOLE> 
+<ROOM MY-KIND-OF-DOCK (LOC ROOMS) (DESC "My Kinda Dock!") (SDESC
+"Now THIS Is My Kind of Dock") (LDESC
+"If I owned a pier on a major Martian canal, I'd want it to look just like
+this one -- handsome, well-proportioned, and amply endowed with jade and
+ivory. I could probably live without the alabaster stair which leads up at
+the end of the dock, to the east.") (WEST SORRY
+"If you want to jump in the canal, say so.") (SW SORRY
+"If you want to jump in the canal, say so.") (NW SORRY
+"If you want to jump in the canal, say so.") (EAST TO MAIN-HALL-OF-PALACE) (UP
+TO MAIN-HALL-OF-PALACE) (FLAGS ONBIT NARTICLEBIT) (GLOBAL CANAL-OBJECT
+DOCK-OBJECT WATER STAIRS LIGHT)> 
+<ROOM MAIN-HALL-OF-PALACE (LOC ROOMS) (DESC "Main Hall of Palace") (LDESC
+"A shaft of sunlight penetrates the stained glass windows and glistens off a
+large reflecting pool, filling this huge entry hall with a seductive pattern
+of tantalizing colors. Gleaming marble pillars rise majestically from the pool
+to support a towering, arched roof. You are on a branching pathway suspended
+above the pool, leading toward shadowy archways in every direction.") (NORTH
+SORRY "As you approach, you realize that the archway in this direction is merely
+a design on a solid wall.") (NE TO AUDIENCE-CHAMBER) (EAST TO ORIENTAL-GARDEN)
+(SE SORRY "As you approach, you realize that the archway in this direction is merely
+a design on a solid wall.") (SOUTH TO LAUNDRY-ROOM) (SW SORRY
+"As you approach, you realize that the archway in this direction is merely
+a design on a solid wall.") (WEST TO MY-KIND-OF-DOCK) (NW SORRY
+"As you approach, you realize that the archway in this direction is merely
+a design on a solid wall.") (DOWN TO MY-KIND-OF-DOCK) (FLAGS RLANDBIT ONBIT
+INDOORSBIT) (GLOBAL WATER STAIRS WINDOW LIGHT)> 
+<ROOM LAUNDRY-ROOM (LOC ROOMS) (DESC "Laundry Room") (NORTH TO
+MAIN-HALL-OF-PALACE) (OUT TO MAIN-HALL-OF-PALACE) (FLAGS RLANDBIT ONBIT
+INDOORSBIT) (ACTION LAUNDRY-ROOM-F)> 
+<OBJECT DIRTY-LAUNDRY (LOC LAUNDRY-ROOM) (DESC "laundry") (SYNONYM BRA BRAS
+BRASSIERE JOCKSTRAP LAUNDRY) (ADJECTIVE DIRTY) (FLAGS NDESCBIT) (ACTION
+UNIMPORTANT-THING-F)> 
+<DEFINE-ROUTINE LAUNDRY-ROOM-F> 
+<OBJECT CLOTHES-PIN (LOC LAUNDRY-ROOM) (DESC "clothes pin") (NO-T-DESC
+"clohes pin") (FDESC
+"Today must be drying day at the laundry, since there's only one clothes
+pin left.") (SYNONYM PIN) (ADJECTIVE CLOTHES CLOHES) (FLAGS TAKEBIT BURNBIT) (
+SIZE 2) (ACTION CLOTHES-PIN-F)> 
+<DEFINE-ROUTINE CLOTHES-PIN-F> 
+<ROOM ORIENTAL-GARDEN (LOC ROOMS) (DESC "Oriental Garden") (LDESC
+"These twisted trees and elegant footbridges are even more beautiful than the
+gardens of the most lavish Fu Manchu films. Paths from the north, southeast,
+and west meet at a large well of hand-carved stone in the center of the
+garden.") (WEST TO MAIN-HALL-OF-PALACE) (NORTH TO AUDIENCE-CHAMBER) (SE TO
+BASE-OF-TOWER) (DOWN PER WELL-ENTER-F) (FLAGS RLANDBIT ONBIT) (GLOBAL TREE
+WELL-OBJECT)> 
+<OBJECT WELL-OBJECT (LOC LOCAL-GLOBALS) (DESC "well") (SYNONYM WELL) (ADJECTIVE
+LARGE STONE) (FLAGS NDESCBIT) (ACTION WELL-F)> 
+<DEFINE-ROUTINE WELL-ENTER-F> 
+<DEFINE-ROUTINE WELL-F> 
+<OBJECT TOWER (LOC LOCAL-GLOBALS) (DESC "tower") (SYNONYM TOWER MINARET) (
+ADJECTIVE SLENDER TALL) (ACTION TOWER-F)> 
+<DEFINE-ROUTINE TOWER-F> 
+<ROOM BASE-OF-TOWER (LOC ROOMS) (DESC "Base of Tower") (LDESC
+"A slender tower protrudes magnificently above the palace grounds. A stair
+winds up into the tower and an oriental garden spreads out to the northwest.")
+(UP TO MINARET) (NW TO ORIENTAL-GARDEN) (FLAGS RLANDBIT ONBIT) (GLOBAL STAIRS
+TOWER)> 
+<ROOM MINARET (LOC ROOMS) (DESC "Minaret") (LDESC
+"By standing erect at the parapet of this mighty tower, you command an exciting
+view. Below, gardens and courtyards intermingle with the palace buildings,
+forming a fertile oasis in the Martian desert. Off to the west, docks straddle
+a deep canal. On the far shore, sand dunes lap at crumbling buildings. On the
+top step of a winding stair is a black circle.") (DOWN TO BASE-OF-TOWER) (FLAGS
+RLANDBIT ONBIT) (GLOBAL HOLE STAIRS TOWER CANAL-OBJECT WATER DUNES DOCK-OBJECT)
+(HOLE-DESTINATION CRAMPED-SPACE)> 
+<ROOM AUDIENCE-CHAMBER (LOC ROOMS) (DESC "Audience Chamber") (WEST PER
+AUDIENCE-CHAMBER-EXIT-F) (IN PER AUDIENCE-CHAMBER-EXIT-F) (SOUTH PER
+AUDIENCE-CHAMBER-EXIT-F) (SW PER AUDIENCE-CHAMBER-EXIT-F) (GLOBAL HAREM-OBJECT)
+(FLAGS RLANDBIT ONBIT INDOORSBIT) (ACTION AUDIENCE-CHAMBER-F)> 
+<OBJECT HAREM-OBJECT (LOC LOCAL-GLOBALS) (DESC "harem") (SYNONYM HAREM) (FLAGS
+NDESCBIT) (ACTION HAREM-OBJECT-F)> 
+<OBJECT WIFE-NOT-HERE (LOC AUDIENCE-CHAMBER) (DESC "wife") (SYNONYM WIFE) (
+FLAGS NDESCBIT) (ACTION WIFE-NOT-HERE-F)> 
+<OBJECT HUSBAND-NOT-HERE (LOC AUDIENCE-CHAMBER) (DESC "husband") (SYNONYM
+HUSBAND) (FLAGS NDESCBIT) (ACTION HUSBAND-NOT-HERE-F)> 
+<DEFINE-ROUTINE AUDIENCE-CHAMBER-F> 
+<DEFINE-ROUTINE AUDIENCE-CHAMBER-EXIT-F> 
+<OBJECT RIDDLE (LOC AUDIENCE-CHAMBER) (DESC "riddle") (SYNONYM RIDDLE) (FLAGS
+NDESCBIT)> 
+<DEFINE-ROUTINE HUSBAND-NOT-HERE-F> 
+<DEFINE-ROUTINE WIFE-NOT-HERE-F> 
+<OBJECT HAREM-GUARD (DESC "harem guard") (LDESC
+"A guard stands by the entrance to the harem, apparently waiting for
+a response from you.") (SYNONYM GUARD) (ADJECTIVE HAREM) (FLAGS ACTORBIT) (
+ACTION HAREM-GUARD-F)> 
+<DEFINE-ROUTINE HAREM-GUARD-F> 
+<GLOBAL HAREM-GUARD-COUNTER 0 %<> WORD> 
+<DEFINE-ROUTINE I-HAREM-GUARD> 
+<DEFINE-ROUTINE PICK-WIFE> 
+<GLOBAL HAREM-PROB 0 %<> WORD> 
+<GLOBAL CHOICE-NUMBER 0 %<> WORD> 
+<GLOBAL WRONG-ANSWERS <TABLE 0 0 0 0 0 0 0 0> %<> WORD> 
+<GLOBAL EXCUSES <LTABLE 0 "Oops, deceased" "Vacationing on Ceres"
+"Bad case of harem fever"> %<> WORD> 
+<OBJECT SULTAN (LOC AUDIENCE-CHAMBER) (SDESC "") (DESCFCN SULTAN-F) (SYNONYM
+SULTAN SULTANESS) (FLAGS ACTORBIT) (ACTION SULTAN-F)> 
+<DEFINE-ROUTINE SULTAN-F> 
+<DEFINE-ROUTINE ARGUING-WITH-LEGAL-ADVISOR> 
+<GLOBAL SULTAN-COUNTER 0 %<> WORD> 
+<DEFINE-ROUTINE I-SULTAN> 
+<DEFINE-ROUTINE YOU-WILL-DIE> 
+<DEFINE-ROUTINE RIDDLE-DEATH> 
+<DEFINE-ROUTINE I-SNEEZE> 
+<GLOBAL RIDDLE-ANSWERED <> %<> WORD> 
+<DEFINE-ROUTINE RIDDLE-ANSWER> 
+<ROOM HAREM (LOC ROOMS) (DESC "Harem") (EAST TO AUDIENCE-CHAMBER) (OUT TO
+AUDIENCE-CHAMBER) (FLAGS RLANDBIT ONBIT INDOORSBIT) (GLOBAL ODOR HAREM-OBJECT)
+(ODOR "") (ODOR-NUMBER 4) (ACTION HAREM-F)> 
+<DEFINE-ROUTINE HAREM-F> 
+<DEFINE-ROUTINE TIGER-EATS-SIDEKICK> 
+<DEFINE-ROUTINE I-HAREM> 
+<DEFINE-ROUTINE I-HOUR> 
+<DEFINE-ROUTINE HAREM-OBJECT-F> 
+<ROOM INNER-HAREM (LOC ROOMS) (DESC "Inner Harem") (DOWN PER CATACOMBS-ENTER-F)
+(SE PER INNER-HAREM-EXIT-F) (OUT PER INNER-HAREM-EXIT-F) (FLAGS RLANDBIT ONBIT
+INDOORSBIT) (GLOBAL ODOR HAREM-OBJECT) (ACTION INNER-HAREM-F)> 
+<DEFINE-ROUTINE INNER-HAREM-F> 
+<DEFINE-ROUTINE INNER-HAREM-EXIT-F> 
+<OBJECT SULTANS-WIFE (LOC INNER-HAREM) (DESCFCN SULTANS-WIFE-F) (SYNONYM
+HUSBAND WIFE) (ADJECTIVE SULTAN\'S SULTAN SULTANESS) (FLAGS ACTORBIT
+NARTICLEBIT NDESCBIT) (ACTION SULTANS-WIFE-F)> 
+<DEFINE-ROUTINE SULTANS-WIFE-F> 
+<GLOBAL WIFE-FUCKED <> %<> WORD> 
+<GLOBAL DISCUSSION-TOPICS <LTABLE 0 "the latest sounds in jazz."
+"a new radio serial." "possible uses of electricity."
+"the writings of Jules Verne." "the intelligence level of beavers."> %<> WORD> 
+<OBJECT TORCH (SDESC "reliable torch") (NO-T-DESC "orch") (SYNONYM TORCH ORCH)
+(ADJECTIVE RELIABLE UNRELIABLE) (FLAGS TAKEBIT ONBIT LIGHTBIT) (ACTION TORCH-F)
+> 
+<DEFINE-ROUTINE TORCH-F> 
+<GLOBAL TORCH-LIFE 5 %<> WORD> 
+<DEFINE-ROUTINE TORCH-OFF> 
+<DEFINE-ROUTINE I-TORCH> 
+<OBJECT MAP (DESC "secret map") (NO-T-DESC "secre map") (SYNONYM MAP) (
+ADJECTIVE SECRET SECRE) (FLAGS TAKEBIT BURNBIT READBIT) (SIZE 2) (ACTION MAP-F)
+> 
+<DEFINE-ROUTINE MAP-F> 
+<GLOBAL CATACOMBS-OPEN <> %<> WORD> 
+<DEFINE-ROUTINE CATACOMBS-ENTER-F> 
+<ROOM CATACOMBS (LOC ROOMS) (DESC "Catacombs") (NORTH PER CATACOMBS-MOVEMENT-F)
+(NE PER CATACOMBS-MOVEMENT-F) (EAST PER CATACOMBS-MOVEMENT-F) (SE PER
+CATACOMBS-MOVEMENT-F) (SOUTH PER CATACOMBS-MOVEMENT-F) (SW PER
+CATACOMBS-MOVEMENT-F) (WEST PER CATACOMBS-MOVEMENT-F) (NW PER
+CATACOMBS-MOVEMENT-F) (UP PER CATACOMBS-MOVEMENT-F) (DOWN PER
+CATACOMBS-MOVEMENT-F) (GLOBAL WATER) (FLAGS INDOORSBIT) (ACTION CATACOMBS-F)> 
+<DEFINE-ROUTINE CATACOMBS-F> 
+<DEFINE-ROUTINE CATACOMBS-MOVEMENT-F> 
+<GLOBAL CATACOMBS-LOC 1 %<> WORD> 
+<CONSTANT CATACOMBS-TABLE <TABLE 0 0 99 0 0 99 0 2 80 0 3 0 0 3 0 1 0 0 0 0 0 4
+0 0 2 0 2 0 0 0 3 0 5 0 0 0 99 0 0 0 0 6 4 99 0 0 0 0 0 0 0 7 0 5 99 0 0 0 0 0
+99 6 0 8 0 0 0 0 0 0 0 0 0 0 7 0 0 99 0 9 0 0 0 0 0 10 0 11 8 0 0 9 0 10 0 0 10
+0 0 0 0 12 0 0 0 9 99 0 0 0 13 0 0 0 0 11 99 0 0 0 0 12 0 0 14 0 99 0 0 0 0 15
+99 0 0 0 13 0 0 0 0 16 0 14 0 0 0 0 17 0 15 0 16 0 0 16 0 0 0 0 0 0 0 0 18 0 0
+40 0 15 0 99 0 19 0 0 0 17 0 0 0 0 18 22 20 0 0 0 0 0 21 21 0 0 19 0 0 0 0 0 0
+20 0 50 0 0 0 20 0 0 0 0 19 0 0 0 0 50 0 23 0 25 24 0 0 0 0 0 22 0 25 0 0 0 0 0
+23 99 0 0 0 0 0 23 24 0 26 0 0 0 60 25 27 0 0 0 0 0 0 0 0 0 0 0 0 99 28 26 0 0
+0 0 27 0 29 29 0 0 0 0 0 28 0 0 28 70 0 0 0 0>> 
+<ROOM FORGOTTEN-STOREHOUSE (LOC ROOMS) (DESC "Forgotten Storehouse") (LDESC
+"No living creature can even guess how long this storehouse has sat amidst
+the catacombs, undisturbed by man or by time, untouched by wars and weather,
+a silent witness to the passing eons, the rise and fall of empires, the
+births and deaths of countless billions, its only visitor the dark waters
+of a Martian canal.") (NW TO CATACOMBS) (OUT TO CATACOMBS) (FLAGS INDOORSBIT) (
+GLOBAL WATER)> 
+<OBJECT PHONE-BOOK (LOC FORGOTTEN-STOREHOUSE) (DESC "Cleveland phone book") (
+FDESC "Sitting in one corner is a Cleveland telephone directory.") (SYNONYM
+BOOK DIRECTORY PHONEBOOK) (ADJECTIVE CLEVELAND PHONE TELEPHONE) (FLAGS TAKEBIT
+BURNBIT) (ACTION PHONE-BOOK-F)> 
+<DEFINE-ROUTINE PHONE-BOOK-F> 
+<ROOM WELL-BOTTOM (LOC ROOMS) (DESC "Well Bottom") (LDESC
+"Damp walls of brick rise to a point of light far above. A black circle
+is visible just below the surface of the water.") (EAST PER WELL-BOTTOM-EXIT-F)
+(SE PER WELL-BOTTOM-EXIT-F) (SW PER WELL-BOTTOM-LOOP-F) (NW PER
+WELL-BOTTOM-LOOP-F) (UP SORRY "The well has no handholds.") (GLOBAL HOLE WATER
+LIGHT WELL-OBJECT) (HOLE-DESTINATION BARGE) (FLAGS ONBIT INDOORSBIT)> 
+<DEFINE-ROUTINE WELL-BOTTOM-EXIT-F> 
+<DEFINE-ROUTINE WELL-BOTTOM-LOOP-F> 
+<ROOM LADDER-ROOM (LOC ROOMS) (DESC "Ladder Room") (LDESC
+"This spot is much like the rest of the catacombs, except that a ladder
+leads up into the darkness.") (NW TO CATACOMBS) (OUT TO CATACOMBS) (UP PER
+LADDER-ROOM-EXIT-F) (FLAGS INDOORSBIT) (GLOBAL WATER)> 
+<OBJECT LADDER (LOC LADDER-ROOM) (DESC "ladder") (SYNONYM LADDER) (FLAGS
+NDESCBIT) (ACTION LADDER-F)> 
+<DEFINE-ROUTINE LADDER-ROOM-EXIT-F> 
+<DEFINE-ROUTINE LADDER-F> 
+<ROOM BURIAL-CHAMBER (LOC ROOMS) (DESC "Burial Chamber") (LDESC
+"Generations of Sultans and Sultanesses are entombed here, along with their
+vast wealth, their favorite servants, and some form of transportation to the
+next world. For example, one Sultan lies amidst mountains of rubies, surrounded
+by a fleet of dirigibles.") (NORTH TO CATACOMBS) (OUT TO CATACOMBS) (FLAGS
+INDOORSBIT) (GLOBAL WATER)> 
+<OBJECT RUBIES (LOC BURIAL-CHAMBER) (DESC "ruby") (SYNONYM RUBY RUBIES) (FLAGS
+NDESCBIT) (ACTION UNIMPORTANT-THING-F)> 
+<OBJECT DIRIGIBLE (LOC BURIAL-CHAMBER) (DESC "dirigible") (SYNONYM DIRIGIBLE) (
+FLAGS NDESCBIT) (ACTION UNIMPORTANT-THING-F)> 
+<OBJECT RAFT (LOC BURIAL-CHAMBER) (SDESC "raft") (NO-T-DESC "raf") (DESCFCN
+RAFT-F) (SYNONYM RAFT RAF LIFERAFT) (ADJECTIVE DEFLATED SIMPLE RUBBER LIFE) (
+CAPACITY 100) (SIZE 60) (FLAGS TAKEBIT VEHBIT INBIT CONTBIT SEARCHBIT OPENBIT)
+(ACTION RAFT-F)> 
+<GLOBAL RAFT-HELD <> %<> WORD> 
+<DEFINE-ROUTINE RAFT-F> 
+<DEFINE-ROUTINE I-BEETLES> 
+<DEFINE-ROUTINE I-CRABS> 
+<DEFINE-ROUTINE I-GATOR> 
+<DEFINE-ROUTINE HARMLESS-SNAP> 
+<ROOM MARTIAN-DESSERT (LOC ROOMS) (DESC "Martian Dessert") (LDESC
+"No, not a typo. \"Dessert\" refers to the fifty foot Martian Cream Pie here.
+A mirage, of course. People hopelessly lost in the desert often see strange
+mirages, such as cream pies, lakes, or trails to the northwest and southeast.")
+(NW PER MARTIAN-DESSERT-EXIT-F) (SE PER MARTIAN-DESSERT-EXIT-F) (FLAGS RLANDBIT
+ONBIT) (GLOBAL DUNES)> 
+<OBJECT DESSERT-OBJECT (LOC MARTIAN-DESSERT) (DESC "Martian Cream Pie") (
+SYNONYM PIE DESSERT MIRAGE) (ADJECTIVE MARTIAN CREAM) (FLAGS NDESCBIT) (ACTION
+UNIMPORTANT-THING-F)> 
+<DEFINE-ROUTINE MARTIAN-DESSERT-EXIT-F> 
+<ROOM WATTZ-UPP-DOCK (LOC ROOMS) (DESC "Wattz-Upp Dock") (LDESC
+"This tiny dock is the maritime entrance to the once-famous Wattz-Upp section
+of Mars. East of the dock is a wide, north-south canal; you can hear a gurgling
+sound to the west. There's a chill in the air; you might be approaching the
+south polar cap.") (NE SORRY "If you want to jump in the canal, say so.") (EAST
+SORRY "If you want to jump in the canal, say so.") (SE SORRY
+"If you want to jump in the canal, say so.") (WEST TO OASIS) (FLAGS RLANDBIT
+ONBIT) (GLOBAL CANAL-OBJECT DOCK-OBJECT WATER SIGN BUOY)> 
+<ROOM OASIS (LOC ROOMS) (DESC "Oasis") (EAST PER WATTZ-UPP-DOCK-ENTER-F) (WEST
+PER MARTIAN-DESSERT-ENTER-F) (FLAGS RLANDBIT ONBIT) (GLOBAL HOLE WATER DUNES) (
+HOLE-DESTINATION CLEVELAND) (ACTION OASIS-F)> 
+<DEFINE-ROUTINE WATTZ-UPP-DOCK-ENTER-F> 
+<DEFINE-ROUTINE MARTIAN-DESSERT-ENTER-F> 
+<GLOBAL CIRCLE-BLACK T %<> WORD> 
+<GLOBAL CIRCLE-FADED <> %<> WORD> 
+<DEFINE-ROUTINE CIRCLE-ISNT-BLACK> 
+<DEFINE-ROUTINE OASIS-F> 
+<OBJECT RABBIT (LOC OASIS) (DESC "rabbit") (FDESC
+"A little bunny rabbit is sipping at the waters of the oasis.") (SYNONYM RABBIT
+BUNNY) (ADJECTIVE BUNNY SMALL) (FLAGS TAKEBIT)> 
+<ROOM ICY-DOCK (LOC ROOMS) (DESC "Icy Dock") (LDESC
+"This is the southern terminus of the canal. Far below this dock, teleportation
+machinery transports massive quantities of water back to the head of the canal
+in the equatorial region of Mars. It's quite chilly, and the dock is covered
+with a sheet of ice. To the south, as far as you can see, is the bleak
+whiteness of the southern ice cap.") (NORTH SORRY
+"If you want to jump in the canal, say so.") (NE SORRY
+"If you want to jump in the canal, say so.") (NW SORRY
+"If you want to jump in the canal, say so.") (SOUTH TO TUNDRA) (FLAGS RLANDBIT
+ONBIT) (GLOBAL WATER DOCK-OBJECT CANAL-OBJECT) (ACTION ICY-DOCK-F)> 
+<DEFINE-ROUTINE ICY-DOCK-F> 
+<ROOM TUNDRA (LOC ROOMS) (DESC "Edge of Polar Ice Cap") (NORTH TO ICY-DOCK) (
+SOUTH TO ALLUSION-ROOM) (SE TO PENGUIN-PARK) (FLAGS RLANDBIT ONBIT) (ACTION
+TUNDRA-F)> 
+<DEFINE-ROUTINE TUNDRA-F> 
+<ROOM ALLUSION-ROOM (LOC ROOMS) (DESC "Allusion Room") (LDESC
+"A solitary black circle is the only break in an vaste expanse of whiteness
+extending to the horizon. Like a dark speck in a sea of white, or a huge piece
+of typing paper with but a single period typed upon it, this black circle seems
+to have been placed here entirely as an opportunity for some silly literary
+allusions. To avoid the danger of accidentally typing an \"L\" and having to
+read them again, follow the faint trails to the north or east.") (NORTH TO
+TUNDRA) (NE SORRY "You'd only get lost in the snow and die.") (EAST TO
+PENGUIN-PARK) (SE SORRY "You'd only get lost in the snow and die.") (SOUTH
+SORRY "You'd only get lost in the snow and die.") (SW SORRY
+"You'd only get lost in the snow and die.") (WEST SORRY
+"You'd only get lost in the snow and die.") (NW SORRY
+"You'd only get lost in the snow and die.") (FLAGS RLANDBIT ONBIT) (GLOBAL HOLE
+) (HOLE-DESTINATION WATTZ-UPP-DOCK)> 
+<ROOM PENGUIN-PARK (LOC ROOMS) (DESC "Penguin Park") (WEST TO ALLUSION-ROOM) (
+NW TO TUNDRA) (SE TO GYPSY-CAMP IF PENGUINS-PARTED ELSE
+"There's a wall of penguins in the way.") (FLAGS RLANDBIT ONBIT) (GLOBAL SIGN)
+(ACTION PENGUIN-PARK-F)> 
+<DEFINE-ROUTINE PENGUIN-PARK-F> 
+<GLOBAL PENGUINS-PARTED <> %<> WORD> 
+<OBJECT PENGUINS (LOC PENGUIN-PARK) (DESC "mass of penguins") (SYNONYM PENGUIN
+MASS BIRD BIRDS) (ADJECTIVE WADDLING) (FLAGS NDESCBIT) (ACTION PENGUINS-F)> 
+<DEFINE-ROUTINE PENGUINS-F> 
+<ROOM GYPSY-CAMP (LOC ROOMS) (DESC "Gypsy Camp") (LDESC
+"This is the campsite of a family of nomadic robotic gypsies. A ragged tent is
+pitched on the north side of the camp, and trails lead northwest and south.") (
+SOUTH TO SOUTH-POLE) (NORTH TO TENT) (IN TO TENT) (NW TO PENGUIN-PARK) (FLAGS
+RLANDBIT ONBIT) (ACTION GYPSY-CAMP-F)> 
+<OBJECT OUTSIDE-TENT (LOC GYPSY-CAMP) (DESC "ragged tent") (SYNONYM TENT) (
+ADJECTIVE RAGGED TATTERED) (FLAGS NDESCBIT) (ACTION OUTSIDE-TENT-F)> 
+<GLOBAL PARENTS-KILLED <> %<> WORD> 
+<DEFINE-ROUTINE GYPSY-CAMP-F> 
+<DEFINE-ROUTINE OUTSIDE-TENT-F> 
+<DEFINE-ROUTINE INSIDE-TENT-F> 
+<ROOM TENT (LOC ROOMS) (DESC "Inside the Tent") (LDESC
+"This tattered tent, home to the deceased robots, provides meager protection
+against the cold polar winds. You can exit to the south.") (SOUTH TO GYPSY-CAMP
+) (OUT TO GYPSY-CAMP) (FLAGS RLANDBIT ONBIT INDOORSBIT) (ACTION TENT-F)> 
+<OBJECT INSIDE-TENT (LOC TENT) (DESC "ragged tent") (SYNONYM TENT) (ADJECTIVE
+RAGGED TATTERED) (FLAGS NDESCBIT) (ACTION INSIDE-TENT-F)> 
+<DEFINE-ROUTINE TENT-F> 
+<DEFINE-ROUTINE I-CRY> 
+<OBJECT BABY (LOC TENT) (SDESC "robot infant") (DESCFCN BABY-F) (SYNONYM BABY
+INFANT ROBOT) (ADJECTIVE INFANT ROBOT ROBOTIC SMALL BABY) (FLAGS TAKEBIT
+OPENBIT CONTBIT SEARCHBIT) (SIZE 35) (ACTION BABY-F)> 
+<DEFINE-ROUTINE BABY-F> 
+<DEFINE-ROUTINE CRYING-ALERTS-MATRON> 
+<DEFINE-ROUTINE SHOO> 
+<CONSTANT MATRON-DESC
+"A matronly woman of massive proportions and rather cubical aspect "> 
+<ROOM SOUTH-POLE (LOC ROOMS) (DESC "South Pole") (LDESC
+"You are standing near the front stoop of a very large igloo. Its door is
+flanked by a faded sign and a barred window. Paths lead north, north and
+north.") (NORTH TO GYPSY-CAMP) (SOUTH SORRY
+"This is as far south as you can go!") (EAST SORRY
+"You walk in a tight circle, returning to your starting point.") (WEST SORRY
+"You walk in a tight circle, returning to your starting point.") (IN TO
+ORPHANAGE-FOYER IF ORPHANAGE-DOOR IS OPEN) (FLAGS RLANDBIT ONBIT) (GLOBAL SIGN
+IGLOO ORPHANAGE-DOOR WINDOW BARS) (ACTION SOUTH-POLE-F)> 
+<OBJECT BARS (LOC LOCAL-GLOBALS) (DESC "barred window") (SYNONYM BAR BARS) (
+FLAGS NDESCBIT) (ACTION WINDOW-F)> 
+<DEFINE-ROUTINE SOUTH-POLE-F> 
+<GLOBAL COTTON-BALLS-SEEN <> %<> WORD> 
+<OBJECT ORPHANAGE-DOOR (LOC LOCAL-GLOBALS) (DESC "igloo door") (SYNONYM DOOR) (
+ADJECTIVE IGLOO ORPHANAGE) (FLAGS DOORBIT LOCKEDBIT VOWELBIT) (ACTION
+ORPHANAGE-DOOR-F)> 
+<DEFINE-ROUTINE ORPHANAGE-DOOR-F> 
+<OBJECT FRONT-STOOP (LOC SOUTH-POLE) (DESC "front stoop") (SYNONYM STOOP
+DOORSTEP) (ADJECTIVE FRONT) (CAPACITY 150) (FLAGS NDESCBIT CONTBIT SEARCHBIT
+SURFACEBIT OPENBIT) (ACTION FRONT-STOOP-F)> 
+<DEFINE-ROUTINE FRONT-STOOP-F> 
+<DEFINE-ROUTINE COLD-CAUSES-CRYING> 
+<DEFINE-ROUTINE ABANDON-BABY> 
+<DEFINE-ROUTINE I-ORPHANAGE> 
+<ROOM ORPHANAGE-FOYER (LOC ROOMS) (DESC "Orphanage Foyer") (NE PER
+IGLOO-ENTER-F) (NW PER IGLOO-ENTER-F) (SOUTH TO SOUTH-POLE IF ORPHANAGE-DOOR IS
+OPEN) (OUT TO SOUTH-POLE IF ORPHANAGE-DOOR IS OPEN) (FLAGS RLANDBIT ONBIT
+INDOORSBIT) (GLOBAL ORPHANAGE-DOOR IGLOO WINDOW BARS) (ACTION ORPHANAGE-FOYER-F
+)> 
+<DEFINE-ROUTINE ORPHANAGE-FOYER-F> 
+<DEFINE-ROUTINE IGLOO-ENTER-F> 
+<DEFINE-ROUTINE I-ORPHANAGE-BOOT> 
+<OBJECT COTTON-BALLS (DESC "pair of cotton balls") (NO-T-DESC
+"pair of coon balls") (SYNONYM PAIR BALL BALLS) (ADJECTIVE COTTON COON) (FLAGS
+TAKEBIT TRYTAKEBIT NDESCBIT PLURALBIT BURNBIT) (SIZE 2) (ACTION COTTON-BALLS-F)
+> 
+<DEFINE-ROUTINE COTTON-BALLS-F> 
+<OBJECT IGLOO (LOC LOCAL-GLOBALS) (DESC "igloo") (SYNONYM IGLOO ORPHANAGE) (
+ADJECTIVE LARGE) (FLAGS VOWELBIT) (ACTION IGLOO-F)> 
+<DEFINE-ROUTINE IGLOO-F> 

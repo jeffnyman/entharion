@@ -1,0 +1,26 @@
+Assembling X1.ZAP.25 on Tuesday, April 5, 1988 15:10:54
+Release: 4
+
+    64	Inserting X1FREQ.ZAP.1	   (614 bytes)
+   678	Inserting X1DAT.ZAP.25	 (29158 bytes)
+ 29836	Inserting X1PUR.ZAP.25	  (1672 bytes)
+ 31508	Inserting MISC.ZAP.10	  (2616 bytes)
+ 34124	Inserting PARSER.ZAP.14	  (7169 bytes)
+ 41293	Inserting VERBS.ZAP.16	 (16590 bytes)
+ 57883	Inserting GLOBALS.ZAP.16	  (7163 bytes)
+ 65046	Inserting EARTH.ZAP.6	  (3339 bytes)
+ 68385	Inserting MARS.ZAP.13	 (24963 bytes)
+ 93348	Inserting VENUS.ZAP.8	  (9319 bytes)
+102667	Inserting CLEVELAND.ZAP.10	  (3713 bytes)
+106380	Inserting SPACESHIP.ZAP.6	  (7227 bytes)
+113607	Inserting PHOBOS.ZAP.10	 (11053 bytes)
+124660	Inserting HINTS.ZAP.14	  (1407 bytes)
+126067	Inserting X1STR.ZAP.25	 (33859 bytes)
+267 objects.
+170 globals.
+1031 word vocabulary.
+
+159926 bytes (157K).
+ 29836 bytes of preload.
+ 15145 bytes of impure.
+Outputting symbol tables
