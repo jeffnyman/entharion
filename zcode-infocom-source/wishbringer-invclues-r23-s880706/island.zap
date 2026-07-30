@@ -1,0 +1,478 @@
+
+
+	.FUNCT	WHISTLE-F
+	EQUAL?	PRSA,V?EXAMINE \?CCL3
+	ICALL2	SAY-THE,WHISTLE
+	PRINTI	" is shaped like a "
+	PRINTD	PLATYPUS
+	EQUAL?	HERE,EDGE-OF-LAKE /?PRG12
+	EQUAL?	HERE,ISLAND,THRONE-ROOM \?PRG14
+	ZERO?	RETURN-FROM-ISLAND? /?PRG14
+?PRG12:	PRINTI	", and twinkles with gentle Magick"
+?PRG14:	PRINTR	"."
+?CCL3:	EQUAL?	PRSA,V?BLOW-INTO \FALSE
+	CALL2	DONT-HAVE?,WHISTLE
+	ZERO?	STACK \TRUE
+	ICALL1	WHISTLE-SOUND
+	ZERO?	BEEN-TO-ISLAND? \?CCL22
+	EQUAL?	HERE,EDGE-OF-LAKE \?CCL22
+	SET	'BEEN-TO-ISLAND?,TRUE-VALUE
+	CRLF	
+	ICALL2	SAY-THE,WHISTLE
+	PRINTI	"'s music echoes over the lake, rippling the water with gentle Magick. "
+	ICALL1	SUDDEN-GUST
+	PRINTI	"blows through your hair. "
+	PRINT	YOU-SEE
+	PRINTI	"the soft outline of "
+	PRINTD	ISLAND
+	PRINTI	" drawing closer as you streak across the waves..."
+	ICALL1	CARRIAGE-RETURNS
+	MOVE	PROTAGONIST,ISLAND
+	SET	'HERE,ISLAND
+	SET	'OHERE,FALSE-VALUE
+	ICALL1	V-LOOK
+	RTRUE	
+?CCL22:	ZERO?	RETURN-FROM-ISLAND? /TRUE
+	EQUAL?	HERE,ISLAND,THRONE-ROOM \TRUE
+	REMOVE	WHISTLE
+	IN?	BOOTS,FESTERON-POINT /?CND32
+	SET	'BOOT-LOC,0
+	MOVE	BOOTS,FESTERON-POINT
+?CND32:	MOVE	PROTAGONIST,EDGE-OF-LAKE
+	SET	'HERE,EDGE-OF-LAKE
+	SET	'OHERE,FALSE-VALUE
+	CRLF	
+	ICALL1	SUDDEN-GUST
+	PRINTI	"rises out of nowhere, and "
+	PRINTD	ISLAND
+	ICALL1	BENEATH-FEET
+	PRINTI	". You feel the "
+	PRINTD	WHISTLE
+	PRINTI	" slip from "
+	PRINTD	HANDS
+	PRINTI	" as you streak across the lake..."
+	ICALL1	CARRIAGE-RETURNS
+	ICALL1	V-LOOK
+	RTRUE	
+
+
+	.FUNCT	WHISTLE-SOUND
+	PRINTR	"A clear, sweet note stills the night with its beauty."
+
+
+	.FUNCT	ISLAND-F,CONTEXT
+	EQUAL?	CONTEXT,M-LOOK \FALSE
+	ICALL1	STANDING
+	PRINTI	"on a fog-shrouded beach. Sheer cliff walls rise "
+	CALL1	TO-N
+	PRINT	STACK
+	PRINTI	" and south, and the dark waters of the lake stretch eastward.
+
+To the west stands a magnificent "
+	PRINTD	CASTLE
+	PRINTI	", its parapets rising high into the mist. Golden light streams invitingly through the open "
+	PRINTD	ENTRANCE
+	PRINTI	". "
+	PRINT	YOU-HEAR
+	PRINTR	"friendly voices and music inside."
+
+
+	.FUNCT	ENTER-THRONE-ROOM
+	ZERO?	KING-SCRIPT /?CCL2
+	RETURN	THRONE-ROOM
+?CCL2:	SET	'ANGER,4
+	CALL	QUEUE,I-KING-BLAB,-1
+	PUT	STACK,0,1
+	RETURN	THRONE-ROOM
+
+
+	.FUNCT	PLATS-BLOCK
+	ICALL2	THIS-IS-IT,CROWD
+	ICALL2	SAY-THE,CROWD
+	PRINTI	" blocks your path."
+	CRLF	
+	RFALSE	
+
+
+	.FUNCT	EXIT-THRONE-ROOM
+	CALL2	ENABLED?,I-KING-BLAB
+	ZERO?	STACK /?CND1
+	LESS?	KING-SCRIPT,4 /?PRG5
+	RETURN	ISLAND
+?PRG5:	PRINTI	"""Wait!"" cries the white "
+	PRINTD	PLATYPUS
+	PRINTI	". """
+	LOC	HAT
+	EQUAL?	STACK,KING,THRONE-ROOM \?PRG12
+	PRINTI	"You forgot the "
+	PRINTD	HAT
+	JUMP	?PRG14
+?PRG12:	PRINTI	"I wish to speak with you"
+?PRG14:	PRINTI	"!"""
+	CRLF	
+	CRLF	
+?CND1:	RETURN	ISLAND
+
+
+	.FUNCT	THRONE-ROOM-F,CONTEXT
+	EQUAL?	CONTEXT,M-LOOK \FALSE
+	ICALL2	THIS-IS-IT,CROWD
+	ICALL2	THIS-IS-IT,KING
+	ICALL2	THIS-IS-IT,PRINCESS
+	ICALL1	STANDING
+	PRINTI	"in a long, high-ceilinged chamber. Hundreds of "
+	PRINTD	PLATYPUS
+	PRINTI	"es are "
+	GRTR?	KING-SCRIPT,1 \?PRG11
+	PRINTI	"watching you respectfully"
+	JUMP	?PRG13
+?PRG11:	PRINTI	"milling about with teacups in their paws"
+?PRG13:	PRINTI	", their faces illuminated by a roaring fireplace.
+
+At the far end of the chamber stands a mighty throne. It's occupied by a snow-white "
+	PRINTD	PLATYPUS
+	PRINTI	" with a gold crown on its head and a jeweled scepter in its paw. On the floor near the throne is another crowned "
+	PRINTD	PLATYPUS
+	PRINTR	"... the same one you rescued from the pit."
+
+
+	.FUNCT	I-KING-BLAB
+	ZERO?	FUZZY? \TRUE
+	ZERO?	ECLIPSE? \TRUE
+	EQUAL?	HERE,THRONE-ROOM \FALSE
+	CRLF	
+	IN?	HAT,KING \?CND8
+	DEC	'ANGER
+	ZERO?	ANGER \?PRG13
+	ICALL1	KING-ANNOYED
+	RTRUE	
+?PRG13:	PRINTC	34
+	CALL2	PICK-ONE,KING-OFFERS
+	PRINT	STACK
+	PRINTI	","" says "
+	PRINTD	KING
+	PRINTR	", holding it out to you."
+?CND8:	INC	'KING-SCRIPT
+	EQUAL?	KING-SCRIPT,1 \?CCL17
+	ICALL2	SAY-THE,CROWD
+	PRINTI	" falls silent as you enter.
+
+""Welcome"
+	PRINT	ADVENTURER
+	PRINTI	","" says the white "
+	PRINTD	PLATYPUS
+	PRINTI	", rising from its throne to greet you. ""I am Anatinus, King of "
+	PRINTD	ISLAND
+	PRINTI	". My court thanks you most humbly for rescuing the life of my daughter, "
+	PRINTD	PRINCESS
+	PRINTI	". Great would our sorrow have been if not for your cunning.""
+
+The "
+	PRINTD	CROWD
+	PRINTI	" applauds politely, and "
+	PRINTD	PRINCESS
+	PRINTR	" blushes."
+?CCL17:	EQUAL?	KING-SCRIPT,2 \?CCL21
+	ICALL2	THIS-IS-IT,HAT
+	MOVE	HAT,KING
+	PRINTI	"""My messengers have told me of your quest,"" continues "
+	PRINTD	KING
+	PRINTI	". ""Allow me to repay your kindness with words of advice.""
+
+The old "
+	PRINTD	PLATYPUS
+	PRINTI	" motions you to his side. ""The Tower of"
+	PRINT	EONE
+	PRINTI	" is formidable,"" he begins in a low, serious voice. ""You will never get inside unaided. Legends speak of a Magick Word that can open the gates of the Tower. But what Word it is, none can say.""
+
+The king reaches beneath his throne and takes out a small "
+	PRINTD	HAT
+	PRINTR	". ""Take this,"" he says, holding it out to you."
+?CCL21:	EQUAL?	KING-SCRIPT,3 \?CCL25
+	PRINTI	"""Take it to the sea,"" "
+	PRINTD	KING
+	PRINTI	" whispers as you turn the hat in "
+	PRINTD	HANDS
+	PRINTR	"s. ""There you will find a creature learned in the lore of Magick. Heed him well! In his wisdom lies your only hope."""
+?CCL25:	EQUAL?	KING-SCRIPT,4 \?CCL29
+	SET	'ANGER,4
+	SET	'RETURN-FROM-ISLAND?,TRUE-VALUE
+	ICALL2	THIS-IS-IT,WHISTLE
+	PRINTI	"A fanfare of trumpets breaks the silence, and the "
+	PRINTD	CROWD
+	PRINTI	" falls to its knees."
+	CRLF	
+	CRLF	
+	ICALL1	REAPPEARS
+	PRINTI	"""Good luck to you"
+	PRINT	ADVENTURER
+	PRINTI	"!"" cries "
+	PRINTD	KING
+	PRINTI	", bowing deeply. ""Now blow into the "
+	PRINTD	WHISTLE
+	PRINTI	" one more time, and deliver us from the horror of"
+	PRINT	EONE
+	PRINTI	".""
+
+The "
+	PRINTD	PLATYPUS
+	PRINTR	"es look at you expectantly."
+?CCL29:	ICALL1	REAPPEARS
+	DEC	'ANGER
+	ZERO?	ANGER \?PRG37
+	CALL2	KING-ANNOYED,TRUE-VALUE
+	RSTACK	
+?PRG37:	PRINTC	34
+	CALL2	PICK-ONE,SCRAMS
+	PRINT	STACK
+	PRINTI	","" says "
+	PRINTD	KING
+	PRINTR	"."
+
+
+	.FUNCT	REAPPEARS,THING
+	CALL2	ULTIMATELY-IN?,WHISTLE
+	ZERO?	STACK \?CCL3
+	SET	'THING,WHISTLE
+	JUMP	?CND1
+?CCL3:	CALL2	ULTIMATELY-IN?,HAT
+	ZERO?	STACK \?CND1
+	SET	'THING,HAT
+?CND1:	ZERO?	THING /FALSE
+	MOVE	THING,PROTAGONIST
+	ICALL2	SAY-THE,THING
+	PRINTI	" magically reappears in "
+	PRINTD	HANDS
+	PRINTC	46
+	CRLF	
+	CRLF	
+	RTRUE	
+
+
+	.FUNCT	KING-ANNOYED,BLOW?
+	ICALL2	SAY-THE,KING
+	PRINTI	" glares at you with annoyance.
+
+""You dare to ignore a royal "
+	ZERO?	BLOW? /?PRG8
+	PRINTI	"command"
+	JUMP	?PRG10
+?PRG8:	PRINTI	"gift"
+?PRG10:	PRINTI	"?"" he cries, deeply offended. ""I see. Perhaps a short visit to the granola mines will teach you some respect!""
+
+The King turns you into a "
+	PRINTD	PLATYPUS
+	PRINTI	" with an angry wave of his scepter, and the guards lead you away to twenty years of backbreaking labor."
+	CALL1	BAD-ENDING
+	RSTACK	
+
+
+	.FUNCT	HAT-F,TEMP
+	EQUAL?	PRSA,V?READ,V?LOOK-ON,V?EXAMINE \?CCL3
+	ICALL2	SAY-THE,HAT
+	PRINTR	" is decorated with foil stars and cheap glitter."
+?CCL3:	EQUAL?	PRSA,V?LOOK-DOWN,V?LOOK-INSIDE \?CCL7
+	CALL2	DONT-HAVE?,HAT
+	ZERO?	STACK \TRUE
+	FCLEAR	HAT,RMUNGBIT
+	PRINTR	"Weird! It's like peering into an endless well."
+?CCL7:	EQUAL?	PRSA,V?TAKE \?CCL13
+	IN?	HAT,PELICAN \?CCL13
+	ICALL2	SAY-THE,PELICAN
+	PRINTR	" would rather you didn't."
+?CCL13:	EQUAL?	PRSA,V?WEAR \?CCL19
+	ICALL	TOO-LARGE,HAT,TRUE-VALUE
+	RTRUE	
+?CCL19:	EQUAL?	PRSA,V?THROW,V?PUT \?CCL21
+	EQUAL?	PRSI,HAT \?CCL21
+	CALL2	DONT-HAVE?,HAT
+	ZERO?	STACK \TRUE
+	EQUAL?	PRSO,HAT \?CCL28
+	ICALL1	WHAT-A-CONCEPT
+	RTRUE	
+?CCL28:	EQUAL?	PRSO,HANDS \?CND24
+	PRINTI	"You feel "
+	PRINTD	HANDS
+	PRINTR	" tingling."
+?CND24:	GETP	PRSO,P?SIZE >TEMP
+	GRTR?	TEMP,5 \?CCL34
+	ICALL2	TOO-LARGE,PRSO
+	RTRUE	
+?CCL34:	FSET?	HAT,RMUNGBIT \?CCL36
+	PRINTI	"Maybe you should look inside the "
+	PRINTD	HAT
+	PRINTR	" first."
+?CCL36:	ICALL1	SAY-SURE
+	PRINTI	"put "
+	ICALL	ARTICLE,PRSO,TRUE-VALUE
+	PRINTD	PRSO
+	PRINTI	" into the "
+	PRINTD	HAT
+	PRINTC	63
+	CALL1	YES?
+	ZERO?	STACK /?PRG48
+	GETP	DCASE,P?CAPACITY
+	ADD	TEMP,STACK >TEMP
+	PUTP	DCASE,P?CAPACITY,TEMP
+	MOVE	PRSO,DCASE
+	ICALL2	SAY-THE,PRSO
+	PRINTI	" disappears into the "
+	PRINTD	HAT
+	ICALL1	NO-TRACE
+	RTRUE	
+?PRG48:	PRINT	OKAY
+	PRINTI	"you're still holding "
+	ICALL	ARTICLE,PRSO,TRUE-VALUE
+	PRINTD	PRSO
+	PRINTR	"."
+?CCL21:	EQUAL?	PRSA,V?REACH-IN \FALSE
+	ICALL	PERFORM,V?PUT,HANDS,HAT
+	RTRUE	
+
+
+	.FUNCT	PRINCESS-F,CONTEXT
+	ICALL2	THIS-IS-IT,PRINCESS
+	EQUAL?	HERE,VESTIBULE \?CCL3
+	ICALL2	TAKE-MIND-OFF,PRINCESS
+	RTRUE	
+?CCL3:	EQUAL?	HERE,TORTURE-CHAMBER \?CCL5
+	EQUAL?	PRSA,V?MOVE,V?PUSH,V?TAKE \?CCL8
+	ZERO?	CLAMPED? /?PRG12
+	ICALL1	STILL-CLAMPED
+	RTRUE	
+?PRG12:	PRINTD	PRINCESS
+	PRINTR	" probably wouldn't enjoy being manhandled."
+?CCL8:	CALL2	ASKING?,PRINCESS
+	ZERO?	STACK /?CCL15
+	ZERO?	COAT-WORN? /?CCL18
+	ICALL1	NO-TALKING
+	RETURN	2
+?CCL18:	ICALL2	HAD-TIME,STR?337
+	RETURN	2
+?CCL15:	EQUAL?	PRSA,V?HELLO,V?REPLY,V?TELL /?CTR21
+	EQUAL?	PRSA,V?WAVE-AT \?CCL22
+?CTR21:	ZERO?	COAT-WORN? /?CCL27
+	ICALL1	NO-TALKING
+	RETURN	2
+?CCL27:	ICALL2	HAD-TIME,STR?338
+	RETURN	2
+?CCL22:	EQUAL?	PRSA,V?RELEASE,V?UNLOCK,V?RESCUE \?CCL31
+	ICALL1	HOW?
+	RTRUE	
+?CCL31:	CALL2	HURT?,PRINCESS
+	ZERO?	STACK \?CTR32
+	EQUAL?	PRSA,V?RUB,V?KISS,V?YELL /?CTR32
+	EQUAL?	PRSA,V?SQUEEZE \?CCL33
+?CTR32:	PRINTD	PRINCESS
+	ICALL1	MIGHT-NOT-LIKE
+	RTRUE	
+?CCL33:	EQUAL?	PRSA,V?GIVE \?CCL38
+	EQUAL?	PRSI,PRINCESS \?CCL38
+	ZERO?	COAT-WORN? /?PRG44
+	ICALL1	NO-TALKING
+	RTRUE	
+?PRG44:	PRINTD	PRINCESS
+	PRINTR	" gracefully declines your offer."
+?CCL38:	CALL1	PRINCESS-SPECIFIC?
+	ZERO?	STACK /FALSE
+	RTRUE	
+?CCL5:	CALL1	CROWD-F
+	ZERO?	STACK /FALSE
+	RTRUE	
+
+
+	.FUNCT	STILL-CLAMPED
+	ICALL2	BUT-THE,PRINCESS
+	PRINTI	"is still clamped into the "
+	PRINTD	TMACHINE
+	PRINTR	"!"
+
+
+	.FUNCT	HAD-TIME,STR
+	PRINTI	"""Would that we had time for "
+	PRINT	STR
+	PRINTI	","" sighs "
+	PRINTD	PRINCESS
+	PRINTR	"."
+
+
+	.FUNCT	NO-TALKING
+	PRINTI	"""No communication between prisoners!"" barks "
+	PRINTD	CRISP
+	PRINTR	"."
+
+
+	.FUNCT	TAKE-MIND-OFF,OBJ
+	PRINTI	"A rumbling noise calls your attention away from "
+	ICALL	ARTICLE,OBJ,TRUE-VALUE
+	PRINTD	OBJ
+	PRINTR	"."
+
+
+	.FUNCT	PRINCESS-SPECIFIC?
+	EQUAL?	PRSA,V?EXAMINE \?CCL3
+	PRINTI	"Not unexpectedly, "
+	EQUAL?	PRSO,PRINCESS \?CCL8
+	ZERO?	CLAMPED? /?CCL8
+	PRINTI	"the Princess clamped into the "
+	PRINTD	TMACHINE
+	JUMP	?PRG13
+?CCL8:	ICALL	ARTICLE,PRSO,TRUE-VALUE
+	PRINTD	PRSO
+?PRG13:	PRINTI	" is arrayed in high "
+	PRINTD	PLATYPUS
+	PRINTR	" fashion."
+?CCL3:	EQUAL?	PRSA,V?BOW,V?LISTEN \FALSE
+	PRINTI	"Graciously, "
+	ICALL	ARTICLE,PRSO,TRUE-VALUE
+	PRINTD	PRSO
+	PRINTR	" acknowledges your respectful attention."
+
+
+	.FUNCT	CROWD-F,CONTEXT
+	CALL1	PRINCESS-SPECIFIC?
+	ZERO?	STACK \TRUE
+	CALL2	TALKING-TO?,PRSO
+	ZERO?	STACK /?CCL5
+	PRINTD	KING
+	PRINTI	" interrupts you gently. ""There's little time for chit-chat."""
+	CRLF	
+	RETURN	2
+?CCL5:	CALL2	HURT?,PRSO
+	ZERO?	STACK \?CTR10
+	EQUAL?	PRSA,V?KISS,V?YELL \?CCL11
+?CTR10:	ICALL	NOT-LIKELY,KING,STR?339
+	RTRUE	
+?CCL11:	EQUAL?	PRSA,V?GIVE \FALSE
+	EQUAL?	PRSI,PRINCESS,KING,CROWD \FALSE
+	PRINTI	"With reluctant dignity, "
+	ICALL	ARTICLE,PRSI,TRUE-VALUE
+	PRINTD	PRSI
+	PRINTR	" refuses your offer."
+
+
+	.FUNCT	CASTLE-F
+	CALL	ENTER-FROM?,ISLAND,THRONE-ROOM,CASTLE
+	ZERO?	STACK \TRUE
+	EQUAL?	PRSA,V?LOOK-INSIDE,V?EXAMINE \?CCL5
+	EQUAL?	HERE,THRONE-ROOM \?CCL8
+	ICALL1	V-LOOK
+	RTRUE	
+?CCL8:	ICALL1	GO-INSIDE
+	RTRUE	
+?CCL5:	ICALL2	YOU-DONT-NEED,CASTLE
+	RETURN	2
+
+
+	.FUNCT	CASTLE-JUNK-F
+	CALL1	SEE-VERB?
+	ZERO?	STACK /?CCL3
+	PRINT	YOU-SEE
+	PRINTI	"nothing "
+	CALL2	PICK-ONE,YAWNS
+	PRINT	STACK
+	PRINTR	" about it."
+?CCL3:	ICALL	YOU-DONT-NEED,STR?340,TRUE-VALUE
+	RETURN	2
+
+	.ENDI

@@ -78,8 +78,10 @@ There are a lot of _Zork_ versions and they run the gamut from version 1 to vers
 - minizork-r2-s840207.z3 (source included)
 - minizork-r34-s871124.z3 (source included)
 - minizork2-r2-s871123.z3 (source included)
+- nordandbert-r19-s870722.z4 (MP; source included)
 - planetfall-r37-s851003.z3 (MP, PC; source included)
 - planetfall-invclues-r10-s880531.z5 (LTOI1, Mac; MP, Mac; Solid Gold)
+- plunderedhearts-r26-s870730.z3 (MP; source included)
 - seastalker-r16-s850603.z3 (MP)
 - seastalker-r18-s850919.z3 (FD; source included)
 - sherlock-r26-s880127.z5 (MP, Mac; source included; resource blorb provided)
@@ -88,10 +90,20 @@ There are a lot of _Zork_ versions and they run the gamut from version 1 to vers
 - sorcerer-r13-s851021.z3 (LTOI1, Amiga; source included)
 - sorcerer-r15-s851108.z3 (MP)
 - sorcerer-r18-s860904.z3 (source included)
+- stationfall-r107-s870430.z3 (MP; source included)
 - starcross-r17-s821021.z3 (MP)
 - starcross-r18-s830114.z3 (FD; source included)
+- suspect-r14-s841005.z3 (MP; source included)
 - suspended-r8-s830521.z3 (LTOI1, Amiga)
 - suspended-r8-s840521.z3 (MP, Mac; source included)
 - trinity-r12-s860926.z4 (MP; source included)
+- wishbringer-r69-s850920.z3 (MP, PC; source included)
+- wishbringer-invclues-r23-s880706.z5 (Solid Gold; source included)
 - witness-r22-s840924.z3 (MP)
 - witness-r23-s840925.z3 (FD; source included)
+
+A few notes:
+
+- Apparently the Solid Gold edition of _Wishbringer_ has related to the delivery time limit. [Bug discussion](https://github.com/the-infocom-files/wishbringer-invclues/issues/7)
+
+- Reports suggest that Mini-Zork 2 fails on modern interpreters when you exit the Carousel Room.

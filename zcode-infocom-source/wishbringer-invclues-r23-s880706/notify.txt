@@ -1,0 +1,38 @@
+<<GLOBAL DO-SCORE?:NUMBER 0> "0 = not offered, 1 = on, 2 = off."
+
+<ROUTINE V-NOTIFY ()
+	 <COND (<WRONG-WINNER?>
+		<RFATAL>)
+	       (<L? ,DO-SCORE? 2>
+		<SETG DO-SCORE? 2>)
+	       (T
+		<SETG DO-SCORE? 1>)>
+	 <TELL "[Score notification o">
+	 <COND (<EQUAL? ,DO-SCORE? 2>
+		<TELL "ff">)
+	       (T
+		<TELL "n">)>
+	 <TELL ".]" CR>
+	 <RTRUE>>
+
+<ROUTINE UPDATE-SCORE ("OPTIONAL" (PTS 1) (CR T))
+	 <SETG SCORE <+ ,SCORE .PTS>>
+	 <COND (<EQUAL? ,DO-SCORE? 2>
+		<RTRUE>)
+	       (<T? .CR>
+		<CRLF>)>
+	 <HLIGHT ,H-BOLD>
+	 <TELL "[Your score just went up by " N .PTS " point">
+	 <COND (<NOT <EQUAL? .PTS 1>>
+		<TELL "s">)>
+	 <TELL ,PTHE "total is now " N ,SCORE " out of 100.]">
+	 <HLIGHT ,H-NORMAL>
+	 <CRLF>
+	 <HLIGHT ,H-NORMAL>
+	 <SOUND 1>
+	 <COND (<ZERO? ,DO-SCORE?>
+		<SETG DO-SCORE? 1>
+		<TELL CR
+"[NOTE: You can turn score notification on or off at any time with the NOTIFY command.]" CR>)>
+	 <RTRUE>>
+>

@@ -1,0 +1,35 @@
+Assembling WISH.ZAP.1 on Wednesday, July 6, 1988 12:18:11
+Release(last was 22): 23
+
+    64	Inserting WISHFREQ.ZAP.2	   (628 bytes)
+   692	Inserting WISHDAT.ZAP.1	 (27948 bytes)
+ 28640	Inserting WISHPUR.ZAP.1	  (2482 bytes)
+ 31122	Inserting MISC.ZAP.1	  (1595 bytes)
+ 32717	Inserting PARSER.ZAP.1	 (12014 bytes)
+ 44731	Inserting GLOBALS.ZAP.1	  (4262 bytes)
+ 48993	Inserting VERBS.ZAP.1	  (8697 bytes)
+ 57690	Inserting PEOPLE.ZAP.1	 (10993 bytes)
+ 68683	Inserting SOUTH.ZAP.1	  (4427 bytes)
+ 73110	Inserting CENTER.ZAP.1	 (14346 bytes)
+ 87456	Inserting WEST.ZAP.1	  (3767 bytes)
+ 91223	Inserting EAST.ZAP.1	  (4426 bytes)
+ 95649	Inserting NORTH.ZAP.1	   (901 bytes)
+ 96550	Inserting BRIDGE.ZAP.1	  (3705 bytes)
+100255	Inserting FOG.ZAP.1	   (932 bytes)
+101187	Inserting SHOPPE.ZAP.1	  (5624 bytes)
+106811	Inserting CEMETERY.ZAP.1	  (3684 bytes)
+110495	Inserting UNDER.ZAP.1	  (2978 bytes)
+113473	Inserting TOWER.ZAP.1	  (6940 bytes)
+120413	Inserting ISLAND.ZAP.1	  (3172 bytes)
+123585	Inserting BOXES.ZAP.1	  (4156 bytes)
+127741	Inserting MAGICK.ZAP.1	  (4034 bytes)
+131775	Inserting HINTS.ZAP.1	  (1412 bytes)
+133187	Inserting WISHSTR.ZAP.1	 (31525 bytes)
+254 objects.
+232 globals.
+1063 word vocabulary.
+
+164712 bytes (161K).
+ 28640 bytes of preload.
+ 15424 bytes of impure.
+Outputting symbol tables

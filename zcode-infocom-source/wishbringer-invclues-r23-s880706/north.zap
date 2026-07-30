@@ -1,0 +1,140 @@
+
+
+	.FUNCT	BACK-TO-ROCKY-PATH
+	CALL2	ENABLED?,I-WAKE-SMALL-BOX
+	ZERO?	STACK /?PRG6
+	PRINTI	"The spectacle of the "
+	PRINTD	SMALL-BOX
+	PRINTI	" has you frozen in your tracks."
+	CRLF	
+	RFALSE	
+?PRG6:	PRINTI	"As the house disappears into the distance, you get the distinct feeling that, someday, you will pass this way again."
+	ICALL1	CARRIAGE-RETURNS
+	RETURN	ROCKY-PATH
+
+
+	.FUNCT	BOARDS-ARE-SECURE
+	ICALL2	SAY-THE,HOUSE-DOOR
+	PRINTI	" is securely closed."
+	CRLF	
+	RFALSE	
+
+
+	.FUNCT	WHITE-HOUSE-F
+	EQUAL?	PRSA,V?EXAMINE \?CCL3
+	PRINTR	"This place has seen better days. Its stately colonial architecture reflects the taste and wealth of its builders. But eons of trespassing by thoughtless adventurers have left the once noble edifice in ruins."
+?CCL3:	EQUAL?	PRSA,V?MUNG,V?OPEN,V?LOOK-INSIDE /?CTR6
+	EQUAL?	PRSA,V?ENTER,V?THROUGH \FALSE
+?CTR6:	ICALL1	BOARDS-ARE-SECURE
+	RTRUE	
+
+
+	.FUNCT	HOUSE-DOOR-F
+	CALL2	HURT?,HOUSE-DOOR
+	ZERO?	STACK \?CTR2
+	EQUAL?	PRSA,V?OPEN \?CCL3
+?CTR2:	ICALL1	BOARDS-ARE-SECURE
+	RTRUE	
+?CCL3:	CALL2	USE-DOOR?,WEST-OF-HOUSE
+	ZERO?	STACK /FALSE
+	RTRUE	
+
+
+	.FUNCT	LEAFLET-F
+	EQUAL?	PRSA,V?EXAMINE,V?LOOK-ON,V?READ \?CCL3
+	IN?	LEAFLET,PROTAGONIST \?CCL6
+	PRINTI	"It seems to be a junk-mail ad for a primitive computer game. The cancelled stamp on the "
+	PRINTD	LEAFLET
+	ICALL1	TOO-FADED
+	RTRUE	
+?CCL6:	ICALL	YOUD-HAVE-TO,STR?234,LEAFLET
+	RTRUE	
+?CCL3:	CALL2	HURT?,LEAFLET
+	ZERO?	STACK /FALSE
+	ICALL2	RUIN,LEAFLET
+	RTRUE	
+
+
+	.FUNCT	FOREST-PSEUDO
+	EQUAL?	PRSA,V?LOOK-INSIDE,V?EXAMINE \?CCL3
+	PRINTI	"It's "
+	ZERO?	HOUSE-VISITED? \?PRG10
+	PRINTI	"almost "
+?PRG10:	PRINTR	"impenetrable."
+?CCL3:	EQUAL?	PRSA,V?WALK-TO,V?THROUGH,V?ENTER \?CCL13
+	ICALL2	DO-WALK,P?SOUTH
+	RTRUE	
+?CCL13:	ICALL	YOU-DONT-NEED,STR?235,TRUE-VALUE
+	RETURN	2
+
+
+	.FUNCT	ROCKY-PATH-F,CONTEXT
+	EQUAL?	CONTEXT,M-LOOK \FALSE
+	PRINTI	"You're on a rocky path that runs east and west along the banks of the"
+	ICALL2	WHICH-TOWN,STR?206
+	PRINTI	". A "
+	ZERO?	SKEWED? /?PRG15
+	ZERO?	HOUSE-VISITED? \?PRG15
+	PRINTI	"shimmering "
+	PRINTD	TRAIL
+	PRINTI	" leads south into a dense forest"
+	JUMP	?PRG17
+?PRG15:	PRINTI	"dense, impenetrable forest borders the south edge of the path"
+?PRG17:	PRINTR	"."
+
+
+	.FUNCT	ENTER-HOUSE?
+	ZERO?	SKEWED? /?PRG8
+	ZERO?	HOUSE-VISITED? \?PRG8
+	PRINTI	"As you walk along the shimmering "
+	PRINTD	TRAIL
+	PRINTI	" you feel a vague sense of disorientation, then a shock of recognition..."
+	ICALL1	CARRIAGE-RETURNS
+	RETURN	WEST-OF-HOUSE
+?PRG8:	PRINT	CANT
+	PRINTI	" enter an impenetrable forest."
+	CRLF	
+	RFALSE	
+
+
+	.FUNCT	RIVER-F
+	EQUAL?	PRSA,V?EXAMINE \?CCL3
+	PRINTI	"The current looks swift and "
+	ZERO?	SKEWED? /?PRG11
+	PRINTI	"murky"
+	JUMP	?PRG13
+?PRG11:	PRINTI	"clean"
+?PRG13:	PRINTR	"."
+?CCL3:	EQUAL?	PRSA,V?CROSS \?CCL16
+	EQUAL?	HERE,SOUTH-OF-BRIDGE \?CCL19
+	ICALL2	DO-WALK,P?NORTH
+	RTRUE	
+?CCL19:	EQUAL?	HERE,NORTH-OF-BRIDGE \?CCL21
+	ICALL2	DO-WALK,P?SOUTH
+	RTRUE	
+?CCL21:	ICALL1	V-WALK-AROUND
+	RTRUE	
+?CCL16:	CALL1	HANDLE-WATER?
+	ZERO?	STACK /FALSE
+	RTRUE	
+
+
+	.FUNCT	SOUTH-OF-BRIDGE-F,CONTEXT
+	EQUAL?	CONTEXT,M-LOOK \FALSE
+	PRINTI	"This is the south side of a "
+	PRINTD	BRIDGE
+	PRINTI	" that spans the"
+	ICALL2	WHICH-TOWN,STR?206
+	PRINTI	". Paths lead off "
+	CALL1	TO-E
+	PRINT	STACK
+	PRINTI	" and west, and a road leads south to the "
+	PRINTD	FESTERON
+	PRINTR	"."
+
+
+	.FUNCT	GO-ON-BRIDGE
+	SET	'WHERE-FROM,SOUTH-OF-BRIDGE
+	RETURN	ON-BRIDGE
+
+	.ENDI

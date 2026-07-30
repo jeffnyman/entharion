@@ -1,0 +1,635 @@
+
+
+	.FUNCT	IN-MAILBOX,CONTEXT
+	EQUAL?	CONTEXT,M-CONT \FALSE
+	CALL2	TOUCHING?,PRSO
+	ZERO?	STACK /FALSE
+	PRINT	CANT
+	PRINTI	" reach into the "
+	PRINTD	MAILBOX
+	PRINTC	46
+	CRLF	
+	RETURN	2
+
+
+	.FUNCT	DESCRIBE-MAILBOX,CONTEXT
+	EQUAL?	CONTEXT,M-OBJDESC \FALSE
+	PRINTI	"A big"
+	ZERO?	BOX-DANGEROUS? /?PRG10
+	PRINTI	", hungry"
+?PRG10:	PRINTI	" mailbox is "
+	ZERO?	BOX-DANGEROUS? /?PRG16
+	PRINTI	"threatening you "
+?PRG16:	PRINTI	"nearby."
+	RTRUE	
+
+
+	.FUNCT	BY-ITSELF
+	ICALL2	SAY-THE,MAILBOX
+	PRINTR	" is opening and closing all by itself!"
+
+
+	.FUNCT	MAILBOX-F
+	ICALL2	THIS-IS-IT,MAILBOX
+	EQUAL?	PRSA,V?EXAMINE \?CCL3
+	ZERO?	BOX-DANGEROUS? /?CCL6
+	ICALL1	BY-ITSELF
+	RTRUE	
+?CCL6:	ICALL2	SAY-THE,MAILBOX
+	PRINTI	" seems ordinary enough."
+	ZERO?	SKEWED? /?CND9
+	PRINTR	" Or does it?"
+?CND9:	CRLF	
+	RTRUE	
+?CCL3:	EQUAL?	PRSA,V?OPEN \?CCL14
+	ZERO?	BOX-DANGEROUS? /?CCL17
+	ICALL1	BY-ITSELF
+	RTRUE	
+?CCL17:	FSET?	MAILBOX,OPENBIT \?CCL19
+	ICALL1	ALREADY-OPEN
+	RTRUE	
+?CCL19:	ZERO?	SKEWED? /?CCL21
+	PRINTI	"It immediately snaps shut. Bang!"
+	CRLF	
+	RETURN	2
+?CCL21:	CALL	QUEUE,I-BOX-LID,2
+	PUT	STACK,0,1
+	ICALL	NOW-CLOSED-OR-OPEN,MAILBOX,TRUE-VALUE
+	RTRUE	
+?CCL14:	EQUAL?	PRSA,V?CLOSE \?CCL27
+	ZERO?	BOX-DANGEROUS? /?CCL30
+	ICALL1	BY-ITSELF
+	RTRUE	
+?CCL30:	FSET?	MAILBOX,OPENBIT /?CCL32
+	ICALL1	ALREADY-CLOSED
+	RTRUE	
+?CCL32:	CALL2	INT,I-BOX-LID
+	PUT	STACK,0,0
+	ICALL2	NOW-CLOSED-OR-OPEN,MAILBOX
+	RTRUE	
+?CCL27:	CALL2	HURT?,MAILBOX
+	ZERO?	STACK /?CCL34
+	ZERO?	BOX-DANGEROUS? /?PRG38
+	ICALL1	BOX-MOOD
+	RTRUE	
+?PRG38:	PRINTI	"You shouldn't"
+	ICALL1	DO-TO
+	PRINTR	"government property."
+?CCL34:	EQUAL?	PRSA,V?REACH-IN,V?LOOK-DOWN,V?LOOK-INSIDE \?CCL43
+	ZERO?	BOX-DANGEROUS? /?CCL43
+	ICALL1	BOX-MOOD
+	RTRUE	
+?CCL43:	EQUAL?	PRSA,V?FEED,V?PUT,V?GIVE /?PRD49
+	EQUAL?	PRSA,V?THROW \FALSE
+?PRD49:	EQUAL?	PRSI,MAILBOX \FALSE
+	EQUAL?	PRSO,LEAFLET \?CCL54
+	CALL2	ENABLED?,I-WAKE-BOX
+	ZERO?	STACK /?CCL57
+	CALL2	INT,I-WAKE-BOX
+	PUT	STACK,0,0
+	JUMP	?CND55
+?CCL57:	CALL2	INT,I-BAD-BOX
+	PUT	STACK,0,0
+?CND55:	MOVE	LEAFLET,MAILBOX
+	PRINTI	"Done."
+	CRLF	
+	ZERO?	BOX-DANGEROUS? /TRUE
+	SET	'BOX-DANGEROUS?,FALSE-VALUE
+	MOVE	MAILBOX,STEEP-TRAIL
+	CRLF	
+	ICALL2	SAY-THE,MAILBOX
+	PRINTI	" gobbles the "
+	PRINTD	LEAFLET
+	PRINTR	" down, smacks its lid and belches. ""Mmmm! Good!""
+
+The satisfied box scrapes slowly out of sight."
+?CCL54:	ZERO?	BOX-DANGEROUS? /FALSE
+	EQUAL?	PRSO,VIOLET-NOTE \?CCL67
+	ICALL2	BOX-SPITS,STR?341
+	RTRUE	
+?CCL67:	ICALL2	BOX-SPITS,STR?342
+	RTRUE	
+
+
+	.FUNCT	BOX-MOOD
+	PRINTI	"Better not. "
+	ICALL2	SAY-THE,MAILBOX
+	PRINTR	" isn't in a very good mood."
+
+
+	.FUNCT	BOX-SPITS,STR
+	MOVE	PRSO,HERE
+	ICALL2	SAY-THE,MAILBOX
+	PRINTI	" spits out "
+	ICALL	ARTICLE,PRSO,TRUE-VALUE
+	PRINTD	PRSO
+	PRINTI	" on the "
+	PRINTD	GROUND
+	PRINTI	". ""Not "
+	PRINT	STR
+	PRINTR	"!"""
+
+
+	.FUNCT	I-BOX-LID
+	IN?	MAILBOX,HERE \?CND1
+	CRLF	
+	PRINTI	"The "
+	ICALL1	BIG-LID
+	PRINTI	"squeaks and"
+	ICALL1	BANGS
+?CND1:	FCLEAR	MAILBOX,OPENBIT
+	RTRUE	
+
+
+	.FUNCT	BIG-LID
+	PRINTI	"lid of the "
+	PRINTD	MAILBOX
+	PRINTC	32
+	RTRUE	
+
+
+	.FUNCT	BANGS
+	PRINTR	" snaps shut with a clang."
+
+
+	.FUNCT	HUNGRY
+	PRINTC	34
+	CALL2	PICK-ONE,BOX-YELLS
+	PRINT	STACK
+	PRINTI	"!"""
+	RTRUE	
+
+
+	.FUNCT	I-WAKE-BOX
+	ZERO?	FUZZY? \TRUE
+	ZERO?	ECLIPSE? \TRUE
+	EQUAL?	HERE,PLEASURE-WHARF \FALSE
+	INC	'BOX-SCRIPT
+	ICALL2	THIS-IS-IT,MAILBOX
+	CRLF	
+	EQUAL?	BOX-SCRIPT,1 \?CCL10
+	PRINTI	"A voice behind you growls, "
+	ICALL1	HUNGRY
+	PRINTR	" You turn to face the sound, but there's nobody here except you."
+?CCL10:	EQUAL?	BOX-SCRIPT,2 \?CCL16
+	PRINTI	"You watch with astonishment as the "
+	ICALL1	BIG-LID
+	PRINTI	"slowly opens by itself, then"
+	CALL1	BANGS
+	RSTACK	
+?CCL16:	EQUAL?	BOX-SCRIPT,3 \?CCL22
+	SET	'BOX-DANGEROUS?,TRUE-VALUE
+	PRINTI	"The "
+	ICALL1	BIG-LID
+	PRINTI	"opens again. "
+	ICALL1	HUNGRY
+	CRLF	
+	RTRUE	
+?CCL22:	EQUAL?	BOX-SCRIPT,4 \FALSE
+	CALL2	INT,I-WAKE-BOX
+	PUT	STACK,0,0
+	CALL	QUEUE,I-BAD-BOX,-1
+	PUT	STACK,0,1
+	ICALL2	SAY-THE,MAILBOX
+	PRINTI	" begins to clatter like a rusty machine. Your astonishment turns to horror as the mindless thing begins to MOVE! Slowly at first, but with increasing confidence, it scrapes across the planks of the "
+	PRINTD	PLEASURE-WHARF
+	PRINTI	", heading straight in your direction!"
+	CRLF	
+	CRLF	
+	PRINTI	"The "
+	ICALL1	BIG-LID
+	PRINTI	"snaps open with a menacing clang. "
+	ICALL1	HUNGRY
+	CRLF	
+	RTRUE	
+
+
+	.FUNCT	NO-MAILBOX-ALLOWED?
+	EQUAL?	HERE,WHARF,PLEASURE-WHARF,FESTERON-POINT /FALSE
+	EQUAL?	HERE,ROTARY-NORTH,ROTARY-SOUTH,ROTARY-EAST /FALSE
+	EQUAL?	HERE,ROTARY-WEST,EDGE-OF-LAKE,RIVER-OUTLET /FALSE
+	EQUAL?	HERE,PARK,LOOKOUT-HILL,SOUTH-OF-BRIDGE /FALSE
+	EQUAL?	HERE,WEST-OF-HOUSE,ROCKY-PATH /FALSE
+	RTRUE	
+
+
+	.FUNCT	SAY-BOX-CLOSER,LIST,HUNGRY?
+	CRLF	
+	ICALL2	SAY-THE,MAILBOX
+	CALL2	PICK-ONE,LIST
+	PRINT	STACK
+	PRINTC	46
+	ZERO?	HUNGRY? \?PRG7
+	RANDOM	100
+	LESS?	50,STACK /?CND3
+?PRG7:	PRINTC	32
+	ICALL1	HUNGRY
+?CND3:	CRLF	
+	RTRUE	
+
+
+	.FUNCT	I-BAD-BOX,TEMP
+	ZERO?	FUZZY? \TRUE
+	ZERO?	ECLIPSE? \TRUE
+	IN?	MAILBOX,HERE \?CCL7
+	SET	'BOX-COMING,0
+	INC	'EAT-SCRIPT
+	CALL2	FIGHT?,SMALL-BOX
+	ZERO?	STACK \TRUE
+	EQUAL?	EAT-SCRIPT,1 \?CCL12
+	CALL2	SAY-BOX-CLOSER,BOX-CLOSERS
+	RSTACK	
+?CCL12:	EQUAL?	EAT-SCRIPT,2 \?CCL14
+	CALL2	SAY-BOX-CLOSER,BOX-EVEN-CLOSERS
+	RSTACK	
+?CCL14:	SET	'EAT-SCRIPT,0
+	FIRST?	PROTAGONIST >TEMP /?BOGUS15
+?BOGUS15:	ZERO?	TEMP /?CCL18
+	FCLEAR	TEMP,WORNBIT
+	MOVE	TEMP,FOSSIL
+	CRLF	
+	ICALL2	SAY-THE,MAILBOX
+	PRINTC	32
+	CALL2	PICK-ONE,SWIPES
+	PRINT	STACK
+	PRINTC	32
+	ICALL	ARTICLE,TEMP,TRUE-VALUE
+	PRINTD	TEMP
+	PRINTI	" away from you and swallows it! "
+	RANDOM	100
+	LESS?	50,STACK /?CND23
+	ICALL1	HUNGRY
+?CND23:	CRLF	
+	EQUAL?	TEMP,WISHBRINGER,SHOE \FALSE
+	ICALL1	I-LUCK
+	CALL1	I-GLOW
+	RSTACK	
+?CCL18:	ICALL1	HUNGRY
+	CRLF	
+	CRLF	
+	PRINTI	"With a triumphant roar, the "
+	PRINTD	MAILBOX
+	PRINTI	" trips your feet and sends you sprawling to the "
+	PRINTD	GROUND
+	PRINTI	". Its snapping lid closes in, and you are Sent."
+	CALL1	BAD-ENDING
+	RSTACK	
+?CCL7:	SET	'EAT-SCRIPT,0
+	EQUAL?	HERE,WEST-OF-HOUSE /TRUE
+	CALL1	NO-MAILBOX-ALLOWED?
+	ZERO?	STACK \TRUE
+	EQUAL?	HERE,PREVIOUS-LOC /?CND34
+	SET	'PREVIOUS-LOC,HERE
+	SET	'BOX-COMING,0
+?CND34:	INC	'BOX-COMING
+	EQUAL?	BOX-COMING,2 \?CCL38
+	CRLF	
+	CALL2	PICK-ONE,BAD-BOX-COMINGS
+	PRINT	STACK
+	CRLF	
+	RTRUE	
+?CCL38:	MOVE	MAILBOX,HERE
+	ICALL	SAY-BOX-CLOSER,BAD-BOX-ARRIVALS,TRUE-VALUE
+	CALL2	FIGHT?,SMALL-BOX
+	RSTACK	
+
+
+	.FUNCT	SMALL-BOX-F
+	ICALL2	THIS-IS-IT,SMALL-BOX
+	EQUAL?	HERE,INSIDE-POST-OFFICE \?CCL3
+	CALL1	PRIVATE-BOXES?
+	ZERO?	STACK /FALSE
+	RTRUE	
+?CCL3:	EQUAL?	PRSA,V?OPEN \?CCL8
+	ZERO?	HOUSE-VISITED? \?CCL8
+	SET	'HOUSE-VISITED?,TRUE-VALUE
+	CALL	QUEUE,I-WAKE-SMALL-BOX,-1
+	PUT	STACK,0,1
+	RFALSE	
+?CCL8:	EQUAL?	PRSA,V?EXAMINE \?CCL12
+	ZERO?	BOX-ALIVE? \?PRG18
+	CALL2	ENABLED?,I-WAKE-SMALL-BOX
+	ZERO?	STACK /FALSE
+?PRG18:	PRINTI	"It's the strangest "
+	PRINTD	SMALL-BOX
+	PRINTR	" you've ever seen."
+?CCL12:	EQUAL?	PRSA,V?RUB \?CCL21
+	ZERO?	BOX-ALIVE? /?CCL21
+	ICALL2	SAY-THE,SMALL-BOX
+	ICALL2	COOS-AT,STR?362
+	RTRUE	
+?CCL21:	CALL2	TALKING-TO?,SMALL-BOX
+	ZERO?	STACK /FALSE
+	ZERO?	BOX-ALIVE? /FALSE
+	ICALL2	SAY-THE,SMALL-BOX
+	PRINTI	" doesn't reply, but"
+	ICALL2	COOS-AT,STR?363
+	RETURN	2
+
+
+	.FUNCT	COOS-AT,STR
+	PRINTI	" coos with pleasure at "
+	PRINT	STR
+	PRINTR	"."
+
+
+	.FUNCT	I-WAKE-SMALL-BOX
+	ZERO?	FUZZY? \TRUE
+	ZERO?	ECLIPSE? \TRUE
+	EQUAL?	HERE,WEST-OF-HOUSE \FALSE
+	INC	'SMALL-SCRIPT
+	CRLF	
+	EQUAL?	SMALL-SCRIPT,1 \?CCL10
+	PRINTI	"The edges of the "
+	PRINTD	SMALL-BOX
+	PRINTR	" are beginning to twinkle."
+?CCL10:	EQUAL?	SMALL-SCRIPT,2 \?CCL14
+	ICALL2	SAY-THE,SMALL-BOX
+	PRINTR	" is engulfed in a sparkling aurora! Tremors of anticipation run up and down its length, and the air sings with Magick."
+?CCL14:	EQUAL?	SMALL-SCRIPT,3 \?CCL18
+	SET	'BOX-ALIVE?,TRUE-VALUE
+	PRINTI	"With a gentle pop, the "
+	PRINTD	SMALL-BOX
+	PRINTI	" pulls itself out of the "
+	PRINTD	GROUND
+	PRINTR	" and cavorts about the grass like a happy rabbit!"
+?CCL18:	CALL2	INT,I-WAKE-SMALL-BOX
+	PUT	STACK,0,0
+	CALL	QUEUE,I-FRIENDLY-BOX,-1
+	PUT	STACK,0,1
+	ICALL2	SAY-THE,SMALL-BOX
+	PRINTI	" notices you and snaps its tiny lid with joy. It makes a silly"
+	ICALL1	CLUMP
+	PRINTI	"as it"
+	ICALL1	HOPS-TO-SIDE
+	CRLF	
+	RTRUE	
+
+
+	.FUNCT	CLUMP
+	PRINTI	" ""clump-clump, clump-clump"" sound "
+	RTRUE	
+
+
+	.FUNCT	HOPS-TO-SIDE
+	PRINTI	" hops to your side and rubs lovingly against your sleeve."
+	RTRUE	
+
+
+	.FUNCT	I-FRIENDLY-BOX,TEMP
+	ZERO?	FUZZY? \TRUE
+	ZERO?	ECLIPSE? \TRUE
+	IN?	SMALL-BOX,HERE \?CCL7
+	SET	'SMALL-BOX-COMING,0
+	CALL2	FIGHT?,MAILBOX
+	ZERO?	STACK \TRUE
+	RANDOM	100
+	LESS?	50,STACK /FALSE
+	CRLF	
+	ICALL2	SAY-THE,SMALL-BOX
+	PRINTC	32
+	CALL2	PICK-ONE,CUDDLES
+	PRINT	STACK
+	PRINTR	"."
+?CCL7:	CALL1	NO-MAILBOX-ALLOWED?
+	ZERO?	STACK \TRUE
+	EQUAL?	HERE,PREVIOUS-SMALL-LOC /?CND17
+	SET	'PREVIOUS-SMALL-LOC,HERE
+	SET	'SMALL-BOX-COMING,0
+?CND17:	INC	'SMALL-BOX-COMING
+	EQUAL?	SMALL-BOX-COMING,1 /TRUE
+	EQUAL?	SMALL-BOX-COMING,2 \FALSE
+	MOVE	SMALL-BOX,HERE
+	CRLF	
+	ICALL2	SAY-THE,SMALL-BOX
+	PRINTI	" ""clump-clumps"" "
+	CALL2	PICK-ONE,SMALL-BOX-ARRIVALS
+	PRINT	STACK
+	PRINTC	46
+	CRLF	
+	CALL2	FIGHT?,MAILBOX
+	RSTACK	
+
+
+	.FUNCT	FIGHT?,ENEMY
+	IN?	ENEMY,HERE \FALSE
+	GRTR?	BOX-SCRIPT,2 \FALSE
+	REMOVE	SMALL-BOX
+	REMOVE	MAILBOX
+	REMOVE	EXHIBITS
+	MOVE	FOSSIL,MUSEUM
+	ICALL	MOVE-ALL,SMALL-BOX,FOSSIL
+	CALL2	INT,I-FRIENDLY-BOX
+	PUT	STACK,0,0
+	CALL2	ENABLED?,I-WAKE-BOX
+	ZERO?	STACK /?CND6
+	CALL2	INT,I-WAKE-BOX
+	PUT	STACK,0,0
+?CND6:	CALL2	ENABLED?,I-BAD-BOX
+	ZERO?	STACK /?CND8
+	CALL2	INT,I-BAD-BOX
+	PUT	STACK,0,0
+?CND8:	SET	'BOX-ALIVE?,FALSE-VALUE
+	CRLF	
+	PRINTI	"The two mailboxes freeze at the sight of one another.
+
+The "
+	PRINTD	SMALL-BOX
+	PRINTI	" snarls and stands protectively by your side. The "
+	PRINTD	MAILBOX
+	PRINTI	" emits a frightful growl and throws its lid wide open, displaying rows of "
+	ICALL1	SHARP-TEETH
+	PRINTI	". A crowd of postal meters and stamp dispensers gathers as the metal warriors circle each other with tense, snapping lids.
+
+With a sudden rush, the "
+	PRINTD	SMALL-BOX
+	PRINTI	" throws itself at the "
+	PRINTD	MAILBOX
+	PRINTI	" and clamps onto its forefoot. The "
+	PRINTD	MAILBOX
+	PRINTI	" roars with anger, bites the "
+	PRINTD	SMALL-BOX
+	PRINTI	" viciously and tries in vain to shake it off. You stare in wonder as the fighting boxes swell to twice their normal size, then four times larger, eight times!
+
+The "
+	PRINTD	MAILBOX
+	PRINTI	" frees itself with a savage twist and bends to finish its foe. The "
+	PRINTD	SMALL-BOX
+	PRINTR	" dodges, grips the descending lid and holds on for dear life. Locked in mortal combat, the giant boxes roll over and over, shaking the earth with the thunder of battle.
+
+The scene disappears under a cloud of dust. You hear a terrible scream of agony, then an even more terrible silence. When the air clears, the boxes and spectators are gone."
+
+
+	.FUNCT	DEPOSIT-BRANCH
+	IN?	BRANCH,PROTAGONIST \?CCL3
+	MOVE	BRANCH,HERE
+	RTRUE	
+?CCL3:	IN?	BROOM,PROTAGONIST \FALSE
+	SET	'BROOM-SIT?,FALSE-VALUE
+	MOVE	BROOM,HERE
+	RTRUE	
+
+
+	.FUNCT	TRAMP
+	PRINTI	" tramp of marching "
+	PRINTD	BOOTS
+	PRINTC	32
+	RTRUE	
+
+
+	.FUNCT	COMING-THIS-WAY
+	PRINTI	" It sounds as if they're coming this way!"
+	RTRUE	
+
+
+	.FUNCT	TO-JAIL
+	SET	'ON-STUMP?,FALSE-VALUE
+	ZERO?	JAIL-VISITS \?CCL3
+	SET	'JAIL-SCRIPT,24
+	CALL2	INT,I-BREAK-IN
+	PUT	STACK,0,0
+	CALL	QUEUE,I-JAIL,-1
+	PUT	STACK,0,1
+	JUMP	?CND1
+?CCL3:	SET	'JAIL-SCRIPT,16
+?CND1:	INC	'JAIL-VISITS
+	MOVE	PROTAGONIST,JAIL-CELL
+	SET	'OHERE,FALSE-VALUE
+	SET	'HERE,JAIL-CELL
+	ICALL	MOVE-ALL,PROTAGONIST,JAIL-CELL
+	GRTR?	JAIL-VISITS,1 \?CND4
+	FCLEAR	BUNK,RMUNGBIT
+	FCLEAR	UNDER-CELL,ONBIT
+	FCLEAR	UNDER-CELL,TOUCHBIT
+?CND4:	CRLF	
+	CRLF	
+	ICALL1	V-LOOK
+	ICALL1	I-LUCK
+	CALL1	I-GLOW
+	RSTACK	
+
+
+	.FUNCT	EVIL-VOICES
+	PRINTI	"evil voices down the "
+	PRINTD	CORRIDOR
+	RTRUE	
+
+
+	.FUNCT	HEAR-WAILS
+	PRINT	YOU-HEAR
+	CALL2	PICK-ONE,JAIL-SOUNDS
+	PRINT	STACK
+	PRINTI	" from "
+	RANDOM	100
+	LESS?	50,STACK /?PRG8
+	PRINTI	"an adjacent cell"
+	JUMP	?PRG10
+?PRG8:	PRINTI	"the "
+	PRINTD	CORRIDOR
+	PRINTI	" outside"
+?PRG10:	PRINTR	"."
+
+
+	.FUNCT	SHARK-SNACK
+	PRINTI	" with this jailbreaker any more tonight, do we?"" The surrounding "
+	PRINTD	BOOTS
+	PRINTI	" grunt in sympathy. ""No, of course not. Let's "
+	EQUAL?	HERE,WHARF,PLEASURE-WHARF /?PRG7
+	PRINTI	"pay a visit to the "
+	PRINTD	PLEASURE-WHARF
+	PRINTI	", and "
+?PRG7:	PRINTI	"give the "
+	PRINTD	SHARKS
+	PRINTI	" a little bedtime snack!"""
+	RTRUE	
+
+
+	.FUNCT	THROWN-OVER-SHOULDER
+	CRLF	
+	CRLF	
+	PRINTI	"You're thrown into an especially smelly Boot and carried, kicking and screaming, to "
+	RTRUE	
+
+
+	.FUNCT	INTO-BAY
+	PRINTI	"the edge of the "
+	PRINTD	PLEASURE-WHARF
+	PRINTI	". With a mighty swing, you're thrown high into the air and fall with a splash into the churning waters of"
+	ICALL2	WHICH-TOWN,STR?209
+	PRINTI	".
+
+The "
+	PRINTD	BOOTS
+	PRINTI	" on the wharf stomp and hoot as a black fin rises above the waves. It circles slowly, getting closer. You shut your eyes and pray that the end will be quick and not too painful..."
+	ZERO?	HORSE-SAVED? /?CCL7
+	CALL1	SAVED-BY-HORSES
+	RSTACK	
+?CCL7:	CALL1	BAD-ENDING
+	RSTACK	
+
+
+	.FUNCT	SAVED-BY-HORSES
+	REMOVE	BOOTS
+	CALL2	INT,I-JAIL
+	PUT	STACK,0,0
+	CALL2	INT,I-BOOT-PATROL
+	PUT	STACK,0,0
+	CRLF	
+	CRLF	
+	PRINTI	"""Hop on!""
+
+The tiny voice is somewhere near your left ear. ""Don't just thrash about with your eyes shut. Hop on!""
+
+The "
+	PRINTD	BOOTS
+	PRINTI	" on the "
+	PRINTD	PLEASURE-WHARF
+	PRINTI	" have stopped hooting and started screaming. Timidly, you open one eye.
+
+The bay is boiling with thousands of "
+	PRINTD	HORSE
+	PRINTI	"s! They leap from the waves like wet little rockets, splashing the "
+	PRINTD	PLEASURE-WHARF
+	PRINTI	" with black, oily water. Many of the "
+	PRINTD	BOOTS
+	PRINTI	" have already slipped and fallen into the sea; and a black fin is gliding confidently in their direction.
+
+""What are you waiting for? Halloween?""
+
+The familiar "
+	PRINTD	HORSE
+	PRINTI	" at your ear urges you to a nearby buoy. You grasp it with your last ounce of strength and feel yourself speeding across the bay, propelled by dozens of "
+	PRINTD	HORSE
+	PRINTI	"s reined to the buoy with seaweed.
+
+""I don't mind returning a favor,"" remarks the "
+	PRINTD	HORSE
+	PRINTI	" as your brain sinks into oblivion, ""but can't you pick a better night to go swimming?"""
+	FCLEAR	POLICE-DOOR,OPENBIT
+	FSET	POLICE-DOOR,LOCKEDBIT
+	MOVE	PROTAGONIST,FESTERON-POINT
+	SET	'HERE,FESTERON-POINT
+	SET	'OHERE,FALSE-VALUE
+	ICALL	MOVE-ALL,PROTAGONIST,FESTERON-POINT
+	CALL1	COME-TO-SENSES
+	RSTACK	
+
+
+	.FUNCT	JAIL-AGAIN
+	FSET	HIDDEN-HATCH,RMUNGBIT
+	REMOVE	PSEUDO-BUNK
+	FCLEAR	HIDDEN-HATCH,TOUCHBIT
+	PRINTI	"""Well, well. If it isn't the disappearing mail clerk."" You open your mouth to reply, but a vicious little kick changes your mind. ""The Tower wants a chat with this troublemaker.""
+
+""The "
+	PRINTD	SHARKS
+	PRINTI	" are getting restless,"" remarks the Tall Boot hopefully."
+	CRLF	
+	CRLF	
+	PRINTD	MACGUFFIN
+	PRINTI	" smirks. ""So is"
+	PRINT	EONE
+	PRINTI	"."""
+	RTRUE	
+
+	.ENDI

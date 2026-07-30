@@ -1,0 +1,1561 @@
+
+
+	.FUNCT	BOSS
+	PRINTI	" your mean old boss, "
+	PRINTD	CRISP
+	RTRUE	
+
+
+	.FUNCT	CRISP-F,CONTEXT
+	ICALL2	THIS-IS-IT,CRISP
+	EQUAL?	PRSA,V?EXAMINE \?CCL3
+	PRINTI	"He's wearing a "
+	ZERO?	SKEWED? /?PRG11
+	PRINTD	COAT
+	JUMP	?PRG13
+?PRG11:	PRINTI	"regulation "
+	PRINTD	POST-OFFICE
+	PRINTI	" uniform"
+?PRG13:	PRINTR	", which does little to hide his ugly face."
+?CCL3:	CALL2	ASKING?,CRISP
+	ZERO?	STACK /?CCL16
+	PRINTD	CRISP
+	PRINTC	32
+	CALL2	PICK-ONE,YELL-TYPES
+	PRINT	STACK
+	PRINTI	", ""You're here to "
+	ZERO?	SKEWED? /?PRG24
+	PRINTI	"answer questions, not to ask them"
+	JUMP	?PRG26
+?PRG24:	PRINTI	"take orders, not to ask questions"
+?PRG26:	PRINTI	"!"""
+	CRLF	
+	RETURN	2
+?CCL16:	EQUAL?	PRSA,V?REPLY,V?YELL,V?TELL /?PRG34
+	EQUAL?	PRSA,V?THANK,V?REPLY,V?HELLO \?CCL31
+?PRG34:	PRINTI	"""Don't talk back to me!"" "
+	PRINTD	CRISP
+	PRINTC	32
+	CALL2	PICK-ONE,YELL-TYPES
+	PRINT	STACK
+	PRINTC	46
+	CRLF	
+	RETURN	2
+?CCL31:	CALL2	HURT?,CRISP
+	ZERO?	STACK /?CCL39
+	PRINTD	CRISP
+	PRINTI	" might "
+	ZERO?	SKEWED? /?PRG47
+	PRINTI	"torture"
+	JUMP	?PRG49
+?PRG47:	PRINTI	"fire"
+?PRG49:	PRINTI	" you"
+	ICALL1	IF-YOU-TRIED
+	RTRUE	
+?CCL39:	EQUAL?	PRSA,V?WALK-TO,V?FOLLOW \?CCL52
+	ZERO?	CHAINED? /?CCL55
+	ICALL1	NOT-GOING-ANYWHERE
+	RTRUE	
+?CCL55:	EQUAL?	HERE,TORTURE-CHAMBER \FALSE
+	ICALL2	DO-WALK,P?UP
+	RTRUE	
+?CCL52:	EQUAL?	PRSA,V?GIVE \?CCL59
+	EQUAL?	PRSI,CRISP \?CCL59
+	EQUAL?	PRSO,ENVELOPE \?PRG64
+	ICALL1	IVE-ALREADY-SEEN-IT
+	RTRUE	
+?PRG64:	PRINTD	CRISP
+	PRINTI	" takes "
+	ICALL	ARTICLE,PRSO,TRUE-VALUE
+	PRINTD	PRSO
+	PRINTI	" and stares at it"
+	EQUAL?	PRSO,VIOLET-NOTE \?CCL70
+	PRINTI	". "
+	ICALL1	CRISP-SEES-NOTE
+	RTRUE	
+?CCL70:	EQUAL?	PRSO,WISHBRINGER \?CCL74
+	PRINTI	". "
+	ICALL1	CRISP-SEES-STONE
+	RTRUE	
+?CCL74:	EQUAL?	PRSO,CHOCOLATE \?CCL78
+	PRINTI	" hungrily."
+	ICALL1	HISTORY
+	REMOVE	CHOCOLATE
+	RTRUE	
+?CCL78:	EQUAL?	PRSO,CONCH-SHELL \?PRG87
+	PRINTI	" admiringly. ""This"
+	ICALL2	TV-SET,TRUE-VALUE
+	PRINTI	","" he mutters, setting it aside."
+	CRLF	
+	MOVE	CONCH-SHELL,HERE
+	FSET	CONCH-SHELL,THROWNBIT
+	RTRUE	
+?PRG87:	PRINTI	" stupidly. ""Trying to butter me up with presents, eh?"" he "
+	CALL2	PICK-ONE,YELL-TYPES
+	PRINT	STACK
+	PRINTI	", tossing it "
+	ZERO?	SKEWED? /?PRG94
+	FSET	PRSO,THROWNBIT
+	MOVE	PRSO,HERE
+	PRINTR	"angrily to the floor."
+?PRG94:	PRINTI	"back at you."
+	ICALL	YOU-ARE-HOLDING,PRSO,TRUE-VALUE
+	CRLF	
+	RTRUE	
+?CCL59:	EQUAL?	PRSA,V?RUB,V?SQUEEZE,V?KISS \FALSE
+	PRINTD	CRISP
+	PRINTR	" blushes. ""I didn't know you cared."""
+
+
+	.FUNCT	I-GIVE-ENVELOPE
+	EQUAL?	HERE,INSIDE-POST-OFFICE \FALSE
+	ICALL2	THIS-IS-IT,CRISP
+	INC	'CRISP-SCRIPT
+	CRLF	
+	PRINTD	CRISP
+	PRINTC	32
+	EQUAL?	CRISP-SCRIPT,3 \?CCL8
+	PRINTI	"drums his fingers on the "
+	PRINTD	COUNTER
+	PRINTI	" impatiently. """
+	CALL2	PICK-ONE,GET-GOINGS
+	PRINT	STACK
+	ICALL1	PLACE-CLOSES
+	JUMP	?CND6
+?CCL8:	IN?	ENVELOPE,PROTAGONIST \?CCL12
+	DEC	'ANGER
+	ZERO?	ANGER \?PRG15
+	ICALL1	CRISP-THROWS-YOU-OUT
+	RTRUE	
+?PRG15:	CALL2	PICK-ONE,YELL-TYPES
+	PRINT	STACK
+	PRINTI	", """
+	CALL2	PICK-ONE,GET-GOINGS
+	PRINT	STACK
+	PRINTR	"!"""
+?CCL12:	EQUAL?	CRISP-SCRIPT,1 \?CCL18
+	PRINTR	"hides the postcards away as you enter. ""Where have you been?"" he barks angrily. ""Daydreaming again, eh? I've been looking everywhere for you!"""
+?CCL18:	EQUAL?	CRISP-SCRIPT,2 \?CCL22
+	MOVE	ENVELOPE,COUNTER
+	ICALL2	THIS-IS-IT,ENVELOPE
+	FSET	ENVELOPE,RMUNGBIT
+	PRINTI	"reaches under the "
+	PRINTD	COUNTER
+	PRINTI	" and pulls out a "
+	PRINTD	ENVELOPE
+	PRINTI	". ""We just got this Special Delivery,"" he snarls, tossing it onto the "
+	PRINTD	COUNTER
+	PRINTR	". ""I want you to drop it off right away. That means NOW!"""
+?CCL22:	ICALL2	THIS-IS-IT,ENVELOPE
+	DEC	'ANGER
+	ZERO?	ANGER \?PRG30
+	PUTP	ENVELOPE,P?VALUE,0
+	FSET	ENVELOPE,TOUCHBIT
+	MOVE	ENVELOPE,PROTAGONIST
+	PRINTI	"picks up the "
+	PRINTD	ENVELOPE
+	PRINTI	" and stuffs it into "
+	PRINTD	HANDS
+	PRINTI	"s with a curse. Then he "
+	ICALL1	CRISP-THROWS-YOU-OUT
+	RTRUE	
+?PRG30:	PRINTI	"points to the "
+	PRINTD	ENVELOPE
+	PRINTI	" on the "
+	IN?	ENVELOPE,COUNTER \?PRG35
+	PRINTD	COUNTER
+	JUMP	?PRG37
+?PRG35:	PRINTI	"floor"
+?PRG37:	PRINTI	" impatiently. ""Take the "
+	RANDOM	100
+	LESS?	50,STACK /?PRG43
+	PRINTI	"stupid "
+?PRG43:	PRINTI	"envelope and scram"
+	ICALL1	PLACE-CLOSES
+?CND6:	CRLF	
+	RTRUE	
+
+
+	.FUNCT	CRISP-THROWS-YOU-OUT
+	MOVE	PROTAGONIST,HILLTOP
+	SET	'OHERE,FALSE-VALUE
+	SET	'HERE,HILLTOP
+	FSET?	POST-DOOR,OPENBIT /?PRG5
+	PRINTI	"opens the "
+	PRINTD	HOUSE-DOOR
+	PRINTI	", "
+?PRG5:	PRINTI	"picks you up and throws you out of the "
+	PRINTD	POST-OFFICE
+	PRINTI	". """
+	CALL2	PICK-ONE,GET-GOINGS
+	PRINT	STACK
+	PRINTI	"!"" he "
+	CALL2	PICK-ONE,YELL-TYPES
+	PRINT	STACK
+	PRINTI	" as he"
+	ICALL1	SLAMS-AND-LOCKS
+	CRLF	
+	CRLF	
+	ICALL1	V-LOOK
+	RFALSE	
+
+
+	.FUNCT	PLACE-CLOSES
+	RANDOM	100
+	LESS?	50,STACK /?PRG5
+	PRINTI	", "
+	CALL2	PICK-ONE,INSULTS
+	PRINT	STACK
+?PRG5:	PRINTI	"! The "
+	PRINTD	MAGICK-SHOPPE
+	PRINTI	" closes at five o'clock!"""
+	RTRUE	
+
+
+	.FUNCT	I-CRISP-CAPTURE,OBJ
+	ZERO?	FUZZY? \TRUE
+	ZERO?	ECLIPSE? \TRUE
+	EQUAL?	HERE,VESTIBULE,TORTURE-CHAMBER \FALSE
+	INC	'CRISP-SCRIPT
+	CRLF	
+	EQUAL?	CRISP-SCRIPT,1 \?CCL10
+	MOVE	PRINCESS,VESTIBULE
+	PRINTI	"""Turn back"
+	PRINT	ADVENTURER
+	PRINTI	"!""
+
+You stare in horror at the "
+	PRINTD	PLATYPUS
+	PRINTI	" chained to the floor. It's "
+	PRINTD	PRINCESS
+	PRINTR	"!"
+?CCL10:	EQUAL?	CRISP-SCRIPT,2 \?CCL14
+	LESS?	WISDOM,6 \?CND15
+	ICALL2	START-BUZZ,6
+?CND15:	FCLEAR	DRAWBRIDGE,OPENBIT
+	FCLEAR	VESTIBULE,TOUCHBIT
+	ICALL1	DEPOSIT-BRANCH
+	MOVE	PROTAGONIST,TORTURE-CHAMBER
+	SET	'OHERE,FALSE-VALUE
+	MOVE	PRINCESS,TORTURE-CHAMBER
+	MOVE	CRISP,TORTURE-CHAMBER
+	MOVE	CHAINS,TORTURE-CHAMBER
+	SET	'CHAINED?,TRUE-VALUE
+	SET	'CLAMPED?,TRUE-VALUE
+	SET	'HERE,TORTURE-CHAMBER
+	ICALL1	INTRO
+	PRINTI	"... "
+	PRINTD	CRISP
+	PRINTI	"!
+
+""Nice of you to drop by,"" he sneers as a gigantic Boot pins you to the "
+	PRINTD	GROUND
+	PRINTI	". ""Saves me the bother of tracking you down."""
+	ICALL1	CARRIAGE-RETURNS
+	CALL1	V-LOOK
+	RSTACK	
+?CCL14:	EQUAL?	CRISP-SCRIPT,3 \?CCL20
+	PRINTD	CRISP
+	PRINTI	" dangles a "
+	PRINTD	KEY
+	PRINTI	" in front of your face. ""This is the key to your "
+	PRINTD	CHAINS
+	PRINTI	","" he announces. ""Say goodbye to it."" He drops the key into his coat pocket and laughs like a madman.
+
+""Your laughter is like one gone mad!"" notes "
+	PRINTD	PRINCESS
+	PRINTI	" observantly.
+
+""Silence!"" He grips a control lever on the "
+	PRINTD	TMACHINE
+	PRINTR	". ""One more peep, your Highness, and I'll push this lever up and reward your insolence with Pain!"""
+?CCL20:	EQUAL?	CRISP-SCRIPT,4 \?CCL24
+	PRINTD	CRISP
+	PRINTI	" snaps on a pair of rubber gloves and smiles wickedly.
+
+""Are you carrying anything interesting?"" he asks, looking you up and down. ""I'd hate to start my experiments without giving you a chance to bribe me."""
+	CRLF	
+	IN?	VIOLET-NOTE,TORTURE-CHAMBER \?CCL29
+	CRLF	
+	ICALL2	CRISP-LIFTS,VIOLET-NOTE
+	ICALL1	CRISP-SEES-NOTE
+	RTRUE	
+?CCL29:	IN?	WISHBRINGER,TORTURE-CHAMBER \?CCL31
+	CRLF	
+	ICALL2	CRISP-LIFTS,WISHBRINGER
+	ICALL1	CRISP-SEES-STONE
+	RTRUE	
+?CCL31:	FIRST?	PROTAGONIST /TRUE
+	CRLF	
+	ICALL1	NO-BRIBE
+	RTRUE	
+?CCL24:	FIRST?	PROTAGONIST >OBJ /?BOGUS33
+?BOGUS33:	IN?	VIOLET-NOTE,TORTURE-CHAMBER \?CCL36
+	ICALL2	CRISP-LIFTS,VIOLET-NOTE
+	ICALL1	CRISP-SEES-NOTE
+	RTRUE	
+?CCL36:	IN?	WISHBRINGER,TORTURE-CHAMBER \?CCL38
+	ICALL2	CRISP-LIFTS,WISHBRINGER
+	ICALL1	CRISP-SEES-STONE
+	RTRUE	
+?CCL38:	EQUAL?	OBJ,VIOLET-NOTE,WISHBRINGER,CHOCOLATE /?CTR39
+	EQUAL?	OBJ,CONCH-SHELL \?CCL40
+?CTR39:	ICALL	PERFORM,V?GIVE,OBJ,CRISP
+	EQUAL?	OBJ,WISHBRINGER \TRUE
+	ICALL1	I-LUCK
+	RTRUE	
+?CCL40:	ZERO?	OBJ /?CCL46
+	FCLEAR	OBJ,WORNBIT
+	FSET	OBJ,THROWNBIT
+	MOVE	OBJ,TORTURE-CHAMBER
+	PRINTD	CRISP
+	PRINTC	32
+	CALL2	PICK-ONE,SWIPES
+	PRINT	STACK
+	PRINTC	32
+	ICALL	ARTICLE,OBJ,TRUE-VALUE
+	PRINTD	OBJ
+	PRINTI	" away from you"
+	CALL2	PICK-ONE,CONSIDERATIONS
+	PRINT	STACK
+	PRINTI	". "
+	CALL2	PICK-ONE,BORINGS
+	PRINT	STACK
+	PRINTI	" to the floor."
+	CRLF	
+	EQUAL?	OBJ,SHOE \TRUE
+	ICALL1	I-LUCK
+	RTRUE	
+?CCL46:	ICALL1	NO-BRIBE
+	RTRUE	
+
+
+	.FUNCT	CRISP-LIFTS,OBJ
+	MOVE	OBJ,CRISP
+	PRINTD	CRISP
+	PRINTI	" notices "
+	ICALL	ARTICLE,OBJ,TRUE-VALUE
+	PRINTD	OBJ
+	PRINTI	" lying on the floor and picks it up. "
+	RTRUE	
+
+
+	.FUNCT	CRISP-SEES-NOTE
+	CALL2	INT,I-CRISP-CAPTURE
+	PUT	STACK,0,0
+	SET	'CRISP-SCRIPT,0
+	CALL	QUEUE,I-PRINCESS-CALLS,-1
+	PUT	STACK,0,1
+	MOVE	VIOLET-NOTE,TORTURE-CHAMBER
+	FSET	VIOLET-NOTE,THROWNBIT
+	FCLEAR	VIOLET-NOTE,RMUNGBIT
+	SET	'COAT-WORN?,FALSE-VALUE
+	FCLEAR	COAT,NDESCBIT
+	FCLEAR	HATCH,OPENBIT
+	MOVE	CRISP,INSIDE-POST-OFFICE
+	PRINTI	"His face turns pale. ""Where did this come from?"" he whispers, opening it.
+
+An unbearably sweet expression spreads over his face as he reads. The "
+	PRINTD	VIOLET-NOTE
+	PRINTI	" falls from his hands.
+
+""I've got to run,"" "
+	PRINTD	CRISP
+	PRINTI	" cries, tossing his "
+	PRINTD	COAT
+	PRINTI	" into a "
+	PRINTD	CORNER
+	PRINTI	" and stuffing his shirttails into his pants. ""Violet scolds me when I'm late!"" He struggles into a hideous velvet blazer, pushes a comb through his hair and scampers up the "
+	PRINTD	LADDER
+	PRINTI	" like a little boy.
+
+The "
+	PRINTD	HATCH
+	PRINTR	" closes with a hollow thud."
+
+
+	.FUNCT	CRISP-SEES-STONE
+	MOVE	WISHBRINGER,COAT
+	FCLEAR	WISHBRINGER,ONBIT
+	FSET	WISHBRINGER,RMUNGBIT
+	PRINTI	"""Humph!"" he snorts, peering at it. ""I wonder if"
+	PRINT	EONE
+	PRINTI	" has one of these."" He plunks the "
+	PRINTD	WISHBRINGER
+	PRINTR	" into his coat pocket."
+
+
+	.FUNCT	NO-BRIBE
+	CALL2	INT,I-CRISP-CAPTURE
+	PUT	STACK,0,0
+	PRINTD	CRISP
+	PRINTI	" searches you carefully, but finds you empty-handed. ""Too bad,"" he sighs. ""I was hoping you'd try to bribe me, then start begging for mercy, maybe even grovel a little."" He walks to the "
+	PRINTD	LADDER
+	PRINTI	" and calls upward, ""Next!""
+
+A Boot escorts the "
+	PRINTD	GRAVEDIGGER
+	PRINTI	" down the "
+	PRINTD	LADDER
+	PRINTI	" as "
+	PRINTD	CRISP
+	PRINTI	" touches a hidden switch. The floor"
+	ICALL1	BENEATH-FEET
+	PRINTI	", and you slide screaming down an endless chute..."
+	CALL1	BAD-ENDING
+	RSTACK	
+
+
+	.FUNCT	BENEATH-FEET
+	PRINTI	" falls away beneath your feet"
+	RTRUE	
+
+
+	.FUNCT	I-PRINCESS-CALLS
+	ZERO?	FUZZY? \TRUE
+	EQUAL?	HERE,TORTURE-CHAMBER \FALSE
+	INC	'CRISP-SCRIPT
+	EQUAL?	CRISP-SCRIPT,1 /TRUE
+	EQUAL?	CRISP-SCRIPT,2 \?CCL10
+	CRLF	
+	PRINTI	"You "
+	ICALL1	HEAR-BRIDGE
+	CRLF	
+	PRINTD	PRINCESS
+	PRINTR	" breathes a sigh of relief."
+?CCL10:	EQUAL?	CRISP-SCRIPT,3 \?CCL16
+	CRLF	
+	PRINTI	"You "
+	ICALL1	HEAR-BRIDGE
+	CRLF	
+	PRINTD	PRINCESS
+	PRINTI	" strains against her clamps. ""Release me from this "
+	PRINTD	TMACHINE
+	PRINT	ADVENTURER
+	PRINTI	"! "
+	CALL2	PICK-ONE,BEGS
+	PRINT	STACK
+	PRINTR	"."""
+?CCL16:	RANDOM	100
+	LESS?	50,STACK /FALSE
+	ICALL2	THIS-IS-IT,LEVER
+	CRLF	
+	PRINTC	34
+	CALL2	PICK-ONE,BEGS
+	PRINT	STACK
+	PRINTI	","" cries "
+	PRINTD	PRINCESS
+	PRINTR	"."
+
+
+	.FUNCT	GRAVEDIGGER-F,CONTEXT
+	ICALL2	THIS-IS-IT,GRAVEDIGGER
+	EQUAL?	PRSA,V?EXAMINE \?CCL3
+	ZERO?	SKEWED? /?PRG8
+	PRINTI	"No doubt about it. "
+?PRG8:	PRINTI	"He's the town "
+	PRINTD	GRAVEDIGGER
+	PRINTI	", "
+	ZERO?	SKEWED? /?PRG15
+	PRINTI	"looking stiff and uncomfortable in his new usher's uniform"
+	JUMP	?PRG17
+?PRG15:	PRINTI	"a "
+	PRINTD	FESTERON
+	PRINTI	" fixture since before you were born"
+?PRG17:	PRINTR	"."
+?CCL3:	EQUAL?	PRSA,V?WAVE-AT \?CCL20
+	ICALL2	SAY-THE,GRAVEDIGGER
+	ZERO?	SKEWED? /?PRG26
+	PRINTI	" sneers"
+	JUMP	?PRG28
+?PRG26:	PRINTI	" winks at you slyly"
+?PRG28:	PRINTR	"."
+?CCL20:	CALL2	HURT?,GRAVEDIGGER
+	ZERO?	STACK /?CCL31
+	ICALL2	SAY-THE,GRAVEDIGGER
+	ICALL1	MIGHT-NOT-LIKE
+	RTRUE	
+?CCL31:	CALL2	TALKING-TO?,GRAVEDIGGER
+	ZERO?	STACK /?CCL33
+	ICALL2	SAY-THE,GRAVEDIGGER
+	PRINTI	" doesn't respond. He seems to be a bit hard of hearing."
+	CRLF	
+	RETURN	2
+?CCL33:	EQUAL?	PRSA,V?YELL \?CCL39
+	PRINTI	"No reply. "
+	ICALL2	SAY-THE,GRAVEDIGGER
+	PRINTI	" is apparently stone deaf."
+	CRLF	
+	RETURN	2
+?CCL39:	EQUAL?	PRSA,V?FOLLOW \?CCL47
+	ZERO?	SKEWED? \?CCL47
+	EQUAL?	HERE,SPOOKY-COPSE \?CCL52
+	CALL2	ENABLED?,I-DIGGER-TALK
+	ZERO?	STACK \?CCL52
+	ICALL2	DO-WALK,P?WEST
+	RTRUE	
+?CCL52:	EQUAL?	HERE,TWILIGHT-GLEN \FALSE
+	FSET?	NORTH-GATE,OPENBIT /FALSE
+	ICALL2	DO-WALK,P?NORTH
+	RTRUE	
+?CCL47:	EQUAL?	PRSA,V?GIVE \FALSE
+	EQUAL?	PRSI,GRAVEDIGGER \FALSE
+	EQUAL?	PRSO,ENVELOPE \?CCL65
+	ZERO?	ENVELOPE-PEERED-AT? /?CCL68
+	ICALL1	IVE-ALREADY-SEEN-IT
+	RTRUE	
+?CCL68:	SET	'ENVELOPE-PEERED-AT?,TRUE-VALUE
+	ICALL2	SAY-THE,GRAVEDIGGER
+	PRINTI	" peers at the address on the "
+	PRINTD	ENVELOPE
+	PRINTI	". ""Hmm,"" he mutters, handing it back to you. ""Could've sworn I buried that "
+	PRINTD	OLD-WOMAN
+	PRINTI	" years ago."""
+	ICALL	YOU-ARE-HOLDING,ENVELOPE,TRUE-VALUE
+	CRLF	
+	RETURN	2
+?CCL65:	EQUAL?	PRSO,TICKET \?PRG79
+	MOVE	TICKET,STEEP-TRAIL
+	FSET	TICKET,TOOLBIT
+	SET	'NO-MOVIE?,FALSE-VALUE
+	ICALL2	THIS-IS-IT,CARTON
+	ICALL2	SAY-THE,GRAVEDIGGER
+	PRINTI	" takes the "
+	PRINTD	TICKET
+	PRINTI	", gestures absently to the empty "
+	PRINTD	CARTON
+	PRINTI	" and leans back to daydream."
+	CRLF	
+	RETURN	2
+?PRG79:	PRINTR	"""No, thanks,"" he says, shaking his head. ""Got enough junk already."""
+
+
+	.FUNCT	I-DIGGER-TALK
+	EQUAL?	HERE,SPOOKY-COPSE \FALSE
+	ICALL2	THIS-IS-IT,GRAVEDIGGER
+	INC	'DIGGER-SCRIPT
+	CRLF	
+	EQUAL?	DIGGER-SCRIPT,1 \?CCL6
+	ICALL2	SAY-THE,GRAVEDIGGER
+	PRINTR	" nods a greeting as you approach."
+?CCL6:	IN?	ENVELOPE,HERE \?CCL10
+	DEC	'DIGGER-SCRIPT
+	MOVE	ENVELOPE,PROTAGONIST
+	ICALL2	SAY-THE,GRAVEDIGGER
+	PRINTI	" notices the "
+	PRINTD	ENVELOPE
+	PRINTI	" on the "
+	PRINTD	GROUND
+	PRINTI	" and picks it up. ""You dropped this"
+	ZERO?	ENVELOPE-PEERED-AT? /?CCL15
+	PRINTI	","" he says, handing it back to you."
+	ICALL	YOU-ARE-HOLDING,ENVELOPE,TRUE-VALUE
+	CRLF	
+	RTRUE	
+?CCL15:	ICALL1	MIND-IF-I-LOOK
+	CRLF	
+	ICALL	PERFORM,V?GIVE,ENVELOPE,GRAVEDIGGER
+	RTRUE	
+?CCL10:	EQUAL?	DIGGER-SCRIPT,2 \?CCL19
+	ZERO?	ENVELOPE-PEERED-AT? \?PRG27
+	IN?	ENVELOPE,PROTAGONIST \?PRG27
+	ICALL2	SAY-THE,GRAVEDIGGER
+	PRINTI	" notices the "
+	PRINTD	ENVELOPE
+	PRINTI	" you're holding. ""That's a mighty mysterious-lookin' envelope you got there"
+	CALL1	MIND-IF-I-LOOK
+	RSTACK	
+?PRG27:	PRINTI	"""Nice grave-diggin' weather we're havin' lately,"" the "
+	PRINTD	GRAVEDIGGER
+	PRINTR	" notes drily."
+?CCL19:	EQUAL?	DIGGER-SCRIPT,3 \?CCL30
+	PRINTC	34
+	ZERO?	ENVELOPE-PEERED-AT? \?PRG40
+	IN?	ENVELOPE,PROTAGONIST \?PRG40
+	ICALL2	THIS-IS-IT,ENVELOPE
+	PRINTI	"Sure would like to get a closer look at that "
+	PRINTD	ENVELOPE
+	JUMP	?PRG42
+?PRG40:	PRINTI	"Couldn't ask for a nicer day for diggin' graves"
+?PRG42:	PRINTR	"."""
+?CCL30:	MOVE	GRAVEDIGGER,TWILIGHT-GLEN
+	CALL2	INT,I-DIGGER-TALK
+	PUT	STACK,0,0
+	PRINTI	"""Got to go,"" says the "
+	PRINTD	GRAVEDIGGER
+	PRINTI	", picking up his shovel. ""See you soon.""
+
+The old man ambles away "
+	GET	DIR-NAMES,3
+	PRINT	STACK
+	PRINTR	"."
+
+
+	.FUNCT	MIND-IF-I-LOOK
+	ICALL2	THIS-IS-IT,ENVELOPE
+	PRINTR	","" he says. ""Let's have a look at it."""
+
+
+	.FUNCT	MACGUFFIN-F,CONTEXT
+	CALL2	TALKING-TO?,MACGUFFIN
+	ZERO?	STACK \?CTR2
+	EQUAL?	PRSA,V?YELL \?CCL3
+?CTR2:	ZERO?	SKEWED? /?PRG11
+	PRINTI	"""I'll do the talking around here!"" snaps "
+	PRINTD	MACGUFFIN
+	JUMP	?PRG22
+?PRG11:	PRINTD	MACGUFFIN
+	PRINTC	32
+	GRTR?	MACGUFFIN-SCRIPT,3 \?PRG18
+	PRINTI	"snores"
+	JUMP	?PRG20
+?PRG18:	PRINTI	"mutters something vague"
+?PRG20:	PRINTI	" in reply"
+?PRG22:	PRINTC	46
+	CRLF	
+	RETURN	2
+?CCL3:	EQUAL?	PRSA,V?EXAMINE \?CCL27
+	PRINTD	MACGUFFIN
+	ZERO?	SKEWED? /?PRG33
+	PRINTI	" isn't in a good mood"
+	JUMP	?PRG42
+?PRG33:	PRINTI	"'s "
+	GRTR?	MACGUFFIN-SCRIPT,3 \?PRG40
+	PRINTI	"sleeping like a baby"
+	JUMP	?PRG42
+?PRG40:	PRINTI	"about to fall asleep"
+?PRG42:	PRINTR	"."
+?CCL27:	CALL2	HURT?,MACGUFFIN
+	ZERO?	STACK /?CCL45
+	PRINTD	MACGUFFIN
+	PRINTI	" would probably have you "
+	ZERO?	SKEWED? /?PRG53
+	PRINTI	"tortured"
+	JUMP	?CND48
+?PRG53:	PRINTI	"arrested"
+?CND48:	ICALL1	IF-YOU-TRIED
+	RTRUE	
+?CCL45:	EQUAL?	PRSA,V?RUB,V?SQUEEZE,V?KISS \?CCL56
+	PRINTD	MACGUFFIN
+	PRINTC	32
+	ZERO?	SKEWED? /?PRG64
+	PRINTI	"slaps you across the face"
+	JUMP	?PRG66
+?PRG64:	PRINTI	"smiles dreamily"
+?PRG66:	PRINTR	"."
+?CCL56:	EQUAL?	PRSA,V?FEED,V?GIVE \FALSE
+	EQUAL?	PRSI,MACGUFFIN \FALSE
+	ZERO?	SKEWED? \FALSE
+	GRTR?	MACGUFFIN-SCRIPT,3 \FALSE
+	ICALL2	BUT-THE,MACGUFFIN
+	PRINTR	"is sound asleep!"
+
+
+	.FUNCT	I-DULL-MACGUFFIN
+	EQUAL?	HERE,INSIDE-POLICE-STATION \FALSE
+	INC	'MACGUFFIN-SCRIPT
+	CRLF	
+	EQUAL?	MACGUFFIN-SCRIPT,1 \?CCL6
+	PRINTD	MACGUFFIN
+	PRINTI	" opens one eye as you enter"
+	JUMP	?PRG34
+?CCL6:	EQUAL?	MACGUFFIN-SCRIPT,2 \?CCL10
+	PRINTI	"""Just drop my mail on the desk,"" "
+	PRINTD	MACGUFFIN
+	PRINTI	" murmurs sleepily"
+	JUMP	?PRG34
+?CCL10:	EQUAL?	MACGUFFIN-SCRIPT,3 \?CCL14
+	PRINTI	"A voice crackles on the "
+	PRINTD	RADIO
+	PRINTI	". ""Ten-four,"" "
+	PRINTD	MACGUFFIN
+	PRINTI	" yawns"
+	JUMP	?PRG34
+?CCL14:	EQUAL?	MACGUFFIN-SCRIPT,4 \?CCL18
+	PRINTD	MACGUFFIN
+	PRINTI	" begins to snore softly"
+	JUMP	?PRG34
+?CCL18:	CALL2	INT,I-DULL-MACGUFFIN
+	PUT	STACK,0,0
+	PRINTI	"The voice of"
+	ICALL1	BOSS
+	PRINTI	", crackles to life on the "
+	PRINTD	RADIO
+	PRINTI	". """
+	FSET?	ENVELOPE,RMUNGBIT \?PRG30
+	PRINTI	"Stop dawdling and deliver that"
+	JUMP	?PRG32
+?PRG30:	PRINTI	"You "
+	CALL2	PICK-ONE,INSULTS
+	PRINT	STACK
+	PRINTI	"! You forgot the"
+?PRG32:	PRINTI	" envelope!"" he "
+	CALL2	PICK-ONE,YELL-TYPES
+	PRINT	STACK
+?PRG34:	PRINTR	"."
+
+
+	.FUNCT	I-NASTY-MACGUFFIN
+	ZERO?	FUZZY? \TRUE
+	ZERO?	ECLIPSE? \TRUE
+	EQUAL?	HERE,INSIDE-POLICE-STATION \FALSE
+	INC	'MACGUFFIN-SCRIPT
+	CRLF	
+	EQUAL?	MACGUFFIN-SCRIPT,1 \?CCL10
+	ZERO?	JAIL-VISITS \?CCL13
+	PRINTI	"""It's past curfew,"" "
+	PRINTD	MACGUFFIN
+	PRINTR	" growls as you enter. ""I hope you've got a very good reason for coming in here at this hour."""
+?CCL13:	SET	'MACGUFFIN-SCRIPT,0
+	CALL2	INT,I-NASTY-MACGUFFIN
+	PUT	STACK,0,0
+	IN?	BRANCH,PROTAGONIST \?PRG18
+	MOVE	BRANCH,ROTARY-WEST
+?PRG18:	PRINTI	"""You again!"" cries "
+	PRINTD	MACGUFFIN
+	PRINTI	" as you enter. Moments later you're pinned to the floor by a dozen gigantic Boots. An especially tall Boot strides into the "
+	PRINTD	GLOBBY
+	PRINTI	", curls its leather tongue and leaves an ugly toeprint on your nice, clean clothes."
+	CRLF	
+	CRLF	
+	PRINTD	MACGUFFIN
+	PRINTI	" shows you his "
+	ICALL1	SHARP-TEETH
+	PRINTI	". "
+	EQUAL?	JAIL-VISITS,1 \?PRG25
+	ICALL1	JAIL-AGAIN
+	CALL1	TO-JAIL
+	RSTACK	
+?PRG25:	PRINTI	"""We don't want to trouble the Tower"
+	ICALL1	SHARK-SNACK
+	ICALL1	THROWN-OVER-SHOULDER
+	CALL1	INTO-BAY
+	RSTACK	
+?CCL10:	EQUAL?	MACGUFFIN-SCRIPT,2 \?CCL28
+	PRINTI	"""You've got exactly one second to tell me why I shouldn't throw you in jail,"" notes "
+	PRINTD	MACGUFFIN
+	PRINTR	" through clenched teeth."
+?CCL28:	SET	'MACGUFFIN-SCRIPT,0
+	CALL2	INT,I-NASTY-MACGUFFIN
+	PUT	STACK,0,0
+	IN?	BRANCH,PROTAGONIST \?PRG33
+	MOVE	BRANCH,ROTARY-WEST
+?PRG33:	PRINTI	"""Your second's up."""
+	CALL1	TO-JAIL
+	RSTACK	
+
+
+	.FUNCT	VOSS-F,CONTEXT,RESPONSE
+	EQUAL?	PRSA,V?EXAMINE \?CCL3
+	ZERO?	SKEWED? /?PRG9
+	PRINTI	"Her once kindly features have grown hard with cynicism"
+	JUMP	?PRG11
+?PRG9:	PRINTI	"She's holding a purse and an armful of books"
+?PRG11:	PRINTR	"."
+?CCL3:	CALL2	IMAGE?,MISS-VOSS
+	ZERO?	STACK /?CCL14
+	RETURN	2
+?CCL14:	CALL2	TALKING-TO?,MISS-VOSS
+	ZERO?	STACK /?CCL18
+	ZERO?	SKEWED? /?CCL21
+	SET	'RESPONSE,BAD-VOSS-RESPONSES
+	JUMP	?PRG22
+?CCL21:	SET	'RESPONSE,GOOD-VOSS-RESPONSES
+?PRG22:	PRINTC	34
+	CALL2	PICK-ONE,RESPONSE
+	PRINT	STACK
+	PRINTI	","" she replies."
+	CRLF	
+	RETURN	2
+?CCL18:	EQUAL?	PRSA,V?GIVE \?CCL27
+	EQUAL?	PRSI,MISS-VOSS \?CCL27
+	PRINTD	MISS-VOSS
+	EQUAL?	PRSO,COIN \?CCL32
+	CALL2	ULTIMATELY-IN?,COIN
+	ZERO?	STACK /?CCL32
+	ZERO?	SKEWED? /?CCL32
+	MOVE	COIN,MISS-VOSS
+	SET	'VOSS-SCRIPT,-1
+	CALL	QUEUE,I-VOSS-SUSPICIOUS,-1
+	PUT	STACK,0,1
+	FCLEAR	TICKET,RMUNGBIT
+	FCLEAR	TICKET,NDESCBIT
+	MOVE	TICKET,PROTAGONIST
+	PRINTI	" snatches away your "
+	PRINTD	COIN
+	PRINTI	" with her bony fingers and hands you a "
+	PRINTD	TICKET
+	PRINTC	46
+	ICALL2	YOU-ARE-HOLDING,TICKET
+	CRLF	
+	CRLF	
+	ICALL2	UPDATE-SCORE,3
+	RTRUE	
+?CCL32:	EQUAL?	PRSO,BOOK \?PRG55
+	ZERO?	SKEWED? /?PRG53
+	PRINTI	"""Sentimental garbage. Try my new book, "
+	EQUAL?	HOST,MACINTOSH \?CCL46
+	PRINTI	"99 WAYS TO DE-TICK YOUR HELLHOUND"
+	JUMP	?PRG51
+?CCL46:	HLIGHT	H-ITALIC
+	PRINTI	"99 Ways To De-Tick Your Hellhound"
+	HLIGHT	H-NORMAL
+?PRG51:	PRINTR	"."""
+?PRG53:	PRINTR	"""No time for autographs now, dear."""
+?PRG55:	PRINTI	" shakes her head. ""I haven't any use for "
+	ICALL2	ARTICLE,PRSO
+	PRINTD	PRSO
+	PRINTI	"!"" she "
+	ZERO?	SKEWED? /?PRG64
+	PRINTI	"snarl"
+	JUMP	?PRG66
+?PRG64:	PRINTI	"laugh"
+?PRG66:	PRINTR	"s."
+?CCL27:	EQUAL?	PRSA,V?FOLLOW \?CCL69
+	ZERO?	SKEWED? \?CCL69
+	EQUAL?	HERE,ROTARY-SOUTH \?CCL69
+	IN?	MISS-VOSS,THRONE-ROOM \?CCL69
+	MOVE	MISS-VOSS,ISLAND
+	ICALL2	DO-WALK,P?SOUTH
+	RTRUE	
+?CCL69:	EQUAL?	PRSA,V?LISTEN \FALSE
+	CALL2	ENABLED?,I-VOSS-SUSPICIOUS
+	ZERO?	STACK /FALSE
+	PRINTI	"""M-Y-O-B!"" snaps "
+	PRINTD	MISS-VOSS
+	PRINTR	"."
+
+
+	.FUNCT	IN-VOSS,CONTEXT
+	EQUAL?	CONTEXT,M-CONT \FALSE
+	EQUAL?	PRSA,V?TAKE \FALSE
+	EQUAL?	PRSO,VIOLET-NOTE /FALSE
+	ICALL	NOT-LIKELY,MISS-VOSS,STR?136
+	RTRUE	
+
+
+	.FUNCT	VOSS-THINGS-F
+	CALL2	TOUCHING?,VOSS-THINGS
+	ZERO?	STACK \?CTR2
+	EQUAL?	PRSA,V?SEARCH,V?LOOK-INSIDE \FALSE
+?CTR2:	PRINTD	MISS-VOSS
+	ICALL1	MIGHT-NOT-LIKE
+	RTRUE	
+
+
+	.FUNCT	I-VOSS-CALLING
+	ZERO?	SKEWED? \FALSE
+	ZERO?	NOTE-GIVEN? \FALSE
+	EQUAL?	HERE,ROTARY-WEST,PARK,ROTARY-EAST \FALSE
+	CALL2	SOMEBODY-CALLING,TRUE-VALUE
+	RSTACK	
+
+
+	.FUNCT	I-VOSS-BABBLE
+	EQUAL?	HERE,ROTARY-SOUTH \FALSE
+	ICALL2	THIS-IS-IT,MISS-VOSS
+	CRLF	
+	IN?	VIOLET-NOTE,MISS-VOSS \?CND4
+	DEC	'ANGER
+	ZERO?	ANGER \?CCL8
+	ICALL1	VOSS-LEAVES
+	REMOVE	VIOLET-NOTE
+	PRINTD	MISS-VOSS
+	PRINTI	" puts the "
+	PRINTD	VIOLET-NOTE
+	PRINTI	" back in her purse. ""Very well,"" she says. ""If you won't take this note to "
+	PRINTD	CRISP
+	PRINTI	" for me, I'll just have to do it myself.""
+
+She closes her purse with an indignant snap and"
+	ICALL1	VOSS-HURRIES
+	CRLF	
+	CRLF	
+	ICALL2	UPDATE-SCORE,-10
+	RTRUE	
+?CCL8:	ICALL2	THIS-IS-IT,VIOLET-NOTE
+	PRINTC	34
+	CALL2	PICK-ONE,VOSS-OFFERS
+	PRINT	STACK
+	PRINTI	","" says "
+	PRINTD	MISS-VOSS
+	PRINTR	", holding it out to you."
+?CND4:	INC	'VOSS-SCRIPT
+	EQUAL?	VOSS-SCRIPT,1 \?CCL15
+	ICALL1	LIBRARIAN
+	PRINTI	", is locking the "
+	PRINTD	LIBRARY-DOOR
+	PRINTR	" as you approach. ""Just the person I was looking for!"" she exclaims, smiling brightly."
+?CCL15:	EQUAL?	VOSS-SCRIPT,2 \?CCL19
+	MOVE	VIOLET-NOTE,MISS-VOSS
+	ICALL2	THIS-IS-IT,VIOLET-NOTE
+	PRINTD	MISS-VOSS
+	PRINTI	" retrieves a violet slip of paper from the depths of her purse. ""Be a sweetie and give this note to your dear boss, "
+	PRINTD	CRISP
+	PRINTR	","" she coos, holding the note out to you. ""I'd be ever so much obliged."""
+?CCL19:	SET	'NOTE-GIVEN?,TRUE-VALUE
+	ICALL1	VOSS-HURRIES-AWAY
+	CRLF	
+	RTRUE	
+
+
+	.FUNCT	VOSS-HURRIES-AWAY
+	ICALL1	VOSS-LEAVES
+	PRINTD	MISS-VOSS
+	ICALL1	VOSS-HURRIES
+	PRINTI	" ""Thanks! Toody-loo!"""
+	RTRUE	
+
+
+	.FUNCT	VOSS-LEAVES
+	SET	'ANGER,4
+	REMOVE	VOSS-THINGS
+	MOVE	MISS-VOSS,THRONE-ROOM
+	CALL2	INT,I-VOSS-CALLING
+	PUT	STACK,0,0
+	CALL2	INT,I-VOSS-BABBLE
+	PUT	STACK,0,0
+	RFALSE	
+
+
+	.FUNCT	VOSS-HURRIES
+	PRINTI	" hurries away down the street."
+	RTRUE	
+
+
+	.FUNCT	I-VOSS-SUSPICIOUS
+	ZERO?	FUZZY? \TRUE
+	ZERO?	ECLIPSE? \TRUE
+	EQUAL?	HERE,ROTARY-EAST \FALSE
+	INC	'VOSS-SCRIPT
+	ZERO?	VOSS-SCRIPT /FALSE
+	CRLF	
+	EQUAL?	VOSS-SCRIPT,1 \?CCL12
+	PRINTI	"Out of the "
+	PRINTD	CORNER
+	PRINTI	" of your eye, you notice "
+	PRINTD	MISS-VOSS
+	PRINTI	" squinting carefully at the "
+	PRINTD	COIN
+	PRINTR	" you gave her. She looks at you suspiciously, picks up a telephone and begins to dial rapidly."
+?CCL12:	EQUAL?	VOSS-SCRIPT,2 \?CCL16
+	PRINTD	MISS-VOSS
+	PRINTR	" is talking urgently with someone on the phone. She doesn't take her eyes off you for a moment."
+?CCL16:	EQUAL?	VOSS-SCRIPT,3 \?CCL20
+	PRINTD	MISS-VOSS
+	PRINTR	" hangs up the phone and looks at you with triumph in her eyes."
+?CCL20:	CALL2	INT,I-VOSS-SUSPICIOUS
+	PUT	STACK,0,0
+	CALL1	SEE-VULTURE
+	RSTACK	
+
+
+	.FUNCT	DESCRIBE-HORSE,CONTEXT
+	EQUAL?	CONTEXT,M-OBJDESC \FALSE
+	FSET?	HORSE,TOUCHBIT \?CCL6
+	PRINTI	"There's a dying "
+	PRINTD	HORSE
+	PRINTI	" here"
+	JUMP	?PRG11
+?CCL6:	FSET	HORSE,TOUCHBIT
+	PRINTI	"Apparently a careless fisherman has just left the wharf, for lying on the planks is a little "
+	PRINTD	HORSE
+	PRINTI	", its gills moving in and out with its dying gasps"
+?PRG11:	PRINTC	46
+	RTRUE	
+
+
+	.FUNCT	HORSE-F
+	EQUAL?	PRSA,V?EXAMINE \?CCL3
+	PRINTR	"Poor thing. It's at the edge of death."
+?CCL3:	CALL2	TALKING-TO?,HORSE
+	ZERO?	STACK /?CCL7
+	ICALL2	SAY-THE,HORSE
+	PRINTI	" is too busy dying to respond."
+	CRLF	
+	RETURN	2
+?CCL7:	EQUAL?	PRSA,V?RESCUE \?CCL13
+	PRINTI	"A noble idea. "
+	ICALL1	HOW?
+	RTRUE	
+?CCL13:	CALL2	HURT?,HORSE
+	ZERO?	STACK /FALSE
+	PRINTI	"Let the "
+	PRINTD	HORSE
+	PRINTR	" die in peace, will you?"
+
+
+	.FUNCT	I-HORSE-DEATH
+	CALL2	VISIBLE?,HORSE
+	ZERO?	STACK /FALSE
+	DEC	'HORSE-SCRIPT
+	CRLF	
+	EQUAL?	HORSE-SCRIPT,3 \?CCL6
+	ICALL2	SAY-THE,HORSE
+	PRINTI	" looks at you with moist, frightened eyes"
+	JUMP	?PRG19
+?CCL6:	EQUAL?	HORSE-SCRIPT,2 \?CCL10
+	ICALL2	SAY-THE,HORSE
+	PRINTI	" opens and closes its little mouth pathetically"
+	JUMP	?PRG19
+?CCL10:	EQUAL?	HORSE-SCRIPT,1 \?PRG17
+	ICALL2	SAY-THE,HORSE
+	PRINTI	"'s gills are barely moving. It's practically dead"
+	JUMP	?PRG19
+?PRG17:	PRINTI	"With a barely perceptible sigh, the little "
+	PRINTD	HORSE
+	PRINTI	" gives up its ghost"
+	LOC	HORSE
+	MOVE	DHORSE,STACK
+	REMOVE	HORSE
+	CALL2	INT,I-HORSE-DEATH
+	PUT	STACK,0,0
+?PRG19:	PRINTR	"."
+
+
+	.FUNCT	DHORSE-F
+	EQUAL?	PRSA,V?EXAMINE \?CCL3
+	ICALL2	SAY-THE,HORSE
+	PRINTR	" is dead."
+?CCL3:	CALL2	TALKING-TO?,DHORSE
+	ZERO?	STACK /?CCL7
+	ICALL	NOT-LIKELY,DHORSE,STR?146
+	RETURN	2
+?CCL7:	CALL2	HURT?,DHORSE
+	ZERO?	STACK \?PRG14
+	EQUAL?	PRSA,V?RESCUE \FALSE
+?PRG14:	PRINTI	"Too late. "
+	ICALL	PERFORM,V?EXAMINE,DHORSE
+	RTRUE	
+
+
+	.FUNCT	PELICAN-F,CONTEXT
+	ICALL2	THIS-IS-IT,PELICAN
+	CALL2	TALKING-TO?,PELICAN
+	ZERO?	STACK \?CTR2
+	EQUAL?	PRSA,V?YELL \?CCL3
+?CTR2:	ICALL2	IT-IGNORES-YOU,PELICAN
+	RETURN	2
+?CCL3:	EQUAL?	PRSA,V?EXAMINE \?CCL9
+	PRINTI	"It's a fat old bird with a droopy beak"
+	IN?	HAT,PELICAN \?PRG17
+	PRINTI	", half-closed eyes and "
+	ICALL1	A-WIZARDS-HAT
+	RTRUE	
+?PRG17:	PRINTR	" and half-closed eyes."
+?CCL9:	EQUAL?	PRSA,V?LOOK-ON \?CCL20
+	IN?	HAT,PELICAN \?CCL20
+	PRINTI	"It's wearing a "
+	PRINTD	HAT
+	PRINTR	"."
+?CCL20:	EQUAL?	PRSA,V?PUT-ON,V?FEED,V?GIVE \?CCL26
+	EQUAL?	PRSI,PELICAN \?CCL26
+	EQUAL?	PRSO,BROOM \?CND29
+	ICALL1	GET-OFF-BROOM-FIRST
+?CND29:	ICALL2	SAY-THE,PELICAN
+	PRINTI	" sniffs "
+	ICALL	ARTICLE,PRSO,TRUE-VALUE
+	PRINTD	PRSO
+	PRINTI	" suspiciously"
+	EQUAL?	PRSO,DHORSE,CHOCOLATE,WORM \?CCL37
+	REMOVE	PRSO
+	PRINTR	", then swallows it without a word of thanks."
+?CCL37:	EQUAL?	PRSO,MILK \?CCL41
+	PRINTR	", but refuses to take it."
+?CCL41:	EQUAL?	PRSO,WISHBRINGER \?CCL45
+	REMOVE	WISHBRINGER
+	REMOVE	PELICAN
+	ICALL1	EYES-OPEN
+	PRINTI	" disappears with the "
+	PRINTD	PELICAN
+	PRINTI	" as it flies off across the bay."
+	CRLF	
+	ICALL2	UPDATE-SCORE,-10
+	RETURN	2
+?CCL45:	EQUAL?	PRSO,HAT \?CCL51
+	REMOVE	HAT
+	REMOVE	PELICAN
+	ICALL2	START-BUZZ,5
+	FCLEAR	PELICAN,RMUNGBIT
+	ICALL1	EYES-OPEN
+	PRINTI	" quickly finds a place on the "
+	PRINTD	PELICAN
+	PRINTI	"'s head. Then the old bird gives you a sly, knowledgeable wink.
+
+All at once the "
+	PRINTD	LIGHTHOUSE
+	PRINTI	" blazes to life! Its shining beacon whirls like a gyroscope, and a pencil-thin beam of light pierces the sky and traces a word on a passing cloud: "
+	GET	POWER-WORDS,POWER
+	PRINT	STACK
+	PRINTI	".
+
+The "
+	PRINTD	PELICAN
+	ICALL1	SOARS-AWAY-OVER
+	PRINTI	"the bay. As the beam of the "
+	PRINTD	LIGHTHOUSE
+	PRINTI	" fades, a voice in your head whispers, ""Good luck"
+	PRINT	ADVENTURER
+	PRINTI	"!"""
+	CRLF	
+	CRLF	
+	ICALL2	UPDATE-SCORE,5
+	RETURN	2
+?CCL51:	MOVE	PRSO,FESTERON-POINT
+	PRINTR	" and carelessly drops it at your feet."
+?CCL26:	CALL2	HURT?,PELICAN
+	ZERO?	STACK /?CCL61
+	PRINTI	"Imagine doing that to a defenseless "
+	PRINTD	PELICAN
+	PRINTR	"!"
+?CCL61:	EQUAL?	PRSA,V?KISS,V?RUB,V?TAKE /?PRD67
+	EQUAL?	PRSA,V?PLAY \FALSE
+?PRD67:	EQUAL?	PRSO,PELICAN \FALSE
+	ICALL2	SAY-THE,PELICAN
+	PRINTR	" nips you with its beak. Ouch!"
+
+
+	.FUNCT	EYES-OPEN
+	PRINTI	". Its eyes open wide with interest, and the "
+	PRINTD	PRSO
+	RTRUE	
+
+
+	.FUNCT	OLD-WOMAN-F,CONTEXT
+	ICALL2	THIS-IS-IT,OLD-WOMAN
+	EQUAL?	PRSA,V?WAVE-AT,V?HELLO \?CCL3
+	ICALL2	SAY-THE,OLD-WOMAN
+	PRINTI	" smiles kindly."
+	CRLF	
+	RETURN	2
+?CCL3:	EQUAL?	PRSA,V?REPLY,V?THANK,V?TELL \?CCL9
+	EQUAL?	PRSO,OLD-WOMAN \?CCL9
+	RANDOM	100
+	LESS?	50,STACK /?PRG15
+	ICALL2	SAY-THE,OLD-WOMAN
+	JUMP	?PRG17
+?PRG15:	PRINTI	"She"
+?PRG17:	PRINTC	32
+	CALL2	PICK-ONE,LADY-REACTIONS
+	PRINT	STACK
+	PRINTC	46
+	CRLF	
+	RETURN	2
+?CCL9:	EQUAL?	PRSA,V?QUESTION,V?ASK-ABOUT \?CCL22
+	EQUAL?	PRSO,OLD-WOMAN \?CCL22
+	PRINTC	34
+	CALL2	PICK-ONE,Q-SIGHS
+	PRINT	STACK
+	PRINTI	","" sighs the "
+	PRINTD	OLD-WOMAN
+	PRINTI	" wistfully."
+	RANDOM	100
+	LESS?	50,STACK /?CND27
+	PRINTI	" """
+	CALL2	PICK-ONE,Q-EXCUSES
+	PRINT	STACK
+	PRINTI	"."""
+?CND27:	CRLF	
+	RETURN	2
+?CCL22:	EQUAL?	PRSA,V?ASK-FOR \?CCL34
+	EQUAL?	PRSO,OLD-WOMAN \?CCL34
+	IN?	PRSI,OLD-WOMAN \?CCL39
+	ICALL	PERFORM,V?TAKE,PRSI
+	RTRUE	
+?CCL39:	ICALL2	SAY-THE,OLD-WOMAN
+	PRINTR	" tactfully ignores your request."
+?CCL34:	CALL2	HURT?,OLD-WOMAN
+	ZERO?	STACK \?CTR42
+	EQUAL?	PRSA,V?ALARM,V?KISS \?CCL43
+?CTR42:	ICALL2	SAY-THE,OLD-WOMAN
+	ICALL1	MIGHT-NOT-LIKE
+	RTRUE	
+?CCL43:	EQUAL?	PRSA,V?READ \?CCL47
+	EQUAL?	PRSI,OLD-WOMAN \?CCL47
+	FSET?	PRSO,READBIT \?CCL47
+	EQUAL?	PRSO,RANSOM-LETTER \?CCL53
+	ICALL1	READ-LETTER-TO-WOMAN
+	RTRUE	
+?CCL53:	ICALL	PERFORM,V?THANK,OLD-WOMAN
+	RTRUE	
+?CCL47:	EQUAL?	PRSA,V?GIVE \FALSE
+	EQUAL?	PRSI,OLD-WOMAN \FALSE
+	ICALL2	THIS-IS-IT,PRSO
+	EQUAL?	PRSO,ENVELOPE,OPEN-ENVELOPE \?CCL60
+	ZERO?	WOMAN-SEEN-ENVELOPE? /?CCL63
+	ICALL1	READ-BEG
+	RETURN	2
+?CCL63:	SET	'WOMAN-SEEN-ENVELOPE?,1
+	CALL2	INT,I-WOMAN-SCRIPT
+	PUT	STACK,0,0
+	SET	'ANGER,4
+	CALL	QUEUE,I-READ-PROMPT,-1
+	PUT	STACK,0,1
+	ICALL2	UPDATE-SCORE,5
+	CRLF	
+	ICALL2	SAY-THE,OLD-WOMAN
+	PRINTI	" turns pale as she takes the "
+	PRINTD	ENVELOPE
+	PRINTI	" from you. ""It's been a long, long time since I last saw this handwriting,"" she murmurs, turning it over in her hands. ""Hoped I never would again.""
+
+She starts to open the "
+	PRINTD	ENVELOPE
+	PRINTI	", thinks better of it and hands it back to you. ""Will you open it up and read it to me?"" she pleads. ""I'll never find my glasses in this mess."""
+	ICALL	YOU-ARE-HOLDING,ENVELOPE,TRUE-VALUE
+	CRLF	
+	RTRUE	
+?CCL60:	EQUAL?	PRSO,RANSOM-LETTER \?CCL69
+	ICALL1	READ-BEG
+	RETURN	2
+?CCL69:	ICALL2	SAY-THE,OLD-WOMAN
+	PRINTI	" glances at "
+	ICALL	ARTICLE,PRSO,TRUE-VALUE
+	PRINTD	PRSO
+	PRINTI	" and hands it back. ""You keep it, dear. I've "
+	EQUAL?	PRSO,BOOK \?PRG80
+	PRINTR	"a feeling you're going to need it."
+?PRG80:	PRINTR	"got enough junk already."""
+
+
+	.FUNCT	I-WOMAN-SCRIPT
+	ICALL2	THIS-IS-IT,OLD-WOMAN
+	EQUAL?	HERE,INSIDE-SHOPPE \FALSE
+	INC	'WOMAN-SCRIPT
+	CRLF	
+	EQUAL?	WOMAN-SCRIPT,1 \?CCL6
+	FSET?	SHOPPE-DOOR,OPENBIT \?PRG11
+	FCLEAR	SHOPPE-DOOR,OPENBIT
+	ICALL2	THIS-IS-IT,SHOPPE-DOOR
+	ICALL1	SUDDEN-GUST
+	PRINTI	"slams the "
+	PRINTD	SHOPPE-DOOR
+	PRINTI	" closed. "
+	ICALL1	BELL-TINKLES
+	CRLF	
+?PRG11:	PRINTI	"""Just a moment!"" cries a voice behind the "
+	PRINTD	CURTAIN
+	PRINTR	"."
+?CCL6:	EQUAL?	WOMAN-SCRIPT,2 \?CCL14
+	ICALL2	THIS-IS-IT,CLOCK
+	PRINTI	"The noisy tick of the "
+	PRINTD	CLOCK
+	PRINTR	" is making you uneasy."
+?CCL14:	EQUAL?	WOMAN-SCRIPT,3 \?CCL18
+	FCLEAR	CLOCK,RMUNGBIT
+	MOVE	OLD-WOMAN,INSIDE-SHOPPE
+	ICALL2	THIS-IS-IT,OLD-WOMAN
+	ICALL2	SAY-THE,CURTAIN
+	PRINTR	" opens so quickly it makes you jump.
+
+The woman standing before you is older than your oldest aunt. Her thin, pale face and bony hands make her look fragile, like a fading signature in an antique book. But her eyes remember everything they have ever seen.
+
+You appraise one another for a long moment before she breaks the ice. ""Welcome in, welcome!"" she chortles. ""Don't get many visitors this late in the day.""
+
+The room seems oddly quiet all of a sudden."
+?CCL18:	EQUAL?	WOMAN-SCRIPT,4 \?CCL22
+	SET	'ANGER,4
+	PRINTI	"""Hope you have some mail for me,"" the "
+	PRINTD	OLD-WOMAN
+	PRINTR	" says eagerly."
+?CCL22:	DEC	'ANGER
+	ZERO?	ANGER \?PRG30
+	PRINTI	"""No mail, huh?"" says the woman with disappointment in her voice. ""Oh, well."""
+	ICALL1	THROWN-OUT-OF-SHOPPE
+	CRLF	
+	RTRUE	
+?PRG30:	PRINTC	34
+	CALL2	PICK-ONE,WOMAN-WAITS
+	PRINT	STACK
+	PRINTR	"."""
+
+
+	.FUNCT	I-READ-PROMPT
+	ICALL2	THIS-IS-IT,OLD-WOMAN
+	EQUAL?	WOMAN-SEEN-ENVELOPE?,1 \?CND1
+	SET	'WOMAN-SEEN-ENVELOPE?,2
+	RTRUE	
+?CND1:	DEC	'ANGER
+	CRLF	
+	ZERO?	ANGER \?CCL5
+	PRINTI	"""Never mind, then,"" says the woman, taking the envelope"
+	FSET?	OPEN-ENVELOPE,TOUCHBIT \?PRG12
+	PRINTI	" and letter"
+?PRG12:	PRINTI	". ""I'll read it myself later."""
+	CALL1	THROWN-OUT-OF-SHOPPE
+	RSTACK	
+?CCL5:	CALL1	READ-BEG
+	RSTACK	
+
+
+	.FUNCT	READ-BEG
+	PRINTC	34
+	RANDOM	100
+	LESS?	50,STACK /?CND3
+	PRINTI	"Go ahead, dear. "
+?CND3:	RANDOM	100
+	LESS?	50,STACK /?CND7
+	PRINTI	"Don't be bashful. "
+?CND7:	FSET?	OPEN-ENVELOPE,TOUCHBIT \?CCL13
+	ICALL2	THIS-IS-IT,RANSOM-LETTER
+	PRINTC	82
+	JUMP	?PRG18
+?CCL13:	ICALL2	THIS-IS-IT,ENVELOPE
+	PRINTI	"Open the envelope and r"
+?PRG18:	PRINTI	"ead the letter to me"
+	RANDOM	100
+	LESS?	50,STACK /?CND20
+	PRINTI	", please"
+?CND20:	RANDOM	100
+	LESS?	50,STACK /?PRG28
+	PRINTI	". I'm waiting"
+?PRG28:	PRINTR	"."""
+
+
+	.FUNCT	READ-LETTER,ALOUD
+	ZERO?	ALOUD \?PRG5
+	PRINTI	"You study the quirky handwriting.
+
+"
+?PRG5:	PRINTR	"""Deliver the Magick Stone to me before the moons sets, or you will never see your cat again!
+
+      The Evil One"""
+
+
+	.FUNCT	READ-LETTER-TO-WOMAN
+	ZERO?	LETTER-READ-TO-WOMAN? /?CCL3
+	PRINTR	"""Once was more than enough."""
+?CCL3:	SET	'LETTER-READ-TO-WOMAN?,TRUE-VALUE
+	CALL2	INT,I-READ-PROMPT
+	PUT	STACK,0,0
+	SET	'WOMAN-SCRIPT,-1
+	SET	'ANGER,4
+	CALL	QUEUE,I-RECRUIT,-1
+	PUT	STACK,0,1
+	REMOVE	RANSOM-LETTER
+	REMOVE	OPEN-ENVELOPE
+	ICALL2	UPDATE-SCORE,1
+	PRINTI	"You smooth the letter out, clearing your throat nervously.
+
+"
+	ICALL2	READ-LETTER,TRUE-VALUE
+	CRLF	
+	ICALL2	SAY-THE,OLD-WOMAN
+	PRINTI	" is motionless as you read. Glancing up, you see tears of anger forming; but she turns away as your eyes meet.
+
+""Kidnapped,"" she whispers after a long silence. She paces aimlessly around the room, deep in thought.
+
+""Many seek to gain the Stone of Dreams,"" she mutters, mostly to herself. ""Yet few can imagine the price. For years I have fought to conceal it from"
+	PRINT	EONE
+	PRINTI	" and others like her. My youth, my home and family, all were forfeited for its protection. And now,"" her voice breaking with emotion, ""now it claims my only companion.""
+
+Impulsively, the woman snatches away the letter and envelope and crumples them in her trembling hands. ""No one is strong enough to guard "
+	PRINT	GAME
+	PRINTR	" alone."""
+
+
+	.FUNCT	THROWN-OUT-OF-SHOPPE
+	CRLF	
+	CRLF	
+	ICALL2	SAY-THE,OLD-WOMAN
+	FSET?	SHOPPE-DOOR,OPENBIT /?PRG5
+	PRINTI	" opens the "
+	PRINTD	HOUSE-DOOR
+	PRINTI	" and"
+?PRG5:	PRINTI	" leads you gently but firmly out of the "
+	PRINTD	MAGICK-SHOPPE
+	PRINTI	". ""Thanks for the visit. Good night!""
+
+She slams the door shut in your face. "
+	ICALL1	BELL-TINKLES
+	CALL1	FIRED
+	RSTACK	
+
+
+	.FUNCT	I-RECRUIT
+	ICALL2	THIS-IS-IT,OLD-WOMAN
+	IN?	SNAKE-CAN,OLD-WOMAN \?CND1
+	DEC	'ANGER
+	CRLF	
+	ZERO?	ANGER \?CCL5
+	PRINTI	"""Oh, well. Never mind,"" shrugs the woman as she puts the "
+	PRINTD	SNAKE-CAN
+	PRINTI	" away."
+	ICALL1	THROWN-OUT-OF-SHOPPE
+	RTRUE	
+?CCL5:	ICALL2	THIS-IS-IT,SNAKE-CAN
+	PRINTC	34
+	CALL2	PICK-ONE,CROW-OFFERS
+	PRINT	STACK
+	PRINTI	","" says the "
+	PRINTD	OLD-WOMAN
+	PRINTI	", holding a "
+	PRINTD	SNAKE-CAN
+	PRINTR	" out to you."
+?CND1:	INC	'WOMAN-SCRIPT
+	ZERO?	WOMAN-SCRIPT /FALSE
+	CRLF	
+	EQUAL?	WOMAN-SCRIPT,1 \?CCL14
+	ICALL2	THIS-IS-IT,SNAKE-CAN
+	MOVE	SNAKE-CAN,OLD-WOMAN
+	ICALL2	SAY-THE,OLD-WOMAN
+	PRINTI	" makes an effort to compose herself.
+
+""Thank you for coming all this way for me,"" she says, reaching up to a shelf full of cheap gags. ""I know I'm not supposed to tip you, but take this little trinket anyway.""
+
+The woman holds out a small "
+	PRINTD	SNAKE-CAN
+	PRINTR	" for you to take."
+?CCL14:	EQUAL?	WOMAN-SCRIPT,2 \?CCL18
+	PRINTI	"""It's getting Dark outside,"" the "
+	PRINTD	OLD-WOMAN
+	PRINTR	" remarks, and you can almost hear the capital D. ""Maybe you should be getting back to town."""
+?CCL18:	EQUAL?	WOMAN-SCRIPT,3 \?CCL22
+	FSET	SHOPPE-DOOR,OPENBIT
+	SET	'IMMOBILIZED?,TRUE-VALUE
+	ICALL2	SAY-THE,OLD-WOMAN
+	PRINTI	" hobbles over to the "
+	PRINTD	SHOPPE-DOOR
+	PRINTI	" and opens it. "
+	ICALL1	BELL-TINKLES
+	CRLF	
+	PRINTI	"""Keep a sharp eye out for my cat, won't you?"" She speaks the words slowly and distinctly. ""Bring her to me if you find her. "
+	ICALL2	DESCRIBE-CHAOS,TRUE-VALUE
+	PRINTI	"... right HERE."""
+	CRLF	
+	CRLF	
+	ICALL2	SAY-THE,OLD-WOMAN
+	PRINTR	" touches the middle of your forehead with her finger. The light outside dims suddenly, like a cloud passing over the sun."
+?CCL22:	EQUAL?	WOMAN-SCRIPT,4 \FALSE
+	SET	'IMMOBILIZED?,FALSE-VALUE
+	ICALL2	SAY-THE,OLD-WOMAN
+	PRINTI	" takes away her finger. Your forehead is tingling.
+
+""The Stone of Dreams can help you in your search. I cannot reveal the place where I have hidden it, for"
+	PRINT	EONE
+	PRINTI	" would see your thoughts and take the treasure for herself. You must discover it alone, and rely on legends to instruct you in its mysteries.""
+
+As she speaks, the "
+	PRINTD	OLD-WOMAN
+	PRINTI	" gently leads you through the door of the "
+	PRINTD	MAGICK-SHOPPE
+	PRINTI	". She pauses before closing the door.
+
+""The moon will set at six tomorrow morning. Return the cat to me by then, and "
+	PRINT	GAME
+	PRINTI	" shall be yours.
+
+""Her name is "
+	PRINTD	CHAOS
+	PRINTI	"."""
+	CRLF	
+	CRLF	
+	ICALL1	BELL-TINKLES
+	CALL2	INT,I-RECRUIT
+	PUT	STACK,0,0
+	MOVE	PROTAGONIST,CLIFF-EDGE
+	SET	'OHERE,FALSE-VALUE
+	ICALL1	SKEW
+	LESS?	HOURS,18 \?CND35
+	SET	'HOURS,18
+	SET	'MINUTES,0
+?CND35:	SET	'HERE,CLIFF-EDGE
+	ICALL1	CARRIAGE-RETURNS
+	ICALL1	V-LOOK
+	CALL	QUEUE,I-BEFORE-MOONSET,-1
+	PUT	STACK,0,1
+	SET	'WOMAN-SCRIPT,-1
+	CALL	QUEUE,I-FOG-RISING,-1
+	PUT	STACK,0,1
+	RTRUE	
+
+
+	.FUNCT	SKEW,OBJ,NXT
+	FIRST?	ROOMS >OBJ /?PRG2
+?PRG2:	ZERO?	OBJ /?REP3
+	FCLEAR	OBJ,TOUCHBIT
+	NEXT?	OBJ >OBJ /?PRG2
+	JUMP	?PRG2
+?REP3:	FCLEAR	MAGICK-SHOPPE,TOUCHBIT
+	FCLEAR	SHOPPE-DOOR,OPENBIT
+	FSET	SHOPPE-DOOR,LOCKEDBIT
+	FCLEAR	SNAKE-CAN,OPENBIT
+	SET	'SNAKE-GONE?,FALSE-VALUE
+	MOVE	VULTURE,GNARLED-TREE
+	MOVE	TROLL,NORTH-OF-BRIDGE
+	MOVE	TOLL-GATE,NORTH-OF-BRIDGE
+	FCLEAR	SMALL-BOX,NDESCBIT
+	MOVE	SMALL-BOX,WEST-OF-HOUSE
+	FCLEAR	LAKE-SAND,RMUNGBIT
+	FSET?	PIT,OPENBIT \?CCL10
+	FSET	LAKE-SAND,TOOLBIT
+	JUMP	?CND8
+?CCL10:	REMOVE	LEAVES
+	FSET	PIT,OPENBIT
+	MOVE	PLATYPUS,PIT
+?CND8:	ICALL	MOVE-ALL,FOUNTAIN,STEEP-TRAIL
+	MOVE	PIRANHA,FOUNTAIN
+	MOVE	TOKEN,FOUNTAIN
+	MOVE	BOOTS,FESTERON-POINT
+	CALL	QUEUE,I-BOOT-PATROL,-1
+	PUT	STACK,0,1
+	CALL2	ENABLED?,I-DULL-MACGUFFIN
+	ZERO?	STACK /?CND11
+	CALL2	INT,I-DULL-MACGUFFIN
+	PUT	STACK,0,0
+?CND11:	SET	'MACGUFFIN-SCRIPT,0
+	IN?	CHOCOLATE,DESK \?CCL15
+	REMOVE	CHOCOLATE
+	JUMP	?CND13
+?CCL15:	FCLEAR	CHOCOLATE,NDESCBIT
+?CND13:	CALL	QUEUE,I-BREAK-IN,-1
+	PUT	STACK,0,1
+	ZERO?	NOTE-GIVEN? \?CND16
+	CALL2	INT,I-VOSS-CALLING
+	PUT	STACK,0,0
+	CALL2	INT,I-VOSS-BABBLE
+	PUT	STACK,0,0
+	REMOVE	VIOLET-NOTE
+	REMOVE	VOSS-THINGS
+?CND16:	MOVE	MISS-VOSS,ROTARY-EAST
+	MOVE	TICKET,MISS-VOSS
+	MOVE	GRAVEDIGGER,LOBBY
+	FSET	ENTRANCE,OPENBIT
+	FCLEAR	ENTRANCE,LOCKEDBIT
+	SET	'VOSS-SCRIPT,0
+	MOVE	CDEBRIS,INSIDE-CHURCH
+	CALL2	ENABLED?,I-RODENT
+	ZERO?	STACK /?CND18
+	CALL2	INT,I-RODENT
+	PUT	STACK,0,0
+?CND18:	FSET	CHURCH,RMUNGBIT
+	FSET	CHURCH,TOUCHBIT
+	FSET	CHURCH,TOOLBIT
+	MOVE	SPEAKER,INSIDE-CHURCH
+	SET	'POODLE-HAPPY?,FALSE-VALUE
+	REMOVE	POODLE
+	SET	'POOCH,HELLHOUND
+	MOVE	HELLHOUND,OUTSIDE-COTTAGE
+	FSET	HILLTOP,WETBIT
+	MOVE	MOAT,HILLTOP
+	SET	'CRISP-SCRIPT,0
+	FCLEAR	CRISP,TOUCHBIT
+	CALL2	ENABLED?,I-DIGGER-TALK
+	ZERO?	STACK /?CND20
+	CALL2	INT,I-DIGGER-TALK
+	PUT	STACK,0,0
+?CND20:	SET	'DIGGER-SCRIPT,0
+	FSET	SOUTH-GATE,OPENBIT
+	FCLEAR	SOUTH-GATE,LOCKEDBIT
+	CALL	QUEUE,I-CREAK,-1
+	PUT	STACK,0,1
+	FSET	VAPORS,ACTORBIT
+	CALL2	ACCESSIBLE?,HORSE
+	ZERO?	STACK \?CND22
+	REMOVE	HORSE
+?CND22:	MOVE	HUMANOIDS,VIDEO-ARCADE
+	MOVE	SHARKS,WHARF
+	ICALL	MOVE-ALL,MAILBOX,FOSSIL
+	SET	'SKEWED?,TRUE-VALUE
+	RETURN	SKEWED?
+
+	.ENDI
