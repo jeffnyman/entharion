@@ -1,0 +1,26 @@
+Assembling SUSPENDED.XZAP.5
+
+
+Inserting SUSPENDEDFREQ.XZAP.3	(  682 bytes)
+Inserting SUSPENDEDDAT.ZAP.1	(23479 bytes)
+Inserting MACROS.ZAP.1	(  121 bytes)
+Inserting GLOBALS.ZAP.1	(  261 bytes)
+Inserting SYNTAX.ZAP.1	(    0 bytes)
+Inserting CLOCK.ZAP.1	(  200 bytes)
+Inserting MAIN.ZAP.1	( 1711 bytes)
+Inserting PARSER.ZAP.1	( 5549 bytes)
+Inserting CRUFTY.XZAP.1	(   79 bytes)
+Inserting VERBS.ZAP.1	(12755 bytes)
+Inserting ROBOTS.ZAP.1	( 4661 bytes)
+Inserting ROOMS.ZAP.2	( 2525 bytes)
+Inserting OBJECTS.ZAP.1	( 2863 bytes)
+Inserting GOAL.ZAP.1	( 1749 bytes)
+Inserting PEOPLE.ZAP.1	( 6535 bytes)
+Inserting SETUP.ZAP.1	(  770 bytes)
+Inserting SUSPENDEDSTR.ZAP.1	(41580 bytes)
+17467 bytes of preload.
+
+105584 bytes (104K).
+20592 bytes too large for one-disk game on ATARI.
+191 objects.
+203 globals.
