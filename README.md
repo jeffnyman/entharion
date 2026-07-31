@@ -114,3 +114,43 @@ A few notes:
 - Apparently the Solid Gold edition of _Wishbringer_ has related to the delivery time limit. [Bug discussion](https://github.com/the-infocom-files/wishbringer-invclues/issues/7)
 
 - Reports suggest that Mini-Zork 2 fails on modern interpreters when you exit the Carousel Room.
+
+## Inform
+
+_Advent_ comes in variations in this repo. The r9-s060321 edition has source included. The r9-s260512 edition is here simply because it provides three versions of the same story file.
+
+_All Roads_ (allroads-r1-s011119.z5) includes some interesting mechanics that a Z-Machine interpreter has to get right. Unfortunately, the author never released the source code.
+
+_Awakening_ (awakening-r1-s980726.z5) is a nice simple game with an easy walkthrough, making it good to test for a new interpreter.
+
+_Balances_ (balances-r5-s961216.z5; source included) provides a good example of the Inform language's versatility and thus is a good one to check an interpreter against.
+
+_Blue Chairs_ (bluechairs-r2-s041229.z5; source included) has some interesting elements on its title screen and those are good to see if an interpreter renders all of it correctly.
+
+_Bomber_ (bomber-r3-s971123.z5; source included) is a good one because it requires timed out and color is provided, although not required.
+
+_Curses_ (curses-r16-s951024.z5, curses-r17-s210531.z8; source included) is an interesting game. The original source is lost but was recreated. See Allen Garvin's [curses repo](https://github.com/allengarvin/curses). That source is included here, which is for the release 17 revision.
+
+_Custard_ (custard-r1-s000314) is included only because it is one of the very few games compiled to the version 7 format of the Z-Machine.
+
+_Destruct_ (destruct-r1-s030509.z1) is included only because it is one of the very few games compiled to the version 1 format of the Z-Machine.
+
+_All Things Devours_ (devours-r3-s050325.z5; source included) is included because it's a great game and has a very solid walkthrough that is easy to test an interpreter with.
+
+_Jigsaw_ (jigsaw-r3-s951129.z5, jigsaw-r3-s951129.z8) comes in two versions and the puzzle pieces in the game are a good thing to see rendering correctly. Unfortunately, the source code has never been released.
+
+_Magic Toyshop_ (magic-toyshop-r1-s951018.z5; source included) is included mainly for some of the interesting mechanics it showcases.
+
+_Photopia_ (photopia-r1-s120416.z5) is a game that allows you to test out some color aspects.
+
+_Risorgimento Represso_ (risorg-r6-s171114.zblorb; source included) is included just because it's an interesting game.
+
+_Simple Test_ (source included) comes in one file for each Z-Machine version. It's painfully simple and is designed to do nothing more than provide a sanity test that every Z-Machine can be read by a given intepreter.
+
+_Zombies_ (zombies-r1-s990524.z5; source included) is an "abuse" of the Z-Machine and provides a lot of interesting elements to attempt to interpret.
+
+_Z-Tornado_ (ztornado-r2-s030711.z5; source included) is billed as a "a two-player weather action game" and is one of the few games to exercise section 7 of the Z-Machine Standard.
+
+_Z-Trek_ (ztrek-r1-s000229.z5; source included) is billed as "Super Z Trek" and is based on a much older game. It has interesting status bar and drawling elements to consider.
+
+_Zork: The Undiscovered Underground_ (ztuu-r16-s970828.z5) is the only _Zork_ game not written in Infocom's language, but rather that of Inform. Mainly included for historical interest.
