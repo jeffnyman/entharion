@@ -139,6 +139,8 @@ _All Things Devours_ (devours-r3-s050325.z5; source included) is included becaus
 
 _Bronze_ (bronze-r11-s060503.zblorb; source included) is one of the few Inform 7 games included in this repo. It does some interesting things with the status line that are worth making sure an interpreter can handle.
 
+_Freefall_ (freefall-r2-s951111.z5; source included) is an "abuse" of the Z-Machine that provides a Tetris-style implementation. Worth it to see if an interpreter can handle it.
+
 _Jigsaw_ (jigsaw-r3-s951129.z5, jigsaw-r3-s951129.z8) comes in two versions and the puzzle pieces in the game are a good thing to see rendering correctly. Unfortunately, the source code has never been released.
 
 _Magic Toyshop_ (magic-toyshop-r1-s951018.z5; source included) is included mainly for some of the interesting mechanics it showcases.
@@ -148,6 +150,8 @@ _Mysterious Adventures_ is a grouping of two batches of eleven distinct games. T
 _Photopia_ (photopia-r1-s120416.z5) is a game that allows you to test out some color aspects.
 
 _Risorgimento Represso_ (risorg-r6-s171114.zblorb; source included) is included just because it's an interesting game.
+
+_Robots_ (robots-r6-s980115.z5; source included) is an "abuse" of the Z-Machine that provides interesting mechanics for an interpreter.
 
 _Simple Test_ (source included) comes in one file for each Z-Machine version. It's painfully simple and is designed to do nothing more than provide a sanity test that every Z-Machine can be read by a given intepreter.
 
