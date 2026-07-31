@@ -137,15 +137,21 @@ _Destruct_ (destruct-r1-s030509.z1) is included only because it is one of the ve
 
 _All Things Devours_ (devours-r3-s050325.z5; source included) is included because it's a great game and has a very solid walkthrough that is easy to test an interpreter with.
 
+_Bronze_ (bronze-r11-s060503.zblorb; source included) is one of the few Inform 7 games included in this repo. It does some interesting things with the status line that are worth making sure an interpreter can handle.
+
 _Jigsaw_ (jigsaw-r3-s951129.z5, jigsaw-r3-s951129.z8) comes in two versions and the puzzle pieces in the game are a good thing to see rendering correctly. Unfortunately, the source code has never been released.
 
 _Magic Toyshop_ (magic-toyshop-r1-s951018.z5; source included) is included mainly for some of the interesting mechanics it showcases.
+
+_Mysterious Adventures_ is a grouping of two batches of eleven distinct games. The `mysterious_z6_blorb` directory contains the games with blorb format graphics. The `mysterious_z6_noblorb` directory contains graphics drawn directly by the game's code, thus using no blorb resources. The series is made up of the following games: The Golden Baton (#01), The Time Machine (#02), Arrow of Death Part 1 (#03), Arrow of Death Part 2 (#04), Escape from Pulsar 7 (#05), Circus (#06), Feasibility Experiment (#07), The Wizard of Akyrz (#08), Perseus and Andromeda (#09), Ten Little Indians (#10) and Waxworks (#11).
 
 _Photopia_ (photopia-r1-s120416.z5) is a game that allows you to test out some color aspects.
 
 _Risorgimento Represso_ (risorg-r6-s171114.zblorb; source included) is included just because it's an interesting game.
 
 _Simple Test_ (source included) comes in one file for each Z-Machine version. It's painfully simple and is designed to do nothing more than provide a sanity test that every Z-Machine can be read by a given intepreter.
+
+_Wurm_ (wurm-r2-s260731.z5; source included) is an "abuse" of the Z-Machine that provides some interesting mechanics for an interpreter.
 
 _Zombies_ (zombies-r1-s990524.z5; source included) is an "abuse" of the Z-Machine and provides a lot of interesting elements to attempt to interpret.
 
