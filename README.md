@@ -12,6 +12,14 @@ Building a robust Z-Machine interpreter is an exercise in taming decades of scat
 
 # Contents
 
+## Specs
+
+The `specs` directory contains a lot of specifications I found for Infocom and Inform development around the Z-Machine specification. In terms of the Z-Machine Standard document, I found various competing PDFs and online sources, some of which entirely disagreed. So I ended up creating my own.
+
+[Z-Machine Standard 1.1 (revised)](https://jeffnyman.github.io/z-machine-standard/)
+
+## Story Files
+
 This repository contains a lot of binaries for Infocom and Inform text adventures. It also contains a great deal of source code for many of those games. In the list below you will see reference to "MP" and this refers to the "Masterpieces" versions, more specifically those versions that appeared on the _The Text Adventure Masterpieces of Infocom_ CD collection released in 1996. You will also see reference to either "LTOI1" or and these refer to the _Lost Treasures of Infocom 1 and 2_, which were a collection released by Activisoin in 1992. Those two distributions each had some oddities. The Mac and PC directories on the Masterpieces CD ended up shipping with different versions. It was also the case that _Hitchhiker's Guide to the Galaxy_ and _Shogun_. The LOTOI series also had different choices of versions for the various games but, on the other, did include the games missing from Masterpieces. What's also interesting is that LTOI1 was released for the Amiga as well, and that mattered in terms of the some of the differences that the Amiga versions provided.
 
 You will also see reference to "Solid Gold" and the context here is that a few of Infocom's earlier games were re-released under this branding, taking advantage of the version 5 features but also being distributed with in game clus (called "Invisiclues"). These versions used ".z5" format in order to accomodate the additional text.
