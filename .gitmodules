@@ -7,3 +7,6 @@
 [submodule "reform6"]
 	path = reform6
 	url = https://github.com/jeffnyman/reform6.git
+[submodule "ifarchive-if-specs"]
+	path = ifarchive-if-specs
+	url = https://github.com/iftechfoundation/ifarchive-if-specs
