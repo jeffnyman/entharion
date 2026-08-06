@@ -10,3 +10,6 @@
 [submodule "ifarchive-if-specs"]
 	path = ifarchive-if-specs
 	url = https://github.com/iftechfoundation/ifarchive-if-specs
+[submodule "z-machine-standard"]
+	path = z-machine-standard
+	url = https://github.com/jeffnyman/z-machine-standard.git
