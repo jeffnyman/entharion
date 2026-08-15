@@ -126,7 +126,7 @@ A few notes:
 
 ## Inform
 
-_Advent_ comes in variations in this repo. The r9-s060321 edition has source included. The r9-s260512 edition is here simply because it provides three versions of the same story file.
+_Advent_ comes in variations in this repo. The r9-s060321 edition has source included. The r9-s260512 edition is here simply because it provides three versions of the same story file. There is also a v6 version.
 
 _All Roads_ (allroads-r1-s011119.z5) includes some interesting mechanics that a Z-Machine interpreter has to get right. Unfortunately, the author never released the source code.
 
@@ -165,6 +165,8 @@ _Robots_ (robots-r6-s980115.z5; source included) is an "abuse" of the Z-Machine 
 _Simple Test_ (source included) comes in one file for each Z-Machine version. It's painfully simple and is designed to do nothing more than provide a sanity test that every Z-Machine can be read by a given intepreter.
 
 _Wurm_ (wurm-r2-s260731.z5; source included) is an "abuse" of the Z-Machine that provides some interesting mechanics for an interpreter.
+
+_Wyrmward_ (wyrmward-r1-s260816.z5, wyrmward-r1-s260816.z6; source included) is a good example of a game in both v5 and v6.
 
 _Zombies_ (zombies-r1-s990524.z5; source included) is an "abuse" of the Z-Machine and provides a lot of interesting elements to attempt to interpret.
 
