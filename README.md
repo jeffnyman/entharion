@@ -130,6 +130,8 @@ _Advent_ comes in variations in this repo. The r9-s060321 edition has source inc
 
 _All Roads_ (allroads-r1-s011119.z5) includes some interesting mechanics that a Z-Machine interpreter has to get right. Unfortunately, the author never released the source code.
 
+_All Things Devours_ (devours-r3-s050325.z5; source included) is included because it's a great game and has a very solid walkthrough that is easy to test an interpreter with.
+
 _Awakening_ (awakening-r1-s980726.z5) is a nice simple game with an easy walkthrough, making it good to test for a new interpreter.
 
 _Balances_ (balances-r5-s961216.z5; source included) provides a good example of the Inform language's versatility and thus is a good one to check an interpreter against.
@@ -138,21 +140,23 @@ _Blue Chairs_ (bluechairs-r2-s041229.z5; source included) has some interesting e
 
 _Bomber_ (bomber-r3-s971123.z5; source included) is a good one because it requires timed out and color is provided, although not required.
 
+_Bronze_ (bronze-r11-s060503.zblorb; source included) is one of the few Inform 7 games included in this repo. It does some interesting things with the status line that are worth making sure an interpreter can handle.
+
 _Curses_ (curses-r16-s951024.z5, curses-r17-s210531.z8; source included) is an interesting game. The original source is lost but was recreated. See Allen Garvin's [curses repo](https://github.com/allengarvin/curses). That source is included here, which is for the release 17 revision.
 
 _Custard_ (custard-r1-s000314) is included only because it is one of the very few games compiled to the version 7 format of the Z-Machine.
 
 _Destruct_ (destruct-r1-s030509.z1) is included only because it is one of the very few games compiled to the version 1 format of the Z-Machine.
 
-_All Things Devours_ (devours-r3-s050325.z5; source included) is included because it's a great game and has a very solid walkthrough that is easy to test an interpreter with.
-
-_Bronze_ (bronze-r11-s060503.zblorb; source included) is one of the few Inform 7 games included in this repo. It does some interesting things with the status line that are worth making sure an interpreter can handle.
-
 _Freefall_ (freefall-r2-s951111.z5; source included) is an "abuse" of the Z-Machine that provides a Tetris-style implementation. Worth it to see if an interpreter can handle it.
+
+_Little Green Robbing Hood_ (green-r1-s060120.z2) is a version 2 game, which are rare to find.
 
 _Jigsaw_ (jigsaw-r3-s951129.z5, jigsaw-r3-s951129.z8) comes in two versions and the puzzle pieces in the game are a good thing to see rendering correctly. Unfortunately, the source code has never been released.
 
 _Magic Toyshop_ (magic-toyshop-r1-s951018.z5; source included) is included mainly for some of the interesting mechanics it showcases.
+
+_The Mulldoon Legacy_ (mulldoon-r6-s000724.z8) is included mainly because it was a popular game and good to test in the version 8 category.
 
 _Mysterious Adventures_ is a grouping of two batches of eleven distinct games. The `mysterious_z6_blorb` directory contains the games with blorb format graphics. The `mysterious_z6_noblorb` directory contains graphics drawn directly by the game's code, thus using no blorb resources. The series is made up of the following games: The Golden Baton (#01), The Time Machine (#02), Arrow of Death Part 1 (#03), Arrow of Death Part 2 (#04), Escape from Pulsar 7 (#05), Circus (#06), Feasibility Experiment (#07), The Wizard of Akyrz (#08), Perseus and Andromeda (#09), Ten Little Indians (#10) and Waxworks (#11).
 
