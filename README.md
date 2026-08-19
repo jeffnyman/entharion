@@ -152,6 +152,8 @@ _Destruct_ (destruct-r1-s030509.z1) is included only because it is one of the ve
 
 _Freefall_ (freefall-r2-s951111.z5; source included) is an "abuse" of the Z-Machine that provides a Tetris-style implementation. Worth it to see if an interpreter can handle it.
 
+_Frobozz Magic Video Poker_ (fmvpoker.z6) is a weird one. It's the only z6 I know of that requires the pre-Blorb picture format.
+
 _Little Green Robbing Hood_ (green-r1-s060120.z2) is a version 2 game, which are rare to find.
 
 _Jigsaw_ (jigsaw-r3-s951129.z5, jigsaw-r3-s951129.z8) comes in two versions and the puzzle pieces in the game are a good thing to see rendering correctly. Unfortunately, the source code has never been released.
@@ -168,11 +170,17 @@ _Risorgimento Represso_ (risorg-r6-s171114.zblorb; source included) is included 
 
 _Robots_ (robots-r6-s980115.z5; source included) is an "abuse" of the Z-Machine that provides interesting mechanics for an interpreter.
 
+_Scopa_ (scopa-r1-s110321.z6; source included) is a version 6 game that relies heavily on graphics and mouse clicks for a card game simulation.
+
 _Simple Test_ (source included) comes in one file for each Z-Machine version. It's painfully simple and is designed to do nothing more than provide a sanity test that every Z-Machine can be read by a given intepreter.
+
+_Solitaire Poker_ (solpoker-r5-s000913.z5) is not so much an "abuse" but a full overhaul of how a game is played in the Z-Machine, essentially to simulate a poker game.
 
 _Wurm_ (wurm-r2-s260731.z5; source included) is an "abuse" of the Z-Machine that provides some interesting mechanics for an interpreter.
 
 _Wyrmward_ (wyrmward-r1-s260816.z5, wyrmward-r1-s260816.z6; source included) is a good example of a game in both v5 and v6.
+
+_Zen Speaks!_ (zenspeak-r1-s990217.z5) is an interesting example that includes sounds.
 
 _Zombies_ (zombies-r1-s990524.z5; source included) is an "abuse" of the Z-Machine and provides a lot of interesting elements to attempt to interpret.
 

@@ -1,0 +1,1859 @@
+Attribute hot;
+
+Array deck -> 41;
+Array table -> 13;		!// there can be no more
+!--------41 (cards taken)-----!---4 (hand)---!--#swp--!-g-!-sb-!-ps-!totp
+Array player0 -> 50;
+Array player1 -> 50;
+Constant HANDOFFS 41;
+Constant SWOOPOFFS 45;
+Constant GOLDCOFFS 46;
+Constant SEVENOFFS 47;
+Constant PRIPTOFFS 48;
+Constant TOTALOFFS 49;
+
+Constant debugging 0;
+
+Constant PARITYVALUE 6;
+
+Constant INF 32000;
+
+Constant PSIZE 16;
+Constant MAXP 256;
+
+Array moves -> (PSIZE*MAXP);
+Global move_sp;
+Array thebestmove -> PSIZE;
+
+Constant AUTOALLOWED 1;
+Global auto = 0;
+
+#Include "milcards.h";
+
+! unsigned compare
+! returns: -1 if a<b, 0 if a==b, 1 if a>b
+[ unscmp a b ca cb;
+  ca = a & 1; @log_shift a $ffff -> a;
+  cb = b & 1; @log_shift b $ffff -> b;
+  if (a < b) return -1;
+  if (a > b) rtrue;
+  return (ca-cb);
+];
+
+! memcpy - safe for overlapping mem
+[ memmove d s n i;
+  if (n <= 0) return;		! nothing to move
+  i = unscmp(d,s);
+  if (i==0) return;		! nothing to move
+  if (i < 0) for (i=0:i<n:i++) d->i = s->i;
+  else for (i=n-1:i>=0:i--) d->i = s->i;
+];
+
+[ memzero d n i;
+  if (n <= 0) return;		! nothing to zero
+  for (i=0:i<n:i++) d->i = 0;
+];
+
+[ print2d n;
+  if (n < 10) print " "; print n;
+];
+
+[ pcard cd v s;
+  cd--;
+  if (cd < 0){ print  "   "; return;}
+  v = cd % 10;
+  s = cd / 10;
+  print " ";
+  if (v < 7) print (char) ('1'+v);
+  else switch(v){ 7: print "F"; 8: print "C"; 9: print "R";}
+  switch(s){ 0: print "C"; 1: print "D"; 2: print "B"; 3: print "S";};
+];
+
+[ pileadd pile card n;
+  n = pile->0+1;
+  pile->n = card;
+  pile->0 = n;
+];
+
+[ pileaddfront pile card n;
+  n = pile->0;
+  if (n) memmove(pile+2,pile+1,n);
+  pile->1 = card;
+  pile->0 = n+1;
+];
+
+[ pilecat p p1 n n1;
+  n1 = p1->0; if (n1 == 0) return;
+  n = p->0;
+  memmove(p+n+1,p1+1,n1);
+  p->0 = n+n1;
+];
+
+[ pilesqueeze p n i k;
+  n = p->0;
+  if (n==0) return;
+  p++;
+  for (i=0:i<n:i++)
+	if (p->i){ p->k = p->i; k++;}
+  p--;
+  p->0 = k;
+];
+
+[ VALUE a; if (a > 0) return ((((a)-1)%10)+1); rfalse;];
+
+! returns 1 if needs reshuffle, 0 if OK
+[ shuffle i k t nk d;
+  d = deck+1;
+  for (i=0:i<40:i++) d->(i) = i+1;
+  for (i=0:i<39:i++)
+    {
+    k = random(40-i)-1;
+    if (k) { t = d->(i); d->(i) = d->(i+k); d->(i+k) = t;}
+    }
+  nk = 0;
+  for (i=0:i<4:i++) if (VALUE(d->(i)) == 10) nk++;
+  deck->(0) = 40;
+  if (nk > 2) return 1;
+  return 0;
+];
+
+[ givecd n dest nrem;
+
+  nrem = deck->(0);
+  if (nrem < n) n = nrem;
+  if (n <= 0) return 0;
+  memmove( dest+1, deck+1, n);
+  dest->(0) = n;
+  nrem = nrem-n;
+  if (nrem) memmove(deck+1,deck+n+1,nrem);
+  deck->(0) = nrem;
+  return n;
+];
+
+[ printcd cd i n;
+  n = cd->0; cd++;
+  for (i=0:i<n:i++) pcard(cd->(i));
+  print "^";
+];
+
+[ deal33 ;
+
+  givecd(3,player0+HANDOFFS);
+  givecd(3,player1+HANDOFFS);
+];
+
+Array parity -> 10;
+
+[ deal i;
+
+  while ( shuffle() ) ;
+  givecd(4,table);
+  for (i=0:i<10:i++) parity->i = 0;
+];
+
+Global nmoves = 0;
+
+[ addtry cd ncp cps p;
+
+  p = moves + (move_sp)*PSIZE;
+! print "...addtry ",cd," ",ncp," ",nmoves," ",p,"^";
+  p->0 = cd;
+  p->1 = ncp;
+  if (ncp) memmove(p+2,cps,ncp);
+  move_sp++;
+];
+
+Array tcaps->(12);
+Array comb->(12);
+
+[ next_combination N K i;
+  if (comb->(0) == 255){
+	for (i=0:i<K:i++) comb->(i) = i;
+	return 1;
+	}
+  i = K;
+  while (i > 0)
+    {
+    i--;
+    if (comb->(i) < (N-K+i)){
+	comb->(i) = comb->(i)+1;
+	i++;
+	while (i < K){ comb->(i) = comb->(i-1)+1; i++;}
+	return 1;
+	}
+    }
+  return 0;
+ ];
+
+
+! returns the number of possible moves with this card
+[ generate_moves cd i nsing nmult nn sum ntab tb;
+
+  tb = table;
+  ntab = tb->0; tb++;
+  if (ntab == 0) { addtry(cd,0,tcaps); rtrue;}	! nothing on table, only poss to place cd
+! 	first try singles
+  for (i=0:i<ntab:i++)
+	if (VALUE(tb->(i)) == VALUE(cd))
+		{
+		nsing++;
+		tcaps->(0) = tb->(i);
+		addtry(cd,1,tcaps);
+		}
+  if (nsing) return nsing;	! single captures, no multiple
+  if (ntab > 1)
+    for (nn=2:nn<=ntab:nn++)	! try nn
+	{
+	comb->(0) = 255;
+	while (next_combination(ntab,nn))
+		{
+		sum = 0;
+		for (i=0:i<nn:i++) sum = sum + VALUE(tb->(comb->(i)));
+		if (sum == VALUE(cd))
+			{
+			for (i=0:i<nn:i++) tcaps->(i) = tb->(comb->(i));
+			addtry(cd,nn,tcaps);
+			nmult++;
+			}
+		}
+	}
+  if (nmult) return nmult;	! multiple caps possible
+! 	no cap
+  addtry(cd,0,tcaps);
+  rtrue;
+];
+
+[ generate_all_moves pca i m;
+  m = move_sp;
+  for (i=0:i<pca->(0):i++) generate_moves(pca->(i+1));
+  nmoves = move_sp - m;
+];
+
+[ generate_all_moves_dis hand poss i cd;
+  move_sp = 0;
+  for (i=0:i<3:i++)
+	{
+	cd = hand->i;
+	if (cd) cd = generate_moves(cd);
+	poss->i = cd;
+	}
+  nmoves = move_sp;
+];
+
+[ printmove p nc;
+  nc = p->1;
+  print "^"; pcard(p->0); print "  ",nc," ";
+  if (nc) printcd(p+1);
+  else print "^";
+];
+
+! remove card but do not squeeze
+[ removecard cd pile i n;
+  n = pile->0;
+  for (i=0:i<n:i++)
+    if (pile->(i+1)==cd)
+	{
+	pile->(i+1) = 0;
+	return;
+	}
+  if (debugging)
+	{
+	print "**removecard err ";
+	pcard(cd);
+	print " from ";
+	printcd(pile);
+	}
+];
+
+Global lasttocap;
+
+Array savelastcaps -> 13;
+
+[ makemove thismove player movesrem sqz cd ncap i isswoop;
+  cd = thismove->0;
+  removecard(cd,player+HANDOFFS);
+  if (sqz) pilesqueeze(player+HANDOFFS);
+  savelastcaps->0 = 0;
+  ncap = thismove->1;
+  if (ncap)		! scopa
+	{
+	lasttocap = player;
+ 	if ((ncap == table->0) && (movesrem))
+		{
+		pileaddfront(player,cd);
+		player->SWOOPOFFS = player->SWOOPOFFS + 1;
+		isswoop = 1;
+		}
+	else
+		pileadd(player,cd);
+	for (i=0:i<ncap:i++)
+		{
+		cd = thismove->(i+2);
+		pileadd(player,cd);
+		removecard(cd,table);
+		}
+	if (sqz) pilesqueeze(table);
+	}
+  else
+	pileadd(table,cd);
+  if (movesrem==0)
+	{
+	ncap = table->0;
+	for (i=0:i<ncap:i++)
+	  if (table->(i+1))
+		{
+		pileadd(lasttocap,table->(i+1));
+		pileadd(savelastcaps,table->(i+1));
+		}
+	table->0 = 0;
+	}
+  return isswoop;
+];
+
+[ unmakemove thismove player movesrem wassw cd ncap i;
+  if (movesrem==0)
+	{		! restore last taken
+	ncap = savelastcaps->0;
+	for (i=0:i<ncap:i++)
+	  {
+	  cd = savelastcaps->(i+1);
+	  removecard(cd,lasttocap);
+	  pileadd(table,cd);
+	  }
+	pilesqueeze(lasttocap);
+	}
+  cd = thismove->0;
+  pileadd(player+HANDOFFS,cd);
+  ncap = thismove->1;
+  if (ncap)		! scopa
+	{
+	if (wassw)		! was a swoop
+		player->SWOOPOFFS = player->SWOOPOFFS - 1;
+	removecard(cd,player);
+	for (i=0:i<ncap:i++)
+		{
+		cd = thismove->(i+2);
+		removecard(cd,player);
+		pileadd(table,cd);
+		}
+	}
+  else
+	removecard(cd,table);
+  savelastcaps->0 = 0;
+  pilesqueeze(player);
+  pilesqueeze(table);
+];
+
+Array primeval -> 16 12 13 14 15 18 21 10 10 10;
+Array primecds -> 4;
+
+[ primescore p force n i cdm s;
+  n = p->0; p++;
+  memzero(primecds,4);
+  for (i=0:i<n:i++)
+	{
+	cdm = p->i; if (cdm <= 0) continue;
+	cdm--;
+	s = cdm / 10;
+	cdm = primeval->(cdm % 10);
+	if (cdm > primecds->s) primecds->s = cdm;
+	}
+  s = 0;
+  for (i=0:i<4:i++)
+	{
+	cdm = primecds->i;
+	if (cdm==0) if (force==0) rfalse;
+	s = s + cdm;
+	}
+  return s;
+];
+
+[ takesseven cmove ntake i;
+  ntake = cmove->1;
+  if (ntake==0) rfalse;
+  if (cmove->0 == 17) rtrue;
+  for (i=0:i<ntake:i++) if (cmove->(i+2)==17) rtrue;
+  rfalse;
+];
+
+[ isgold cd;
+  return ((cd-1)/10==1);
+];
+
+[ countgolds p i ng;
+  for (i=0:i<p->0:i++)
+    if (isgold(p->(i+1))) ng++;
+  return ng;
+];
+
+Array unknown -> 41;
+
+[ clearunk p n i;
+  n = p->0; p++;
+  for (i=0:i<n:i++) unknown->(p->i) = 0;
+];
+
+[ getunknowncards i;
+  for (i=1:i<=40:i++) unknown->i = i;
+  unknown->0 = 40;
+  clearunk(player0);
+  clearunk(player1);
+  clearunk(table);
+  clearunk(player1+HANDOFFS);
+  pilesqueeze(unknown);
+];
+
+[ sumcards p n i s;
+  n = p->0; p++;
+  for (i=0:i<n:i++) s = s + VALUE(p->i);
+  return s;
+];
+
+[ getnparity i n;
+  for (i=0:i<10:i++) if (parity->i) n++;
+  return n;
+];
+
+[ changeparity cmove cd n i;
+  n = cmove->1;
+  if (n==0) return;
+  cd = (cmove->0 - 1) % 10;
+  parity->cd = 1-parity->cd;
+  cmove = cmove+2;
+  for (i=0:i<n:i++)
+	{
+	cd = (cmove->i - 1) % 10;
+  	parity->cd = 1-parity->cd;
+	}
+];
+
+Global ply;
+
+[ evaluate cmove score ntake ng thisg scp i nt nh favprob num den k;
+	! scopa?
+  ntake = cmove->1;
+  if ((ntake) && (ntake == table->0)){ scp = 1; score = 100;}
+	! settebello?
+  if (takesseven(cmove)) score = score+100;
+  else if (cmove->0 == 17) score = score - 50;
+	! spariglio?
+  if ((ntake) && (PARITYVALUE))
+    {
+    num = getnparity();
+    changeparity(cmove);
+    num = getnparity() - num;
+    changeparity(cmove);
+    if (ply) num = -num;
+    score = score + PARITYVALUE*num;
+    }
+	! denari
+  thisg = (((cmove->0-1)/10)==1);
+  num = countgolds(cmove+1)+thisg;
+  if (num)
+    {
+    ng = countgolds(player1);
+    if (ng < 6)
+	{
+	if (ntake)
+      	  {
+	  if ((ng+num) > 5)
+		{
+		if (ng < 5) score = score+100;
+		else score = score+50;
+		}
+	  else if ((ng+num) == 5) score = score + 50;
+	  else score = score + 5*num;
+	  }
+    	else
+	  score = score - 3*thisg;
+	}
+    }
+	!   carte
+  num = player1->0;
+  den = ntake+1;
+  if (num < 21)
+    {
+    if (ntake)
+	{
+	if ((num+den) > 20)
+		{
+		if (num < 20) score = score+100;
+		else score = score+50;
+		}
+	else if ((num+den)==20) score = score+50;
+	else score = score+4*(den);
+	}
+    else score = score-1;
+    }
+	! primiera - difficult...
+	! this is quite rudimentary
+  if (ntake)
+    {
+    nt = primescore(player1,1);
+    ng = player1->0;
+    pileadd(player1,cmove->0);
+    pilecat(player1,cmove+1);
+    nh = primescore(player1,1);
+    player1->0 = ng;
+    score = score+(nh-nt);
+    }
+	! lascio scopa?
+  if (scp==0)
+    {
+    if (ntake) scp = sumcards(table) - sumcards(cmove+1);
+    else scp = sumcards(table) + VALUE(cmove->0);
+    if (scp <= 10)
+	{
+	getunknowncards();
+	ng = 0;
+	for (i=0:i<unknown->0:i++)
+	  if (VALUE(unknown->(i+1)) == scp) ng++;
+	if (ng)
+		{
+		nt = unknown->0;
+		nh = player0->HANDOFFS;
+		if (nt-ng < nh) favprob = 0;
+		else
+			{
+			num = den = 1;
+			for (i=0:i<nh:i++)
+				{
+				num = num*(nt-ng-i);
+				den = den*(nt-i);
+				}
+			k = 1;
+			while (num/k > 327) k++;
+			num = num/k; den = den/k;
+			favprob = (100*num)/den;
+			}
+		}
+	score = score - (100-favprob);
+	}
+    }
+
+  return score;
+];
+
+[ debprintmove lab p s nc;
+  nc = p->1;
+  print (string) lab," ",s," "; pcard(p->0); print "  ",nc," ";
+  if (nc) printcd(p+1);
+  else print "^";
+];
+
+! dumb
+[ choosebestmove i cmove score best bestmove;
+  if (debugging) print "*** choosebestmove ***^";
+  best = -INF;
+  for (i=0:i<nmoves:i++)
+    {
+    cmove = moves+i*PSIZE;
+    score = evaluate(cmove);
+    if (debugging) debprintmove("cbm:",cmove,score);
+    if (score > best)
+	{
+	best = score;
+	bestmove = cmove;
+	}
+    }
+  if (debugging) print "*** END choosebestmove ***^";
+  return bestmove;
+];
+
+Array savetable -> 13;
+Array savep0 -> 50;
+Array savep1 -> 50;
+
+[ savesituation;
+  memmove(savetable,table,13);
+  memmove(savep0,player0,50);
+  memmove(savep1,player1,50);
+];
+
+[ restoresituation;
+  memmove(table,savetable,13);
+  memmove(player0,savep0,50);
+  memmove(player1,savep1,50);
+];
+
+[ finalscore thisp other st so pt po;
+	! scope
+  st = result(thisp);
+  so = result(other);
+  pt = thisp->PRIPTOFFS;
+  po = other->PRIPTOFFS;
+  if (pt > po) st++;
+  else if (pt < po) so++;
+  return (st-so);
+];
+
+[ evaltree thisp movesrem sbest score bscore other m cmove ltc swoop;
+
+  if (thisp == player1) other = player0; else other = player1;
+  if (movesrem < 0)
+	return finalscore(thisp,other);
+  m = move_sp;
+  generate_all_moves(thisp+HANDOFFS);
+  bscore = -32000;
+  if ((debugging) && (sbest)) print "*** evaltree ***^";
+  while (move_sp > m)
+    {
+    cmove = moves+(move_sp-1)*PSIZE;
+    ltc = lasttocap;
+    swoop = makemove(cmove,thisp,movesrem,1);
+    score = -evaltree(other,movesrem-1);
+    unmakemove(cmove,thisp,movesrem,swoop);
+    lasttocap = ltc;
+    if ((debugging) && (sbest)) debprintmove("evt:",cmove,score);
+    if (score > bscore)
+	{
+	bscore = score;
+	if (sbest) memmove(thebestmove,cmove,PSIZE);
+	}
+    move_sp--;
+    }
+  if ((debugging) && (sbest)) print "*** END evaltree ***^";
+  return bscore;
+];
+
+[ computermove movesrem cmove;
+  move_sp = 0;
+  if (deck->0)
+    {
+    generate_all_moves(player1+HANDOFFS);
+    cmove = choosebestmove();
+    }
+  else
+    {
+    savesituation();
+    pilesqueeze(player0);
+    pilesqueeze(player1);
+    pilesqueeze(player0+HANDOFFS);
+    pilesqueeze(player1+HANDOFFS);
+    pilesqueeze(table);
+    evaltree(player1,movesrem,1);
+    cmove = thebestmove;
+!     generate_all_moves(player1+HANDOFFS);
+!     cmove = choosebestmove();
+    restoresituation();
+    }
+  showmove(1,cmove);
+  while (accept()~=13);
+  makemove(cmove,player1,movesrem);
+];
+
+[ result player who ng i cd sb ps score;
+  if (who){
+    print (string) who, " score:";
+    print " scope=",player->SWOOPOFFS;
+    print " cards=",player->0;
+    }
+  for (i=0:i<player->0:i++)
+	{
+	cd = player->(i+1);
+	if (cd == 17) sb = 1;
+	cd = (cd-1)/10;
+	if (cd==1) ng++;
+	}
+  player->GOLDCOFFS = ng;
+  player->SEVENOFFS = sb;
+  if (who){
+    print " golds=",ng;
+    print " setteb=",sb;
+    }
+  ps = primescore(player);
+  if (who) print " prime pts=",ps;
+  player->PRIPTOFFS = ps;
+  if (who) print "^";
+  score = player->SWOOPOFFS;	! scope
+  if (player->0 > 20) score++;	! cards
+  if (ng > 5) score++;		! denari
+  if (sb) score++;		! settebello
+	! primiera remains to be assigned
+  return score;
+];
+
+Array p0poss -> 3;
+Array p0offset -> 3;
+
+[ play youplay movesrem m ka ik c npr;
+  situation();
+  if (youplay)
+    {
+! 	you move
+    generate_all_moves_dis(dis_hand0,p0poss);
+    p0offset->0 = 0;
+    p0offset->1 = p0poss->0;
+    p0offset->2 = p0poss->0 + p0poss->1;
+!     if (p0poss->0) ka = 0;
+!     else if (p0poss->1) ka = 1;
+!     else ka = 2;
+    ka = -1;
+    ik = 0;
+    buttok.clear(buttok.bcolour);
+    buttok.text = "Choose";
+    buttok.draw();
+    for (::)
+	{
+	if (ka >= 0)
+		{
+		m = p0offset->ka + ik;
+		showmove(0,moves+m*PSIZE);
+		}
+	c = accept();
+	if ((c == 13) && (ka >= 0)) break;
+	if (c > -4 && c < 0)
+		{
+		npr = c+3;
+		if (p0poss->npr)
+			{
+			if (ka < 0)
+			    {
+			    buttok.clear(buttok.bcolour);
+			    buttok.text = "OK";
+			    buttok.draw();
+			    }
+			if (npr == ka) ik = (ik+1)%p0poss->ka;
+			else { ka = npr; ik = 0;}
+			continue;
+			}
+		}
+	}
+    m = moves+m*PSIZE;
+    makemove(m,player0,movesrem);
+    pilesqueeze(player0+HANDOFFS);
+    }
+  else
+    {
+    computermove(movesrem);
+    pilesqueeze(player1+HANDOFFS);
+    }
+  pilesqueeze(table);
+];
+
+! returns: 0 continue, 1 human wins, 2 comp wins, 3 temp draw
+! movesrem is the num of moves remaining after the next one
+[ Hand youfirst h i movesrem ps0 ps1 s0 s1 t0 t1;
+
+  memzero(player0,48);
+  memzero(player1,48);
+  WinSet(1,1); setbuttons(1); WinSet(0);
+  deal();
+  movesrem = 36;
+  for (h=0:h<6:h++)
+    {
+    deal33();
+    updatedisdata();
+    for (i=0:i<3:i++)
+	{
+	movesrem--;
+	play(youfirst,movesrem);
+    	updatedisdata();
+	movesrem--;
+	play(youfirst==0,movesrem);
+    	updatedisdata();
+	}
+    }
+  situation();
+  auto =  0;
+  drawsituation(); buttsum.clear(DGREEN);
+  s1 = result(player1,"My");
+  s0 = result(player0,"Your");
+  ps0 = player0->PRIPTOFFS;
+  ps1 = player1->PRIPTOFFS;
+  if (ps0 > ps1) s0++;
+  else if (ps0 < ps1) s1++;
+  t0 = player0->TOTALOFFS+s0;
+  t1 = player1->TOTALOFFS+s1;
+  print "I score ",s1," points, total ",t1,"^";
+  print "You score ",s0," points, total ",t0,"^";
+  player0->TOTALOFFS = t0;
+  player1->TOTALOFFS = t1;
+  drawgolds();
+  drawprime();
+  drawpoints(s0,s1);
+  if (t0 >= 11 || t1 >= 11)
+	{
+	if (t0==t1) return 3;
+	if (t0 > t1) rtrue;
+	return 2;
+	}
+  rfalse;
+];
+
+[ Game c;
+  player0->TOTALOFFS = 0;
+  player1->TOTALOFFS = 0;
+  updatedisdata(1);
+  for (::)
+	{
+	print "^^^";
+	c = Hand(ply);
+	auto = 0;
+	while (accept()~=13);
+	switch (c) {
+	  1: drawvictory(0); "^You win!^";
+	  2: drawvictory(1); "^I win!^";
+	  3: print "Do you wish to go on? (ESC = no)^";
+		@read_char 1 c;
+		if (c==27) return;
+	  }
+	ply = ~~ply;
+	}
+];
+
+Global terpOK = 0;
+Constant V101 = 1;
+
+[ terpcheck ver;
+  terpOK = 0;
+  ver = ($32)-->0;
+  if (ver >= $0101) terpOK = terpOK | V101;
+];
+
+[ Main ;
+
+  graphics.init();
+
+  menu();
+  WinSet(0);
+
+  ply = 1;
+  Game();
+
+  while (accept() ~= 13);
+  @restart;
+];
+
+Array picdata --> 2;
+
+! returns the width
+[ measurepic pic;
+  if (pic > 40)
+    {
+    @picture_data pic picdata ?okpic;
+    picdata-->0 = picdata-->1 = 0;
+.okpic;
+    return picdata-->1;
+    }
+  else
+	{
+	picdata-->1 = CardData(0,-1);
+	picdata-->0 = CardData(0,-2);
+	}
+  return picdata-->1;
+];
+
+Global W0HEIGHT;
+
+[ WinSet win clr ws;
+  ws = graphics.window;
+  @set_window win;
+  if (clr) @erase_window win;
+  graphics.window = win;
+  if (win) @output_stream 1;
+  else
+    @output_stream -1;
+  return ws;
+];
+
+Global GAMEWID = 640;
+Global GAMEHEI = 480;
+
+Constant TOPSKIP 5;
+
+! true colours!
+Constant BLACK 0;
+Constant WHITE $7fff;
+Constant DGREEN $0200;
+Constant RED $3dff;
+Constant BLUE $59a0;
+
+! best approx of a true colour c by a z-colour
+[ bestguess c r g b;
+  if (c == -1) rtrue;
+  if (c == -2) rfalse;
+  if (c == -3) return -1;
+  if (c == -4) return 15;
+  r = (c & $1f) > $f;
+  g = (c/32 & $1f) > $f;
+  b = (c/1024 & $1f) > $f;
+  return (2+r+2*g+4*b);
+];
+
+[ colour f b win ws;
+  if (terpOK & V101)
+	{
+	ws = WinSet(win);
+	@"EXT:13" f b;
+	WinSet(ws);
+	}
+  else
+	{
+  	f = bestguess(f);
+  	b = bestguess(b);
+  	@set_colour f b win;
+  	}
+];
+
+! 	uses window 3
+[ simplebox x y w h c;
+    if (w < 1 || h < 1) return;
+    @window_size 3 h w;
+    @move_window 3 y x;
+    colour(BLACK,c,3);
+    @erase_window 3;
+ ];
+
+! 	uses window 3
+[ fastsimplebox x y w h c;
+    @window_size 3 h w;
+    @move_window 3 y x;
+    @set_colour 2 c 3;
+    @erase_window 3;
+ ];
+
+[ colourdef1;
+  colour(BLACK,DGREEN,1);
+];
+
+[ frame x y w h c cbox;
+  x = x + graphics.xoffs;
+  y = y + graphics.yoffs;
+  if (cbox) simplebox(x,y,w,h,cbox);
+  simplebox(x-2,y-2,w+4,2,c);
+  simplebox(x-2,y-2,2,h+4,c);
+  simplebox(x-2,y+h,w+4,2,c);
+  simplebox(x+w,y-2,2,h+4,c);
+];
+
+[ HardPic pno x y w h xx yy s dy v c;
+  w = CardData(0,-1);
+  h = CardData(0,-2);
+  while (yy < h)
+	{
+	@output_stream 3 sbbuf;
+	CardData(pno,yy);
+	@output_stream -3;
+	s = sbbuf+2;
+	dy = s->0-'a'+1; s++;
+	xx = 0;
+	while (xx < w)
+		{
+		v = 26*(s->0-'a')+s->1-'a'; s = s+2;
+		c = v/64; v = v%64+1;
+		if (c ~= 2)
+		  fastsimplebox(x+xx,y+yy,v,dy,c+2);
+		xx = xx+v;
+		}
+	yy = yy+dy;
+	}
+];
+
+Object graphics with
+  window 0,
+  base 0,
+  xstep 64, ystep 64,
+  xoffs, yoffs,
+  ytop TOPSKIP, ybottom,
+  yrow1, yrow2, 
+  xcsize 40, ycsize 60,
+  xpile, xdeck,
+  width, height,
+	! x,y are 0-based, game relative (win 1) coords
+  drawpic [ pic x y ws;
+    x = x + self.xoffs; y = y+self.yoffs;
+    if (pic > 40)
+	{
+    	@move_window 3 y x;
+    	@window_size 3 1000 1000;
+    	ws = WinSet(3);
+    	@draw_picture pic 1 1;
+    	WinSet(ws);
+	}
+    else
+	HardPic(pic,x,y);
+    ],
+  ytext [ r ch;
+    ch = $26->0 + 6;
+    if (r >= 0) return (DTBORDER+r*ch+4);
+    return (GAMEHEI+r*ch-DTBORDER);
+    ],
+  textwidth [ txt ws tw;
+	! measure text
+    @window_size 5 1000 1000;
+    ws = WinSet(5);
+    @output_stream 3 sbbuf;
+    switch (metaclass(txt)){
+	String: print (string) txt;
+	Routine: txt();
+	}
+    @output_stream -3;
+    tw = $30-->0;
+    WinSet(ws);
+    return tw;
+    ],
+  drawcard [ cd x y;
+    if (cd < 0) cd = 0;
+    self.drawpic(self.base+cd,x-self.xcsize/2,y-self.ycsize/2);
+    ],
+! 	clears the frame too
+  clearcard [ x y;
+    simplebox(x + self.xoffs-self.xcsize/2-2,
+	y+self.yoffs-self.ycsize/2-2,
+	self.xcsize+4,self.ycsize+4,DGREEN);
+    ],
+  cardframe [ x y c w h;
+    w = self.xcsize;
+    h = self.ycsize;
+    frame(x-w/2,y-h/2,w,h,c);
+    ],
+  init [ w h x y ;
+    terpcheck();
+    @mouse_window -1;
+    self.width = w = $22-->0;
+    self.height = h = $24-->0;
+    if (w < 600 || h < 400)
+	{
+	print "Sorry, your terp screen size is too small (",w,"x",h,
+"). You need at least 600x400 (recommended 640x480 or larger).^Goodbye.^";
+	print "^[Hit a key.]";
+	@read_char 1 y;
+	quit;
+	}
+    if (w < 640) GAMEWID = w;
+    if (h < 480) GAMEHEI = h;
+    objectloop (x ofclass Button) if (x.pos) x.pos();
+    locateims();
+    colour(BLACK,DGREEN,0);
+    colour(BLACK,DGREEN,1);
+    @erase_window -1;
+    if (measurepic(self.base))
+	{
+    	self.xcsize = picdata-->1;
+    	self.ycsize = picdata-->0;
+	}
+    self.ytop = self.ycsize/2+TOPSKIP;
+    self.ybottom = GAMEHEI-self.ycsize/2-TOPSKIP;
+    self.yrow1 = GAMEHEI/2-5-self.ycsize/2;
+    self.yrow2 = GAMEHEI/2+5+self.ycsize/2;
+    self.xoffs = x = (w-GAMEWID)/2+1;
+    self.yoffs = y = (h-GAMEHEI)/2+1;
+    self.xpile = 5+self.xcsize/2;
+    self.xdeck = GAMEWID/2+3*self.xcsize;
+    @move_window 1 y x;
+    @window_size 1 GAMEHEI GAMEWID;
+    y = y+GAMEHEI;
+    h = h-y+1;
+    W0HEIGHT = h;
+    @window_size 0 h GAMEWID;
+    @move_window 0 y x;
+	! never show [MORE] prompts
+    for (w=0:w<8:w++)
+	{
+	@put_wind_prop w 15 (-999);
+	@set_window w;
+	@set_text_style 2;
+	}
+    WinSet(0); @set_cursor -1;
+  ],
+;
+
+Array dis_hand0 -> 3;
+Array dis_hand1 -> 3;
+Array dis_table -> 12;
+
+Array temp->40;
+
+[ updatedata src dis nd ns i j c found;
+  ns = src->0; src++;
+  memmove(temp,src,ns);
+! 	clear taken away
+  for (i=0:i<nd:i++)
+	{
+	c = dis->i; if (c==0) continue;
+	found = 0;
+	for (j=0:j<ns:j++)
+	  if (temp->j == c)
+		{
+		temp->j = 0; found++;
+		break;
+		}
+	if (found==0) dis->i = 0;
+	}
+! 	insert news
+  for (i=0:i<ns:i++)
+	{
+	c = temp->i; if (c==0) continue;
+	for (j=0:j<nd:j++) if (dis->j == 0) break;
+	dis->j = c;
+	}
+];
+
+[ updatedisdata clr;
+  if (clr)
+	{
+	memzero(dis_hand0,3);
+	memzero(dis_hand1,3);
+	memzero(dis_table,12);
+	return;
+	}
+  updatedata(player0+HANDOFFS,dis_hand0,3);
+  updatedata(player1+HANDOFFS,dis_hand1,3);
+  updatedata(table,dis_table,12);
+];
+
+[ drawdeck y;
+  if (ply) y = graphics.ytop; else y = graphics.ybottom;
+  if (deck->0 == 0) graphics.clearcard(graphics.xdeck,y);
+  else graphics.drawcard(0,graphics.xdeck,y);
+];
+
+[ drawpile p y n nsw d i;
+  if (p){ p = player1; y = graphics.ytop; d = 8;}
+  else { p = player0; y = graphics.ybottom; d = -8;}
+  n = p->0; if (n==0) return;
+  nsw = p->SWOOPOFFS;
+  if (nsw)
+    for (i=nsw:i>0:i--)
+	graphics.drawcard(p->i,graphics.xpile+8*i,y+d*i);
+  graphics.drawcard(0,graphics.xpile,y);
+];
+
+! coords
+! 0 1 2 3  4  5
+! 6 7 8 9 10 11
+! positions
+! 10 6 0 2 4 8
+! 11 7 1 3 5 9
+[ tablecardxid pos;
+  pos = pos/2;
+  if (pos < 3) return (pos + 2);
+  if (pos == 3) return 1;
+  if (pos == 4) return 5;
+  rfalse;
+];
+
+! if cd <= 0, erased
+[ drawtablecard cd pos frd x y;
+  y = pos & 1;
+  x = tablecardxid(pos);
+  x = GAMEWID/2+((2*x-5)*(graphics.xcsize+4))/2;
+  if (y) y = graphics.yrow2; else y = graphics.yrow1;
+  if (cd) graphics.drawcard(cd,x,y);
+  else graphics.clearcard(x,y);
+  if (frd) graphics.cardframe(x,y,RED);
+  else graphics.cardframe(x,y,DGREEN);
+];
+
+[ intake cd take n i;
+  if (cd==0) rfalse;
+  if (take==0) rfalse;
+  n = take->0;
+  for (i=1:i<=n:i++)
+	if (cd == take->i) rtrue;
+  rfalse;
+];
+
+[ drawtable take i cd;
+  for (i=0:i<12:i++)
+	{
+	cd = dis_table->i;
+	drawtablecard(cd,i,intake(cd,take));
+	}
+];
+
+[ drawhandcard cd pos up frd x y;
+  if (up) y = graphics.ytop;
+  else y = graphics.ybottom;
+  x = GAMEWID/2+(pos-1)*(graphics.xcsize+4);
+  if (cd)
+	{
+	if (up) cd = 0;
+ 	graphics.drawcard(cd,x,y);
+	}
+  else graphics.clearcard(x,y);
+  if (frd) graphics.cardframe(x,y,RED);
+  else graphics.cardframe(x,y,DGREEN);
+];
+
+[ drawhand hand up i;
+  if (up) for (i=0:i<3:i++) drawhandcard(hand->i,i,up);
+  else for (i=0:i<3:i++) drawhandcard(hand->i,i,up);
+];
+
+[ drawsituation ;
+  drawtable();
+  drawhand(dis_hand1,1);
+  drawhand(dis_hand0,0);
+  drawpile(0);
+  drawpile(1);
+  drawdeck();
+];
+
+[ situation;
+  print "table:     "; printcd(table);
+  print "your cards:"; printcd(player0+HANDOFFS);
+  drawsituation();
+];
+
+[ showmove who cmove hand y i x ;
+  if (who) print "My"; else print "Your";
+  print " move:";
+  printmove(cmove);
+	! show played card
+  if (who)
+	{
+	hand = dis_hand1;
+	y = graphics.ytop;
+	}
+  else
+	{
+	hand = dis_hand0;
+	y = graphics.ybottom;
+	}
+  for (i=0:i<3:i++)
+    {
+    x = GAMEWID/2+(i-1)*(graphics.xcsize+4);
+    if (hand->i == cmove->0)
+	{
+  	if (who) graphics.drawcard(cmove->0,x,y);
+	graphics.cardframe(x,y,RED);
+	}
+    else
+	graphics.cardframe(x,y,DGREEN);
+    }
+	! show taken cards, if any
+  drawtable(cmove+1);
+  buttsum.mov = cmove;
+  buttsum.draw();
+];
+
+Constant DTBORDER 10;
+
+
+[ highestprimecd p suit i n h c v hv;
+  n = p->0; p++;
+  for (i=0:i<n:i++)
+	{
+	c = p->i;
+	if (((c-1)/10) == suit)
+	  {
+	  v = primeval->((c-1)%10);
+	  if (v > hv)
+		{
+		hv = v;
+		h = c;
+		}
+	  }
+	}
+  return h;
+];
+
+[ drawprimeof i x w p y step cw xx cd;
+  cw = $27->0;
+  if (i){ p = player1; y = graphics.yrow1;}
+  else { p = player0; y = graphics.yrow2;}
+  xx = x + DTBORDER/2 + cw/2;
+  x = x + DTBORDER/2+graphics.xcsize/2 + 3*cw;
+  step = graphics.xcsize+(w-DTBORDER-4*graphics.xcsize-3*cw)/3;
+  for (i=0:i<4:i++)
+    {
+    cd = highestprimecd(p,i);
+    if (cd) graphics.drawcard(cd,x,y);
+    x = x + step;
+    }
+  y = y - ($26->0)/2;
+  @set_cursor y xx;
+  print p->PRIPTOFFS;
+];
+
+[ drawgoldsof i x w p y n step c cw xx;
+  cw = $27->0;
+  if (i){ p = player1; y = graphics.yrow1;}
+  else { p = player0; y = graphics.yrow2;} 
+  memzero(temp,10);
+  n = p->0; p++;
+  for (i=0:i<n:i++)
+	{
+	c = p->i - 1;
+	if ((c / 10) == 1) temp->(c % 10) = 1;
+	}
+  step = (w-3*cw-DTBORDER-graphics.xcsize)/9;
+  xx = x + DTBORDER/2 + cw/2;
+  x = x + DTBORDER/2+graphics.xcsize/2 +3*cw;
+  n = 0;
+  for (i=0:i<10:i++)
+    {
+    if (temp->i){ n++; graphics.drawcard(i+11,x,y);}
+    x = x + step;
+    }
+  y = y - ($26->0)/2;
+  @set_cursor y xx;
+  print n;
+];
+
+Constant GTEXTH 24;
+Constant TXTGOLDS "Denari";
+Constant GDIFF 36;
+
+[ drawgolds x y w h tw th;
+  WinSet(1);
+  w = GAMEWID/2 - DTBORDER + GDIFF;
+  h = graphics.yrow2-graphics.yrow1+graphics.ycsize + DTBORDER + 2*GTEXTH;
+  x = DTBORDER/2;
+  tw = graphics.textwidth(TXTGOLDS);
+  th = $26->0;
+  y = GAMEHEI/2 - h/2;
+  frame(x,y,w,h,WHITE,BLUE);
+  colour(WHITE,BLUE,1);
+  drawgoldsof(0,x,w);
+  drawgoldsof(1,x,w);
+  x = x + w/2 -tw/2;
+  y = y + GTEXTH/2 - th/2;
+  @set_cursor y x;
+!   @set_colour 9 -1 1;
+  print (string) TXTGOLDS;
+  colourdef1();
+  WinSet(0);
+];
+
+Constant TXTPRIME "Primiera";
+
+[ drawprime x y w h tw th;
+  WinSet(1);
+  colour(WHITE,BLUE,1);
+  w = GAMEWID/2 - DTBORDER - GDIFF;
+  h = graphics.yrow2-graphics.yrow1+graphics.ycsize + DTBORDER + 2*GTEXTH;
+  x = GAMEWID - w - DTBORDER/2;
+  tw = graphics.textwidth(TXTPRIME);
+  th = $26->0;
+  y = GAMEHEI/2 - h/2;
+  frame(x,y,w,h,WHITE,BLUE);
+  drawprimeof(0,x,w);
+  drawprimeof(1,x,w);
+  x = x + w/2 -tw/2;
+  y = y + GTEXTH/2 - th/2;
+  @set_cursor y x;
+!   @set_colour 9 -1 1;
+  print (string) TXTPRIME;
+  colourdef1();
+  WinSet(0);
+];
+
+
+Constant GDELTA 60;
+
+[ puttext y x t tw;
+  tw = graphics.textwidth(t);
+  x = x - tw/2;
+  @set_cursor y x;
+  print (string) t;
+  return tw;
+];
+
+[ drawpoints s0 s1 x y0 y1 y2 d dd swo0 swo1;
+  WinSet(1);
+  dd = graphics.textwidth("7bello");
+  d = graphics.textwidth("0");
+  y0 = graphics.ytext(0);
+  y1 = graphics.ytext(1);
+  y2 = graphics.ytext(2);
+  x = GAMEWID/2 - 3*GDELTA;
+  frame(x-8,y0-4,
+	5*GDELTA+GDELTA/3+d+dd/2+16,3*(y1-y0)+4,WHITE,BLUE);
+
+  colour(WHITE,BLUE,1);
+  @set_cursor y1 x; print "Mine";
+  @set_cursor y2 x; print "Yours";
+  x = x+GDELTA+GDELTA/3;
+  puttext(y0,x+d,"scope");
+  swo1 = player1->SWOOPOFFS;
+  swo0 = player0->SWOOPOFFS;
+  @set_cursor y1 x; print2d(swo1);
+  @set_cursor y2 x; print2d(swo0);
+  x = x+GDELTA;
+  puttext(y0,x+d,"carte");
+  @set_cursor y1 x; print2d(player1->0);
+  @set_cursor y2 x; print2d(player0->0);
+  x = x+GDELTA;
+  puttext(y0,x+d,"denari");
+  @set_cursor y1 x; print2d(player1->GOLDCOFFS);
+  @set_cursor y2 x; print2d(player0->GOLDCOFFS);
+  x = x+GDELTA;
+  puttext(y0,x+d,"prim.");
+  @set_cursor y1 x; print2d(player1->PRIPTOFFS);
+  @set_cursor y2 x; print2d(player0->PRIPTOFFS);
+  x = x+GDELTA;
+  dd = puttext(y0,x+d,"7bello");
+  @set_cursor y1 x; print2d(player1->SEVENOFFS);
+  @set_cursor y2 x; print2d(player0->SEVENOFFS);
+  x = x+d+dd/2;
+  y2 = graphics.ytext(3);
+
+  d = graphics.textwidth("Your score: this hand 000 (0+0), total 000");
+  x = GAMEWID/2-d/2;
+  y0 = graphics.ytext(-2);
+  y1 = graphics.ytext(-1);
+  frame(x-8,y0-4,d+16,2*(y1-y0)+8,WHITE,BLUE);
+  @set_cursor y0 x; print "My score: this hand ",s1," (",s1-swo1,"+",swo1,"), total ",
+	player1->TOTALOFFS;
+  @set_cursor y1 x; print "Your score: this hand ",s0," (",s0-swo0,"+",swo0,"), total ",
+	player0->TOTALOFFS;
+
+  colourdef1();
+  WinSet(0);
+];
+
+[ drawvictory who x y0 y1 d;
+
+  WinSet(1);
+  colour(WHITE,RED,1);
+  y0 = graphics.ytext(-3);
+  y1 = graphics.ytext(-4);
+  d = graphics.textwidth("YOU WIN!!!");
+  x = GAMEWID/2-d/2;
+  frame(x-8,y1-4,d+16,(y0-y1)+8,WHITE,RED);
+  @set_cursor y1 x;
+  if (who) print "I"; else print "YOU";
+  print " WIN!!!";
+  colourdef1();
+  WinSet(0);
+];
+
+Zcharacter terminating 254;
+
+Array sbbuf -->100;
+
+Class Button with
+  stage 0,
+	! center coords
+  xc, yc,
+	! wid excludes rounded borders on left and right sides
+  wid 80, hei 30,
+  rbsize 5,
+  text "",
+  bcolour WHITE,
+  textcolour BLACK,
+  background DGREEN,
+  command,
+  pos 0,
+  hotxl, hotxh, hotyl, hotyh,
+  clear [ colr xx yy ww hh ;
+    xx = self.xc-self.wid/2-5+graphics.xoffs;
+    yy = self.yc-self.hei/2+graphics.yoffs;
+    ww = self.wid;
+    hh = self.hei;
+    self.hotxl = xx+5; self.hotxh = xx+ww+5;
+    self.hotyl = yy; self.hotyh = yy+hh;
+    simplebox(xx+5,yy,ww,1,colr); yy++;
+    simplebox(xx+3,yy,ww+4,1,colr); yy++,
+    simplebox(xx+2,yy,ww+6,1,colr); yy++;
+    simplebox(xx+1,yy,ww+8,2,colr); yy = yy+2;
+    simplebox(xx,yy,ww+10,hh-10,colr); yy = yy+hh-10;
+    simplebox(xx+1,yy,ww+8,2,colr); yy = yy+2;
+    simplebox(xx+2,yy,ww+6,1,colr); yy++;
+    simplebox(xx+3,yy,ww+4,1,colr); yy++,
+    simplebox(xx+5,yy,ww,1,colr); yy++;
+    ],
+  tw, th,
+  measure [ ws ww hw;
+	! measure text
+    @window_size 5 1000 1000;
+    ws = WinSet(5);
+    @output_stream 3 sbbuf;
+    style bold;
+    switch (metaclass(self.text)){
+	String: print (string) self.text;
+	Routine: self.text();
+	}
+    style roman;
+    @output_stream -3;
+    self.tw = $30-->0;
+    ww = self.tw+4;
+    if (self.wid < ww) self.wid = ww;
+    self.th = $26->0;
+    hw = self.th + 2;
+    if (hw > self.hei) self.hei = hw;
+    WinSet(ws);
+    ],
+  draw [ w h wsave x y colr;
+	! measure text
+    self.measure();
+    w = self.tw; h = self.th;
+    self.clear(self.bcolour);
+    if (w < 1 || h < 1) { WinSet(wsave); return;}
+    x = self.xc-w/2+graphics.xoffs;
+    y = self.yc-h/2+graphics.yoffs;
+    w = w+6;
+    x = x-3;
+    y = y-2;
+    @window_size 5 h w;
+    @move_window 5 y x;
+    wsave = WinSet(5);
+    colour(self.textcolour,self.bcolour,5);
+    @set_cursor 1 1 5;
+    style bold;
+    switch (metaclass(self.text)){
+	String: print (string) self.text;
+	Routine: self.text();
+	}
+    style roman;
+	! @buffer_screen -1
+    if (terpOK & V101) @"EXT:29S" -1 -> colr;
+    WinSet(wsave);
+    ],
+;
+
+Constant IMDELTA 70;
+
+[ locateims x n o;
+  objectloop (x ofclass ButtonImg)
+    {
+    x.measure();
+    if (x.stage == 0) n++;
+    }
+  if (n==0) return;
+  x = (GAMEWID-(n-1)*IMDELTA)/2;
+  objectloop (o ofclass ButtonImg)
+    if (o.stage == 0)
+	{
+	o.xc = x;
+	o.yc = GAMEHEI-50;
+	o.command = 32767-o.base;
+	x = x + IMDELTA;
+	}
+];
+
+
+Class ButtonImg class Button with
+  picture 1,
+  base 0,
+  measure [;
+    self.wid = measurepic(self.base+self.picture);
+    if (self.wid <= 0){ self.stage = -1; rfalse;}
+    self.hei = picdata-->0;
+    rtrue;
+    ],
+  clear [;],
+  draw [;
+    if (self.measure() == 0) return;
+    graphics.drawpic(self.base+self.picture,
+	self.xc-self.wid/2,self.yc-self.hei/2);
+    self.hotxl = self.xc-self.wid/2+graphics.xoffs;
+    self.hotyl = self.yc-self.hei/2+graphics.yoffs;
+    self.hotxh = self.hotxl+self.wid;
+    self.hotyh = self.hotyl+self.hei;
+    ],
+;
+
+ButtonImg bhard with base 0;
+Buttonimg bnap with base 100;
+Buttonimg bfra with base 200;
+Buttonimg bsic with base 300;
+
+[ findhotspot x y ob;
+  objectloop (ob has hot)
+	if (x >= ob.hotxl && x < ob.hotxh &&
+	    y >= ob.hotyl && y < ob.hotyh) return ob;
+  rfalse;
+];
+
+Array mouse_array --> 4;
+Global ESCcount = 0;
+
+[ accept c;
+
+  if (terpOK & V101) @"EXT:29S" -1 -> c;
+
+  if (auto) return 13;
+
+  @read_char 1 c;
+
+  if (c == 27) {
+    ESCcount++;
+    if (ESCcount >= 2) @restart;
+    rfalse;
+    }
+  else
+    ESCcount = 0;
+
+  if (c == 134) if (AUTOALLOWED) { auto = 1; rfalse;}
+  if (c == 254)
+	{
+  	@read_mouse mouse_array;
+	if (mouse_array-->2 & 1)
+	  {
+	  c = findhotspot( mouse_array-->1, mouse_array-->0);
+	  if (c) c = c.command;
+	  if (c == 'abort') @restart;
+	  }
+	else c = 0;
+	}
+  else c = 0;
+  return c;
+];
+
+[ setbuttons forstage x;
+  objectloop( x ofclass Button)
+	{
+	if (x.stage == forstage)
+	  { give x hot; x.draw();}
+	else
+	  give x ~hot;
+	}
+];
+
+[ pbold s; style bold; print (string) s; style roman;];
+[ italic s; style underline; print (string) s; style roman;];
+[ pred s; @set_colour 5 3 0; print (string) s; @set_colour 2 9 0;];
+
+Array curs --> 2;
+Global leftmargin;
+Global rightmargin;
+
+[ indent s x y;
+  if (s)
+	{
+	print (char) 9, (string) s;
+	@get_cursor curs;
+	x = curs-->1 - 1;
+	@set_margins x rightmargin 0;
+	}
+  else
+	{
+	@set_margins leftmargin rightmargin 0;
+	@get_cursor curs;
+	y = curs-->0;
+	@set_cursor y 1 0;
+	}
+];
+
+[ waitclick c;
+  print "^[Click to return to the starting screen]";
+  while (c==0)
+    {
+    @read_char 1 c;
+    if (c == 254)
+	{
+  	@read_mouse mouse_array;
+	if ((mouse_array-->2 & 1)==0) c = 0;
+	}
+    }
+];
+
+[ dohelp w h;
+
+  w = $22-->0;
+  h = $24-->0;
+  @window_size 0 h w;
+  @move_window 0 1 1;
+  @set_colour 2 9 0;
+  @output_stream 1;
+  @set_window 0;
+  @window_style 0 15 1;
+  @erase_window 0;
+  @get_wind_prop 0 6 -> leftmargin;
+  @get_wind_prop 0 7 -> rightmargin;
+  style roman;
+
+  print (pbold) "*** THE GAME ***^^";
+
+  print (italic) "Scopa", " is an ancient popular card game in Italy. It's played with a deck of
+40 cards, with values from one (ace) to seven and three figures for each suit. In the traditional
+Neapolitan-style cards the figures are: Fante (Knave), with face value 8, Cavallo (Knight), value 9, and Re (King), value 10, and the suits are: Coppe (cups), Denari (coins), Spade (swords) and Bastoni (clubs). The game can also be played with French-style cards, with the suit equivalence Coppe=Hearts, Denari=Diamonds, Spade=Spades, Bastoni=Clubs. In this case the figures are Fante (Jack), Donna (Dame/Queen) and Re (King), with the same face values of 8, 9 and 10.^";
+
+  print "^The game consists of one or (typically) more rounds. In each round, the dealer starts putting four cards face up on the table and giving three cards to both players. Each player then plays in turn one of his/her cards, until all six cards have been played; six cards are then dealt again and so on until there are no more cards to be played.^";
+
+  print "^Each player, when it's his/her turn, must play one of the cards in hand. S/he has, in general, two options:^^";
+  indent("- ");
+  print "place on the table a card whose face value doesn't match any single card on the table, nor the sum of the face values of any combination of cards on the table;^^";
+  indent(0);
+  indent("- ");
+  print "play a card that ",(italic) "does"," match either a single card or a combination of two or more cards. In this latter case, the matching card(s) are captured and placed, together with the capturing card, in the player's pile (on the left of the screen), and remain out of play until the end of the round.^^";
+  indent(0);
+  print "Note that in the case of multiple different combinations of table cards matching the same played card, the player may choose which ones to take. However, if there is on the table a single card matching the played card, that one must be taken even if there are alternative matching combinations of two or more cards.^^";
+  print "Capturing is only compulsory if you decide to play a card that captures; you may decide to play another card, if you have that possibility.^";
+  print "In the case that all the cards on the table are captured, the player scores a ", (italic)"scopa", " point in his/her favor, and this is indicated by placing the capturing card face up under the player's pile, as a reminder.^";
+
+  print "If any cards remain on the table after the last card of the round has been played, they are assigned to the player that did the last capture. Note that the last card of the round ",(italic)"never"," scores a scopa, even if it would by the previous rule.^";
+
+  print "^At the end of each round, the score of each player is computed. There are four so-called ",(italic)"punti di mazzo"," (points of deck), namely:^^";
+  indent("- ");
+  print (italic)"carte"," (cards): one point to the player having most cards in his/her pile. In case of parity (20-20) the point is not assigned.^";
+  indent(0);
+  indent("- ");
+  print (italic)"denari"," (coins): one point to the player with most cards of the coins suit. Again, in case of parity (5-5) the point is not assigned.^";
+  indent(0);
+  indent("- ");
+  print (italic)"primiera"," (prime): one point to the player totalling the highest primiera score (see below). In case of parity of scores, the point is not assigned.^";
+  indent(0);
+  indent("- ");
+  print (italic)"settebello"," (handsome seven): one point to the player who took the seven of coins. This is the only point that is always assigned.^";
+  indent(0);
+
+  print "^As concerns the primiera, the score of each player is computed by summing up the highest primiera values in each suit, where the primiera values of each card are: seven=21, six=18, ace=16, two to five=face value+10 (i.e. 12 to 15), figures=10. Hence, the highest primiera score that can be attained is 84 (four sevens). Note that if a player has no cards of a given suit, his/her primiera score is ",(italic)"zero",", irrespective of what cards s/he may have in the other suits.^^";
+
+  print "To the above points, each player adds one point for each scopa. The round scores are then added to the previous total, and the player that first reaches a total of at least 11 points wins the game. In case of parity (11-11, 12-12 etc.) the game continues until at the end of a round the scores are different.^^";
+
+  print (pbold) "*** HOW TO PLAY ***^^";
+
+  print "Gameplay is pretty straightforward and (almost) completely mouse-driven. The starting screen displays three clickable buttons, namely a ",(pbold)"~Help~"," button that leads you to the text you are reading now, a ",(pbold)"~Credits~"," button that displays a screenful of credits text, and a ",(pbold)"~Quit~"," button that does what you probably have already guessed.^^";
+
+  print "To actually start playing, you must click on one of the cards displayed at the bottom of the screen. If you have the Blorb file, and your interpreter understands it, you should be able to choose among three different card styles: Milanese (with French suits), Neapolitan and Sicilian (with Italian suits.) If you don't have the Blorb, or your interpreter does not understand it (as e.g. xfrotz), then your choice is restricted to the Milanese deck, whose graphics are hardwired into the z-code.^^";
+
+  print "The table cards are displayed at the center of the screen, while your hand is at the bottom center, and the computer's one (face down) at the top center. The game starts with the computer dealing, so you have the first move; in the next round you are the dealer, and the computer has the first move, and so on alternating. The deck of cards still to be dealt are displayed next to the dealer's hand on the right, while the two piles of taken cards are on the far left.^^";
+
+  print "When it's your turn, you select the card you wish to play by clicking on it. The selected card will be highlighted by a red frame, as well as any table cards it captures. Note that if different combinations of table cards may be captured by the selected one, you may cycle through all possibilities by repeatedly clicking on the same card; if you have more than one card in hand, you may as well change your selection by clicking another card. When you are satisfied with your choice, click on the ",(pbold)"~OK~"," button to confirm it. The computer will then show its choice by turning its selection face up. Your only option now is to click the ",(pbold)"~OK~"," button to accept it.^^";
+
+  print "At the end of the round, the screen summarizes the scores of the two players. In the upper part of the screen, each player's score is broken down in terms of scope, carte, denari, primiera and settebello. The central part of the screen shows in more detail the status of the denari and primiera points. The lower part of the screen summarizes the current total scores. You must then click again on ",(pbold)"~OK~"," to continue.^^";
+
+  print "Now, if neither player has yet reached a winning score, the game goes on with another round. Otherwise, a message of the kind ~I win!!~ or ~You win!!~ is displayed, and clicking again ",(pbold)"~OK~"," returns you to the starting screen for another game, if you wish.^^";
+
+  print "Note that while you are playing, if for any reason you want to abort the current game, pressing the ESCape key twice in succession will return you to the starting screen. The same can be obtained by clicking the red ",(pred)" abort "," button in the upper right corner.^^";
+
+  print "Have fun!^^";
+
+  style bold;
+  waitclick();
+  @restart;
+];
+
+[ docredits w h;
+
+  w = $22-->0;
+  h = $24-->0;
+  @window_size 0 h w;
+  @move_window 0 1 1;
+  @set_colour 2 9 0;
+  @output_stream 1;
+  @set_window 0;
+  @window_style 0 15 1;
+  @erase_window 0;
+  style roman;
+
+  print (pbold) "*** CREDITS ***^^";
+
+  print "This game was designed and is Copyright (C) 2011 by Aldo Cumani. Its source code (in the source/ folder of the distribution) is released under the Gnu General Public License (GPL - see the file COPYING for details). The game code includes some (ugly) graphics for displaying a Milanese-style deck of cards; these drawings have been made by me on the basis of a real deck. The source encoding of these cards is covered by the GPL but, as far as I'm concerned, the graphics themselves are public domain.^^";
+
+  print "The accompanying Blorb file contains pictures of two other decks:^^";
+  indent("- ");
+  print "a Neapolitan-style deck, adapted from a photo by user Florixc on Wikipedia (http://it.wikipedia.org/wiki/File:Carte_napoletane_al_completo.jpg), where it's declared to be public domain;^^";
+  indent(0);
+  indent("- ");
+  print "a Sicilian-style deck, adapted from 4 photos by user Matsoftware on Wikipedia:^
+http://it.wikipedia.org/wiki/File:Carte_da_gioco_siciliane_-_bastoni.jpg^
+http://it.wikipedia.org/wiki/File:Carte_da_gioco_siciliane_-_coppe.jpg^
+http://it.wikipedia.org/wiki/File:Carte_da_gioco_siciliane_-_denari.jpg^
+http://it.wikipedia.org/wiki/File:Carte_da_gioco_siciliane_-_spade.jpg^
+ where they are released under a Gnu Free Documentation License (GFDL)^^";
+  indent(0);
+
+  print "As far as I'm concerned, my Neapolitan cards pictures are also public domain, while the Sicilian cards are covered by the GFDL (see file fdl.txt for details.)^^";
+
+  print "I wish to express my gratitude to Graham Nelson for designing the Inform compiler, to Andrew Plotkin for the Blorb format, and to all authors of z-code interpreters supporting v6 and graphics.^^";
+
+  style bold;
+  waitclick();
+  @restart;
+];
+
+[ menu x;
+
+  WinSet(1,1); @set_cursor -1;
+  setbuttons(0);
+
+  for (::)
+	{
+	auto = 0;
+	x = accept();
+	if (x == 'goon') break;
+	if (x == 'help') dohelp();
+	if (x == 'credits') docredits();
+	if (x == 'quit') { colour(WHITE,BLUE,0); @erase_window -1; quit;}
+	if (x > 32000)
+		{
+		graphics.base = 32767-x;
+		break;
+		}
+	}
+
+  WinSet(1,1);
+  setbuttons(1);
+];
+
+Button buttstart with
+  pos [; self.xc = (GAMEWID/2), self.yc = (GAMEHEI-130);],
+  text "Click on a card type to begin", command 0;
+
+Button butthelp with
+  pos [; self.xc = (GAMEWID/2), self.yc = (GAMEHEI/2-100);],
+  text "Help", command 'help';
+
+Button buttcred with
+  pos [; self.xc = (GAMEWID/2), self.yc = (GAMEHEI/2-50);],
+  text "Credits", command 'credits';
+
+Button buttquit with
+  pos [; self.xc = (GAMEWID/2), self.yc = (GAMEHEI/2);],
+  text "Quit", command 'quit';
+
+
+Button buttsum with
+  stage 999,
+  bcolour DGREEN,
+  mov 0,
+  pos [; self.xc = (GAMEWID-70), self.yc = (GAMEHEI/2);],
+  text 
+    [ m n i;
+    m = self.mov;
+    if (m == 0 || m->1 == 0)
+	return;
+    print VALUE(m->0)," = ";
+    n = m->1; m = m+2;;
+    for (i=0:i<n:i++)
+	{
+	if (i) print "+";
+	print VALUE(m->i);
+	}
+    ],
+;
+
+Button buttok with
+  stage 1, wid 60,
+  pos [; self.xc = (GAMEWID-50), self.yc = (GAMEHEI-20);],
+  text "OK", command 13;
+
+Button buttabo with
+  stage 1, wid 60, bcolour RED, textcolour $03bd,
+  pos [; self.xc = (GAMEWID-50), self.yc = (20);],
+  text "abort", command 'abort';
+
+Class ButtonCard class ButtonImg with
+  stage 1,
+  idx,
+  measure [;
+    self.wid = graphics.xcsize;
+    self.hei = graphics.ycsize;
+    self.yc = graphics.ybottom;
+    self.xc = GAMEWID/2+(self.idx-1)*(graphics.xcsize+4);
+    rtrue;
+    ],
+  clear [;],
+  draw [;
+    if (self.measure() == 0) return;
+    self.hotxl = self.xc-self.wid/2+graphics.xoffs;
+    self.hotyl = self.yc-self.hei/2+graphics.yoffs;
+    self.hotxh = self.hotxl+self.wid;
+    self.hotyh = self.hotyl+self.hei;
+    ],
+;
+
+ButtonCard bcard1 with
+  idx 0, command -3;
+
+ButtonCard bcard2 with
+  idx 1, command -2;
+
+ButtonCard bcard3 with
+  idx 2, command -1;
