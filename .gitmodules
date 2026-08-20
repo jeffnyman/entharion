@@ -13,3 +13,18 @@
 [submodule "z-machine-standard"]
 	path = vendor/z-machine-standard
 	url = https://github.com/jeffnyman/z-machine-standard.git
+[submodule "cheapglk"]
+	path = vendor/cheapglk
+	url = https://github.com/erkyrath/cheapglk
+[submodule "glkote"]
+	path = vendor/glkote
+	url = https://github.com/erkyrath/glkote
+[submodule "glkterm"]
+	path = vendor/glkterm
+	url = https://github.com/erkyrath/glkterm
+[submodule "glulxe"]
+	path = vendor/glulxe
+	url = https://github.com/erkyrath/glulxe
+[submodule "quixe"]
+	path = vendor/quixe
+	url = https://github.com/erkyrath/quixe

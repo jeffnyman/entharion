@@ -36,9 +36,39 @@ As a final note, I will say that while the source code for all Inform games is p
 
 ## 3rd Party Tooling
 
+All third-party code is pulled in as git submodules living under the `vendor` directory. A fresh clone won't have any of it until you populate them:
+
+```bash
+git submodule update --init --recursive
+```
+
 I am providing a submodule to my own distribution of [ztools](https://github.com/jeffnyman/ztools/). I'm doing this rather than providing executables because this will allow anyone to simply compile from source. The same applies to Frotz, although here I link directly to David Griffith's [Frotz](https://gitlab.com/DavidGriffith/frotz). Annoyingly, that project is on GitLab, which makes the direct link often not resolve but the submodule always should. Again, this can be built from source.
 
-Finally, rather than directly include Inform 6, I have include my own [Reform 6](https://github.com/jeffnyman/reform6). This should compile Inform files just the way Inform 6 does, but with some additions that I'm playing around with.
+Rather than directly include Inform 6, I have include my own [Reform 6](https://github.com/jeffnyman/reform6). This should compile Inform files just the way Inform 6 does, but with some additions that I'm playing around with.
+
+### Glk and Glulx
+
+The Z-Machine is only half the story. Its 16-bit address space eventually became the binding constraint, and Andrew Plotkin's **Glulx** was the answer: a 32-bit virtual machine that Inform can target instead, which is why this repository carries Glulx story files and source alongside the zcode ones. Glulx itself does no input or output. It delegates all of that to **Glk**, a portable API that cleanly separates the interpreter from whatever is drawing the screen. Understanding that split is most of the work, so I've included Plotkin's reference implementations of both halves.
+
+The virtual machines:
+
+- [Glulxe](https://github.com/erkyrath/glulxe) is the reference Glulx interpreter, written in C. It is a Glk program, which means it does not stand alone: it has to be linked against one of the Glk libraries below.
+- [Quixe](https://github.com/erkyrath/quixe) is a Glulx interpreter written in pure JavaScript. It plays `.ulx` and `.gblorb` files directly in a browser with no server component, which makes it a fast way to sanity check a story file.
+
+The Glk libraries:
+
+- [CheapGlk](https://github.com/erkyrath/cheapglk) is the simplest possible Glk implementation, using nothing but `stdio.h`. One text buffer window, no status line, no cursor control. That austerity is exactly what makes it valuable, both as a baseline to test against and as the shortest path to reading how the API actually fits together.
+- [GlkTerm](https://github.com/erkyrath/glkterm) is a Glk implementation for terminal windows, built on `curses.h`. This is the one to link against when you want multiple windows and a real status line at the console.
+- [GlkOte](https://github.com/erkyrath/glkote) is a JavaScript display library that implements the Glk window model in a web page. Quixe uses it as its front end.
+
+A convenient side effect of keeping these as siblings under `vendor` is that Glulxe's Makefile already defaults to `../cheapglk` for its Glk library, so the pairing builds without editing any paths:
+
+```bash
+make -C vendor/cheapglk
+make -C vendor/glulxe
+```
+
+To build against GlkTerm instead, uncomment the `../glkterm` block near the top of `vendor/glulxe/Makefile`. Either way you will also want to set the appropriate `-DOS_UNIX`, `-DOS_MAC`, or `-DOS_WINDOWS` option in that same file.
 
 ## Generating Dump and Disassembly Info
 
