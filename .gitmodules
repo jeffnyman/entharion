@@ -1,15 +1,15 @@
 [submodule "frotz"]
-	path = frotz
+	path = vendor/frotz
 	url = https://gitlab.com/DavidGriffith/frotz.git
 [submodule "ztools"]
-	path = ztools
+	path = vendor/ztools
 	url = https://github.com/jeffnyman/ztools.git
 [submodule "reform6"]
-	path = reform6
+	path = vendor/reform6
 	url = https://github.com/jeffnyman/reform6.git
 [submodule "ifarchive-if-specs"]
-	path = ifarchive-if-specs
+	path = vendor/ifarchive-if-specs
 	url = https://github.com/iftechfoundation/ifarchive-if-specs
 [submodule "z-machine-standard"]
-	path = z-machine-standard
+	path = vendor/z-machine-standard
 	url = https://github.com/jeffnyman/z-machine-standard.git
