@@ -1,0 +1,369 @@
+! Stick it to the man
+!	Scene 4a: in jail
+
+[BeginPart4a a;
+objectloop (a has worn) give a ~worn;
+while (child(player)) move child(player) to Locker;
+move Handcuffs to player;
+give Handcuffs worn;
+move Carl to Cell;
+move BillyClub to Jail;
+Game.timeOfDay="Afternoon?";
+print "Shit, my head hurts like a motherfucker.  Where in the -- shit, my hands are stuck or something.  What the f -- <e>OW</e>.  My head fucking <e>hurts</e>.  My vision's all fuzzy or something, plus it's kind of dark.  Who's the -- whoa, there's the lights.  Fuck, I still can't see.^
+~Awake now, you little shit?~^
+~What the fuck is --~ I begin.  Who am I talking to, for fuck's sake?  All I can see is some weird silhouette.^
+~Shut the fuck up.~^
+~<e>You</e> shut the -- <e>OW</e>.~^
+~No, <e>you</e> shut the ow, you little fuck.~^
+At least I can see now.  Fuck.  The guy I was talking to is a uniformed police officer.  I guess he just poked me in the back of the head with that club -- doesn't take much to make it hurt real bad, that's tender.  I got a real whack, man.^
+I'm sort of slumping/sitting on the ground against the one real ~wall~ of this -- shit, I guess this is a jail cell.  The other walls are just bars.  My hands -- <e>OW</e>.  Shit, it hurts even when nothing touches it at all.  My hands are handcuffed around some kind of spigot or plumbing fixture or something behind my back.  My -- shit, I'm naked!  Those fucking pigs.^
+Hey, there's some other guy in the cell too, cuffed to the bars at the far side of the cell.  He's sort of craning his neck around to see the whole place.  He turns his head back around toward me.^
+~This fuck's another anarchist like you, bitch,~ the cop says, tapping the guy on the head with his billyclub.  Then he steps away from the cell and begins to stroll around the room.^
+~I'm Carl,~ the guy says.  ~I was at the rally too, and --~^
+~Shut the fuck up,~ says the policeman.^";
+
+	objectloop (a ofclass Talker) {
+a.lastheard=-1;
+a.number=0;
+	}
+
+GxScriptManager.updateWindow();
+
+PlayerTo(Cell);
+];
+
+	Room Jail "Jail"
+with
+description [; print "The room is fairly big, and it's rectangular.  It seems like more of a temporary holding area than a rea honest-to-fuck jail -- like, it doesn't look very secure.  There's a central area with the guard's desk and stuff, and then there's, let's see, looks like six cells -- two each on the two longer walls of the room (the sides of the rectangle), one each on the shorter walls (the ends) -- separated from each other by about 2 meters.  I'm in the cell at one of the ends, and that's the one that really matters right now.  There's two windows, in the far corners, and a door under each one.  I'm guessing they're facing north, because I don't see any direct sunlight coming through them.  I don't see anybody in any of the other cells.^
+In the central area, there's a desk and a big locker";
+if (Guard in self) "-- and the guard.";
+else ".";
+],
+out_to [;
+print "We open the door carefully and peek out.  Nobody there.  Walking on tiptoe like we're hunting wabbit, we sneak down the hall and out a back door.  Fuck knows what'll happen next, but, shit, we're free -- an everday anarchist and a ";
+if (IrisClothes hasnt worn) print "naked ";
+print "girl";
+if (Bat in player) print " with a baseball bat";
+print ".  What <e>couldn't</e> happen?";
+AfterGameOver();
+];
+
+	Decor -> Desk "desk"
+with
+name 'desk' 'guard^s' 'military' 'militaryish' 'military-ish' 'table',
+description "It's kind of a military-ish desk.  No drawers or anything.  More like a table, really, but it's being used as a desk.";
+
+	Decor -> Locker "locker"
+has container openable
+with
+name 'locker' 'big',
+description "It's a locker.  It's a pretty big locker, actually.";
+
+	Object ->-> CuffKey "key"
+with
+pname '.p' 'key' 'to' 'handcuffs' '.or' 'hand' '.or' 'cuffs' '.x' 'cuffs' '.p' 'handcuff^s' '.or' 'hand' '.or' 'cuff^s' '.x' 'cuff^s',
+description [;
+if (Handcuffs has worn) "Hopefully, it's the key to these handcuffs.";
+"It's the key to the handcuffs.";
+];
+
+	Object ->-> CarlClothes "Carl's clothes"
+has proper pluralname
+with
+name 'clothes' 'carl^s' 'clothing',
+description "I assume these are Carl's clothes, since he's the only other naked person around here.";
+
+	Decor -> JailDoor "door out of the room"
+with
+name 'door' 'doors' 'jail' 'out' 'of' 'room',
+description "Just a door, man.  For fuck's sake.",
+before [;
+	Enter,Go: <<Go out_obj>>;
+];
+
+	Decor -> JailWindow "window"
+with
+name 'window' 'high' 'north-facing',
+description "Just a window.";
+
+	Object -> Cell "cell"
+has container enterable transparent
+with
+name 'jail' 'cell' 'door' 'bars' 'bar' 'walls' 'wall' 'cells',
+describe [; if (player notin self) "The cell I was in is right here next to me."; ],
+description [;
+if (player in self) "It's the cell I'm in, man.";
+"It's the same cell, just I'm looking at it from the outside.";
+],
+inside_description [;
+print "The cell is maybe 4 meters square, or a little less.  The south wall (if those windows <e>do</e> face north) is stone -- it's the actual wall of the building.  The other 3 walls are steel bars.";
+if (Handcuffs hasnt general) print "  I'm sort of half-crouching/half-sitting next to the wall.  The pipe, or whatever the fuck it is, that I'm cuffed to is on that south wall, so I'm facing the center of the room and I can see pretty much all of it.";
+"^This guy Carl, now, has his hands cuffed behind his back to the opposite wall of the cell, so his back is to the central area and he can't see shit.  (Well, actually, he can see me, and I'm naked, which is nothing to sneeze at, but I'm trying to be practical here.)  He's naked too, and, like me, he's cuffed at kind of a weird angle, so he can't really sit down without sort of twisting his arms, and there's no way to turn around or stand up or anything.^
+In the cell with us are a bunk bed, a toilet, a sink, and, apparently, a plumbing fixture I can't really see that's digging into my back like a motherfucker.";
+],
+before [;
+	if (Handcuffs hasnt general) rfalse;
+	Enter: "What?  No reason to go back in <e>there</e>.";
+	Open: print "It's locked, obviousl-- wha-ha-haat?  It's <e>not</e> locked!  I guess that stupid pig figured the handcuffs were enough.^";
+	PlayerTo(Jail);
+	rtrue;
+],
+react_before [;
+	if (Handcuffs hasnt general || player notin self) rfalse;
+	Exit: <<Open self>>;
+];
+
+	Decor ->-> BunkBed "bunk bed"
+has supporter enterable
+with
+name 'bed' 'bunk' 'bunkbed',
+description "Basically, bare-bones bunk bed.  Nothing fancy for the enemies of the state.";
+
+	Decor ->-> Toilet "toilet"
+with
+name 'toilet',
+description "It's a toilet.  There's not a lot to say.",
+before [;
+	if (Handcuffs hasnt general) rfalse;
+	Enter: "I don't hear, y'know, nature's call.";
+];
+
+	Decor ->-> Sink "sink"
+with
+name 'sink' 'steel' 'basin' 'little',
+description "A little steel basin, is all.",
+before [;
+	if (Handcuffs hasnt general) rfalse;
+	SwitchOn,SwitchOff: "Why fuck around with the sink?  Forget <e>that</e>.";
+];
+
+	Decor ->-> Pipe "plumbing fixture"
+with
+name 'fixture' 'plumbing' 'pipe' 'spigot' 'handle' 'of' 'valve',
+description "I can't really see it, since it's right behind me, and I can't really twist around to see it.",
+before [;
+	Take: "It would be cool if I could just rip it out of the wall, yeah, but it's in there solid.";
+	Touch: "It feels like a plumbing fixture, like maybe a spigot or something.";
+	Turn,SwitchOn,SwitchOff,Open,Close: 
+	if (self has general) {
+give self ~general;
+"I twist the valve or whatever back to its original position.";
+	}
+	else {
+give self general;
+"I get a grip on what feels like the handle of this spigot or whatever, and I turn it.  Nothing really happens, other than the handle changing position.";
+	}
+],
+react_before [;
+	if (Handcuffs has general) rfalse;
+	Examine,Smell,Look,Listen,GxScriptSay,SwitchConversation,Wait: rfalse;
+	Stand:
+	if (Pipe has general) {
+if (Guard in Jail) Guard.rapeIris();
+give Handcuffs general;
+remove Pipe;
+move Spigot to Cell;
+print "I do a little hop skip and a jump type of thing (this must look <e>so</e> dirty) to get my legs under me, so I'm squatting, and then I slowly stand up.  With the spigot handle in the position it's in, there's a little gap between the pipe and the wall, and I manage to slip the handcuffs through there and I'm free (bwa-ha-haaa!) -- well, not really.  I still have my hands cuffed behind my back, so I crouch down and bring my arms under my feet.  I'm still cuffed, but at least now I've got my hands where I can see them.^";
+Carl.chooseNode(CarlFree);
+rtrue;
+	}
+	else
+"I try to stand up, but the handcuffs catch on some part of the pipe.  If I tried to yank on them I'd probably just fall on my ass, so I sit down again like a good little political prisoner.";
+	default: "Not while I'm handcuffed to this fucking pipe.";
+];
+
+	Decor Spigot "spigot" Limbo
+with
+name 'spigot' 'pipe' 'handle' 'of' 'plumbing' 'fixture' 'valve',
+description "It's a spigot, sure enough.  The water must be turned off outside or something, though, because even though I opened the valve there's no water coming out.",
+before [;
+	Turn,SwitchOn,SwitchOff,Open,Close: "No point fucking around with the spigot, man.";
+];
+
+	Object Handcuffs "handcuffs"
+has pluralname locked
+with
+name 'handcuffs' 'hand' 'cuffs',
+description [;
+if (self has general) "They're pretty normal handcuffs.";
+"I can't really see them, because they're behind my back, but I pretty much know what handcuffs look like.";
+],
+before [;
+	Disrobe: "Right.  I wish it were that easy.";
+	Lock,Wear: if (self hasnt locked) "I'm into that stuff, sure, but this isn't the time.  Besides, Brad's not here.";
+	Unlock:
+	if (self hasnt locked) "I'm not cuffed anymore.";
+	if (second==CuffKey) {
+give self ~locked;
+give self ~worn;
+move Carl to Jail;
+remove CarlClothes;
+"Hey hey hey, the key fits.  It's a little difficult getting the key in the lock with my hands restrained like they are, but it's amazing what motivation can do for you.  Not only that, but once I get <e>cuffs</e> off, I go in and try the key on Carl's, and it works there too.  We get out of the cell and he gets his clothes from the locker and puts them on.  ~Let's get out of here before that cop comes back,~ he says.";
+	}
+if (CuffKey in player) <<Unlock self CuffKey>>;
+else "I don't have the key.";
+],
+react_before [;
+	if (self hasnt worn || self hasnt general) rfalse;
+	Take,Remove: if (children(player)>1) "I can't hold that much with my hands cuffed.";
+	Wear: if (noun~=self) "I can't really dress myself with these handcuffs on.";
+];
+
+
+! The Guard
+	Man Guard "guard" Jail
+with
+name 'pig' 'policeman' 'officer' 'cop' 'police' 'man' 'guard' 'jailer' 'tubby',
+description "This guy's a little on the tubby side (the word 'pig' takes on new meaning here -- actually, old meaning, I guess), which means he's the desk guy.  These are the guys that really piss me off.  Sit at a desk all day long doing diddly-shit, but they love to harass people like us who go out and <e>do</e> stuff.  He's got that billyclub.",
+color [; return $FFFF00; ],
+bgcolor [; return $000099; ],
+NPCbefore [;
+],
+rapeIris [;
+print "Hey, whoa!  With the spigot in this position, I can sort of slip the handcuffs through a little gap and I can stand up and --^
+~You stupid fuck,~ says the guard, coming into the cell with a gun.  He hits me in the face with the butt of it.  ~This is not some fucking movie where the guard is asleep at the desk.~  He kicks my legs out from under me and I fall to the floor.  Fuck, my nose is bleeding.  ~It's <e>insulting</e> to me that you thought I wouldn't see that.~  He picks me up by the hair -- I knew I should've buzzed it and drags me over to the bed.  I try to kick him, but my head is spinning like a top.^
+He adjusts the handcuffs around the bar at the head of the bed, then pulls out another set and cuffs my feet to the foot.  ~You bitched need to learn what's up here,~ he's saying.  My ears are ringing.  He unbuttons his belt and pulls down his pants.  Through the pain, I think how this is a totally appropriate metaphor for the rape of the earth and the exploitation of labor, and so forth, and I can't <e>believe</e> I can actually think something like that at a time like this, and I start laughing, and then he lays down on top of me and I start crying.";
+AfterGameOver();
+],
+number 0,
+each_turn [;
+		if (random(100)<50 && self.lastheard>1) {
+	self.number++;
+	switch (self.number) {
+1: "The cop scratches his crotch.";
+2: "The pig drums his fingers on the desk.";
+3: "Leering at me dramatically, the cop makes a big show of licking his lips, then laughs.";
+4: "The cop puts his hands in his pockets and sort of adjusts his pants.  As if I don't know what that's all about.";
+5: "Without warning, the pig lets out a giant belch, then chuckles.";
+6: "Obviously trying to make me feel exposed or something, the pig looks me up and down and up and down and stares at me.  What a shithead.";
+7: remove self;
+print "~I gotta go get my camera,~ says the cop.  ~This is too good to pass up.~  He laughs, probably at some warped sexual joke he's just told himself.  ~Maybe I'll set you up in some nice little poses, huh?~  He laughs again as he strolls out of the room.^";
+Carl.chooseNode(CarlAlone);
+rtrue;
+	}
+		}
+];
+
+	NLine ->-> Guard0 "You get your kicks from strip-searching people, jackass?"
+with
+content "~You get your kicks from strip-searching people, jackass?~ I say to the pig.^
+~Don't make me hit you again, you little fuck,~ he says affably.";
+
+		NLine ->->-> Guard0x0 "Oh, you prefer beating them up <e>after</e> the strip-search?"
+	with
+	content "~Oh,~ I say, ~you prefer beating them up <e>after</e> the strip-search?~^
+	~I prefer listening to them make 'witty' comments --~ he holds up his fingers to indicate quotation marks around ~witty~ ~-- without realizing I could kick the crap out of them any time I feel like it.~";
+	
+			RNLine ->->->-> Guard0x0x0 "So the really fun part is beating up helpless people."
+		with
+		newnode Guard,
+		content "~So the really fun part is beating up helpless people,~ I say conclusively.^
+		~The really fun part,~ he says, ~is making them beg me not to hit them again.~";
+		
+			RNLine ->->->-> Guard0x0x1 "So my handcuffs compensate for your obesity?  Even the odds?"
+		with
+		newnode Guard,
+		content "~So my handcuffs compensate for your obesity?~^
+		~I could knock you silly with my little finger,~ he says.  In his dreams.";
+		
+			RNLine ->->->-> Guard0x0x2 "If I weren't handcuffed, I'd whip your fat ass."
+		with
+		newnode Guard,
+		content "~If I weren't handcuffed, I'd whip your fat ass.~^
+		~But you <e>are</e> handcuffed,~ he says.  ~Or do you need a more forceful reminder?~";
+		
+		NLine ->->-> Guard0x1 "I'll be ~making you~ eat your shit one day."
+	with
+	newnode Guard,
+	content "~I'll be 'making you' eat your shit one day,~ I say cheerfully.^
+	~If you don't watch out I'll be making <e>you</e> eat <e>your</e> shit <e>today</e>,~ he says.";
+	
+		NLine ->->-> Guard0x2 "Oh, please don't hurt me, Mr. Policeman!"
+	with
+	newnode Guard,
+	content "~Oh,~ I say mockingly, ~please don't hurt me, Mr. Policeman!~^
+	~That's more like it,~ he says, smiling.  ~Good to see some respect for authority.~";
+	
+	NLine ->-> Guard1 "So how long have you been a pig?"
+with
+content "~So how long have you been a pig?~ I ask casually.^
+~You get two warnings,~ he says, grinning, ~about using that word.  Third strike --~ he brandishes his billyclub ~-- I shove this up your cunt until it comes out the other side.~  He smiles broadly.  ~And that's the first warning.~";
+
+		NLine ->->-> Guard1x0 "A long time, then?"
+	with
+	content "~A long time, then?~ I say.  Shit, this is a little risky, even for me.^
+	~That's two,~ he says.^
+	~But I didn't say --~ I almost say ~pig~, but, fuck, he scared me.  ~-- it,~ I conclude after a little pause.^
+	~Suddenly we're being fair here?~";
+	
+			RNLine ->->->-> Guard1x0x0 "<e>I've</e> been being fair all along."
+		with
+		newnode Guard,
+		content "~<e>I've</e> been being fair all along.~^
+		~Oh, right, I forgot,~ he says, ~it's the government that's unfair.~";
+	
+			RNLine ->->->-> Guard1x0x1 "So you admit the law is unfair?"
+		with
+		newnode Guard,
+		content "~So you admit the law is unfair?~^
+		~In your case,~ he says, ~who gives a fuck?~";
+		
+			NLine ->->->-> Guard1x0x2 "Well, I assumed since you were a pig you'd at least want to <e>pretend</e> to be fair."
+		with
+		content "~Well, I assumed since you were a pig you'd at least want to <e>pretend</e> to be fair.~^
+		He gets up and comes over to the cell door, and then I realize I said ~pig~.  ~That's three,~ he says.^",
+		after [;
+		AfterGameOver();
+		];
+			
+		NLine ->->-> Guard1x1 "Threatening a prisoner, huh?  What's next, the thumbscrews?"
+	with
+	content "~Threatening a prisoner, huh?~ I say.  ~What's next, the thumbscrews?~^
+	~I don't know why we ever got rid of those,~ he muses.";
+	
+			RNLine ->->->-> Guard1x1x0 "Because they were inhumane."
+		with
+		newnode Guard,
+		content "~Because they were inhumane,~ I say.^
+		~You don't know the <e>meaning</e> of the <e>word</e>,~ he says.";
+	
+			RNLine ->->->-> Guard1x1x1 "You figure, hey, let's get everybody to confess to everything, who cares if they're innocent or if we maim them in the process?"
+		with
+		newnode Guard,
+		content "~You figure, hey, let's get everybody to confess to everything, who cares if they're innocent or if we maim them in the process?~^
+		~You're about as innocent as Adolf Hitler,~ he says.";
+		
+			RNLine ->->->-> Guard1x1x2 "Me neither.  I mean, they go so well with the drapes."
+		with
+		newnode Guard,
+		content "~Me neither.  I mean, they go so well with the drapes.~^
+		~I love that 'medieval dungeon' motif, yeah.~";
+			
+		NLine ->->-> Guard1x2 "You must be real popular with the ladies, with that kind of pick-up line."
+	with
+	content "~You must be real popular with the ladies,~ I say, ~with that kind of pick-up line.~^
+	~I'm happily married,~ he says, ~to a woman beside whom you look like a pile of shit.~";
+	
+			RNLine ->->->-> Guard1x2x0 "So you're saying you <e>don't</e> get off from looking at my naked body?"
+		with
+		newnode Guard,
+		content "~So you're saying you <e>don't</e> get off from looking at my naked body?~^
+		~I just think it's disgusting when animals wear clothes.~";
+		
+			RNLine ->->->-> Guard1x2x1 "I pity the fool."
+		with
+		newnode Guard,
+		content "~I pity the fool,~ I say.^
+		~She's about 10 times as intelligent as you also, you stupid fuck, and you deserve her pity about 10 million times more.~";
+		
+			RNLine ->->->-> Guard1x2x2 "So she looks like, what, a pooper-scooper?"
+		with
+		newnode Guard,
+		content "~So she looks like, what, a pooper-scooper?~^
+		~Freshman humor,~ he sighs.  ~All you idiots are high-school dropouts.~";
+		
+	RNLine ->-> Guard2 "I don't recall you reading me my rights."
+with
+newnode Guard,
+content "~I don't recall you reading me my rights,~ I say.^
+~You have the right to shut the fuck up,~ he says.";

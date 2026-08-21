@@ -1,0 +1,274 @@
+! Stick it to the man
+!	Oscar
+
+	Man Oscar "Oscar" Limbo
+with name 'oscar' 'big',
+description [;
+if (Game.houseFucked) "There are little lines of moisture down his face, like maybe he cried a little -- and that's just fucking awe-inspiring, because you couldn't hurt him, physically, with a sledgehammer -- and he's got a death grip on Nora's shoulder.";
+"Even though I've known him for a long time, and I know he's intelligent, and nice, and kind of sweet, the first thing that always comes to my mind whenever I see him is ~<e>man</e>, he's big~.^
+He is so cool, though.  Oscar is so cool.  He doesn't do like lots of big guys do and joke around about being big and strong, or threaten to arm-wrestle you or anything.  If he was sitting behind a curtain or something, talking to you, you'd think he was some wispy little wimp or something.  He doesn't have a big voice.  He's got a big body, and I guess, as they say, he's got a big heart.  He's got a big brain too, he's smart.  And he -- man, Oscar is really cool.";
+],
+color [; return $0000FF; ],
+bgcolor [; return $FFFFFF; ],
+switchedTo [;
+self.chooseNode(self.sceneNode());
+],
+NPCbefore [;
+	Kiss: "It'd probably embarass him.";
+],
+forget [;
+if (self.lastheard>5) self.chooseNode(self.sceneNode());
+if (location~=parent(self)) self.chooseNode(self.sceneNode());
+],
+sceneNode [;
+	switch (parent(self)) {
+LivingRoom: return OscarHouse;
+SideStreet: return OscarPreRally;
+Rally: return OscarRally;
+RallyLimbo: return self.node;
+FrontYard: return OscarBack;
+default: return self;
+	}
+],
+notice [a;
+	switch (a) {
+Bat: ;
+Flyer: ;
+StoreFront: OscarRallyStore0.tryActivate();
+Sign: ;
+Mask: ;
+Corpse: OscarRallyCorpse0.tryActivate(); OscarRallyCorpse1.tryActivate();
+	}
+],
+ignore [a;
+	switch (a) {
+Bat: ;
+Flyer: ;
+StoreFront: OscarRallyStore0.deActivate();
+Sign: ;
+Mask: ;
+Corpse: OscarRallyCorpse0.deActivate(); OscarRallyCorpse1.deActivate();
+	}
+],
+moveToRally [;
+move self to Rally;
+if (Nora in RallyLimbo && random(100)<95) move Nora to Rally;
+],
+preventArrest [;
+print "As the cop swings his billyclub at me, Oscar grabs him around the waist and hoists him up.  The cop grunts and begins flailing, but from the angle he's at he can't really get a solid hit on Oscar; he's just hitting him on the back, and it's like Oscar doesn't even feel it.  Oscar turns around, takes a deep breath, and heaves the pig right at another cop who's just drawing his gun.  Both of them go down.  ~Let's get out of here, Iris,~ says Oscar.  He grabs Nora's hand and we start running.^
+~This way,~ says Nora.  How she knows where we going is a mystery to me -- I barely know where I <e>am</e> in all this madness.  The crowd's dissipating really fast now that everybody knows what's up.  Nora leads us right to the same side street where we came into the rally.^
+We get there to find Gary already in the van with the engine running.  Pilar comes running up behind us just a second later";
+if (Brad notin location) print ", followed by Brad.  ";
+else print ".  ";
+print "A few seconds later Kyla comes stumbling up in tears with a black eye.  ~I can't find Jen,~ she cries.  ~I can't find Jen.  We were right next to me and she was right there with us and I can't find her.~  Brad buckles her in and leans her into Nora's shoulder.  We've got everybody in the van before we notice Fletch isn't there.^
+~We can't wait,~ says Gary, shaking his head.  ~Those pigs are gonna be here any second.~  He bites his lip.  ~Fletch knows where the house is.  If he manages to get out. he knows where to go.~^
+~What about Jen?~ Nora says.^
+~With any luck, she's with Fletch,~ Gary says, ~and if she didn't have any luck, she's probably getting the shit beat out of her and there's nothing we can do about that right now.~^
+~We can't just --~ says Nora, but Gary pushes the gas pedal and the gurgling noise of the old engine drowns her out.";
+BeginPart4c();
+],
+number 0,
+each_turn [;
+			switch (parent(self)) {
+		LivingRoom:
+		if (random(100)<50 && player.lastspoke>3) {
+	self.number++;
+	switch (self.number) {
+1: "Oscar drums his fingers on the table.";
+2: "Oscar paces back and forth beside the table a few times.";
+3: "Oscar stares into space, thinking about something.";
+	}
+		}
+		SideStreet:
+		if (random(100)<30) {
+	self.number++;
+	switch(self.number) {
+1: "Oscar stretches, raising his huge arms over his head.";
+2: "Oscar glances at Nora.";
+	}
+		}
+	
+		Rally:
+		if (player.lastspoke>3) {
+	if (Mask has worn && OscarRallyMask hasnt visited) {
+self.chooseNode(OscarRallyMask);
+<<SwitchConversation self>>;
+	}
+	if (random(100)<50) {
+	self.number++;
+	switch(self.number) {
+1: "Oscar stretches his arms overhead and, as he brings them down, accidentally knocks some guy on the head.  He apologizes profusely.";
+2: if (Brad in location) "Oscar and Brad share a few words.";
+3: if (Nora in location) "Oscar moves a little closer to Nora.";
+4: "Oscar bellows a political slogan.  It's kind of funny, because his voice is so small compared to his body.";
+5: if (Nora in location) "Oscar subtly steers Nora away from a weird-looking guy with several face piercings.";
+6: self.number=random(3);
+	}
+	}
+	
+		}
+		
+			}
+];
+
+Holder ->-> OscarHouse;
+
+	RNLine ->->-> OscarHouse0 "Hi Oscar."
+with
+newnode OscarHouse,
+content "~Hi Oscar.~^
+~Morning, Iris.~";
+
+	NLine ->->-> OscarHouse1 "How was your trip?"
+with
+switchedTo [;
+OscarHouse0.deactivate();
+],
+content "~How was your trip?~^
+~Mmm, good,~ Oscar says.  ~It was good to spend some time with my family.  Things are fucked up back home.~";
+
+		NLine ->->->-> OscarHouse1x0 "What's fucked?"
+	with
+	content "~What's fucked?~^
+	~Ah, it's all fucked.  My mother and my sister are working as maids for some rich gringo.  My brother, he was killed like I told you in some kind of guerilla skirmish.  We used to -- like when I was little, we didn't have these problems.  We got by.  We weren't rich, but these problems were far away.  Now I see everybody running to the USA, and I think, how can I tell my family they should come here when I come here and all I do is fight the government that's supposed to be so great?";
+	
+			RNLine ->->->->-> OscarHouse1x0x0 "Well, just because it's no good doesn't mean it's not better than theirs."
+		with
+		newnode OscarHouse,
+		content "~Well,~ I say, ~just because it's no good doesn't mean it's not better than theirs.~^
+		~You mean ours is bad but back home it's even worse?~  He shrugs.  ~This is true.  But it's hard to go to my family and say, 'Come with me, we'll go the USA, where things are bad but not as bad as here.'  No one wants to hear that, to pick up everything and leave their home for a place that's just less fucked up than their own country.  They want to hear about the 'land of opportunity' and all that.~  He shakes his head.  ~There is no solution right now.~";
+		
+			RNLine ->->->->-> OscarHouse1x0x1 "They could help us out, fight with us."
+		with
+		newnode OscarHouse,
+		content "~They could help us out,~ I say, ~fight with us.~^
+		Oscar chuckles.  ~Iris, you're loco.  In the first place my mother is over 50.  There is no way she's fighting anybody after spending 30 years raising 8 kids and then seeing one of them die and one in jail and two working stupid jobs that will never make them more than just enough to eat, and one of them married to a cabron who beats her.  I'm the most 'successful' of any of my brothers and sisters and all I do is move from one dumpy apartment to the next.~  He pauses, then chuckles again.  ~And besides, who is going to leave their home and jump headfirst into a fight against a system they don't know anything about?  How do they know they're not better off cleaning the sinks and toilets instead of getting tear-gassed in some foreign street?~  He shakes his head.";
+		
+		RNLine ->->->-> OscarHouse1x1 "That's too bad."
+	with
+	newnode OscarHouse,
+	content "~That's too bad,~ I say.^
+	~It's bad, yeah.~  He sighs.  ~Ah, never mind this now.  I cannot get all wrapped up this, we have things to do.~";
+
+	RNLine ->->-> OscarHouse2 "Are you going to stick with Nora today at the rally?"
+with
+switchedTo [;
+OscarHouse0.deactivate();
+],
+newnode OscarHouse,
+content "~Are you going to stick with Nora today at the rally?~^
+~I am,~ he says.  ~I don't want anything to happen to her.  Besides, she'll just need company.  You feel like you've already lost if you're walking around in a bunch of people you never saw before, even if you know they want the same thing you want.~";
+
+!
+! Part 2
+!
+
+Holder ->-> OscarPreRally;
+
+	NLine ->->-> OscarPreRally0 "Why don't you and Nora go on ahead."
+with
+content [; print "~Why don't you and Nora go on ahead,~ I say.  It's weird, that sentence structure.  It sounds like a question -- ~why don't you~ -- but a lot of the time when people say it they mean ~do this.~^";
+if (Brad in location) print "Oscar looks over the top of my head to where Brad is standing, absent-mindedly kicking at the asphalt.  ";
+"~Sure,~ he says.^
+He walks over to Nora and puts his hands on her shoulders, then bends way down to put his mouth next to her ear as he whispers something to her.  Their backs are to me -- or, I should say, <e>his</e> back is to me, since I can't even see her back because he's blocking my view.  All I can see of her is her little head, sticking up over his shoulder, leaning to the side to hear his whispering.  She doesn't even move her arms or anything, just stands there while he whispers to her.  I can't believe that someone so big could be so gentle, or that someone so small could be so trusting.^
+She glances back at me with a little smile, then begins to walk away, accompanied by Oscar.  They reach the corner and turn out of sight.";
+],
+after [;
+move Oscar to RallyLimbo;
+move Nora to RallyLimbo;
+Brad.chooseNode(BradPreRallyTalk);
+];
+
+	RNLine ->->-> OscarPreRally1 "Take care of Nora."
+with
+newnode OscarPreRally,
+content "~Take care of Nora,~ I say, in a low voice so she won't hear.^
+He chuckles softly.  ~Oh, I almost forgot.~^
+I reach up and pat him on the shoulder, smiling.  ~Just making sure.~";
+
+!
+! Part 3
+!
+
+Holder ->-> OscarRally
+with
+sharing OscarRallyStuff;
+
+	RNLine ->->-> OscarRally0 "Hey Oscar."
+with
+newnode OscarRally,
+content "~Hey Oscar,~ I say.  Oscar waves to me.";
+	
+	RNLine ->->-> OscarRally1 "Everything all right?"
+with
+newnode OscarRally,
+content [;
+print "~Everything all right?~ I ask Oscar.^";
+if (Nora notin location) "~Well, Nora's disappeard,~ he says.";
+else "~Claro,~ he says.";
+];
+	
+	RNLine ->->-> OscarRally2 "Why the fuck isn't Nora with you?"
+with
+newnode OscarRally,
+content "~Why the fuck isn't Nora with you?~ I ask Oscar, hopping mad.^
+~Ay ay ay, calm down,~ he says, holding up his hands defensively.  ~She said she wanted to go walk around by herself for a little while.  I'm not her father, Iris.  Let her do what she wants.~^
+Goddamn it, now I'm mad at myself for being such a busybody.  I hope I never have kids, man -- I'd be so overprotective.  I remember always thinking how stupid it was that my dad would always tell me what to do.  I mean, what is that?  Why should anybody get to tell anybody what to do?^
+~All right, all right,~ I say.  ~I didn't mean to go nuts.~^
+~No problem,~ Oscar says.";
+	
+	Holder ->->-> OscarRallyStuff;
+	
+	RNLine ->->->-> OscarRallyStore0 "I could go for a veggie burger right about now."
+has ~on
+with
+newnode OscarRally,
+content "~I could go for a veggie burger right about now,~ I say jokingly to Oscar, nodding to the closed-up burger shop.^
+~You think they even <e>sell</e> veggie burgers in there?~ he says.  ~I bet it's all just meat and potatoes.~";
+
+	Holder ->->->-> OscarRallyMask
+	with
+	switchedTo [;
+	Oscar.chooseNode(OscarRally);
+	"~Iris, that mask doesn't suit you,~ Oscar says, smiling.^
+	~Shit, you recognized me!~ I say.^
+	~Like I say, it doesn't suit you.  It's like -- what was that Bob Dylan bit? -- Napoleon in rags.~";
+	];
+	
+	RNLine ->->->-> OscarRallyCorpse0 "Oscar, what do we do about this guy?"
+has ~on
+with
+newnode OscarRally,
+content "~Oscar,~ I say mechanically -- my mouth feels like a vault door -- ~what do we do about this guy?~^
+~Nothing,~ he says.  ~We can't carry him around.  But shit, what a shame.~";
+	
+	RNLine ->->->-> OscarRallyCorpse1 "Goddamn it, Oscar, those fucking pigs killed this fucker!"
+has ~on
+with
+newnode OscarRally,
+content "~Goddamn it, Oscar,~ I splutter, ~those fucking pigs killed this fucker!~^
+~We don't know that,~ he replies quietly.^
+~The fuck we don't!~ I yell.^
+~It's possible, it's possible,~ he says, ~but if we demonize them we're no better than the people who demonize us.~";
+
+!
+! Part 4b
+!
+
+Holder ->-> OscarPost;
+
+	NLine ->->-> OscarPost0 "So, no trouble?"
+with
+content "~So,~ I say to Oscar, ~no trouble?~^
+He chuckles.  ~For some reason people don't give me trouble very often.~^
+~I'll give you trouble, buster,~ I joke, putting up my dukes.^
+~Hey, Iris,~ he says, backing off with a big smile on his face, ~we can't fight the man when we're fighting each other.",
+after [;
+AfterGameOver();
+];
+
+!
+! Part 4c
+!
+
+Holder ->-> OscarBack;

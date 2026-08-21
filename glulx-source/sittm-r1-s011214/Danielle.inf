@@ -1,0 +1,76 @@
+! Stick it to the man
+!	Danielle
+
+	Woman Danielle Limbo
+has ~proper concealed
+with
+short_name [;
+if (self.known==Yes) print "Danielle";
+else print "girl";
+rtrue;
+],
+name 'danielle' 'girl' 'nondescript',
+description "She's kind of nondescript -- or maybe she just looks nondescript standing with him, because he's dressed in black and looks all eye-catching and everything.",
+color [; return $FFFFFF; ],
+bgcolor [; return $CC99FF; ],
+switchedTo [;
+self.chooseNode(self.sceneNode());
+],
+NPCbefore [;
+	Kiss: if (self.known==Yes) "No way.";
+],
+forget [;
+if (self.lastheard>5) self.chooseNode(self.sceneNode());
+if (location~=parent(self)) self.chooseNode(self.sceneNode());
+],
+sceneNode [;
+	switch (parent(self)) {
+Rally: if (self.known==Yes) return DanielleRally; else return DanielleRallyUnknown;
+RallyLimbo: return self.node;
+default: return self;
+	}
+],
+moveToRally [;
+move self to Rally;
+move Zac to Rally;
+],
+number 0,
+known No,
+each_turn [;
+			switch (parent(self)) {
+
+		Rally:
+	
+			}
+];
+
+Holder ->-> DanielleRallyUnknown;
+
+	NLine ->->-> DanielleRallyU0 "Hi."
+with
+content "~Hi,~ I say to the girl, not really sure why.",
+after [;
+Zac.chooseNode(ZacRally);
+<<SwitchConversation Zac>>;
+];
+
+Holder ->-> DanielleRally;
+
+	RNLine ->->-> DanielleRally0 "So you guys are, like, just friends, or what?"
+with
+newnode ZacRally,
+content "~So you guys are, like, just friends,~ I ask Danielle, ~or what?~^
+~Me and Zac?~ she says -- her voice is like a telephone operator's or something -- ~Well, you know, we're, uh -- we have a pretty serious relationship.~";
+
+	NLine ->->-> DanielleRally1 "You're kind of quiet over there."
+with
+newnode ZacRally,
+content "~You're kind of quiet over there,~ I say to Danielle.^
+She smiles.  ~I don't talk much.~^
+Well, duh.";
+	
+	NLine ->->-> DanielleRally2 "What are your, like, thoughts?  I mean, why are you here?"
+with
+newnode ZacRally,
+content "~What are your, like, thoughts?~ I ask Danielle, trying to get her to say something.  ~I mean, why are you here?~^
+~I believe in communism,~ she says, like it was some mythical beast, ~but really, I'm just at this rally 'cause Zac's here.  I don't really do the whole rally thing, usually.~";

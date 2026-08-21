@@ -1,0 +1,289 @@
+! Stick it to the man
+!	Kyla
+
+	Woman Kyla "Kyla" Limbo
+with name 'kyla',
+description "It's so weird that's she's hooked up with Jen.  I mean, Jen is the most gung-ho scream-in-your-face activist I've ever seen, and Kyla is totally mellow.  I'm glad they're <e>together</e>, though, 'cause Kyla's definitely rubbed off a little on Jen -- toned her down, thankfully.",
+color [; return $990099; ],
+bgcolor [; return $00CC99; ],
+switchedTo [;
+self.chooseNode(self.sceneNode());
+],
+NPCbefore [;
+	Kiss: "I really do like Kyla as a friend, but putting on that kind of act could get me into a situation I don't want to be in -- not to mention that it would be the act of a <e>shit</e> to deceive someone like that, espeially someone as wonderful as Kyla, and that it would be another act of shit to mess up her relationship with Jen.";
+],
+forget [;
+if (self.lastheard>5) self.chooseNode(self.sceneNode());
+if (location~=parent(self)) self.chooseNode(self.sceneNode());
+],
+sceneNode [;
+	switch (parent(self)) {
+Bathroom: return KylaHouse;
+Rally: return KylaRally;
+RallyLimbo: return self.node;
+FrontYard: return KylaBack;
+default: return self;
+	}
+],
+notice [a;
+	switch (a) {
+Bat: ;
+Flyer: ;
+StoreFront: ;
+Sign: KylaRallySign0.tryActivate();
+Mask: KylaRallyMask0.tryActivate();
+Corpse: KylaRallyCorpse0.tryActivate();
+	}
+],
+ignore [a;
+	switch (a) {
+Bat: ;
+Flyer: ;
+StoreFront: ;
+Sign: KylaRallySign0.deActivate();
+Mask: KylaRallyMask0.deActivate();
+Corpse: KylaRallyCorpse0.deActivate();
+	}
+],
+moveToRally [;
+move self to Rally;
+if (Jen in RallyLimbo && random(100)<90) move Jen to RallyLimbo;
+],
+number 0,
+each_turn [;
+			switch (parent(self)) {
+		Bathroom:
+		if (random(100)<60 && player.lastspoke>3) {
+	self.number++;
+	switch(self.number) {
+1: "Kyla looks around in vain for a mirror.";
+2: "Kyla smiles at me.";
+3: "Kyla reaches out tentatively to turn on the sink's faucet, but can't muster the courage.";
+4: player.lastspoke=0;
+self.chooseNode(KylaHouseSink);
+<<SwitchConversation Kyla>>;
+5: "Kyla looks apprehensively at the toilet.";
+6: "Kyla runs her fingers through her hair to 'brush' it.";
+	}
+		}
+		
+		Rally:
+		if (player.lastspoke>3) {
+	if (Mask has worn && KylaRallyMask1 hasnt visited) {
+self.chooseNode(KylaRallyMask1);
+<<SwitchConversation self>>;
+	}
+	if (random(100)<50) {
+	self.number++;
+	switch(self.number) {
+1: "Kyla starts singing some kind of protest song.";
+2: "Kyla glances around the crowd.";
+3: if (Brad in location) "Brad and Kyla talk briefly together.";
+4: "Some guy comes up to Kyla and starts talking to her.  She seems to know him.  After a few minutes he waves and disappears into the crowd.";
+5: if (Fletch in location) "Kyla says something to Fletch, and he says something back.";
+6: self.number=random(3);
+	}	
+	}
+		}
+		
+			}
+];
+
+Holder ->-> KylaHouse;
+
+	RNLine ->->-> KylaHouse0 "Hi Kyla."
+with
+newnode KylaHouse,
+content "~Hi Kyla,~ I say, smiling.^
+She smiles back at me.  ~Good morning, Iris.~  She's such a -- she's so, like, nice.";
+
+	NLine ->->-> KylaHouse1 "Haven't seen you at one of these rallies for a while."
+with
+content "~Haven't seen you at one of these rallies for a while,~ I remark.^
+~Heh, yeah,~ she says, rolling her eyes and mock-grimacing like she's scaring herself.  She always manages to make it look like she only just sort of messed up a little bit and is sort of a little bit embarrassed -- never like she messed up so bad you should be concered, and never like she's so embarassed that <e>you're</e> embarrassed for bringing it up.  ~Well, y'know, I got myself all wound up with this stuff, and then I sort of burned out, I guess.  I got all introspective and started asking myself about, y'know, 'why am I here?' and 'what am I doing with my life?' and all that.  But I'm done with that now, thank G -- uh, thank, uh, whatever.~",
+after [;
+KylaHouse0.deactivate();
+];
+
+		RNLine ->->->-> KylaHouse1x0 "Whoa, major personal crisis?"
+	with
+	newnode KylaHouse,
+	content "~Whoa,~ I say, ~major personal crisis?~^
+	~Ah,~ she says, smiling, ~nah.  I mean, it seemed pretty major at the time, but I was just all messed up.  It's -- that's all in the past now.~^
+	~Glad to hear it.~";
+	
+		RNLine ->->->-> KylaHouse1x1 "So, what conclusion did you reach?"
+	with
+	newnode KylaHouse,
+	content "~So, what conclusion did you reach?~^
+	Kyla chuckles.  ~You mean, why <e>am</e> I here?  I sort of realized it doesn't matter.  I guess I'd could get all righteous and say I'm here to combat oppression or something, but that doesn't make sense.  Sure, there's problems, but I'm here, I'm part of -- I'm helping to solve them, I'm -- y'know, I'm in there, I'm doing my thing.  And all this stuff I was thinking about, y'know, 'am I wasting my life?' -- well, I'm not.  I mean, I'm happy.  I'm not living on the streets.  I've got a girlfriend, we're in love, how good can it get?  I'm doing what I -- what I want to be doing.  And that's great.~^
+	~It sure is.~  Man, it sure is.";
+	
+		RNLine ->->->-> KylaHouse1x2 "Still trying to break that 'God' habit?"
+	with
+	newnode KylaHouse,
+	content "~Still trying to break that 'God' habit?~  Kyla's been trying not to say 'God' ever since I've known her.  It's kind of cool, I guess, to try and, like, customize yourself that way, but I sort of feel like it's not that big a deal.  But whatever.^
+	She laughs.  ~Catholic school <e>ruined</e> me.~  She laughs again.  ~It's so weird, y'know?  I mean, they were always going on about how we're <e>not</e> supposed to use the lord's name in vain, and somehow that backfired and now I can hardly help it.  If they hadn't been so anal about it I'd probably have gotten it out of my system.~";
+
+	NLine ->->-> KylaHouse2 "How are things working out with Jen?"
+with
+content "~How are things working out with Jen?~^
+Kyla cocks her head sideways and gives one of those 'awww' kind of reverie-smiles.  ~She's great.  It's great.~",
+after [;
+KylaHouse0.deactivate();
+];
+
+		RNLine ->->->-> KylaHouse2x0 "Glad to hear it."
+	with
+	newnode KylaHouse,
+	content "~Glad to hear it.~^
+	Kyla just keeps on smiling.";
+
+Holder ->-> KylaHouseSink
+with
+switchedTo [;
+KylaHouse0.deactivate();
+Kyla.lastheard=0;
+"Kyla glances over at me with a look of amused fright, then back at the sink.  ~I'm scared to touch that thing,~ she says.";
+];
+
+	RNLine ->->-> KylaHouseSink0 "I don't blame you."
+with
+newnode KylaHouse,
+content "~I don't blame you,~ I say.  That thing is fucking <e>grody</e>.";
+
+	RNLine ->->-> KylaHouseSink1 "It looks, like, dangerous."
+with
+newnode KylaHouse,
+content "~It looks, like, dangerous,~ I say.^
+~Yeah,~ says Kyla, ~in a medical sense.~";
+
+	RNLine ->->-> KylaHouseSink2 "Do you think it even works?"
+with
+newnode KylaHouse,
+content "~Do you think it even works?~^
+~I'm not going to try and find out.  I'm just glad I took a shower before I came here.~";
+
+	NLine ->->-> KylaHouseSink3 "You should have seen the bathroom at the last place."
+with
+content "~You should have seen the bathroom at the last place.~^
+~What was it like?  Or do I not want to know?~";
+
+		RNLine ->->->-> KylaHouseSink3x0 "The toilet not only had shit on the <e>inside</e>, it had shit on the <e>outside</e>."
+	with
+	newnode KylaHouse,
+	content "~The toilet not only had shit on the <e>inside</e>,~ I say ominously, ~it had shit on the <e>outside</e>.~^
+	~Gah!  Ugh!~ She gags.  ~I shouldn't have asked.~";
+	
+		RNLine ->->->-> KylaHouseSink3x1 "The sink had a fucking <e>plant</e> growing out  of the drain."
+	with
+	newnode KylaHouse,
+	content "~The sink had a fucking <e>plant</e> growing out of the drain.~^
+	Kyla makes a disgusted face.  ~Like, a bush or something?~^
+	~It looked like some kind of moss.~^
+	~Oh, God -- er, gross.~";
+	
+		NLine ->->->-> KylaHouseSink3x2 "I turned on the tap in the bathtub and <e>cockroaches</e> came out."
+	with
+	content "~I turned on the tap in the bathtub and <e>cockroaches</e> came out.~^
+	~Oh, man, I didn't want to know.~  She pauses.  ~Like, <e>just</e> cockroaches?  No water or anything?~";
+	
+			RNLine ->->->->-> KylaHouseSink3x2x0 "The water -- actually it was mostly rust -- came out after all the cockroaches.  They were clogging the pipe."
+		with
+		newnode KylaHouse,
+		content "~The water -- ~ I begin, ~-- actually it was mostly rust -- came out after all the cockroaches.  They were clogging the pipe.~^
+		~Ugh, I knew I didn't want to know.~";
+		
+			RNLine ->->->->-> KylaHouseSink3x2x1 "Well, there was water, but who'd want to use it?"
+		with
+		newnode KylaHouse,
+		content "~Well,~ I say, ~there was water, but who'd want to use it?~^
+		~True.~";
+		
+			RNLine ->->->->-> KylaHouseSink3x2x3 "There was, like, totally rusty water."
+		with
+		newnode KylaHouse,
+		content "~There was, like, totally rusty water.~^
+		~Kind of an anticlimax.  It'd be cool if a ton of roaches came out and then the water was, y'know, pristine.~^
+		~It'd be cooler without the roaches.~";
+		
+			RNLine ->->->->-> KylaHouseSink3x2x4 "I've said too much already."
+		with
+		newnode KylaHouse,
+		content "~I've said too much already.~^
+		~You're right, you're right,~ says Kyla.  ~I'm really just torturing myself by asking.~";
+	
+		RNLine ->->->-> KylaHouseSink3x3 "You don't want to know."
+	with
+	newnode KylaHouse,
+	content "~You don't want to know.~^
+	~You're right,~ she says.  ~Thanks.~";
+
+!
+! Part 2	(not present)
+!
+
+!
+! Part 3
+!
+
+Holder ->-> KylaRally
+with
+sharing KylaRallyStuff;
+
+
+	RNLine ->->-> KylaRally0 "Hey Kyla."
+with
+newnode KylaRally,
+content "~Hey Kyla,~ I say.^
+~Hi Iris.~";
+	
+	RNLine ->->-> KylaRally1 "Where's Jen?"
+has ~on
+with
+newnode KylaRally,
+content "~Where's Jen?~ I say to Kyla.^
+~I don't know,~ she says, her eyes looking kind of scared.  ~I'm worried.~^
+I almost laugh.  It's so weird, man, that <e>she's</e> worried about <e>Jen</e>, since it totally seems like Kyla's vulnerable, whereas anybody who tried to pick a fight with Jen would have their hands full.";
+	
+	Holder ->->-> KylaRallyStuff;
+
+	RNLine ->->->-> KylaRallySign0 "Pretty interesting sign there."
+has ~on
+with
+newnode KylaRally,
+content "~Pretty interesting sign there,~ I say.^
+~Yeah, it is,~ Kyla says thoughtfully.  ~I should do something like that for the next one.~";
+		
+	RNLine ->->->-> KylaRallyMask0 "Check out that mask."
+has ~on
+with
+newnode KylaRally,
+content "~Check out that mask,~ I say, pointing it out.^
+~Hey, cool!~ Kyla says, picking it up and putting it on.  She crouches down and puts her hands up like a karate master or something.  ~I'm the man in black!  Fuck the government!  Rah!  Rah!~^
+I start cracking up.  She laughs too, and throws the mask into the crowd.  ~The crazy guys who wear those are so funny,~ she says.  ~So damn uptight, man.~",
+after [;
+remove Mask;
+];
+
+	Holder ->->->-> KylaRallyMask1
+	with
+	switchedTo [;
+	Kyla.chooseNode(KylaRally);
+	"~You got a mask, huh, Iris?~ Kyla says, recognizing me.^
+	~Yeah.~^
+	~Be careful, man, you're going to get arrested for looking like someone who might possibly be suspected of harboring somewhat anti-government sentiment.~  She laughs.";
+	];
+	
+	RNLine ->->->-> KylaRallyCorpse0 "Kyla -- that guy's fucking <e>dead</e>, man."
+has ~on
+with
+newnode KylaRally,
+content "~Kyla -- that's guy's fucking <e>dead</e>, man.~^
+~Goddamn it,~ she says, choking back tears.  ~Goddamn it.  Why in the <e>world</e> does this kind of thing have to happen?~  Goddamn it is right.  I wish I had an answer.";
+
+!
+! Part 4c
+!
+
+Holder ->-> KylaBack;

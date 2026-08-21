@@ -1,0 +1,453 @@
+! Stick it to the man
+!	Part 1 -- at the house, before the rally
+
+! Hallway
+	Room HallwayWest "Hallway"
+with name 'hallway' 'hall' 'way',
+description [;
+if (Game.houseFucked) "Looks like somebody pissed on the carpet.  Those fuckers.";
+else "There's a bedroom to the north.  West of here is the kitchen.";
+],
+n_to BedroomWest, e_to HallwayCenter, w_to Kitchen;
+
+	Room HallwayCenter "Hallway"
+with name 'hallway' 'hall' 'way',
+description [;
+if (Game.houseFucked) "For all the shit they did, they could barely make this hallway look any crappier than it already looked.";
+else "Shit, I didn't notice last night how cruddy this place is.  This hallway is, well, cruddy.  The bedroom I slept in is to the north, and there's more hallway to the east and west.";
+],
+n_to BedroomCenter, e_to HallwayEast, w_to HallwayWest;
+
+	Room HallwayEast "End of Hallway"
+with name 'hallway' 'hall' 'way' 'end',
+description [;
+if (Game.houseFucked) "The hallway is pretty much the same as it was before.";
+else "This hallway just stops short at a blank wall.  There's a bedroom to the north and a bathroom to the south.  The rest of the hallway is to the west.";
+],
+n_to BedroomEast, s_to Bathroom, w_to HallwayCenter;
+
+! Bedrooms & Bathroom
+	Room BedroomWest "Bedroom"
+with name 'bedroom' 'carpet',
+description [; 
+if (Game.houseFucked) "It's a fucking good thing we didn't spiff this place up or anything.  Those fuckers did their fucking best to fuck the house up, but it was so fucking fucked up already they couldn't do shit.  Fuck them anyway.";
+print "Another ~bedroom~ with no beds.  Hell, this one doesn't even have mattresses.";
+if (SleepingJen in self) print "  Jen is curled up in fetal position on the floor, snoring.";
+if (SleepingKyla in self) print "  Over there I see Kyla, sleeping soundly.";
+if (SleepingNora in self) print "  Nora's asleep in the corner.";
+if (SleepingOscar in self) print "  Big Oscar is face down in the crappy carpet, asleep.";
+"  The hallway is back south.";
+],
+before [;
+	Listen:
+	if (SleepingJen in self && SleepingOscar in self) {
+"Damn, with Jen's little snores and Oscar's big ones, it's like some kind of harmony.";
+	}
+	if (SleepingJen in self) {
+"I can hear Jen snoring away.";
+	}
+	if (SleepingOscar in self) {
+"Oscar's snoring is extremely loud.";
+	}
+],
+s_to HallwayWest;
+
+	Decor -> SleepingJen "Jen (asleep)"
+has animate proper
+with name 'Jen' 'sleeping' 'asleep' 'snoring',
+description "She's curled up into a little ball.",
+before [;
+	WakeOther: "Nah.";
+],
+time_left 0,
+time_out [;
+move self to Limbo;
+move Jen to Kitchen;
+	switch (location) {
+Kitchen: "Jen staggers in blearily.";
+BedroomWest: "Jen yawns, uncurls, stands up, and stumbles out into the hallway.";
+HallwayWest: "Jen walks unsteadily past me, en route to the kitchen.";
+	}
+];
+
+	Decor -> SleepingKyla "Kyla (sleeping)"
+has animate proper
+with name 'Kyla' 'sleeping' 'asleep',
+description "Sleeping like a baby.",
+before [;
+	WakeOther: "She looks too comfortable to disturb.";
+],
+time_left 0,
+time_out [;
+move self to Limbo;
+move Kyla to Bathroom;
+	switch (location) {
+Bathroom: "Kyla comes in from the hallway.";
+BedroomWest: "Kyla rubs her eyes and sits up.  She mumbles ~good morning~ as she walks out into the hallway.";
+HallwayWest,HallwayCenter,HallwayEast: "Kyla walks past, heading east.";
+	}
+];
+
+	Decor -> SleepingNora "Nora, asleep"
+has animate proper
+with name 'Nora' 'sleeping' 'asleep',
+description "What a cute kid she is.  She's sleeping in the very corner of the room, and she's sort of twisted and turned in her sleep so her body nestles right into the angle where the walls meet.",
+before [;
+	WakeOther: "She needs her sleep.";
+],
+time_left 0,
+time_out [;
+move self to Limbo;
+move Nora to Kitchen;
+	switch (location) {
+Kitchen: "Nora walks in from the hallway, rubbing her eyes.";
+BedroomWest: "Nora wakes up and stretches exquisitely before walking past me into the hallway, giving me a big smile on the way.";
+HallwayWest: "Nora smiles as she walks briskly past me into the kitchen.";
+	}
+];
+
+	Decor -> SleepingOscar "Oscar, sleeping"
+has animate proper
+with name 'Oscar' 'big' 'sleeping' 'asleep' 'snoring',
+description "Big Oscar is spread-eagled face-down on the floor, snoring like an absolute beast.  I can never get over how massive this guy is.",
+before [;
+	WakeOther: "That could be dangerous (not to mention kind of mean).";
+],
+time_left 0,
+time_out [;
+move self to Limbo;
+move Oscar to LivingRoom;
+	switch (location) {
+LivingRoom: "Big Oscar lumbers in, bright-eyed and bushy-tailed.";
+BedroomWest: print "That low rumbling sound suddenly stops.  Big Oscar sniffs, snorts, yawns, and then sits bolt upright.  "; 
+if (Nora in location) "He glances over at Nora, takes a deep breath, and then lumbers out of the room, nodding to me.";
+else "He glances at the corner where Nora's pillow is, then walks quickly out of the room.";
+HallwayWest: "Oscar walks past, heading for the kitchen.";
+Kitchen:
+if (Nora in location) "Oscar walks in, catches Nora's eye, then heads out toward the living room.";
+else "Oscar walks in, looks around, then goes north to the living room.";
+	}
+];
+
+	Room BedroomCenter "Bedroom"
+with name 'bedroom' 'door' 'hallway',
+description [; 
+if (Game.houseFucked) "Ah, shit.";
+print "It's this wack-ass bedroom.  I mean, it's a bedroom in the sense that that's what it was designed for, and I guess there was probably a bed here at one time, but there's sure no beds here now.  Just three fucking pious mattresses -- shit, this foam stuffing shit is all over the place.  There's the door to the hallway to -- hmm, the sun's in the window there; that must be east -- so I guess that'd make the hallway south.";
+if (SleepingBrad in self) print "  Brad's sleeping over there on one of those mattresses.";
+if (SleepingPilar in self) print "  Oh, and there's Pilar, asleep over there.";
+if (IrisClothes in self) print "  My clothes are lying on the floor here.";
+"^";
+],
+before [;
+	Go: if (noun==s_obj && IrisClothes hasnt worn) "I'd better put on my clothes first.  Not that anybody here has any problem with nudity, but I've gotta be ready for when we leave.";
+],
+s_to HallwayCenter;
+
+	Thing -> IrisClothes "my clothes"
+has clothing concealed pluralname proper
+with name 'clothes' 'my' 'clothing',
+describe "I can see my clothes over there on the floor.",
+description [;
+if (self has worn) "I should be wearing black, but the forecast said it's gonna be fucking <e>hot</e> today.  Anyway, green gives the right message.";
+else "No Armani or anything, but seeing as how I'm naked, that doesn't mean shit.  Besides, Armani is capitalist crap.";
+],
+before [;
+	Disrobe: "Hey, I generally <e>prefer</e> being naked, but this isn't a good time to strip down.";
+];
+
+	Decor -> Mattresses "holey mattresses"
+has pluralname
+with name 'mattress' 'mattresses' 'holey' 'pious' 'foam' 'leaking',
+description "These are <e>real</e> pieces of shit.  Soft, though I guess; I sure slept fine.",
+before [;
+	Take: "Why the fuck would I want to carry a leaking foam mattress around?";
+];
+
+	Decor -> BedroomCenterWindow "window"
+with name 'window' 'east',
+description "This window faces, uh, east.  Sun rises in the east, right?",
+before [;
+	Open,Close: "The piece of shit is jammed.";
+	Search: "I can see the town out there.";
+];
+
+	Decor -> SleepingBrad "Brad, asleep on a mattress"
+has animate proper
+with name 'Brad' 'asleep' 'sleeping' 'bastard' 'late-sleeping',
+description "Still asleep, the bum.  Well, fuck hi-- heh, that's ironic.",
+before [;
+	WakeOther: "Ah, I'll let him sleep for a while.  I kept him up late last night.";
+],
+time_left 0,
+time_out [;
+move self to Limbo;
+move Brad to Kitchen;
+	switch (location) {
+Kitchen: "Hey, here comes Brad.";
+BedroomCenter: "Brad wakes up and comes over to me.  He gives me a kiss on the cheek, pats me on the back, and says, ~I'm gonna head for the kitchen, see what's up.~  He goes out into the hallway.";
+HallwayCenter,HallwayWest: "Brad comes toward me, on his way to the kitchen.  ~Hey Iris,~ he says, grabbing my hand for a little squeeze as he passes by.";
+	}
+];
+
+	Decor -> SleepingPilar "Pilar, sleeping on one of the mattresses"
+has animate proper
+with name 'Pilar' 'sleeping' 'asleep',
+description "Huh, don't remember seeing her last night.  She must've come in late.  Fuck, <e>I</e> came in late; no wonder she's still asleep.",
+before [;
+	WakeOther: "She'll just get all cranky.";
+],
+time_left 0,
+time_out [;
+move self to Limbo;
+move Pilar to FrontYard;
+	switch (location) {
+FrontYard: "Pilar comes out through the front door.";
+BedroomCenter: "Pilar jerks her head up suddenly.  She looks around in apparent surprise, gives me a little nod, then stands up and walks out into the hallway.";
+HallwayCenter,HallwayWest: "Pilar nods to me as she walks past me toward the kitchen.";
+Kitchen,LivingRoom: "Pilar walks into the room, then exits to the north.";
+	}
+];
+
+	Room BedroomEast "Bedroom"
+with name 'bedroom',
+description [;
+if (Game.houseFucked) "Fuck those pigs.  Fuck them.";
+"This room is <e>totally</e> empty -- everybody who was sleeping here must have woken up already.  The hallway is back to the south.";
+],
+s_to HallwayEast;
+
+	Room Bathroom "Bathroom"
+with name 'bathroom',
+description [;
+if (Game.houseFucked) "The most fucked-up place in the whole fucking house, and they fucked it beyond its earlier fuckedness.";
+"This place looks like it hasn't been used in months.  The floor used to be tile, I guess, but now it's just, like, grout.  The sink, toilet, and tub are covered with mildew.  The hallway to the north, dumpy as it is, looks like heaven compared to this shit.";
+],
+before [;
+	Smell: if (noun==0) "Oh, <e>man</e>, it smells bad in here.";
+],
+n_to HallwayEast;
+
+	Decor -> BathroomSink "sink"
+with name 'sink' 'faucet' 'tap' 'sink^s',
+description "Was this piece of shit once white?",
+before [;
+	Smell: "Smells like mildrew -- phew, smells like a <e>lot</e> of mildew.";
+	SwitchOn: "That would be too much to hope for.  Besides, who knows what kind of crud might come spewing out?";
+	SwitchOff: "Oh, it's off; it's probably going to stay that way.";
+	Taste: "I would have to be out of my mind.";
+];
+
+	Decor -> BathroomToilet "toilet"
+with name 'toilet' 'john' 'potty' 'throne' 'shit',
+description "I can't tell whether that's shit in the toilet or whether the toilet just looks like shit.",
+before [;
+	Enter: "I'm not getting any closer.";
+	Flush: "That'd be pointless; I doubt there's even any running water.  Besides, that -- whatever that is in there would easily clog the toilet.";
+	Open: "It doesn't even <e>have</e> a seat.";
+	Search: "There's something in there, but I don't even want to think about it.";
+	Smell,Touch: "I wouldn't dare.";
+	Taste: "I would have to be out of my mind.";
+];
+
+	Decor -> BathroomTub "tub"
+with name 'tub' 'bath' 'bathtub',
+description "It's <e>covered</e> with mildew.",
+before [;
+	Enter: "Seriously, I don't think I'd survive.  If I didn't slip and crack my head open I'd get some
+kind of disease.";
+	Smell,SwitchOn,Touch: "Ack, no way.";
+	Taste: "I would have to be out of my mind.";
+];
+
+! Kitchen
+	Room Kitchen "Kitchen"
+with name 'kitchen',
+description [;
+if (Game.houseFucked) "All Gary's cleaning was for shit.  It looks like the fuckers carried in bags of dirt or something.  The room basically has a dirt floor now.  The stove and the fridge are gone fuck knows where.";
+"This room looks a bit less shitty than the rest of the place.  Gary most likely starting cleaning it up because it's going to be essential -- we need to eat.  It's a pretty big room, maybe the size of an average living room.  It looks even bigger cause it's totally empty, except for an incongruously shiny electric stove and refrigerator -- Gary must've brought those in.  A puny sink is sticking out of the wall off to one side.  The floor has (thankfully) been swept, so it's clean, but the linoleum is so old it's kind of crinkling up.  A wide doorway leads north to what looks like some kind of living room, and the hallway to the bedroom is back east.";
+],
+initial [;
+	if (self hasnt visited) {
+StartTimer(SleepingJen,RandRange(5,8));
+StartTimer(SleepingKyla,RandRange(2,4));
+StartTimer(SleepingNora,RandRange(3,6));
+StartTimer(SleepingOscar,RandRange(4,7));
+StartTimer(SleepingBrad,RandRange(3,5));
+StartTimer(SleepingPilar,RandRange(6,8));
+	}
+],
+n_to LivingRoom, e_to HallwayWest;
+
+	Decor -> KitchenSink "sink"
+with name 'sink' 'sticking' 'straight' 'out' 'of' 'wall',
+description "There's no counter or anything around it; the sink just sticks straight out of the wall.",
+before [;
+	SwitchOn: "Just to waste water?  No.";
+];
+
+	Decor -> Stove "stove"
+with name 'stove' 'electric' 'oven' 'window',
+description "Looks pretty new.  Where the hell does Gary find the scratch to buy stuff like this?",
+before [;
+	Open: "No need -- I can see through the little window that it's empty.";
+	Close: "It's already closed.";
+];
+
+	Decor -> Refrigerator "fridge"
+has openable container
+with name 'fridge' 'refrigerator',
+description "It's a standard fridge.";
+
+	Decor ->-> Milk "carton of whole milk"
+has ~scenery static drinkable
+with name 'milk' 'whole' 'carton',
+description "Mmmm, a carton of whole milk.  It may be fattening, but it tastes good.  This is the all-natural stuff too -- no ~partially hydrogenated~ or ~Grade C Emphasized~or any of that crap.  Just enough doctoring to get rid of the funky bacteria.",
+before [;
+	Close: "It's already closed.";
+	Drink:
+	if (player.drankmilk==1) "I'm not thirsty.";
+		if (player.eaten)	{
+	if (player.eaten==5) player.drankmilk=1;
+	"Ah.  That hit the spot.";
+		}
+	else "I don't like drinking milk just by itself.";
+	Empty: "That would just make a mess.";
+	Fill: "It's already full of milk.";
+	Enter: "~I'm in the milk and the milk's in me~?  I don't think so.";
+	Insert: "It might spill.";
+	Open: "I've got a good guess what's inside.";
+	Smell: "Ah, nice and fresh.";
+	Take: "I'm not going to carry this around; it'll go bad.";
+	Taste: "Mmm, creamy.";
+];
+
+	Decor ->-> Fruit "pile of assorted fruit"
+has ~scenery static edible
+with name 'fruit' 'assorted' 'pile' 'apple' 'orange' 'banana' 'plum',
+description "A pile of fruit -- all kinds of good stuff.",
+before [;
+	Eat:
+	if (player.eaten<5) player.eaten++;
+	switch (player.eaten) {
+		1: "Let's see. . .  <n>Crunch</n>.  Mmm, that's a good apple.";
+		2: "Nothing like a juicy orange to start the day off right.";
+		3: "That was a good banana; I'm starting to get full.";
+		4: "Okay, one last plum.  I'm stuffed.";
+		5: "I'm too full.";
+	}
+	Take: "I might as well just eat it right out of the fridge -- there's nowhere to sit or anything.";
+];		
+	
+
+! Living room
+	Room LivingRoom "Living room"
+with name 'living' 'door' 'front',
+description [;
+if (Game.houseFucked) "I don't see the front door anywhere here either.  Fuck, I don't see the folding table either.";
+"This room is empty, except for the very long folding table in the middle.  South is the kitchen, and a door leads north to the front yard.";
+],
+n_to FrontYard, s_to Kitchen;
+
+	Decor -> FoldingTable "folding table"
+has supporter
+with name 'table' 'folding' 'long' 'very' 'middle',
+description "It's a pretty basic folding table, about 5 meters long.",
+before [;
+	Fold: "I'd better leave it; Gary probably has some use for it.";
+	Unfold: "It's already unfolded.";
+];
+
+! Front Yard
+	Room FrontYard "Front yard"
+with name 'yard',
+description [;
+	if (Game.houseFucked) {
+print "Well, the fucking cops were obviously here.";
+if (SearchNotice in self) "  A little paper notice of some kind is above the door, handcuffed there, with the loop of one cuff puncturing the top of the paper and the loop of the other cuff passing through a hole punched through the wall above the empty doorway.";
+else "";
+	}
+else "I guess this might have been a pasty-white middle-class yuppie yard at one time -- the telltale picket fence is still here, although it's wobbling and crumbling and generally fucked up.  It once contained a gate leading north out to the street, but now there's just a gap in the fence -- the gate rusted off its hinges and collapsed to the ground who knows how fucking long ago.  The lawn has been totally taken over by dandelions.  Next to the wall of the house, some stunted, crappy little bushes are making a pathetic attempt at growing.  The driveway used to be a nice concrete slab, but now it's a mishmash of coarse cement gravel; our van is parked there.  The front door, a wind-blasted piece of shit, leads south into the living room.";
+],
+n_to [;
+if (Game.houseFucked) "No place to go, man.";
+"There's not a fucking thing around here worth seeing.  I'm not going anywhere until it's time for the rally.";
+], s_to LivingRoom, in_to LivingRoom;
+
+	Decor -> PicketFence "picket fence"
+with name 'fence' 'picket' 'wobbling' 'crumbling' 'fucked' 'fucked-up',
+description "It's basically just a bunch of pointy stakes stuck into the ground, connected by a half-assed rail.  There's no paint to speak of.";
+
+	Decor -> PicketGate "gate"
+with name 'gate' 'rusted' 'hinge',
+description "The gate has rusted off its hinges and fallen to the ground.  It's starting to biodegrade.";
+
+	Decor -> FrontLawn "lawn"
+with name 'lawn' 'grass' 'dandelion' 'dandelions' 'flower' 'flowers' 'seed' 'seeds' 'little',
+description "The yard is <e>covered</e> with dandelions.  Some are bare, some still have their full puffball heads, and some are in-between.",
+before [;
+	Attack: "I swipe at a dandelion with my foot.  The little seeds go flying.";
+	Blow: "I puff at one of the dandelions, and the little seeds go flying.";
+	Smell: "Pah!  Ugh!  I snuffed up a dandelion seed!  A-<e>choo</e>!";
+	Take: "I bend over and grab a dandelion, but as I stand up, the motion shakes loose the seeds, leaving only the nude stem.  I drop that.";
+];
+
+	Decor -> FrontBushes "bushes"
+has pluralname
+with name 'bushes' 'crappy' 'stunted' 'leafless',
+description "They're totally fucking leafless.  Probably haven't been watered in years -- and they're on the north side of the house, where they won't get much sunlight.";
+
+	Decor -> Driveway "driveway"
+with name 'driveway' 'concrete' 'cement' 'gravel' 'coarse',
+description "The once-solid concrete of the driveway has been beaten by the elements into a jumble of concrete chunks.  Dandelions are growing up between the pieces.";
+
+	Decor -> Van "van"
+has light container openable enterable
+with name 'van' 'our' 'door' 'sliding' 'big' 'black',
+description "Our van.  It's big.  It's black.  What the fuck am I going over this for?  I know what the thing looks like.",
+inside_description "I've never understood why this van isn't crappier than it is.  It's obviously old and crappy, but the seats aren't ripped, the engine runs. . .",
+add_to_scope [;
+	if (player in self) {
+AddToScope(VanIgnition);
+AddToScope(VanGloveBox);
+AddToScope(VanInterior);
+	}
+],
+before [;
+	SwitchOn: <<Turn VanIgnition>>;
+],
+after [;
+	Open: "The big sliding door is now open.";
+	Close: "Okay, I've closed the van's big sliding door.";
+	Go: GoSolo.execute(1);
+];
+	
+	Decor ->-> VanIgnition "ignition"
+with name 'ignition' 'keyhole' 'starter' 'key',
+description "The key is the ignition.",
+before [;
+	Take: "No, Gary probably left the key in here on purpose, so we'd be ready to go.  It's not like anyone's gonna take it -- we're parked in the middle of fucking nowhere.";
+	Turn: GoSolo.execute(1);
+];
+
+	Decor ->-> VanGloveBox "glove compartment"
+has container open
+with name 'compartment' 'glove' 'box',
+description "It's, like, a glove compartment.  It's empty, though.  No gloves.",
+before [;
+	Open: "It's open already.";
+	Close: "Why fuck with it?";
+];
+
+	Decor ->-> VanInterior "seats and shit"
+with name 'seat' 'seats' 'floor' 'mat' 'mats' 'window' 'windows' 'roof' 'steering' 'wheel',
+description "The interior of this junker is actually in better condition than it deserves to be.  Everything's, like, scuffed, but none of it's really fucked up.  Windows don't work -- but then, they never did.  This van was born crappy, I guess, and it just never matured.";
+
+	Decor -> FrontDoor "front door"
+with pname 'door' '.x' 'front',
+description "It's a pretty shitty door -- paint chipped off almost entirely, wood scratched up. . .",
+before [;
+	Enter: <<Go in_obj>>;
+	Open,Close: "Shit, I know how a door works.  I don't have to explicitly open it to go through it, or close it behind me.";
+];
+

@@ -1,0 +1,120 @@
+! Stick it to the man
+! By H. Joshua Field (alias Brendan Barnwell)
+!
+! Development Log
+!	Date		What the dilly-o
+!	2001/04/12	Began!
+!	2001/04/16	Finished writing LibraryMessages
+!	2001/07/16	Brad, Fletch, and Gary finished for Scene 1.  I have got to HAUL if I'm going to
+!				finish this by September.
+!	2001/09/12	Scenes 1 and 2 finished.  I've got basically two weeks to finish this, and that
+!				includes time for beta-testing.
+!	2001/09/24	Done with Scene 3.
+!	2001/09/28	Mackerel!  Done!  Well, just the author's notes left to do, and then some 			!				extremely accelerated testing.
+
+Abbreviate ".  ";
+Abbreviate ", ";
+Abbreviate " -- ";
+Abbreviate "<e>";
+Abbreviate "</e>";
+
+Abbreviate "The ";
+Abbreviate "the ";
+Abbreviate "a ";
+Abbreviate "an ";
+Abbreviate "I ";
+Abbreviate "I'm";
+Abbreviate " it ";
+Abbreviate " to ";
+Abbreviate " of ";
+Abbreviate "and ";
+Abbreviate " in ";
+Abbreviate " is";
+Abbreviate "He ";
+Abbreviate "She ";
+Abbreviate "he";
+Abbreviate "she";
+Abbreviate "his";
+Abbreviate "her";
+Abbreviate "you";
+
+Abbreviate "'s";
+Abbreviate "ing";
+Abbreviate "ed";
+Abbreviate "ly";
+
+Abbreviate "Brad";
+Abbreviate "Fletch";
+Abbreviate "Gary";
+Abbreviate "Jen";
+Abbreviate "Kyla";
+Abbreviate "Nora";
+Abbreviate "Oscar";
+Abbreviate "Pilar";
+
+Abbreviate " fuck";
+Abbreviate " say";
+Abbreviate " like";
+
+Constant Story "Stick it to the man";
+Constant Headline "^By H. Joshua Field^";
+
+Constant YOURSELF__TX = "myself";
+Constant YOU__TX = "me";
+Constant CYOU__TX = "I";
+Constant YOUR__TX = "my";
+Constant CYOUR__TX = "My";
+Constant YOURE__TX = "I'm";
+Constant CYOURE__TX = "I'm";
+
+Constant MAX_TIMERS = 256;		! Why not?
+
+Replace DrawStatusLine;
+Replace AfterGameOver;
+
+! Replacements for pname
+Replace MakeMatch;
+Replace Identical;
+Replace NounDomain;
+Replace TryGivenObject;
+    
+Include "Parser";
+
+Include "Entry";		! Entry library
+
+Include "Pname";		! Pname library
+
+Include ">entry.inf";		! Game-specific Entry handling
+
+Include "OKBGlulx";
+Include "OKBStyle";
+Include "OKBLib";
+
+Include ">window.inf";	! Game-specific window handling (status line, stylehints, etc.)
+
+Include ">libmess.inf";	! Game-specific library messages
+
+Include "Verblib";
+Include "Grammar";
+
+Include "GxScript";
+
+Include ">misc.inf";		! The player-object, Limbo room, and other miscellany
+
+! 	-	-	- 	The Game
+
+Include ">house.inf";		! The house 				--	before the rally
+
+Include ">prerally.inf";	! The pre-rally meeting		--	before the rally
+
+Include ">rally.inf";		! At the rally				--	during the rally
+
+! Different possible paths (not necessarily mutually exclusive)
+	Include "jail.inf";		! In jail				--	after the rally
+	Include "postrall.inf";		! The post-rally meeting	--	after the rally
+	Include "house2.inf";		! The house			--	after the rally
+	Include "zachouse.inf";	! Zac's house			-- 	after the rally
+
+Include ">NPCs.inf";		! NPCs
+
+Include ">verbs.inf";		! Game-specific grammar extensions

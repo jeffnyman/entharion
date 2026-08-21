@@ -1,0 +1,286 @@
+! Stick it to the man
+!	Zac
+
+	Man Zac Limbo
+has ~proper
+with
+short_name [;
+if (self.known==Yes) print "Zac";
+else print "guy in black";
+rtrue;
+],
+name 'zac' 'man' 'guy' 'intense' 'looking' 'intense-looking' 'black' 'dressed' 'in' 'gloves',
+describe [;
+if (self.known==Yes) print "Zac and Danielle are standing here.";
+else print "There's a guy, standing here, dressed all in black, with a girl.";
+rtrue;
+],
+description "He looks really intense.  He's dressed all in black -- even got black gloves -- and it looks really odd because his hair is super blond, like almost white.  He's got it kind of sticking up.  He looks kind of like a rock star or something.  His face is really, like, choppy -- I mean choppy like it was chopped, like it was formed by chopping: really sharp arngles, like, at the corners of his face, and at his chin.",
+color [; return $FFFFCC; ],
+bgcolor [; return $666666; ],
+switchedTo [;
+self.chooseNode(self.sceneNode());
+],
+NPCbefore [;
+	Kiss: if (self.known==Yes) "Fuck, I barely know the guy..";
+],
+forget [;
+if (self.lastheard>5) self.chooseNode(self.sceneNode());
+if (location~=parent(self)) self.chooseNode(self.sceneNode());
+],
+sceneNode [;
+	switch (parent(self)) {
+Rally: if (self.known==Yes) return ZacRally; else return ZacRallyUnknown;
+RallyLimbo: return self.node;
+default: return self;
+	}
+],
+notice [a;
+	switch (a) {
+Bat: ;
+Flyer: ;
+StoreFront: ;
+Sign: ;
+Mask: ;
+Corpse: if (self.known==Yes) ZacRallyCorpse0.tryActivate();
+else ZacRallyUCorpse0.tryActivate();
+	}
+],
+ignore [a;
+	switch (a) {
+Bat: ;
+Flyer: ;
+StoreFront: ;
+Sign: ;
+Mask: ;
+Corpse: ZacRallyCorpse0.deActivate(); ZacRallyUCorpse0.deActivate();
+	}
+],
+moveToRally [;
+move self to Rally;
+move Danielle to Rally;
+],
+preventArrest [;
+print "Zac jumps into my view from the side, landing on the cop's back like some kind of jungle beast.  The pig tries to shake him off, but Zac just hangs on.  In a couple seconds he's got the cop's helmet off and he's readjusting his grip bit by bit, tightening around his neck.^
+~Zac, what the fuck --~ I start off.^
+~Get the fuck out of here.  I'll deal with this pig.~^
+~But --~^
+~Iris!~  I look over and there's Brad, standing at my shoulder.  ~Shit is hitting the fucking fan fast.~^
+~You don't have to tell <e>me</e>, Brad, I'm standing right here, for fuck's --~^
+~Head for the van!~ shouts Gary, charging up out of nowhere and barrelling past us.  Another cop is beating his way through the crowd with his club.  Brad grabs my arm and drags me with him in the same direction Gary went.  Everybody around us is running like holy fuck.  I glance back and see Zac <e>standing</e> on the cop's shoulders doing some kind of fucking <e>dance</e>, just pummeling the guy into the ground.^
+We come out onto the same side street where we entered the rally.  Up ahead I see Oscar, his left hand hanging onto Nora's right as she leads him around the corner, his right wrapped around Kyla, who he's carrying under his arm.  She's yelping something about Jen.  Brad and I run around the corner and Gary almost runs us over with the van.  Pilar pulls the sliding door open and we jump in.  I take a quick look at everybody.^
+~Where's Fletch?~ I ask.^
+~And what about Jen?~ says Nora.^
+~I can't find Jen, she was right there and then I can't find her, Jen,~ Kyla sputters.  She's got a black eye.^
+~We can't hang around,~ says Gary.  ~We're all going to be punching bags in some cell somewhere.~  He steps on the gas and points the van back toward the house.^";
+BeginPart4c();
+],
+number 0,
+known No,
+each_turn [;
+			switch (parent(self)) {
+
+		Rally:
+		if (self.known==No && player.lastspoke>3) {
+	if (random(100)<40 && player.lastspoke>3) {
+self.chooseNode(ZacRally);
+<<SwitchConversation self>>;
+	}
+	else print_ret (string) random(
+"The guy in black shuffles his feet.  ",
+"The guy in black mutters something to the girl with him.  ",
+"Gripping the shoulder of the girl with his left hand, the guy in black strokes her cheek with the other.  ",
+"The guy in black rubs the girl's belly with his hand.  ",
+	);
+		}
+		if (self.known==Yes && random(100)<30 && player.lastspoke>2) {
+	self.number++;
+	switch (self.number) {
+1: "Zac mutters something to himself.";
+2: "Biting his lip, Zac looks around anxiously.";
+3: "Zac kisses Danielle on the neck.";
+4: "Zac runs his hands through Danielle's hair.";
+5: "Zac uses his right hand to scratch the back of his left, then does the same thing the other way around.";
+6: "Zac coughs softly, then knocks lightly on his own chest with his knuckles.";
+7: self.number=random(3);
+	}
+		}
+	
+			}
+];
+
+Holder ->-> ZacRallyUnknown;
+
+	NLine ->->-> ZacRallyU0 "Hey."
+with
+content "~Hey,~ I say to the guy in black.",
+after [;
+Zac.chooseNode(ZacRally);
+];
+
+	NLine ->->-> ZacRallyUCorpse0 "Whoa, that guy's dead."
+has ~on
+with
+newnode ZacRallyUnknown,
+content "~Whoa,~ I say, ~that guy's dead.~^
+The guy in black clicks his tongue and shakes his head slowly.";
+	
+Holder ->-> ZacRally
+with
+sharing ZacRallyStuff,
+switchedTo [;
+if (Zac.known==Yes) rfalse;
+give Zac proper;
+give Danielle proper;
+Zac.known=Yes;
+Danielle.known=Yes;
+"~Hey,~ says the guy, stepping up to me.  ~I'm Zac.~  He gestures to the girl beside him.  ~She's Danielle.~^
+~I'm Iris,~ I say.^
+~Cool,~ he says, but it's obvious he just means, ~I heard you.~";
+];
+
+	NLine ->->-> ZacRally0 "So, what's your, like, affiliation?"
+with
+content "~So, what's your, like, affiliation?~ I ask Zac.^
+He cocks his head sideways reflectively.  ~Well, politically, I'm an anarchist, but that's not really an affiliation.  What about you?~";
+
+		NLine ->->->-> ZacRally0x0 "Sort of the same deal."
+	with
+	content "~Sort of the same deal,~ I say.^
+	~Say,~ Zac says, ~do you want to get out of here?  We're squatting a big house not too far from here.  We could have a little talk, get out of the sun.~";
+		
+			NLine ->->->->-> ZacRally0x0x0 "Yeah, sure.  Let's go."
+		with
+		content [;
+		print "~Yeah, sure,~ I say.  ";
+		if (Brad in location) print "Brad raises his eyebrows but doesn't say anything.  ";
+		"~Let's go.~^
+		~Cool,~ says Zac.  ~C'mon.~";
+		],
+		after [;
+		BeginPart4d();
+		];
+			
+			RNLine ->->->->-> ZacRally0x0x1 "No thanks, we've got our deal planned out."
+		with
+		newnode ZacRally,
+		content "~No thanks,~ I say, ~we've got our deal planned out.~  I don't really feel like going to some strange guy's house right now.^
+		~That's cool.~";
+		
+		NLine ->->->-> ZacRally0x1 "I'm here with a few people."
+	with
+	sharing ZacRally0x0,
+	content "~I'm here with a few people,~ I say vaguely.  Can't be too careful.^
+	~Well,~ says Zac, ~you want to get 'em together and we could go back to my house -- I mean, we're squatting this big old house.  We could just have a little talk, you know, get to know each other.  Good to have those kinds of connections.~";
+		
+		NLine ->->->-> ZacRally0x2 "But, I mean, are you part of any organization or anything?"
+	with
+	content "~But, I mean,~ I say, ignoring his question~are you part of any organization or anything?~^
+	~No,~ he says, ignoring my ignorance of his question.  ~What about you?~";
+		
+			RNLine ->->->->-> ZacRally0x2x0 "Not really."
+		with
+		newnode ZacRally,
+		content "~Not really,~ I say.  I wouldn't call us an ~organization~.  We're really just a little group of friends.^
+		He nods.";
+			
+			RNLine ->->->->-> ZacRally0x2x1 "Well, y'know, some local stuff."
+		with
+		newnode ZacRally,
+		content "~Well, y'know,~ I say, ~some local stuff.~^
+		~Ah,~ he says.  ~Well, yeah, I'm into some of that, too, I guess.~";
+	
+	NLine ->->-> ZacRally1 "How long have you been here?"
+with
+content "~How long have you been here?~ I ask Zac.^
+~Not really sure,~ he says, ~I don't have a watch.  Maybe a few hours.  You?~";
+	
+		RNLine ->->->-> ZacRally1x0 "About the same, I guess."
+	with
+	newnode ZacRally,
+	content "~About the same, I guess.~  I really have no fucking idea how long I've been here.  Time sort of works weird when all you're doing is walking around in a giant crowd.  Zac nods.";
+		
+		RNLine ->->->-> ZacRally1x1 "I'm not really sure."
+	with
+	newnode ZacRally,
+	content "~I'm not really sure,~ I say.  It's hard to tell how time passes at a rally.  You might walk around and around and around and see all kinds of people and then find out only 5 minutes have gone by, or you might take 2 steps and find out it's been 4 hours.^
+	~Heh,~ he says.  ~Hard to tell, isn't it?~  Obviously he knows what I mean.";
+	
+	NLine ->->-> ZacRally2 "You look like the kind of guy who's been to a few of these things."
+with
+content "~You look like the kind of guy who's been to a few of these things,~ I comment to Zac.^
+He grins.  ~Well, yeah.  I've been to a bunch if 'em.  And, you know, you look like that kind of gal.~";
+	
+		RNLine ->->->-> ZacRally2x0 "I am, yeah."
+	with
+	newnode ZacRally,
+	content "~I am, yeah,~ I say.  It's weird.  I kind of wish I hadn't brought it up.  I almost feel <e>guilty</e> just for being old enough to have gone to several rallies.^
+	Zac nods.";
+		
+		RNLine ->->->-> ZacRally2x1 "Huh.  So how many have you been to?"
+	with
+	newnode ZacRally,
+	content "~Huh,~ I say.  ~So how many have you been to?~^
+	~Hooo,~ he says, look into the sky to calculate.  ~Probably like 20.~";
+		
+		RNLine ->->->-> ZacRally2x2 "Do you usually go to, like, rallies for certain issues, or just general rallies, or what?"
+	with
+	newnode ZacRally,
+	content "~Do you usually go to, like, rallies for certain issues,~ I ask, ~or just general rallies, or what?~^
+	~I don't really come for the rally, so much,~ he says.  ~I mostly come just to see if I can get to know people who might be, you know, good contacts to have.  Build a network of people, you know.~^
+	Huh.  That's always been <e>my</e> feeling as well.";
+
+		RNLine ->->->-> ZacRally2x3 "Well, Brad sort of got me into it."
+	with
+	newnode ZacRally,
+	content [;
+	print "~Well,~ I say, ~Brad sort of got me into it.~^
+	~Brad?~ Zac says.^
+	~My, uh,~ I begin, ~uh. . .~  <e>Fuck</e>.  I hate saying ~boyfriend~, but if I say ~man~ I sound like a lowlife, and if I say ~lover~ or something it sounds pretentious.  ~. . . significant other,~ I say finally";
+	if (Brad in location) print ", pointing to Brad.  He grins and nods to Zac, who nods back.^";
+	else print ".  ~He's around here somewhere.~^";
+	"~So how'd he 'get you into it'?~ Zac asks.^
+	~Oh, well, I mean, I was already into the whole concept -- I mean, we sort of got together because of our shared beliefs or whatever -- but he was the one who started me off on actually, y'know, going to rallies.~^
+	~I see,~ says Zac.";
+	];
+	
+	NLine ->->-> ZacRally3 "You live in this area?"
+with
+content "~You live in this area?~ I ask.^
+~Uh, sort of,~ Zac says.  ~About 500 clicks south of here.  What about you?  You live near here?~";
+	
+		RNLine ->->->-> ZacRally3x0 "No."
+	with
+	newnode ZacRally,
+	content "~No,~ I say.  We'll just leave it at that.^
+	~Hmm,~ Zac says.";
+
+		RNLine ->->->-> ZacRally3x1 "Well, I live in California, really."
+	with
+	newnode ZacRally,
+	content "~Well, I live in California, really,~ I say.  Really, I hardly <e>live</e> anywhere.  I'm in and out of ~home~ every month.^
+	~Hoo,~ he says.  ~A long way off.~^
+	~Yep.~";
+		
+		NLine ->->->-> ZacRally3x2 "We're squatting a house right now, but that's just temporary."
+	with
+	sharing ZacRally0x0,
+	content "~We're squatting a house right now,~ I say, ~but that's just temporary.~^
+	~Say, speaking of that,~ Zac says, ~we're squatting a real big house kind of near here.  I was thinking maybe you and, y'know, whoever you're with could come over, maybe we could just get to know each other, forge some links, you know.~";
+	
+		RNLine ->->->-> ZacRally3x3 "I sort of move around, y'know?"
+	with
+	newnode ZacRally,
+	content "~I sort of move around, y'know?~^
+	~Oh, so you go to rallies and stuff all over the place?~ Zac says.^
+	~Right,~ I say, ~yeah.~^
+	~That's cool, man,~ Zac says earnestly.";
+		
+	Holder ->->-> ZacRallyStuff;
+	
+	RNLine ->->->-> ZacRallyCorpse0 "Fuck, Zac, look at this guy!"
+has ~on
+with
+newnode ZacRally,
+content "~Fuck, Zac, look at this guy!~ I exclaim.^
+Zac is glaring at the corpse.  ~I hate those fucking pigs,~ he says.  His voice sounds like a laryngitic roar -- really breathy and stormy.";

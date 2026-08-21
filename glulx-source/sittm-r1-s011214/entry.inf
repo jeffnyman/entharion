@@ -1,0 +1,39 @@
+! Stick it to the man
+!	Entry stuff
+
+	Enterer GameExtras;
+
+	EnterInitialise -> GamePreInitialize
+with precedes Game, follows OKBStyle,
+execute [;
+!pname_verify(true);
+print "^^^<h>An Important Note</h>^^
+<q>Let's get this over with.  This game uses conversation menus for conversation.  If there's an NPC in the room, a menu of choices will be displayed at the bottom of the screen.  You can choose to say one of the menu options with the command >SAY <X> (where <X> is the number of menu option you want to say).^
+If there's more than one NPC in the room, any command which refers to one of them will update the menu for that NPC.  So if Malcolm and Ian are in the room, typing >X MALCOLM will make the menu display what you can say to Malcolm, and typing >X IAN will show the things you can say to Ian.^
+If you want to switch between different NPCs without taking up game time, you can use >SWITCHTO <NPC> (where NPC is the NPC you want to talk with).  This can be abbreviated to >ST <NPC> for convenience.^
+Oh, and while I've got your attention: this game contains violence, profanity, etc.^
+This post-competition release fixes known bugs, but even so it is quite likely that you will experience problems due to interpreter bugs or unsupported features.</q>^^^^";
+PausePrompt("<s>Press a key to begin the game. . .</s>");
+];
+	
+	Enterer Game
+with
+timeOfDay "Morning",
+houseFucked 0;
+
+	EnterInitialise -> GameInitialize
+with execute [a;
+GlkWinClear(gg_mainwin);
+ChangePlayer(Iris);
+location=BedroomCenter;
+lookmode=2;
+	objectloop (a ofclass Line) {
+if (1 && a.content==a.Line::content) print (name) a," has no content!^";
+	}
+print "I'm looking at this blank wall.  What the fuck?  Man, I wake up in the funkiest places.^
+Oh, yeah, it's this bedroom.  We're squatting this house -- right, right.  Sheesh, crowded, man.  Whoa, I'm groggy.  Shouldn't sit up so fast.  There's Brad, over there; late-sleeping bastard.  What the fuck time is it anyway?  Aren't I supposed to be somew--^
+Oh, right, the rally's today.  Well, that's not till later -- it can't be later than like 8 now.  Still, better get up.  Shit, where are my clothes?  Ah, there we go.^
+I'm a little hungry.  Hmm, I wonder if Gary's got any food out there.  What the fuck time is it, anyway?^";
+Banner();
+return 2;
+];

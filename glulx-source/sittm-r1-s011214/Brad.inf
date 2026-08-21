@@ -1,0 +1,1100 @@
+! Stick it to the man
+! 	Brad
+
+	Man Brad "Brad" Limbo
+with name 'brad' 'lover' 'boy' 'loverboy',
+description [;
+if (Game.houseFucked) "He's sort of looking off into space, like he's thinking about something.";
+"What a guy.  Even now, looking at him still makes me kind of tingly inside -- shit, that feels so dumb-sounding.  He never seems to get old for me -- I mean old as in worn-out, not as in age.  He's just as. . . fresh, I guess, to me, as he ever was.";
+],
+color [; return $0000FF; ],
+bgcolor [; return $FFFF00; ],
+switchedTo [;
+self.chooseNode(self.sceneNode());
+],
+NPCbefore [;
+	Kiss: "I give him a kiss on the cheek.  He smiles and puts his arm around me for a minute, giving me a little squeeze.";
+],
+forget [;
+if (self.lastheard>5) self.chooseNode(self.sceneNode());
+if (location~=parent(self)) self.chooseNode(self.sceneNode());
+],
+sceneNode [;
+	switch (parent(self)) {
+Kitchen: return BradHouse;
+SideStreet: return BradPreRally;
+Rally: return BradRally;
+RallyLimbo: if (player.stickTogether) return self.node; else return BradRally;
+FrontYard: return BradBack;
+default: return self;
+	}
+],
+notice [a;
+	switch (a) {
+Bat: BradRallyBat0.tryActivate(); BradRallyBat1.tryActivate();
+Flyer: if (Flyer hasnt general) BradRallyFlyer0.tryActivate();
+StoreFront: BradRallyStore0.tryActivate();
+Sign: BradRallySign0.tryActivate(); BradRallySign1.tryActivate();
+Mask: BradRallyMask0.tryActivate();
+Corpse: BradRallyCorpse0.tryActivate(); BradRallyCorpse1.tryActivate(); BradRallyCorpse2.tryActivate();
+Pig:
+	if (BradRallyPig hasnt visited) {
+self.chooseNode(BradRallyPig);
+<<SwitchConversation self>>;
+	}
+	"Brad grumbles, deep in his throat.";
+GreenMachine: "~Aw, man,~ mutters Brad.  ~Green machine.~";
+Fletch,Gary,Oscar:
+	if (self hasnt workflag) {
+give self workflag;
+"Brad nods to ",(the) a,".";
+	}
+Jen,Kyla,Nora:
+	if (self hasnt workflag) {
+give self workflag;
+"Brad flashes a smile at ",(the) a,".";
+	}
+	}
+],
+ignore [a;
+	switch (a) {
+Bat: BradRallyBat0.deActivate(); BradRallyBat1.deActivate();
+Flyer: BradRallyFlyer0.deActivate();
+StoreFront: BradRallyStore0.deActivate();
+Sign: BradRallySign0.deActivate(); BradRallySign1.deActivate();
+Mask: BradRallyMask0.deActivate();
+Corpse: BradRallyCorpse0.deActivate(); BradRallyCorpse1.deActivate(); BradRallyCorpse2.deActivate();
+	}
+],
+moveToRally [;
+move self to Rally;
+],
+preventArrest [;
+print "The cop swings his billyclub at me, but before it hits me I am shoved to the side by Brad.  I fall to the ground.  The cop grunts and swings at Brad, but he dodges.  ~Get up, Iris,~ he says, ~we gotta get the fuck outta here.~  He dodges again.  I scramble to my feet as the cop pops open the button on his holster.  I plow into Brad from the side, but not too hard, just pushing him ahead of me.  He gets the idea and turns his back to the cop, and we start running like holy fucking fuck.  Behind us, the cop fires two shots and I hear somebody's gurgling grunt.  That fucker.  He's firing into the crowd.^
+Brad's shoving his way through the crowd like he knows where he's going, so I stick close.  At one point he almost shoves Nora out the way before he recognizes her, and Oscar almost shoves <e>him</e> before he recognizes him.  He pauses for the half-second it takes for everybody to realize who everybody else is, and then he starts running again, and now Oscar and Nora are running too.  The crowd's thinning out pretty fast after that shot, so it's getting easier to move, but that means it's getting easier for that fucking pig back there to move too (and easier for him to see us).  We're barely watching where we're going -- at least, I am, although Brad and, oddly, Nora seem to have a sense of direction.  Suddenly somebody grabs me by the hair and is sort of clawing at me.  I hear Kyla's voice.^
+~Wait, wait,~ she says, ~wait!~  She's on the verge of tears.  ~Where are you going?  I heard a shot and everybody's running and I can't find Jen and somebody elbowed me in the face and --~^
+~Pig's gone hog-wild,~ Brad says tersely.  ~We gotta get to the van.~  Nora has already moved a little ahead, and Oscar is standing, tense, hesitating between her and us.^
+~-- and I can't find her and somebody elbowed me in the face and I can't find her,~ Kyla is saying, stumbling along slowly.  We're moving too fucking slow.  That fucker's gonna <e>be</e> here in a few seconds, and we're dead meat.^
+~Kyla, we've gotta get the fuck out of here, I mean right fucking now,~ Brad says, trying to sort of pull her along.  Oscar pushes his way between them, saying nothing, picks Kyla up like an armful of firewood and slings her across his back like a sack of sugar.  Nora is out of sight.  We start running again.^
+We turn off on that little side street and get to the van.  Nora and Oscar are buckled into the back seat, with Kyla sandwiched between them, crying.  Pilar is in the middle seat.  The engine is running.  Gary is standing slightly away from the truck, facing in the direction of the rally.  He's holding two little grenades or something.  I jump in the van next to Pilar and strap myself in.  Brad pauses next to Gary.  ~Where's Fletch?~ he says.^
+~Dunno,~ Gary says.  ~We don't have time.  Get in.~^
+~Gary --~ says Brad.^
+~<e>What</e> else are we gonna <e>do</e>?  Get the <e>fuck</e> shot out of us?  Get in the <e>fucking</e> van.~^
+~But Jen's not --~ Nora starts to say.^
+~<e>Get</e> in the <e>fucking</e> van before we <e>all</e> get <e>fucked</e>!~ he growls, not loudly, but harshly.^
+Brad climbs into the shotgun and buckles his belt.  Gary heaves one of the grenades down the street, where it gives off a small flash, and dark smoke begins to pour out of it.  He puts the other one in his pocket and gets in the driver's seat.  He slowly drives the van around the corner, then floors it and abrubptly puts on the brakes, skidding.  He puts it in reverse and slowly backs up to the street leading back to the house, then turns around and accelerates cautiously, heading for the house.  I look in the back seat.  Kyla's got a black eye.";
+BeginPart4c();
+],
+number 0,
+each_turn [a;
+			switch (parent(self)) {
+		Kitchen:
+		if ( self.lastheard>3 && (~~BradHouseLove.active) && (~~BradHouseSleep.active) ) {
+	BradHouseGo.activate();
+		}
+		if ( (player.lastspoke>3) &&
+			( (random(100)<50) ||
+			(GxScriptManager.recent==self && GxScriptManager.choices==0) ) ) {
+	a=random(BradHouseLove, BradHouseSleep);
+	if (a.active) {
+player.lastspoke=0;
+self.chooseNode(a);
+<<SwitchConversation Brad>>;
+	}
+		}
+		SideStreet:
+		if (player.lastspoke==3) {
+	switch (player.stickTogether) {
+Yes: self.chooseNode(BradPreRallyGo);
+Maybe: self.chooseNode(BradPreRallyTogether);
+No: self.chooseNode(BradPreRallyLeave);
+	}
+		}
+		Rally:
+		if (random(100)<(Rally.number*2)) BradRallyLeave.tryActivate();
+		if (player.lastspoke>3 || (player.stickTogether==No && player.lastspoke>1)) {
+	if (Sign in player && BradRallySign2 hasnt visited && random(100)<75) {
+self.chooseNode(BradRallySign2);
+<<SwitchConversation self>>;
+	}
+	if (Mask has worn && random(100)<75) {
+if (player.stickTogether==Yes && BradRallyMask1 has visited) rtrue;
+if (player.stickTogether~=Yes && BradRallyMask2 has visited) rtrue;
+if (player.stickTogether==Yes) self.chooseNode(BradRallyMask1);
+else self.chooseNode(BradRallyMask2);
+<<SwitchConversation self>>;
+	}
+	if (Bat in player && random(100)<50) {
+if (player.violence==Yes && BradRallyBat2 has visited) rtrue;
+else if (BradRallyBat3 has visited) rtrue;
+if (player.violence==Yes) self.chooseNode(BradRallyBat2);
+else self.chooseNode(BradRallyBat3);
+	}
+	if (random(100)<50) {
+	self.number++;
+	switch(self.number) {
+1: "Brad engages some other guy in a brief conversation before the guy disappears back into the crowd.";
+2: "Brad looks around the crowd.";
+3: "Brad pats me on the back.";
+4: "Some guy comes up to Brad and starts jabbering at him.  Brad turns away and ignores the guy until he gives up and moves on.";
+5: "Brad stands on tiptoe to look over the heads of the rallyers.";
+6: "Brad gives me a little kiss on the cheek and says, ~Hey, Iris.~  It's gotta look weird, to see some guy who's just sort of standing there suddenly kiss this girl, but when you're on the inside of that, it's good to know he hasn't gotten so wrapped up in everything that he's forgotten I'm here.";
+7: self.number=random(3);
+	}
+	}
+		}
+		
+			}
+];
+
+!
+! Part 1
+!
+Holder ->-> BradHouse;
+
+	RNLine ->->-> BradHouse0 "Hey you."
+with
+newnode BradHouse,
+content "~Hey you,~  I say.  I try to keep a straight face, like he's really just a ~hey you~ to me.  He looks me in the eyes and says ~Hey you to you too,~ walking across the room toward me, and I can't help smiling.^
+He wraps me in a hug and kisses my neck softly.  ~How you feeling?~^
+~Yeah, yeah.~^
+~I'm just asking,~ he says, shrugging away from the embrace so blatantly I can tell he's kidding me.^
+~You're never just asking,~ I say, ~you <e>demand</e>.~^
+He clicks his tongue like he does, sort of to mean, ~so it is~, and says, ~And you accede.~",
+after [; BradHouse1.deactivate(); ];
+
+	NLine ->->-> BradHouse1 "Feeling worn out, lover boy?"
+with
+content "~Feeling worn out, lover boy?~ I ask, tapping his stomach.^
+~Me?~ he says in mock surprise.  ~You're the one who passed out in a fit of ecstasy.~^
+~In your dreams.~^
+~I don't have to dream it.  Anyway, how do you know you didn't pass out and then just wake up in the morning thinking you'd just fallen asleep?~",
+after [;
+BradHouse0.deactivate();
+],
+forget [;
+if (Brad.lastheard>1) Brad.chooseNode(BradHouse);
+];
+
+
+		RNLine ->->->-> BradHouse1x0 "Okay, I admit it, you're too much for me."
+	with
+	newnode BradHouse,
+	content "~Okay, I admit it, you're too much for me.~  I try to make the sarcasm obvious but not harsh.^
+	Brad spreads his hands in acceptance.  He always takes it the right way.  ~As I suspected. . .~";
+
+		NLine ->->->-> BradHouse1x1 "Because I'd feel a lot more satisfied."
+	with
+	content "~Because I'd feel a lot more satisfied.~^
+	~Oh, oh!~ he says, raising his eyebrows and poking me in the stomach.  ~Them's fightin' words.~";
+
+			RNLine ->->->->-> BradHouse1x1x0 "Bring it on."
+		with
+		newnode BradHouse,
+		content "~Bring it on,~ I say, chesting him.^
+		~Another time,~ he says, pushing me away.  ~We've got to get ready for the rally.~";
+
+			RNLine ->->->->-> BradHouse1x1x1 "Let's keep the violence to a minimum."
+		with
+		newnode BradHouse,
+		content "~Let's keep the violence to a minimum,~ I say.^
+		~Okay,~ he says, kissing me on the forehead as he walks toward the refrigerator.  ~I'll be gentle.~";
+
+	NLine ->->-> BradHouse2 "What's the plan for the rally today?"
+with
+content "~What's the plan for the rally today?~ I ask Brad.^
+~I'm not sure.~ he says.  ~You should ask Gary.~",
+after [; BradHouse0.deactivate(); ],
+forget [;
+if (Brad.lastheard>1) Brad.chooseNode(BradHouse);
+];
+
+
+		NLine ->->->-> BradHouse2x0 "I mean what are <e>our</e> plans."
+	with
+	content "~I mean,~ I say, ~what are <e>our</e> plans.~^
+	~Ah,~ he says.  ~Well, I don't know that either.  Did you want to stick together?~";
+
+			RNLine ->->->->-> BradHouse2x0x0 "Yeah."
+		with
+		newnode BradHouse,
+		content "~Yeah.~^
+		~Okay then,~ he says, giving my hand a little squeeze.  ~We'll stick together.~",
+		after [; Iris.stickTogether=Yes; ];
+
+			NLine ->->->->-> BradHouse2x0x1 "Whatever."
+		with
+		content "~Whatever.~^
+		~What the fuck does that mean?~ he says, with a little laugh.";
+
+				RNLine ->->->->->-> BradHouse2x0x1x0 "It means what the fuck <e>ever</e>."
+			with
+			newnode BradHouse,
+			content "~It means what the fuck <e>ever</e>.~^
+			~Ah, shit, I'm just asking, man.  Fine then.  We'll just see how it goes.~",
+			after [; Iris.stickTogether=Maybe; ];
+
+				NLine ->->->->->-> BradHouse2x0x1x1 "It means I don't care."
+			with
+			content "~It means I don't care,~ I say.^
+			~Well,~ he says, ~<e>I</e>'d like to stick together.  So, is that cool?~";
+
+					RNLine ->->->->->->-> BradHouse2x0x1x1x0 "Sure."
+				with
+				newnode BradHouse,
+				content "~Sure.~^
+				~Right on.~",
+				after [; Iris.stickTogether=Yes; ];
+
+					RNLine ->->->->->->-> BradHouse2x0x1x1x1 "Actually, I'd rather not."
+				with
+				newnode BradHouse,
+				content "~Actually, I'd rather not,~ I say.^
+				~I thought you said 'whatever'.~^
+				~Well, I changed my mind.  I'd like to, y'know, explore on my own.~^
+				Brad shrugs.  ~That's cool, I guess.  I guess.~",
+				after [; Iris.stickTogether=No; ];
+
+				RNLine ->->->->->-> BradHouse2x0x1x2 "It means it's up to you."
+			with
+			newnode BradHouse,
+			content [;
+			print "~It means it's up to you.~^";
+				switch (random(3)) {
+			1: Iris.stickTogether=Yes;
+			"~Okay,~ Brad says.  ~Then let's keep close -- you know, do the rally thing together.~^
+			~Right on.~";
+			2: Iris.stickTogether=Maybe;
+			"~Let's just see what happens,~ he says.  ~We may want to stick close, or maybe not.~";
+			3: Iris.stickTogether=No;
+			"~Let's split up,~ he says.  ~I'd kind of like to check out the rally on my own.~^
+			~Sure.~";
+				}
+			];
+
+			RNLine ->->->->-> BradHouse2x0x2 "Nah."
+		with
+		newnode BradHouse,
+		content "~Nah,~ I say.^
+		~Okay,~ Brad says, nodding.",
+		after [; Iris.stickTogether=No; ];
+
+		NLine ->->->-> BradHouse2x1 "Oh, speaking of Gary. . ."
+	with
+	content "~Oh, speaking of Gary,~ I say, ~I follows some links from the FAQ and came onto this thing with a writing credit by somebody named Gary Pearson.  Is that, like, <e>Gary</e>?~^
+	~What was it?~";
+
+			RNLine ->->->->-> BradHouse2x1x0 "What?"
+		with
+		newnode BradHouse2x1,
+		content "~What?~^
+		~What was this thing with a writing credit by Gary Pearson?~ Brad says.";
+
+			NLine ->->->->-> BradHouse2x1x1 "Just some standard stick-it-to-the-man shit."
+		with
+		content "~Just some standard stick-it-to-the-man shit.~^
+		~Standard?  Doesn't sound like Gary.~^";
+
+				NLine ->->->->->-> BradHouse2x1x1x0 "I know."
+			with
+			content "~I know,~ I say.^
+			~But you think it was by him?~";
+
+					RNLine ->->->->->->-> BradHouse2x1x1x0x0 "That's what I'm asking you, Brad."
+				with
+				newnode BradHouse2x1x1x0x1,
+				content "~That's what I'm asking you, Brad,~ I say.^
+				~Well fuck, what?  You say, 'I saw this standard shit on the web and I was wondering if you knew who wrote it.'  Did this thing have, like, a title?  Any identifying birthmarks?  Scars?";
+
+					NLine ->->->->->->-> BradHouse2x1x1x0x1 "It's possible."
+				with
+				content "~It's possible,~ I say.^
+				~Why the fuck do you care, anyway?~ Brad says.";
+
+						RNLine ->->->->->->->-> BradHouse2x1x1x0x1x0 "Ah, fuck, I'm just talking.  Forget it."
+					with
+					newnode BradHouse,
+					content "~Ah, fuck,~ I say, ~I'm just talking.  Forget it.~^
+					~Whatever.~";
+
+						RNLine ->->->->->->->-> BradHouse2x1x1x0x1x1 "I'm just wondering."
+					with
+					newnode BradHouse,
+					content "~I'm just wondering.~^
+					~Well,~ he says, ~I don't know if he wrote it.~";
+
+				RNLine ->->->->->-> BradHouse2x1x1x1 "Still. . ."
+			with
+			newnode BradHouse,
+			content "~Still. . .~ I say hesitantly.^
+			~You should ask Gary,~";
+
+				RNLine ->->->->->-> BradHouse2x1x1x2 "Well, I mean, it was good, but it was standard."
+			with
+			newnode BradHouse,
+			content "~Well, I mean, it was good,~ I say, ~but it was standard.~^
+			~Right on,~ Brad says.  ~Well, I really have no idea who wrote this thing.~";
+
+			RNLine ->->->->-> BradHouse2x1x2 "It was called <n>Power and Punks</n> or something."
+		with
+		newnode BradHouse,
+		content "~It was called <n>Power and Punks</n> or something.~^
+		~Oh, I know that shit,~ Brad says.  ~Gary wrote it?~^
+		~That's what I'm fucking <e>asking</e>.~^
+		~Shit,~ he says, ~I don't know.~^
+		~Thanks,~ I say sarcastically.^
+		~Anything for you, Iris.~";
+
+	RNLine ->->-> BradHouse3 "I love you."
+with
+switchedTo [;
+BradHouseLove.deactivate();
+],
+newnode BradHouse,
+content "~I love you,~ I say to Brad.^
+He smiles and runs his hand along my arm.  ~I love you too, Iris.~";
+
+	NLine ->->-> BradHouseGo "Are we, like, ready to go?"
+has ~on
+with
+active false,
+content "Tapping Brad on the shoulder, I say, ~Are we, like, ready to go?~^
+~<e>I'm</e> ready,~ he says, then, raising his voice to talk to Gary across the room: ~Gary!  Are we gonna roll?~^
+~That we are,~ Gary says.  ~I think everybody's ready.~  He hollers, ~<e>Meeting in the living room</e>!~ and heads in that direction.  Brad takes my hand and we follow.^
+It takes longer for everybody to come into the room and stand around the folding table than it does for Gary to conduct the ~meeting~ by saying, ~Everybody's clear, right?  Questions?~  Even Nora doesn't have any, so the meeting ends there.",
+after [; BeginPart2(); ];
+
+	Holder ->-> BradHouseLove,
+with
+switchedTo [;
+self.deactivate();
+BradHouse0.deactivate();
+BradHouse3.deactivate();
+Brad.lastheard=0;
+"Brad comes up behind me and puts his head in my hair as he wraps his arms around my stomach.  ~I love you, Iris,~ he says.";
+],
+NPCbefore [;
+	Kiss: self.chooseNode(BradHouse); "I turn my head up so I'm looking into his face and give him an upside-down kiss.  He chuckles.";
+];
+
+	RNLine ->->-> BradHouseLove0 "I love you too."
+with
+newnode BradHouse,
+content "~I love you too,~ I say.  He gives me another squeeze, then slowly retracts his arms.";
+
+	Holder ->-> BradHouseSleep
+with
+switchedTo [;
+self.deactivate();
+BradHouse0.deactivate();
+Brad.lastheard=0;
+"~Did you sleep well?~ Brad says to me.";
+];
+
+	RNLine ->->-> BradHouseSleep0 "Yeah."
+with
+newnode BradHouse,
+content "~Yeah.~^
+~Man, me too.~";
+
+	NLine ->->-> BradHouseSleep1 "Nah."
+with
+content "~Nah,~ I say.^
+~Bummer,~ he says.";
+
+		RNLine ->->->-> BradHouseSleep1x0 "Yeah."
+	with
+	!newnode BradHouseLaconic,
+	content "~Yeah.~^
+	~Feeling a little laconic today?~  Brad pokes me in the belly.";
+
+		NLine ->->->-> BradHouseSleep1x1 "Whatever."
+	with
+	content "~Whatever.~^
+	~You ready for the rally?~";
+
+			RNLine ->->->->-> BradHouseSleep1x1x0 "Totally."
+		with
+		newnode BradHouse,
+		content "~Totally,~ I say.^
+		~Me too, man.  This is gonna be. . . cool.~";
+
+			RNLine ->->->->-> BradHouseSleep1x1x1 "Yeah."
+		with
+		newnode BradHouse,
+		content "~Yeah.~^
+		~Right on,~ Brad says.";
+
+			NLine ->->->->-> BradHouseSleep1x1x2 "I guess."
+		with
+		content "~I guess,~ I say.^
+		~You guess?  We've been prepping for this for a week!  It's a big one, man.";
+
+				RNLine ->->->->->-> BradHouseSleep1x1x2x0 "I'm ready, I'm ready."
+			with
+			newnode BradHouse,
+			content "~I'm ready, I'm ready.~^
+			~Cool.  I'm looking forward to this shit.~";
+
+				RNLine ->->->->->-> BradHouseSleep1x1x2x1 "Ah, I'm just tired.  I'm still waking up."
+			with
+			newnode BradHouse,
+			content "~Ah,~ I say, ~I'm just tired.  I'm still waking up.~^
+			~Man, if it goes good, this rally will be, like, the ultimate waker-upper.~  Brad chuckles, and gives my shoulder a little shake, like he's waking me up.";
+
+				RNLine ->->->->->-> BradHouseSleep1x1x2x2 "I know.  It's gonna rock."
+			with
+			newnode BradHouse,
+			content "~I know,~ I say.  ~It's gonna rock.~^
+			~Fuck yeah,~ Brad replies emphatically.  ~We are doing some <e>shit</e> this time.~";
+
+
+
+!
+! Part 2
+!
+
+Holder ->-> BradPreRally;
+
+	NLine ->->-> BradPreRally0 "You ready to go?"
+with
+content [;
+print "~You ready to go?~ I ask Brad.^";
+if (player.stickTogether~=Yes) "He gives me a funny look.  ~So we're sticking together?~^
+~Sure.~^
+~All right, then, let's go.~";
+else "~Absolutely.~";
+],
+after [;
+player.stickTogether=Yes;
+BeginPart3();
+];
+
+
+Holder ->-> BradPreRallyGo
+with
+forget [;
+	if (Brad.lastheard>3) {
+player.stickTogether=No;
+move Brad to RallyLimbo;
+NoraPreRally0x2.deactivate();
+Brad.chooseNode(BradRally);
+"~Whatever,~ says Brad.  ~I'm heading for the rally.  See you there, I guess.~  He walks away.";
+	}
+],
+switchedTo [;
+"~Iris?  Are we ready to go?~ Brad asks.";
+];
+
+	NLine ->->-> BradPreRallyGo0 "Okay, let's go."
+with
+content [; print "~Okay,~ I say, taking his hand, ~let's go.~  "; ],
+after [;
+player.stickTogether=Yes;
+BeginPart3();
+];
+
+	RNLine ->->-> BradPreRallyGo1 "In a minute."
+with
+newnode BradPreRallyGo,
+content "~In a minute,~ I say.^
+Brad puffs air out through his nose and puts his hands in his pockets.";
+
+	NLine ->->-> BradPreRallyGo2 "You go on ahead."
+with
+content [;
+player.stickTogether=No;
+move Brad to RallyLimbo;
+NoraPreRally0x2.deactivate();
+Brad.chooseNode(BradRally);
+"~You go on ahead,~ I tell Brad.^
+He raises his eyebrows at me.  ~Okay.  Guess maybe you'll catch up with me later.~  He walks down to the corner and turns out of sight.";
+];
+
+Holder ->-> BradPreRallyTogether
+with
+adopting BradPreRallyGo2,
+forget [;
+	if (Brad.lastheard>3) {
+player.stickTogether=No;
+move Brad to RallyLimbo;
+NoraPreRally0x2.deactivate();
+Brad.chooseNode(BradRally);
+"~Well,~ says Brad.  ~I'm heading for the rally.  See you around, I guess.~  He walks away.";
+	}
+],
+switchedTo [;
+"~So, um,~ says Brad, ~did you want to, y'know, come <e>with</e> me, or do you want me to go and you can wander around by yourself, or what?";
+];
+
+	NLine ->->-> BradPreRallyTogether0 "I'm coming with you.  Let's go."
+with
+content [; print "~I'm coming with you,~ I say.  ~Let's go.~  "; ],
+after [;
+player.stickTogether=Yes;
+BeginPart3();
+];
+
+
+Holder ->-> BradPreRallyLeave
+with
+forget [;
+	if (Brad.lastheard>2) {
+move Brad to RallyLimbo;
+NoraPreRally0x2.deactivate();
+Brad.chooseNode(BradRally);
+"Brad walks off toward the rally.";
+	}
+],
+switchedTo [;
+player.stickTogether=No;
+"~Well,~ says Brad, ~I guess I'm heading for the rally.  See you there, maybe.~";
+];
+
+	NLine ->->-> BradPreRallyLeave0 "See you, then."
+with
+content "~See you, then.~^
+He nods and heads off in the direction of the rally.",
+after [;
+move Brad to RallyLimbo;
+Brad.chooseNode(BradRally);
+];
+
+	NLine ->->-> BradPreRallyLeave1 "I'm coming with you."
+with
+content "~I'm coming with you,~ I say, taking his hand.^
+~I though you wanted to, uh, mosey around on your own.~^
+~I changed my mind.~^",
+after [;
+move Brad to Rally;
+player.stickTogether=Yes;
+BeginPart3();
+];
+
+Holder ->-> BradPreRallyTalk
+with
+forget [;
+if (player.lastspoke>3) Brad.chooseNode(BradPreRallyLeave);
+rtrue;
+];
+
+	NLine ->->-> BradPreRallyTalk0 "Brad, I'm flipping out or something."
+with
+forget [;
+		if (player.lastspoke>3) {
+	if (self hasnt general) {
+give self general;
+"~Aw, c'mon Iris, talk to me.~";
+	}
+	else {
+print "He steps back with a sort of snort.  He pauses.  ";
+Brad.chooseNode(BradPreRallyLeave);
+	}
+		}
+],
+content "~Brad,~ I say, shaking my head, ~I'm flipping out or something.~^
+He comes over and puts his hand on my shoulder.  ~What?  What do you mean?~";
+
+		NLine ->->->-> BradPreRallyTalk0x0 "You know we always say, y'know, peace is the way ?  Violence isn't the answer?"
+	with
+	content "~You know how we always say, y'know, peace is the way?~ I ask.  ~Violence isn't the answer?~^
+	~Yeah. . .~ he says expectantly.";
+	
+			NLine ->->->->-> BradPreRallyTalk0x0x0 "Well, I'm starting to wonder."
+		with
+		content "~Well,~ I say, ~I'm starting to wonder.~^
+		~Ah, man,~ he says, ~don't we all?~";
+		
+				RNLine ->->->->->-> BradPreRallyTalk0x0x0x0 "I'm serious, Brad.  How many of these fucking things have we been to?"
+			with
+			newnode [;
+			return random(BradPreRallyAnarchist, BradPreRallyManiac);
+			],
+			content "~I'm serious, Brad,~ I say.  ~How many of these fucking things have we been to?~^
+			~I don't know.  Maybe 20.~^
+			~And what happens at every single fucking one of them?~^
+			~We protest the --~^
+			~Fuck that.  What happens at every single one of them is that the demonstrators either get the shit beat out of them or else nobody cares.  When we get beat, we're portrayed as crazy maniacs who had to be -- who -- who force had to be used against to keep us from going nuts.  When we don't get beat, we're seen as ineffective.  Our cause isn't recognized.~";
+			
+				NLine ->->->->->-> BradPreRally0x0x0x1 "We do?"
+			with
+			content "~We do?~ I ask.^
+			~Fuck, sure, Iris!  I get pissed all the time!  I want to punch some cop in the face or throw a bomb or something.~  He pauses, shrugging sheepishly.  ~It's corny and kind of Yoda-ish to say this, but I really think every time we get like that it's an opportunity to, y'know, test our commitment.  I mean, sure, it's easy to be a Gandhi copycat if you're a born pacifist who wouldn't hurt a fly, but most people aren't, and that's the real chance for us to --~ He stops and looks off into space.^
+			~I just thought of something else,~ he continues.  ~It's really important that we show that we can -- that's it's possible to overcome those feelings of anger.  I mean, what good do we do if we're super-peaceful and everybody thinks, 'Well, great for them, but that kind of pacifism is something I just don't have.'?  We're not going to generate any support that way.  People have to know that yes, we're just like them, we get mad.  Unlike them, we don't sit on our asses doing nothing, but unlike the window-smasher punks, we don't just vent our anger on anything nearby.  We channel it into a message -- <e>even</e> if it's all we can do not to join those window-smashers and really just go hog-wild.~^
+			He pauses again.  ~Well, I've been a little long-winded,~ he says.  ~But anyway, that's my feeling.~^
+			I'm about to reply, to say, ~So what?  I've <e>had</e> it with putting on a game face and bottling it all up.  We're not generating any support <e>anyway</e>, so who gives a fuck if we let off a little tension along the way?~  But -- and this is weird -- it's calming just to hear those words.  I mean, it's such a cliche that strong leaders inspire their followers, and blah blah blah, but really, it <e>is</e> -- God, I sound like a cancer victim, spilling my soul out -- it <e>does</e> ~give me strength~ to know that Brad's been putting up with the same internal shit that I have.  I guess, what the hell, it's worth a shot.  Gandhi tested himself all the time, sleeping with those naked girls and -- and anyway, fuck Gandhi, we'll just give it a shot.  Who needs Gandhi?  All I really need is Brad.^
+			~Let's go,~ I say, taking his hand and leading him toward the rally.",
+			after [;
+			player.stickTogether=Yes;
+			player.violence=No;
+			BeginPart3();
+			];
+			
+			NLine ->->->->-> BradPreRallyTalk0x0x1 "Are we sure about that?"
+		with
+		content "~Are we sure about that?~ I ask.^
+		He looks at me for a second, then laughs out loud and wraps me in a giant hug.  ~Iris!~ he guffaws, swinging me back and forth in his arms.  ~No!~  He says.  ~We aren't!~  He lets me loose a little bit and kisses me on the forehead.  ~Always the pacifist, and now you're ready to go crack some skulls?~  He laughs again.  ~No, we're not sure, Iris, but we're not sure about anything, right?  Isn't that the whole anarchist thing?  Isn't that what everybody jokes about and hates us for?  Anarchists are people who want to tear down society without knowing what they'll build in its place.  So maybe violence <e>is</e> the way -- who knows?  All I know is that violence is a lot quicker way to get your face bashed in or your hands cuffed, and I'm in the mood for that today.  Are you?~";
+		
+				NLine ->->->->->-> BradPreRallyTalk0x0x1x0 "Yes."
+			with
+			content "~Yes,~ I say firmly.^
+			The smiling remnants of his laughs disappear from his face and he looks at me kind of sadly.  ~Really?~  He sighs.  ~Well, I'm not, Iris.  If you want to go that route today, that's your deal.  I'm just not prepared for that right now.~  He takes a few steps away.  ~Although -- and I really do mean this -- I totally understand where you're coming from, and whether you decide to or not <e>today</e> -- seriously, talk to me later about this.~",
+			after [;
+			player.violence=Yes;
+			Brad.chooseNode(BradPreRallyLeave);
+			];
+			
+				NLine ->->->->->-> BradPreRallyTalk0x0x1x1 "I guess not."
+			with
+			content "~I guess not,~ I say.  When he puts it that way -- goddamn, who <e>does</e> want to get beat in the face?  I'm going to have to think a little further ahead if I want to take that kind of action.^
+			~Cool,~ Brad says.  ~Now, how about we go to the rally?~  I take his hand.",
+			after [;
+			player.stickTogether=Yes;
+			player.violence=No;
+			BeginPart3();
+			];
+		
+		NLine ->->->-> BradPreRallyTalk0x1 "I'm just really, really frustrated."
+	with
+	content "~I'm just really, really frustrated.~^
+	~What, about the rally?~^
+	~Not just <e>this</e> rally, I -- I'm just pissed off that we keep coming here -- or, not <e>here</e>, but y'know, to rallies -- and it seems like nothing ever happens.  We go back home and feel like, ~yeah, we sure showed them,~ and really it's all just bullshit.  We're no closer to an anarchist world -- or an anarchist nation, or anything -- than we ever were.  We're still fucking around at rallies, waving our fucking signs, and, y'know, where's the results?~^
+	Brad takes a deep breath and chews his lip.  ~Well, I mean -- Iris, y'know. . .  The thing is -- one of the things I've sort of accepted since I got involved with this whole movement is -- and this is, well, a bummer, but it's just the situation -- is that it's totally possible that our goal is not going to be achieved in our lifetime.~^
+	~Well --~ I begin.  Fuck, <e>I</e> know that.  It's not like I. . . ~But --~  Goddamn, <e>why</e>, though?  Why <e>should</e> we have to fucking <e>wait</e>?  ~I --~  Fuck, now I'm crying.  ~That just fucking <e>sucks</e>, Brad.~^
+	~Yep,~ Brad says.  He lets me cry on his shoulder.  How chivalrous.  ~It fucking sucks.~^
+	Well, fuck, at least I got it out of my system.  ~Shit, I got your shirt all wet.~^
+	~Forget it,~ he says.^
+	Not in my lifetime, huh?  Well, let's make it as few lifetimes as possible.  ~Let's go,~ I say, grabbing his hand.",
+	after [;
+	player.stickTogether=Yes;
+	BeginPart3();
+	];
+	
+Holder ->-> BradPreRallyAnarchist
+with
+switchedTo [;
+"~Iris,~ he says, ~we're anarchists.  Anarchism has <e>never</e> been popular -- which is ironic, considering how it's more populist and, y'know, individualized than any other kind of ideology.  It's hard for people to -- I mean, nobody wants to hear, 'Our society sucks ass, let's smash it.'  Everybody's just sort of scared to accept their own realization that there's a lot of things wrong with the world; they're just like, 'Oh, well, there's problems, but it's okay because we're better off than starving people in Africa.'  So, yeah, people are reluctant to buy into it -- but going around breaking windows isn't going to draw those kind of people in.  They want to see rational people with sane ideas -- and I'm not saying we should give them whatever they want to see, but it's not like it conflicts with our own ideas.  Anarchism isn't about destruction and violence -- the opposite, really.~";
+];
+
+	RNLine ->->-> BradPreRallyAnarchist0 "All right, I see what you're saying."
+with
+newnode BradPreRally,
+content "~All right, I see what you're saying.~  Fuck, at least now people just don't want to join.  We don't want to get the point where they're actually actively against us -- well, actually, a lot of them are.  Well, anyway.",
+after [;
+player.violence=No;
+];
+
+	RNLine ->->-> BradPreRallyAnarchist1 "Gee, you sound like a real revolutionary."
+with
+newnode BradPreRally,
+content "~Gee,~ I say in a little kid's voice, ~you sound like a real revolutionary.~  Fuck, he's right, obviously.  No point in smashing shit up -- certainly not now.
+~That I am,~ he says, chuckling.",
+after [;
+player.violence=No;
+];
+
+	RNLine ->->-> BradPreRallyAnarchist2 "Well, thanks for the fucking lecture."
+with
+newnode BradPreRallyLeave,
+content "~Well,~ I say, ~thanks for the fucking lecture.~  What is this shit he's giving me?  Like I don't know my history?^
+~Ah, Iris,~ he says, ~don't be like that.  I'm just --~^
+I give him a cold stare and his sentence sort of peters out.",
+after [;
+player.stickTogether=No;
+];
+
+Holder ->-> BradPreRallyManiac
+with
+switchedTo [;
+"~We're portrayed as crazy maniacs <e>anyway</e>.  Fuck portrayal.  The corporate media can portray us any way they want to.  Part of the whole deal is to reach past that portrayal and show people what the reality is.  That's why we have rallies all over the place, not just in one place.  Sure, maybe we rally in LA, like last time, and people in Chicago see some demonization on CNN, but then two months later we're rallying in Chicago and they see us in person.  Of course, by that time they've already got their preconceptions, but at least we have the opportunity to overturn them.~";
+];
+
+	NLine ->->-> BradPreRallyManiac0 "Okay, then, let's go overturn some preconceptions."
+with
+content "~Okay, then,~ I say, smiling, ~let's go overturn some preconceptions.~  Brad can turn stuff around so fucking fast.  One minute I'm ready to throw myself in front of a bus and then he tells me something I already heard a million times and suddenly I'm on cloud niner.^
+~I'll drink to that,~ he says.",
+after [;
+player.stickTogether=Yes;
+BeginPart3();
+];
+
+	NLine ->->-> BradPreRallyManiac1 "I guess I'm just -- all that negative portrayal, and the preconceptions, it's getting to me."
+with
+content "~I guess I'm just --~ I begin, ~-- all that negative portrayal, and the preconceptions, it's getting to me.~^
+~It gets to me too, sometimes, son~ he says, patting me on the shoulder and using his father-figure voice, ~but sometimes we just have to grin and bear it.  Chin up and all that sort of thing.  Never say di, wot?  Ra<e>ther</e>.~^
+I hit him in the shoulder.  ~Sure thing, pop.~  I grab his hand.  ~Let's get going.~",
+after [;
+player.stickTogether=Yes;
+BeginPart3();
+];
+
+	RNLine ->->-> BradPreRallyManiac2 "Well, let's give 'em reality then, right in the face."
+with
+newnode BradPreRally,
+content "~Well, let's give 'em reality, then,~ I say, ~right in the face.~^
+Brad sighs.  ~That's your deal, Iris -- if indeed you are going to do that.~";
+
+!
+! Part 3
+!
+
+Holder ->-> BradRally
+with
+sharing BradRallyStuff;
+
+	RNLine ->->-> BradRally0 "Lot of people here.",
+with
+newnode BradRally,
+content "~Lot of people here,~ I remark to Brad.^
+~Yeah,~ he says, ~but it looks like a lot of 'em are pretty wacky.  You know, not so many really devoted types.~";
+	
+	RNLine ->->-> BradRally1 "What time is it?"
+with
+newnode BradRally,
+content "~What time is it?~ I ask Brad.^
+~You think I'd bring a watch into this mess?~ he says.";
+
+	Holder ->->-> BradRallyPig
+with
+switchedTo [;
+"~Shit,~ says Brad.  ~Pig.~";
+];
+
+		RNLine ->->->-> BradRallyPig0 "Damn."
+	with
+	newnode BradRally,
+	content "~Damn~ I say.  Sometimes, y'know, I feel kind of bad that every time we see a cop we automatically go into an ~enemy approaching~ mode, but I gotta believe they do the same thing when they see us.  Plus, when most people see a cop, they automatically slip into fear or obsequiousness.^
+	Brad grumbles.";
+	
+		RNLine ->->->-> BradRallyPig1 "Let's keep moving."
+	with
+	newnode BradRally,
+	content "~Let's keep moving,~ I say to Brad.^
+	He rolls his eyes.  ~Okay, but you <e>know</e> we can't avoid 'em.  They're all over the place, man.~",
+	after [;
+	<<VagueGo>>;
+	];
+	
+	NLine ->->-> BradRallyLeave "Let's get out of here, Brad."
+has ~on
+with
+content "~Let's get out of here, Brad,~ I say.^
+~You got it,~ he says, taking my hand.  He begins to shoulder his way through the crowd.^
+~We know where we're going?~ I ask, squinting at the sun.^
+~Yeah,~ he says.  We walk in silence through the noise all around us until we arrive at the street where we came in.  I can't recognize it, but apparently Brad does.  He shoves through the crowd and we pop out onto the side street.  We walk back to the van to find Pilar and Fletch already there.  Gary shows up a few minutes later, and, just as we're starting to get antsy, Oscar and Nora arrive.  When Kyla and Jen don't show up we <e>do</e> get antsy.",
+after [;
+BeginPart4b();
+];
+
+	Holder ->->-> BradRallyStuff;
+	
+	NLine ->->->-> BradRallyBat0 "Think we should grab that bat?"
+has ~on
+with
+content "~Think we should grab that bat?~ I ask Brad.^
+~What for?~ he says.";
+
+		RNLine ->->->->-> BradRallyBat0x0 "To smash shit."
+	with
+	newnode BradRally,
+	content "~To smash shit.~^
+	~Oh, don't get all crazy, Iris,~ he groans.";
+		
+		RNLine ->->->->-> BradRallyBat0x1 "Just to keep it out of the wrong hands."
+	with
+	newnode BradRally,
+	content "~Just to keep it out of the wrong hands,~ I say.^
+	~Riiigggghht,~ says Brad sarcastically.  ~You do that.~";
+		
+		RNLine ->->->->-> BradRallyBat0x2 "What do you mean, what for?"
+	with
+	newnode BradRallyBat0,
+	content "~What do you mean, what for?~^
+	~I mean what the fuck <e>for</e>, Iris!  What do you need a fucking bat for?~";
+		
+	RNLine ->->->-> BradRallyBat1 "Some smasher left his bat."
+has ~on
+with
+newnode BradRally,
+content "~Some smasher left his bat,~ I note.^
+~Hmm?~ says Brad.  I point the bat out.  ~Oh, yeah.~";
+
+	Holder ->->->-> BradRallyBat2	! Violence
+	with
+	switchedTo [;
+	"Brad looks at me apprehensively.  ~So you got a bat?~";
+	];
+	
+		RNLine ->->->->-> BradRallyBat2x0 "Damn right."
+	with
+	newnode BradRally,
+	content "~Damn right,~ I say.^
+	Brad takes deep breath, puffs it out, and shrugs.";
+	
+		RNLine ->->->->-> BradRallyBat2x1 "Yeah, so what?"
+	with
+	newnode BradRally,
+	content "~Yeah,~ I say, ~so what?~^
+	~Whatever, man,~ he says.  ~That's -- whatever, man.~";
+	
+	Holder ->->->-> BradRallyBat3	! No violence, or violence uncertain
+	with
+	switchedTo [;
+	"Brad gives me a funny look.  ~What are you doing with that bat?~";
+	];
+		RNLine ->->->->-> BradRallyBat3x0 "Just testing the heft."
+	with
+	newnode BradRally,
+	content "~Just testing the heft,~ I say.^
+	He looks skeptical.";
+	
+		RNLine ->->->->-> BradRallyBat3x1 "What the fuck do you <e>think</e> I'm doing?"
+	with
+	newnode BradRallyBat3,
+	content "~What the fuck do you <e>think</e> I'm doing?~ I say.  We're not at a baseball game, for fuck's sake.^
+	~I don't know,~ he says carefully, ~that's why I'm asking.~";
+	
+		RNLine ->->->->-> BradRallyBat3x2 "I'm planning on hitting somebody, Brad."
+	with
+	newnode BradRally,
+	content "~I'm planning on hitting somebody, Brad.~^
+	He shakes his head.  ~Dude, Iris. . .~  He keeps shaking his head.  ~I'm, like, not -- all right?  I'm, like -- this is your deal, all right?~^
+	I say nothing.^
+	~Catch you later,~ he says.",
+	after [;
+	move Brad to RallyLimbo;
+	Brad.chooseNode(BradRally);
+	player.stickTogether=No;
+	];
+	
+	NLine ->->->-> BradRallyFlyer0 "What's that flyer there?"
+has ~on
+with
+content "~What's that flyer there?~ I ask Brad.^
+~Looks like some important information about our government and our society,~ he says with a straight face.  He picks it up and reads it:",
+after [;
+<Examine Flyer>;
+"He drops it to the ground again.  ~What do you say to that?~";
+];
+
+		RNLine ->->->->-> BradRallyFlyer0x0 "A little helter-skelter, but well-meaning."
+	with
+	newnode BradRally,
+	content "~A little helter-skelter,~ I say, ~but well-meaning.~^
+	~I give it 7.6 out of 10,~ says Brad.  ~Good idea, but could use polish.~";
+		
+		RNLine ->->->->-> BradRallyFlyer0x1 "Pretty disjointed."
+	with
+	newnode BradRally,
+	content "~Pretty disjointed,~ I say.^
+	~True,~ he says.  ~But that's part of the fun of this kind of thing.~";
+		
+		RNLine ->->->->-> BradRallyFlyer0x2 "It touched my heart."
+	with
+	newnode BradRally,
+	content "~It touched my heart,~ I say, placing my hand on my chest pseudo-sympathetically.^
+	Brad sniffs.  ~It's -- it's so <e>true</e>, so -- so <e>honest</e>.~  He laughs.  ~What a pair of cynics we are.~";
+		
+	RNLine ->->->-> BradRallyStore0 "These guys closed up shop early today."
+has ~on
+with
+newnode BradRally,
+content "~These guys closed up shop early today,~ I say to Brad, pointing to the store window.^
+~Heh, yeah,~ he says, and then puts on his ~I'm-pretending-like-I-don't-know-anything~ face.  ~Is it, like, a holiday or something?~";
+	
+	RNLine ->->->-> BradRallySign0 "Check out that sign."
+has ~on
+with
+newnode BradRally,
+content "~Check out that sign,~ I say.^
+Brad takes a gander at it.  ~Hey, cool.~";
+	
+	RNLine ->->->-> BradRallySign1 "Why don't you grab that sign and spread the word?"
+has ~on
+with
+newnode BradRally,
+content "~Why don't you grab that sign and spread the word?~^
+He laughs.  ~Right on!~  He picks up the sign and starts waving it around, chanting ~<e>of</e> the helpless, <e>by</e> the ruthless!~  Some guy bursts out of the crowd and says, ~Hey!  That's my sign!~^
+~I just found it on the ground,~ Brad says.^
+~Well, it's mine,~ the guy says, grabbing for it.^
+~Shit, man, take it, if you want.~  Brad hands the guy the sign.  ~Holy moly, man.~^
+The guy glares at us both and then disappears into the crowd with his sign.",
+after [;
+remove Sign;
+];
+	
+	Holder ->->->-> BradRallySign2
+	with
+	switchedTo [;
+	"~Whoa,~ says Brad, ~you got a sign.~";
+	];
+	
+		RNLine ->->->->-> BradRallySign2x0 "Pretty spiffy, huh?"
+	with
+	newnode BradRally,
+	content "~Pretty spiffy, huh?~ I say.^
+	~Totally,~ he says.  ~It's catchy.~";
+	
+		RNLine ->->->->-> BradRallySign2x1 "Yeah, I just found it on the ground."
+	with
+	newnode BradRally,
+	content "~Yeah,~ I say, ~I just found it on the ground.~^
+	~Cool, man.~";
+	
+		RNLine ->->->->-> BradRallySign2x2 "Yeah, I figured it was time to speak out."
+	with
+	newnode BradRally,
+	content "~Yeah, I figured it was time to speak out.~^
+	He laughs.  ~I know, man, you're usually so quiet about your political beliefs.~";
+	
+	RNLine ->->->-> BradRallyMask0 "Whoa, somebody's mask."
+has ~on
+with
+newnode BradRally,
+content "~Whoa,~ I say, ~somebody's mask.~^
+~Mmm,~ says Brad.  ~Somebody didn't want to be recognized.~";
+	
+	Holder ->->->-> BradRallyMask1		! Together
+	with
+	switchedTo [;
+	"~What are you wearing that mask for, Iris?~ Brad says.";
+	];
+	
+		RNLine ->->->->-> BradRallyMask1x0 "To scare you!  Boo!"
+	with
+	newnode BradRally,
+	content "~To scare you!~ I bark.  ~Boo!~^
+	~Man, Iris,~ he says, ~you <e>are</e> scaring me.  Someone's going to think you're a black bloc or something and take you down.~";
+	
+		RNLine ->->->->-> BradRallyMask1x1 "Aw, you recognized me."
+	with
+	newnode BradRally,
+	content "~Aw,~ I say, ~you recognized me.~^
+	~Sure I did,~ he says, placing his hand on his chest like a thespian or something.  ~No mask could hide your beauty.~  I crack up laughing.  ~Ah!~ he says tragically.  ~My love is mocked!~";
+	
+		RNLine ->->->->-> BradRallyMask1x2 "Iris?  Who's Iris?"
+	with
+	newnode BradRally,
+	content "~Iris?~ I ask.  ~Who's Iris?~^
+	~You are, you sneak,~ he says.  I laugh.  ~You're nuts,~ he says.";
+	
+	Holder ->->->-> BradRallyMask2	! Apart
+	with
+	switchedTo [;
+	"~Iris?~ Brad says.  Through the mask, I can see him peering at me.  ~Is that you in there?~";
+	];
+	
+		RNLine ->->->->-> BradRallyMask2x0 "Yeah."
+	with
+	newnode BradRallyMask1,
+	content "~Yeah,~ I say.";
+	
+		RNLine ->->->->-> BradRallyMask2x1 "Maybe.  Who wants to know?"
+	with
+	newnode BradRallyMask1,
+	content "~Maybe,~ I say coyly.  ~Who wants to know?~^
+	~A<e>ha</e>,~ he says.  ~I thought so.~";
+	
+		RNLine ->->->->-> BradRallyMask2x2 "No."
+	with
+	newnode BradRallyMask1,
+	content "~No,~ I say.^
+	He rolls his eyes.  ~Oh yes it is,~ he says.  ~I recognize your voice.~  I never can fool Brad.";
+	
+	RNLine ->->->-> BradRallyCorpse0 "Fuck, Brad, look at that guy!"
+has ~on
+with
+newnode BradRally,
+content "~Fuck, Brad, look at this guy!~^
+~Yeah, man,~ he says, biting his lip.  ~Damn.~";
+
+	RNLine ->->->-> BradRallyCorpse1 "This guy's dead, Brad."
+has ~on
+with
+newnode BradRally,
+content "~This guy's dead, Brad,~ I say.^
+He gives me a disgusted look.  ~Fuck, I <e>know</e>, Iris.  What do you want <e>me</e> to do?~";
+	
+	RNLine ->->->-> BradRallyCorpse2 "Who did this to this guy?"
+has ~on
+with
+newnode BradRally,
+content "~Who did this to this guy?~^
+Brad shakes his head.  ~I gotta assume it was the pigs.~";
+
+
+!
+! Part 4b
+!
+
+Holder ->-> BradPost;
+
+	NLine ->->-> BradPost0 "Where could they be?"
+with
+content "~Where could they be?~ I ask Brad.^
+He shrugs.  ~They could be anywhere.  I mean, how are they supposed to know we're ready to leave?~";
+
+		RNLine ->->->-> BradPost0x0 "Yeah, I wish we'd had a better, y'know, plan."
+	with
+	newnode BradPost,
+	content "~Yeah,~ I say, ~I wish we'd had a better, y'know, plan.~^
+	~I know,~ he says, nodding.  ~We're usually more together than this.  We sort of threw this together at the last minute, and we really shouldn't have.~";
+	
+		RNLine ->->->-> BradPost0x1 "Well, everybody else seemed to know."
+	with
+	newnode BradPost,
+	content "~Well, everybody else seemed to know.~^
+	~Yeah,~ he says.  ~Just luck, I guess.~";
+
+	NLine ->->-> BradPost1 "Not the best of rallies."
+with
+content "~Not the best of rallies,~ I say to Brad.^
+~Really?  How come?~";
+
+		RNLine ->->->-> BradPost1x0 "Ah, I just wasn't feeling it."
+	with
+	newnode BradPost,
+	content "~Ah,~ I shrug, ~I just wasn't feeling it.~^
+	He shrugs back.  ~It happens.~";
+	
+		RNLine ->->->-> BradPost1x1 "I didn't really, y'know, get any contacts."
+	with
+	newnode BradPost,
+	content "~I didn't really, y'know, get any contacts.~^
+	He nods and sort of wrinkles his lip.  ~Yeah.  It seems like there was a high proportion of wackos here, and not so many really serious people.~";
+	
+		RNLine ->->->-> BradPost1x2 "I don't know, it just doesn't feel like I did much."
+	with
+	newnode BradPost,
+	content "~I don't know,~ I say, ~it just doesn't feel like I did much.~^
+	He raises his hands like he's making a risky prediction.  ~Hey, just <e>being</e> here is doing something.~";
+	
+	NLine ->->-> BradPost2 "Did you have a good time?"
+with
+content "~Did you have a good time?~ I ask Brad.^
+He chuckles.  ~Well, yeah, I had a blast, but it's not like I came here for kicks.~";
+
+		RNLine ->->->-> BradPost2x0 "I meant good as in, like, productive."
+	with
+	newnode BradPost,
+	content "~I meant good as in, like, productive.~^
+	~Oh,~ he says.  ~Well, yeah.  I mean, heh.~  He laughs and makes a clownish face, raising his hands apologetically.  ~Stuck it to the man, you know?  I mean, if nothing else.~";
+	
+		RNLine ->->->-> BradPost2x1 "Well, still, it's good to have fun."
+	with
+	newnode BradPost,
+	content "~Well, still,~ I say, ~it's good to have fun.~^
+	~I always have fun at these things,~ he says, then puts his arm around me.  ~Especially when you're here.~  Ah, shit, man, it's corny, but, as they say, from the heart.";
+	
+		RNLine ->->->-> BradPost2x2 "Yeah, true."
+	with
+	newnode BradPost,
+	content "~Yeah, true,~ I say.^
+	~Mmmhmm,~ he says.";
+	
+!
+! Part 4c
+!
+
+Holder ->-> BradBack;
+

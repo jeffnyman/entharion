@@ -1,0 +1,39 @@
+! Stick it to the man
+!	NPCs:
+!		Iris's group:			Part:	1	2	3	4a	4b	4c
+!			Brad					X	X	X	-	X	-
+!			Fletch				X	-	X	-	X	-
+!			Gary					X	-	X	-	X	-
+!			Jen					X	-	X	-	-	-
+!			Kyla					X	-	X	-	-	-
+!			Nora					X	X	X	-	X	-
+!			Oscar				X	X	X	-	X	-
+!			Pilar					X	-	-	-	X	-
+!		Zac's group:
+!			Carl					-	-	-	X	-	-
+!			Danielle				-	-	X	-	-	-
+!			Zac					-	-	X	-	-	-
+!
+! X = done	~ = in progress		- = not present		blank = not started
+!	26	down
+!	0	to go!!!
+
+! Normal window		000000	on	66CCFF
+
+Include "Brad.inf";	!	0000FF	on	FFFF00
+Include "Fletch.inf";	!	000000	on	CCCCCC
+Include "Gary.inf";	!	666666	on	FFFFFF
+Include "Jen.inf";	!	FFFFFF	on	990000
+Include "Kyla.inf";	!	990099	on	00CC99
+Include "Nora.inf";	!	00FFFF	on	CC00CC
+Include "Oscar.inf";	!	0000FF	on	FFFFFF
+Include "Pilar.inf";	!	FFFFFF	on	000000
+
+! the pig				FFFF00	on	000099
+! the green machine		0000FF	on	00FF00
+! the anarcho-punk		000000	on	FF0000
+! the guard in the jail		FFFF00	on 	000099
+
+Include "Carl.inf";	!	00FF00	on	CC0066
+Include "Danielle.inf"; !	FFFFFF	on	CC99FF	
+Include "Zac.inf";	!	FFFFCC	on	666666

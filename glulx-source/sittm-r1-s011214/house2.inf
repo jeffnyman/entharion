@@ -1,0 +1,157 @@
+! Stick it to the man
+!	Scene 4c: back at the house
+
+[BeginPart4c a;
+print "As soon as we drive up to the house we can tell it's been fucked.  The front doorway is an empty hole; the door itself is nowhere to be seen.  Gary pulls into the driveway and we pile out of the van.  Everybody's already pissed for one reason or another, and it's obvious nobody's got anything to say to anybody else.^";
+
+Game.timeOfDay="Late Afternoon";
+Game.houseFucked=1;
+
+remove Mattresses;
+move Bonfire to BedroomCenter;
+
+remove BathroomSink;
+remove BathroomToilet;
+remove BathroomTub;
+move FuckedSink to Bathroom;
+move FuckedToilet to Bathroom;
+move FuckedTub to Bathroom;
+
+remove KitchenSink;
+remove Stove;
+remove Refrigerator;
+move FuckedKitchenSink to Kitchen;
+
+remove FoldingTable;
+
+remove FrontBushes;
+remove Van;
+remove FrontDoor;
+move FuckedBushes to FrontYard;
+move UselessVan to FrontYard;
+
+move SearchNotice to FrontYard;
+move HouseHandcuffs to FrontYard;
+move Hole to FrontYard;
+
+move Brad to FrontYard;
+move Gary to FrontYard;
+move Kyla to FrontYard;
+move Nora to FrontYard;
+move Oscar to FrontYard;
+move Pilar to FrontYard;
+
+Brad.chooseNode(BradBack);
+Gary.chooseNode(GaryBack);
+Kyla.chooseNode(KylaBack);
+Nora.chooseNode(NoraBack);
+Oscar.chooseNode(OscarBack);
+Pilar.chooseNode(PilarBack);
+
+	objectloop (a ofclass Talker) {
+a.lastheard=-1;
+a.number=0;
+	}
+
+GxScriptManager.updateWindow();
+
+PlayerTo(FrontYard);
+];
+
+	Decor Hole "hole" Limbo
+with
+name 'hole' 'punched' 'through' 'wall' 'dent' 'big',
+description "They sort of beat the wall until it cracked, then stuffed the handcuffs through.  The hole doesn't go all the way through the wall, it's just sort of a big dent, I guess.";
+
+	Decor HouseHandcuffs "handcuffs" Limbo
+has pluralname
+with
+name 'handcuffs' 'hand' 'cuffs' 'handcuff' 'cuff',
+description "The handcuffs are holding the paper to the wall.",
+before [;
+	Take: "They're locked to the wall.";
+	Unlock: "I don't have the fucking key.";
+];
+
+	Decor SearchNotice "notice of search" Limbo
+with
+name 'notice' 'paper' 'piece' 'of' 'search' 'warrant' 'cause' 'probable',
+description "It's a form:^
+<q>NOTICE OF SEARCH^
+This is to certify that, on 27 April 2002, officers of the peace, having reasonable belief that laws were being broken inside the private residence at 1979 Hill Street, did forcibly enter said residence to appropriately enforce said laws, and did carry out the following enumerated acts:</q>^
+Then there's a little list of checkboxes, each with a blank beside it for a description.  Some of the blanks have writing in them:^
+<q>[ X ] Contraband goods seized: food and milk from refrigerator^
+[ X ] Contraband goods destroyed in situ: front door, stove, refrigerator, mattresses^
+[   ] Arrest(s) made:^
+[ X ] Evidence seized: clothes, toiletries, etc.^
+[   ] Residents questioned:^
+[   ] Photographs taken:^
+[ X ] Thorough search made of residence: you bet^
+[ X ] Other: justice upheld, chaos turned away, terrorists defeated, law and order maintained^
+Reason for entering property: suspected ~squatting~ of private residence by unauthorized persons themselves suspected of agitating against the government</q>^
+Then there's a little box of address information about where to find the Office of Records and the Police Department a bunch of shit like that.  At the bottom of the paper somebody drew a crude little Uncle Sam, kicking the ass of a badly-drawn person in black with a circled A on the back of their shirt.",
+before [;
+	Take:
+remove self;
+"I grab the fucking thing and rip it off the handcuffs, tearing a big gash down the middle of it.  I figure, what the fuck, let's just rip the rest of it, so I rip it lengthwise, then, what do you call it, widthwise?  I repeat this fucking process several times until it's just a bunch of little tiny bits and then I throw them away and they float down to the ground and I can't even see them anymore.";
+];
+
+	Decor UselessVan "van" Limbo
+with
+name 'van' 'our' 'door' 'sliding' 'big' 'black',
+description "It's the same fucking van, for fuck's sake.",
+before [;
+	Enter,Open: "I'm not getting back in there.";
+];
+
+	Decor FuckedBushes "bushes" Limbo
+with
+name 'bushes' 'crappy' 'shitty' 'stunted' 'leafless' 'fucked' 'trashed',
+description "Not content with the completely shitty state these bushes were already in, the cops decided to kick them all to pieces.";
+
+	Decor FuckedKitchenSink "fucked-up sink" Limbo
+with
+name 'sink' 'kitchen' 'fucked' 'pile' 'of' 'debris' 'shards' 'pieces' 'jagged',
+description "The sink barely fucking <e>exists</e> at all anymore.  They totally fucked it up.  It's basically just a big pile of jagged shards and debris.";
+
+	Decor FuckedSink "sink" Limbo
+with
+name 'sink' 'fucked' 'faucet' 'tap' 'sink^s' 'shit' 'in',
+description "As if the sink wasn't dirty enough, one of the cops shit in it.",
+before [;
+	SwitchOn: "I didn't want to to touch it <e>before</e>.  There's no way I'm touching it <e>now</e>.";
+];
+
+	Decor FuckedToilet "toilet" Limbo
+with
+name 'toilet' 'john' 'potty' 'throne' 'shit',
+description "I can hardly even tell if they did anything to it.  It looks really bad, but I can't really remember how bad it already looked.",
+before [;
+	Enter: "I'm not getting any closer.";
+	Flush: "That'd be pointless; I doubt there's even any running water.  Besides, that -- whatever that is in there would easily clog the toilet.";
+	Open: "It doesn't even <e>have</e> a seat.";
+	Search: "There's something in there, but I don't even want to think about it.";
+	Smell,Touch: "I wouldn't dare.";
+	Taste: "I would have to be out of my mind.";
+];
+	
+	Decor FuckedTub "tub" Limbo
+with
+name 'tub' 'bathtub' 'bath' 'water' 'dirty' 'disgusting' 'drain' 'handle',
+description [;
+if (self hasnt general) "Oh, har-de-har-har.  They stuffed the drain with paper or something and left the water running.  Fortunately it hasn't overflowed yet; they must not have been gone long.";
+else "The tub's full of water.  Dirty, disgusting water which I don't want to think about, much less mess with.";
+],
+before [;
+	SwitchOff: "I gather some courage, grab the handle, and turn off the water in the tub.  I don't have the stomach to actually try to unclog the drain.";
+];
+	
+	Object Bonfire "fire" Limbo
+has static
+with
+name 'bonfire' 'fire' 'mattress' 'mattresses' 'stove' 'refrigerator' 'fridge' 'door' 'front',
+describe "Right in the middle of the room is a giant, blazing bonfire.  It's a big stack of stuff, with the mattresses we slept on at the bottom, and then above that the stove, and then the refrigerator, and then on top of it all the front door of the house.",
+description [;
+print "The stove and the refrigerator aren't really ~on fire~, obviously, but I guess those fuckers just threw 'em on there for kicks.  The front door is burning like a motherfucker, and it's probably giving off all kinds of paint fumes but I don't give a fuck.  I mean, right there, on the bottom of the stack, is the mattress I slept on with Brad <e>last fucking night</e>, the mattress we <e>fucked</e> on, and they're burning it just for the <e>fuck</e> of it all.  It wasn't our house, for fucking sure, but it sure as fuck wasn't theirs.  We came in and cleaned it up, and when we left it would've been <e>even fucking cleaner</e>, and they came in and just fucked it all up.  How the fuck are we supposed to get anywhere if <e>we</e> come in and clean it up, and <e>they</e> come in and <e>fuck</e> it up, and then -- what, we're just supposed to clean it all up again?  Or clean up something else so they can fuck <e>that</e> up?  I say fuck nonviolence, I'm fighting fire with fire.";
+AfterGameOver();
+];

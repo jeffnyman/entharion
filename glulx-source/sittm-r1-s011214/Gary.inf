@@ -1,0 +1,549 @@
+! Stick it to the man
+!	Fletch
+
+	Man Gary "Gary" Kitchen
+with name 'gary' 'pearson',
+description [;
+if (Game.houseFucked) "Gary's just sort of standing there, shaking his slightly as he looks around from the house to the van to Nora to Oscar to Brad to me to Kyla.";
+"He seems so much older than he is -- and that's weird because he doesn't look old.  He looks young -- he looks real young.  I bet if I met him for the first time right now I'd think he was, like, 21.  But actually I think he's like 40.  I don't even know how old he really is.";
+],
+color [; return $666666; ],
+bgcolor [; return $FFFFFF; ],
+switchedTo [;
+self.chooseNode(self.sceneNode());
+],
+NPCbefore [;
+	Kiss: "That would be really weird.";
+],
+forget [;
+if (self.lastheard>5) self.chooseNode(self.sceneNode());
+if (location~=parent(self)) self.chooseNode(self.sceneNode());
+],
+sceneNode [;
+	switch (parent(self)) {
+Kitchen: return GaryHouse;
+Rally: return GaryRally;
+RallyLimbo: return self.node;
+FrontYard: return GaryBack;
+default: return self;
+	}
+],
+notice [a;
+	switch (a) {
+Bat: ;
+Flyer: GaryRallyFlyer0.tryActivate();
+StoreFront: ;
+Sign: ;
+Mask: ;
+Corpse: GaryRallyCorpse0.tryActivate();
+	}
+],
+ignore [a;
+	switch (a) {
+Bat: ;
+Flyer: GaryRallyFlyer0.deActivate();
+StoreFront: ;
+Sign: ;
+Mask: ;
+Corpse: GaryRallyCorpse0.deActivate();
+	}
+],
+moveToRally [;
+move self to Rally;
+if (Fletch in RallyLimbo && random(100)<30) move Fletch to Rally;
+],
+preventArrest [;
+print "The cop draws back his club, but before he can swing Gary punches him hard in the shoulder, knocking him off balance.  ~Let's get out of here,~ he says, turning to run and bumping right into Brad, who materializes out of the now-frenzied crowd.  ~C'mon,~ Gary says to him.  We start running.^
+The crowd is thinning out like crazy.  Everybody's diving for the side streets.  Somebody yells in my ear, and I turn to see Nora, with Kyla slumped against her shoulder.  Oscar comes up behind them.  ~What are --~ Nora begins.^
+~Keep moving,~ Gary says.^
+Kyla has a black eye, and is babbling almost deliriously that she can't find Jen.  Oscar picks her up and carries her over his shoulders.^
+By the time we reach the side street where we first entered the rally, the street is almost empty.  A group of about 20 people in black, wearing masks, is set up in a circular formation at the double-yellow line in the middle.  Somebody in the center of the group is passing out molotov cocktails, which those on the perimeter are hurling at the cops who are approaching on horses.  One of the cops levels his gun and I turn my head away to hear Nora, yelling from the corner, further away from the main street: ~Gary's got the van started!  Let's go!~^
+Oscar rushes toward her, with Kyla babbling like a baby on his shoulders and me right behind him.  I look back and Brad is in the crosswalk, shoving at a big dumpster.  He tips it over, spilling trash onto the street, and hollers at the guys in black.  One of them throws him something -- a cocktail, I guess -- which he catches carefully.  He steps back a couple meters and throws it down hard into the heap of trash.  It explodes, igniting the garbage and creating a little pile of fire.  He rushes toward me, waving at me to go on.^
+We get to the van to find everybody else already buckled in except Fletch, who isn't there at all, and Jen, who Kyla's still moaning about.  Gary's in the driver's seat, and the engine is running.  ~Get in,~ he says, ~we're heading for the house.~^
+~What about Fletch?~ Nora asks.^
+~Nothing we can do,~ Gary says.  ~We wait for him, we'll all be toast.~  Brad and I climb in and buckle up and Gary takes off up the hill.  I turn around to look out the rear window, but don't see anybody there, which is good -- nobody to see where we went.";
+BeginPart4c();
+],
+number 0,
+each_turn [;
+			switch (parent(self)) {
+		Kitchen:
+		if (self.lastheard>2) GaryHouse5.activate();
+		if (player.lastspoke<3 && player.lastspoke>-1) rfalse;
+		if (random(100)<40) {
+	player.lastspoke=0;
+	self.number++;
+	switch (self.number) {
+1: GaryHouseSleep.deactivate();
+self.chooseNode(GaryHouseSleep);
+<<SwitchConversation Gary>>;
+2: GaryHouseHow.deactivate();
+self.chooseNode(GaryHouseHow);
+<<SwitchConversation Gary>>;
+3: if (Nora in Kitchen) "Gary waves to Nora, and she waves back.";
+else self.number--;
+	}
+		}
+		
+		Rally:
+		if (Rally.number>48) GaryRallyLeave.tryActivate();
+		if (player.lastspoke>1) {
+	if (Mask has worn && GaryRallyMask hasnt visited) {
+self.chooseNode(GaryRallyMask);
+<<SwitchConversation self>>;
+	}
+	if (random(100)<50) {
+	self.number++;
+	switch(self.number) {
+1: "Gary shouts some slogan into the crowd.";
+2: "Gary shakes his fist in the air.";
+3: "Gary has a short, animated conversation with a man in a tye-dye shirt, who then fades into the crowd.";
+4: if (Jen in location) "Gary talks with Jen for a little while.";
+else "Gary cocks his ear, listening to something.";
+5: if (Oscar in location) "Gary claps Oscar on the shoulder and exchanges a few sentences with him.";
+else "Gary sniffs the air.";
+6: self.number=random(3);
+	}	
+	}
+		}
+			}
+];
+
+!
+! Part 1
+!
+
+Holder ->-> GaryHouse;
+
+	RNLine ->->-> GaryHouse0 "Hey, Gary."
+with
+newnode GaryHouse,
+content "~Hey, Gary,~ I say.^
+~Hi, Iris.~";
+
+	NLine ->->-> GaryHouse1 "Gary, what's the plan today?"
+with
+switchedTo [;
+GaryHouse0.deactivate();
+GaryHouse4.tryActivate();
+],
+content "~Gary,~ I say, ~what's the plan today?~^
+He sets his jaw and points emphatically at me with his index finger while looking off into space.  He does that all the time.  ~We're going to the rally,~ he says, ~and we're going to do our best to hit the man where it hurts.~";
+
+		RNLine ->->->-> GaryHouse1x0 "As in, like, violence?"
+	with
+	newnode GaryHouse,
+	content "~As in, like, violence?~ I ask.  That's not Gary's usual style.^
+	~Nah, nah,~ he says.  ~I mean, there's <e>gonna</e> be violence, but we're going to try to keep it to a minimum.~";
+	
+		NLine ->->->-> GaryHouse1x1 "How?"
+	with
+	content "~How?~ I ask, even though I think I know the answer.^
+	Apparently, Gary thinks the same thing.  ~You know, Iris.  We're gonna carry our signs, we're gonna yell our slogans, we're gonna march with the rest of them.~";
+	
+			RNLine ->->->->-> GaryHouse1x1x0 "Sure is a slow process."
+		with
+		newnode GaryHouse,
+		content "~Sure is a slow process,~ I say.^
+		~You know it,~ says Gary.  ~But, man, it's our only recourse right now.  It's like cooking chicken -- you know how you gotta beat it and beat it with that little meat tenderizing mallet, or even just a big old spoon?  We gotta beat this chicken.  We --~  He laughs.  ~Wow, did I just say 'we gotta beat this chicken'?  Anyway, it's like we gotta soften it up, soften it up, until it's time to put it on the grill, and then it'll cook nice and quick.~  He pauses, staring into space and nodding slightly, as if agreeing with himself, then scratches his forehead.  ~Anyway, I'm preaching to the choir here.~";
+		
+			RNLine ->->->->-> GaryHouse1x1x1 "Gary, tell me honestly: don't you get tired of chipping away at the problem like this?"
+		with
+		newnode GaryHouse,
+		content "~Gary,~ I say, ~tell me honestly: don't you get tired of chipping away at the problem like this?~^
+		He takes a deep breath.  ~Man, Iris, you know I do.  You know <e>you</e> do -- and so does Brad, and -- I mean, you know.  It sure would be great if we could rise up against the capitalist oppressors and bring peace to the land with our glorious revolution and blah blah blah, but this isn't some fantasy kingdom.  There are people who want us to fail, and there are people working for them, and they have guns, and they have fire hoses, and they have jails and they have tear gas.  We --~  He stops and gives me a weird look.  ~I'm monologuing again.  I told you to tell me when I start to do that.~^
+		~Gary,~ I say, ~you're monologuing.~^
+		~Ooh!~ he says.  ~Thanks for tipping me off.~";
+		
+			RNLine ->->->->-> GaryHouse1x1x2 "Man, when are we gonna <e>get</e> somewhere, though?"
+		with
+		newnode GaryHouse,
+		content "~Man,~ I say, ~when are we gonna <e>get</e> somewhere, though.~^
+		~I wish I knew,~ says Gary.  ~I hope it's soon, man.~";
+	
+	RNLine ->->-> GaryHouse2 "Hey, you cleaned this place up pretty heavily."
+with
+switchedTo [;
+GaryHouse0.deactivate();
+GaryHouse4.tryActivate();
+],
+newnode GaryHouse,
+content "~Hey,~ I say to Gary, ~you cleaned this place up pretty heavily.~^
+He chuckles.  ~Yeah, me and Fletch really went to work.  I figure we might as well not be living in a shithole, you know?~^
+~Yeah,~ I say.  What the fuck does that mean?  Like, it was a decision between living in a shithole and not living in a shithole?";
+
+	NLine ->->-> GaryHouse3 "It's kind of wack just getting here the night before."
+has ~on
+with
+active false,
+content "~It's kind of wack getting here the night before,~ I say.^
+~True,~ he says.  ~It would've been nice to get here a day or two earlier, 'cause -- well, you know how it is.  But it was a long drive.~";
+
+		RNLine ->->->-> GaryHouse3x0 "Fuck yes."
+	with
+	newnode GaryHouse,
+	content "~Fuck yes,~ I say.^
+	He nods.";
+	
+		RNLine ->->->-> GaryHouse3x1 "Damn right it was."
+	with
+	newnode GaryHouse,
+	content "~Damn right it was,~ I say.^
+	He nods.";
+	
+		RNLine ->->->-> GaryHouse3x2 "It sure was.  Brad and I were practically dead when we finally got here."
+	with
+	newnode GaryHouse,
+	content "~It sure was,~ I say.  ~Brad and I were practically dead when we finally got here.~^
+	~Oh yeah,~ he says.  ~You guys took the bus into downtown and -- what, did you walk from there?~^
+	~Yeah.~^
+	~Shit!~ he says, laughing.  ~And now you've got a day of marching ahead of you!  Man, that's a lot of walking.~";
+
+	RNLine ->->-> GaryHouse4 "Hey, did you write something on the internet?"
+has ~on
+with
+active false,
+newnode GaryHouse,
+content "~Hey,~ I say, ~did you write something on the internet?~^
+He laughs.  ~Fuck, Iris, you know I've written tons of stuff and posted it all over the place.~^
+~Well, I mean, I found this one piece called <n>Punks and Power Structures</n> or something, and it had your name in the byline.~^
+~<n>Punks and Power Structures</n>?  Doesn't sound familiar.  But man, I've been writing that kind of shit for a long time.~^
+~I was just wondering.~";
+
+	NLine ->->-> GaryHouse5 "Are we gonna roll?"
+has ~on
+with
+active false,
+content "~Are we gonna roll?~ I ask Gary.^
+He nods.  ~I think everybody's about ready.~  He raises his voice to a booming yell.  ~Everybody!  Meeting in the living room!~^
+We all go in and stand in the living room for about ten seconds while Gary says, ~We're all clear, right?  It's all good?~  Nobody has anything to say, which means we're ready to go.",
+after [;
+BeginPart2();
+];
+
+
+	Holder ->-> GaryHouseSleep
+with
+switchedTo [;
+GaryHouse0.deactivate();
+GaryHouse4.tryActivate();
+"~So,~ Gary says to me, ~sleep well?~";
+];
+
+
+	RNLine ->->-> GaryHouseSleep0 "Yeah."
+with
+newnode GaryHouse,
+content "~Yeah,~ I say.^
+~Good to hear.~";
+
+	RNLine ->->-> GaryHouseSleep1 "More or less.  We got here really late."
+with
+newnode GaryHouse,
+content "~More or less,~ I say.  ~We got here really late.~^
+~Ah,~ he says.";
+
+	RNLine ->->-> GaryHouseSleep2 "Well, Brad, uh, kept me up a little."
+with
+newnode
+GaryHouse,
+before [;
+if (Brad in Kitchen) print "I glance over at Brad.  ";
+],
+content "~Well, Brad, uh, kept me up a little.~^
+Gary chuckles.  ~Ah, I see how it is.~";
+
+	Holder ->-> GaryHouseHow
+with
+switchedTo [;
+GaryHouse0.deactivate();
+GaryHouse4.tryActivate();
+Gary.lastheard=0;
+"~So, Iris,~ Gary says.  ~How have you been?~";
+];
+
+	NLine ->->-> GaryHouseHow0 "I've been all right."
+with
+content "~I've been all right,~ I say.^
+~What have you been up to since February?~";
+
+		NLine ->->->-> GaryHouseHow0x0 "Ah, some of this and that, you know.  You?"
+	with
+	content "~Ah,~ I say, ~some of this and that, you know.  You?~^
+	~Mmm, writing.  Sent out a bunch of essays and stuff, you know.  And, you know, lately, keeping in touch with everybody, seeing who was coming to this thing and who couldn't make it.~";
+	
+			RNLine ->->->->-> GaryHouseHow0x0x0 "Only niner this time."
+		with
+		newnode GaryHouse,
+		content "~Only niner this time,~ I remark.^
+		~Yeah,~ says Gary.  ~We got less people and a bigger rally.~";
+			
+			RNLine ->->->->-> GaryHouseHow0x0x1 "Too bad Clara couldn't come this time."
+		with
+		newnode GaryHouse,
+		content "~Too bad Clara couldn't come this time.~^
+		~Ah, yeah,~ he sighs.  ~She's been busy, though.  Setting up that community house back in Chicago, running around to different people and stuff.  She's tired, man.~  He puffs a breath out thoughtfully through rounded lips.  ~Anyway.~";
+		
+			RNLine ->->->->-> GaryHouseHow0x0x2 "Last time we had a <e>crowd</e>, man."
+		with
+		newnode GaryHouse,
+		content "~Last time,~ I say, ~we had a <e>crowd</e>, man.~^
+		~Man, yeah.  We were, like, a quarter of that whole rally.  Right now we're gonna be about a katrillionth of a percent.~";
+			
+		RNLine ->->->-> GaryHouseHow0x1 "Working, man."
+	with
+	newnode GaryHouse,
+	content "~Working, man.~^
+	~Mmmm.~";
+		
+		NLine ->->->-> GaryHouseHow0x2 "I got a little rally going back home."
+	with newnode GaryHouse,
+	content "~I got a little rally going back home,~ I say.^
+	~Really?  How little?~";
+	
+			RNLine ->->->->-> GaryHouseHow0x2x0 "Really little."
+		with
+		newnode GaryHouse,
+		content "~Really little.~^
+		~Hey, every little bit helps,~ he says.";
+		
+			RNLine ->->->->-> GaryHouseHow0x2x1 "Just, like, a hundred people, maybe a couple hundred."
+		with
+		newnode GaryHouse,
+		content "~Just, like, a hundred people,~ I say to Gary, ~maybe a couple hundred.~^
+		~That's nothing to sneeze at, as they say,~ he says.  ~That's cool.~";
+
+	NLine ->->-> GaryHouseHow1 "Ah, you know."
+with
+content "~Ah,~ I say, ~you know.~^
+He looks at me, puzzled.  ~I do?  What do you mean?~";
+
+		RNLine ->->->-> GaryHouseHow1x0 "Never mind."
+	with
+	newnode GaryHouse,
+	content "~Never mind,~ I say.^
+	He nods.";
+	
+		RNLine ->->->-> GaryHouseHow1x1 "Just, you know, sick of all this shit."
+	with
+	newnode GaryHouse,
+	content "~Just, you know, sick of all this shit.~^
+	~Ahh,~ he says.  ~I gotcha.~  It's crazy about Gary -- he always knows when I'm just, like, flapping my lips, and when I'm actually saying something.";
+	
+		NLine ->->->-> GaryHouseHow1x2 "It's just -- man, I'm having, like, a crisis of faith or something."
+	with
+	content "~It's just -- man,~ I say, gesturing suddenly, ~I'm having, like, a crisis of faith or something.~^
+	He crinkles up his eyebrows.  ~What?~";
+	
+			NLine ->->->->-> GaryHouseHow1x2x0 "I'm just sick of marching around all the time and not getting anywhere."
+		with
+		content "~I'm just sick of marching around all the time and not getting anywhere.~^
+		~Mmm,~ he says.  ~You feeling like we're not getting anywhere?~";
+		
+				RNLine ->->->->->-> GaryHouseHow1x2x0x0 "Uh, yes."
+			with
+			newnode GaryHouse,
+			content "~Uh, yes,~ I say.  What the fuck did he think I meant?^
+			~What can I say?~ Gary responds.  He shrugs.  ~Look, Iris, let's see where we get <e>today</e>, for one thing.  We can talk about this later if you're really concerned about our -- about -- about if we're getting anywhere.~^
+			Well, <e>that</e> was helpful.  Ah, fuck it for now.";
+			
+				RNLine ->->->->->-> GaryHouseHow1x2x0x1 "Yeah!  I feel like every march is just like 'whoa, great, we sure showed them', and then we go back and sit on our ass and start over again next time."
+			with
+			newnode GaryHouse,
+			content "~Yeah!  I feel like every march is just like 'whoa, great, we sure showed them', and then we go back and sit on our ass and start over again next time.~^
+			~Mmm.~  He nods and chews his lip.  ~Well,~ he says after a bit, ~I know what you mean, but I think you're wrong.~
+			Wrong?  What the f -- oh, forget this.  This isn't the time to go into a big thing about the practice and theory of revolution.  ~Whatever, Gary.~";
+			
+				NLine ->->->->->-> GaryHouseHow1x2x0x2 "You tell me what we're -- where we're going!"
+			with
+			content "~You tell me what we're -- where we're going!~ I burst out.
+			~We -- ~ Gary glances at his watch.  ~Right now we're going to the rally.  We can talk about this later if you want.~^
+			~Gary --~^
+			~Meet in the living room!~ he hollers.  Fuck this, then, till later.^
+			We all go into the living room and do nothing while Gary asks if everybody's ready, any questions, and all that.  Of course there aren't any.",
+			after [;
+			BeginPart2();
+			];
+			
+			NLine ->->->->-> GaryHouseHow1x2x1 "It's -- I don't -- I wonder what we're accomplishing, man."
+		with
+		content "~It's --~ I begin.  ~I don't --~  Fuck, what <e>do</e> I mean?  ~I wonder what we're accomplishing, man.~^
+		~Iris, listen, I don't have to tell <e>you</e> what's up here.  You know what we're doing.~";
+		
+				RNLine ->->->->->-> GaryHouseHow1x2x1x0 "I know what <e>we're</e> doing, I'm thinking: what is what we're doing doing?"
+			with
+			newnode GaryHouse,
+			content "~I know what <e>we're</e> doing,~ I say, ~I'm thinking: what is what we're doing doing?~^
+			~You mean, what's the effect of our work?  Iris, look <e>around</e> you.  You know there's lots of things we didn't used to have, and we now have them because of us -- I mean, us and people like us, doing the same thing we're doing.  I'm not talking about computers in every household or that stuff, I'm talking about the government crap.  There's <e>less</e> of it.~^
+			~The h --~  The thing, though, is, there might be.  I guess I'll think about that.  ~Never mind.~";
+		
+			NLine ->->->->-> GaryHouseHow1x2x2 "I feel like just bashing a cop in the fucking face, or something, sometimes, you know?"
+		with
+		content "~I feel like just bashing a cop in the fucking face, or something, sometimes, you know?~^
+		~Iris,~ says Gary, grasping the air with his hands as he talks, ~you know what the deal on <e>that</e> is.  We don't want to stoop to that level -- and plus we'll all wind up dead on the sidewalk or getting the crap beat out of us in some back room of the police station.~";
+		
+				RNLine ->->->->->-> GaryHouseHow1x2x2x0 "How are we going to really get the pigs out of our faces if we don't 'stoop to that level'?"
+			with
+			newnode GaryHouse,
+			content "~How are we going to really get the pigs out of our faces if we don't 'stoop to that level'?~ I ask him.^
+			~We might <e>not</e> get the pigs out of our faces -- at least not before we get the whole system out of our lives.  It may well be that the police are gonna be one of the last things to go, when we do finally clear it all away.~^
+			That makes sense, actually.  Fuck, <e>I</e> wouldn't expect the fucking cops to knuckle under first.^
+			Gary takes a deep breath and rubs his forehead with his fingertips.  ~Anyway.~";
+			
+				NLine ->->->->->-> GaryHouseHow1x2x2x1 "What if we don't let them beat the crap out of us?  What if we beat the crap out of <e>them</e>?"
+			with
+			content "~What if we don't let them beat the crap out of us?~ I say.  ~What if we beat the crap out of <e>them</e>?~^
+			He bites his lip and looks at me.  ~If we could fucking do that, Iris, and get it to work, we would <e>win</e> right there.  The problem is that they've got the guns, and if we beat the crap out of one of those fuckers, two more are going to pop up and shoot us dead.  Fucking <e>dead</e> -- in the street.~  He looks at his watch.  ~It's time to go.~^
+			Gary calls everybody together for a ~meeting~ in the living room, where nothing happens because all he does is ask if anyone has any questions, and no one does.",
+			after [;
+			BeginPart2();
+			];
+			
+			NLine ->->->->-> GaryHouseHow1x2x3 "I'm starting to wonder if we're -- if the way we're doing things is the best way."
+		with
+		content "~I'm starting to wonder if we're --  if the way we're doing things is the best way.~^
+		~The <e>best</e> way.  I don't think there is a 'best way', Iris.  I mean, we're doing it a <e>good</e> way.  We're doing it a <e>safe</e> way -- more or less.~  He looks at his watch.  ~We have to get going.~^
+		We all go to the living room.  Gary asks us if we have any questions.  Not even Nora does.",
+		after [;
+		BeginPart2();
+		];
+
+	RNLine ->->-> GaryHouseHow2 "Like, average."
+with
+newnode GaryHouse,
+content "~Like, average,~ I say.^
+~Hmm,~ he says.";
+
+	Holder ->-> GaryHouseRats
+with
+switchedTo [;
+GaryHouse0.deactivate();
+GaryHouse4.tryActivate();
+Gary.lastheard=0;
+];
+
+	RNLine ->->-> GaryHouseRats0 "Ugh."
+with
+newnode GaryHouse,
+content "~Ugh,~ I say.^
+~Pretty grody,~ Gary says.";
+
+	Holder ->-> GaryHouseBird
+with
+switchedTo [;
+GaryHouse0.deactivate();
+GaryHouse4.tryActivate();
+];
+
+	RNLine ->->-> GaryHouseBird0 "Are you kidding me?"
+with
+newnode GaryHouseBird,
+content "~Are you kidding me?~ I say.^
+~No,~ he says.  ~Are you saying that because it's obvious that you don't or because it's obvious that you do?  I mean, do you?~";
+
+	RNLine ->->-> GaryHouseBird1 "Uh, no."
+with
+newnode GaryHouse,
+content "~Uh, no,~ I say.^
+~Bummer,~ he says.  ~That would be cool -- communicating with bird calls.~";
+
+	RNLine ->->-> GaryHouseBird2 "No way, Gary."
+with
+newnode GaryHouse,
+content "~No way, Gary,~ I say incredulously.  He picks up on the funkiest ideas.^
+~Darn,~ he says.  ~I thought you were serious.~";
+
+!
+! Part 2	(Not present)
+!
+
+!
+! Part 3
+!
+
+Holder ->-> GaryRally
+with
+sharing GaryRallyStuff;
+
+	RNLine ->->-> GaryRally0 "Hi, Gary."
+with
+newnode GaryRally,
+content "~Hi, Gary.~^
+~Hey, Iris,~ he says.";
+
+	RNLine ->->-> GaryRally1 "What's up?"
+with
+newnode GaryRally,
+content "~What's up?~ I ask Gary.^
+He shrugs.  ~It's looking pretty good.  Pretty normal~";
+	
+	NLine ->->-> GaryRallyLeave "Is it, like, time to go?"
+has ~on
+with
+content [; print "~Is it, like, time to go?~ I ask Gary.^
+~It is, about,~ he says.  How he knows I don't know, since he doesn't have a watch or anything.  ~C'mon.~^";
+if (Brad in location && player.stickTogether==No) print "Brad joins us as Gary leads ";
+else print "He leads ";
+if (player.stickTogether==Yes) print "us"; else print "me";
+print " through the crowd.  I have no idea where we're going, but eventually we emerge at the same side street where we first entered the rally.  When we get to the van, we see ";
+if (Brad notin location) print "Brad, ";
+"Fletch, Oscar, and Nora already there.  Pilar shows up a little later, but even though we wait for quite a while, there's no sign of Kyla and Jen.";
+],
+after [;
+BeginPart4b();
+];
+
+	Holder ->->-> GaryRallyStuff;
+
+	RNLine ->->->-> GaryRallyFlyer0 "There's some propaganda for you, Gary."
+has ~on
+with
+newnode GaryRally,
+content "~There's some propaganda for you, Gary,~ I say, pointing to the flyer.^
+~Yeah, I saw it,~ he says, wrinkling his face up.  ~Not really the best -- I mean, the heart's in the right place, but, well, kind of unfocused.~";
+	
+	Holder ->->->-> GaryRallyMask
+	with
+	switchedTo [;
+	Gary.chooseNode(GaryRally);
+	"~Iris,~ Gary says, ~is that you in that mask?~^
+	I can't muster the courage to try to fool him.  ~Yeah,~ I admit.^
+	~You're bonkers, man,~ he says.";
+	];
+	
+	RNLine ->->->-> GaryRallyCorpse0 "Gary, look at this guy.",
+has ~on
+with
+newnode GaryRally,
+content "~Gary, look at this guy.~^
+Gary sets his law and sort of presses his lips together.  ~Another fucking victim of the fucking system, as they say.~";
+	
+!
+! Part 4b
+!
+
+Holder ->-> GaryPost;
+
+	RNLine ->->-> GaryPost0 "Where <e>are</e> they?"
+with
+newnode GaryPost,
+content "~Where <e>are</e> they?~^
+~I dont -- hey,~ he says.  ~There they are right there.~  I turn and look and there's Jen and Kyla just sauntering up the street.^
+~Where were you guys?~ Nora says.^
+~What are you fucking talking about?~ Jen says, in full in-your-face mode.  ~We were at the fucking rally, like you.~^
+I look over at Nora, afraid she's going to be mad or insulted or whatever, but she's just smiling.  Actually, now that I'm looking closer, she's actually <e>laughing</e>, she's just holding it in.",
+after [;
+AfterGameOver();
+];
+
+	RNLine ->->-> GaryPost1 "How long are we gonna wait around?"
+with
+newnode GaryPost,
+content "~How long are we gonna wait around?~ I ask Gary.^
+~As long as it takes,~ Gary says, ~or until something forces us out.  We're in no hurry right now.~";
+
+!
+! Part 4c
+!
+
+Holder ->-> GaryBack;

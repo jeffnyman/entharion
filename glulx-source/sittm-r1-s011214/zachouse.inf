@@ -1,0 +1,9 @@
+! Stick it to the man
+!	Scene 4d: at Zac's house (sort of)
+
+[BeginPart4d;
+print "Zac starts leading me through the crowd, heading to where he says his car is.  We get involved in a deep conversation about the degree to which unity is necessary in a community versus the degree to which individuality and diversity is necessary.  I'm so involved I don't even really notice what's going on, but eventually we wind up at his car (a completely beat-up old Dodge), and I find that the whole is gang is there with us.  Zac's friend Carl is there too.  Everybody introduces everybody.^
+We cram into the Dodge for the short drive back to our van, and then we take both cars to the house that Zac, Carl, and Danielle are squatting.  It's a giant old house, like a mansion.  We get inside and everybody gets right into discussing all kinds of stuff.  It's great.^
+This is really, I think, why I go to these rallies -- no, I'd say it's <e>definitely</e> why I go.  I mean, sure, you can yell and scream and blah blah blah, but the real jewel of it all is when you can connect with other people.  Every time we do this we get stronger.  I mean, slipping into Nostradamus mode, I can see the day when the 12 of us will just be 12 among 12,000 people, all joined up, not in the same place, but connected and in contact with each other.  It's just a matter of time, man, and I the sooner the better.";
+AfterGameOver();
+];

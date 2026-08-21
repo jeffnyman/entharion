@@ -1,0 +1,428 @@
+! Stick it to the man
+!	Fletch
+
+	Man Fletch "Fletch" Kitchen
+with name 'fletch',
+description "He's kind of funny-looking, now that I think of it.  I'm so used to just thinking, ~oh, there's Fletch,~ but it's -- I mean, he's all skinny, and his little glasses, and stuff.  But then he wears these black jackets like he's some kind of bruiser or something.  Whatever.",
+color [; return $000000; ],
+bgcolor [; return $CCCCCC; ],
+switchedTo [;
+self.chooseNode(self.sceneNode());
+],
+NPCbefore [;
+	Kiss: "It'd probably scare him or something.";
+],
+forget [;
+if (self.lastheard>5) self.chooseNode(self.sceneNode());
+if (location~=parent(self)) self.chooseNode(self.sceneNode());
+],
+sceneNode [;
+	switch (parent(self)) {
+Kitchen: return FletchHouse;
+Rally: return FletchRally;
+RallyLimbo: return self.node;
+default: return self;
+	}
+],
+notice [a;
+	switch (a) {
+Bat: ;
+Flyer: ;
+StoreFront: ;
+Sign: ;
+Mask: FletchRallyMask0.tryActivate();
+Corpse: FletchRallyCorpse0.tryActivate();
+	}
+],
+ignore [a;
+	switch (a) {
+Bat: ;
+Flyer: ;
+StoreFront: ;
+Sign: ;
+Mask: FletchRallyMask0.deActivate();
+Corpse: FletchRallyCorpse0.deActivate();
+	}
+],
+moveToRally [;
+move self to Rally;
+if (Gary in RallyLimbo && random(100)<50) move Gary to Rally;
+],
+number 0,
+each_turn [;
+			switch (parent(self)) {
+		Kitchen:
+		if (random(100)<50 && player.lastspoke>3) {
+	self.number++;
+	switch (self.number) {
+1: "Fletch exchanges a few brief words with Gary that I can't quite hear.";
+2: "~Gary,~ says Fletch.^
+Gary looks over at Fletch and says, ~Hm?~^
+~Are you gonna take the keys or you want me to?  I mean, when we get to the rally.~^
+~Mmm,~ Gary says hesitantly, bobbing his head from side to side, ~I'd really prefer not to bring the keys into the actual rally at all, but it seems too risky to just leave 'em under the van or something.~^
+Fletch raises his eyebrows as if to say, ~So the upshot of all this. . .~^
+Gary shrugs.  ~I'll take 'em, I guess.~";
+3: "Fletch wanders over, grabs some grapes from the fridge, and pops them into his mouth.";
+4: "Fletch catches Gary's eye and taps his own wrist.";
+	}
+		}
+		
+		Rally:
+		if (player.lastspoke>1) {
+	if (Mask has worn && FletchRallyMask1 hasnt visited) {
+self.chooseNode(FletchRallyMask1);
+<<SwitchConversation self>>;
+	}
+	if (random(100)<50) {
+	self.number++;
+	switch(self.number) {
+1: if (Gary in location) "Fletch exchanges a few words with Gary.";
+else "Fletch mumbles to himself.";
+2: "Fletch scratches his nose.";
+3: "Fletch sneezes.";
+4: if (Nora in location) "Fletch talks with Nora for a little bit.";
+else "Fletch peers into the crowd.";
+5: "Fletch yawns and stretches.";
+6: self.number=random(3);
+	}
+	}
+		}
+			}
+];
+
+!
+! Part 1
+!
+
+Holder ->-> FletchHouse;
+
+	NLine ->->-> FletchHouse0 "'sup, Fletch?"
+with
+content "~'sup, Fletch?~ I say.^
+He nods at me.  ~Not much, not much.  You?~",
+after [; FletchHouse1.deactivate(); FletchHouse2.activate(); ],
+forget [;
+if (Fletch.lastheard>1) Fletch.chooseNode(FletchHouse);
+];
+
+		RNLine ->->->-> FletchHouse0x0 "About the same."
+	with
+	newnode FletchHouse,
+	content "~About the same,~ I say.
+	He nods again.";
+
+		NLine ->->->-> FletchHouse0x1 "Just waiting for this show to get on the road, or whatever."
+	with
+	content "~Just waiting for this show to get on the road,~ I say, ~or whatever.~^
+	~Show on the <e>road</e>. . .~ he says thoughtfully.  It's weird how he does that all the time.  Like, you say, ~Nice weather we're having, huh Fletch?~ and he'll go, ~Nice <e>weatherrrrr</e>. . .~ like he's savoring your words as he repeats them.  ~Are you ready for the show once it gets on the road?~ he continues.";
+
+			RNLine ->->->->-> FletchHouse0x1x0 "Gets on the the <e>road</e>. . ."
+		with
+		newnode FletchHouse,
+		content "~Gets on the <e>road</e>. . .~ I say, mimicking him.^
+		He gives me a kind of sheepish little grin and says, ~Right on.~";
+
+			RNLine ->->->->-> FletchHouse0x1x1 "Totally."
+		with
+		newnode FletchHouse,
+		content "~Absolutely.~^
+		~Right on,~ Fletch says.";
+
+			NLine ->->->->-> FletchHouse0x1x2 "Sure, man.  Are you?"
+		with
+		content "~Sure, man.  Are you?~^
+		He chuckles.  ~I've been ready since 6 o'clock.  I was up at 5 helping Gary clean this place out.~^
+		Gary slaps him on the shoulder.  ~And thanks for that, man.  This place was a total mess.~^
+		~It was, it was,~ Fletch replies, smiling slightly.^
+		Gary pokes me in the bicep with several fingers.  ~Get this,~ he says.  ~This whole floor --~ he gestures sweepingly at the expanse of linoleum ~-- was covered with dust <e>2 centimeters thick</e>.~^
+		I chuckle.  I admire Gary for his determination to go metric, but 2 centimeters just sounds so, like, scientific.^
+		~And covered with rat shit!~ he continues.  ~We found 3 fat rats in here!~",
+		after [;
+		Gary.chooseNode(GaryHouseRats);
+		Gary.lastheard=0;
+		<<SwitchConversation Gary>>;
+		];
+
+	RNLine ->->-> FletchHouse1 "Good morning."
+with
+newnode FletchHouse,
+content "~Good morning,~ I say to Fletch.^
+~Morning, morning.~^",
+after [; FletchHouse0.deactivate(); FletchHouse2.activate(); ];
+
+	NLine ->->-> FletchHouse2 "What's the plan for, like, meeting and stuff, at the rally?"
+has ~on
+with
+active false,
+content "~What's the plan for, like, meeting and stuff,~ I say, ~at the rally?~^
+Fletch raises his eyebrows and wrinkles his mouth, shrugging with his face.  ~I guess we're going to play it by ear.~";
+
+		NLine ->->->-> FletchHouse2x0 "That's unusual."
+	with
+	adopting FletchHouse2x1,
+	content "~That's unusual,~ I remark.^
+	~Yeah. . .~ he says apologetically.  ~It's -- I mean, there's the potential for major problems, but we basically don't have a choice.  We don't have any kind of equipment like we've sometimes had before.~";
+
+			NLine ->->->->-> FletchHouse2x0x0 "How come?"
+		with
+		content "~How come?~ I ask.^
+		He shrugs.  ~Just didn't get it.  I was going to go into town last night and pick up some stuff, but the whole area was <e>already</e> full of cops.~";
+
+				RNLine ->->->->->-> FletchHouse2x0x0x0 "So?  They're not going to arrest you for buying a fucking walkie-talkie, Fletch."
+			with
+			newnode FletchHouse,
+			content "~So?~ I say.  ~They're not going to arrest you for buying a walkie-talkie, Fletch.~^
+			~Oh, I -- actually, I wouldn't put it past those fuckers.  But anyway, I was more worried about if they -- well, first of all, they might recognize me today if they saw me yesterday.  Which is not too big a deal, but it's just not a good practice to let cops get to know your face like that.  Second, they might recognize the van, which is a bigger deal, 'cause then they might find it and tow it while we're at the rally.  Plus, I don't know, it's creepy; I mean, there were <e>tons</e> of cops there.  I'm worried; if there were that many just fucking around last night, the rally today is probably going to be a fucking <e>pigsty</e>.~";
+
+				RNLine ->->->->->-> FletchHouse2x0x0x1 "Fuck."
+			with
+			newnode FletchHouse,
+			content "~Fuck.~^
+			~Fuck <e>yeah</e>.~";
+
+			NLine ->->->->-> FletchHouse2x0x1 "So we're going to communicate secretly with bird calls?"
+		with
+		content "~So we're going to communicate secretly with bird calls?~^
+		He chuckles.  ~Well, we --~^
+		Gary cuts in: ~Say, that's an interesting idea.  Do you know any bird calls?~",
+		after [;
+		Gary.chooseNode(GaryHouseRats);
+		Gary.lastheard=0;
+		<<SwitchConversation Gary>>;
+		];
+
+		RNLine ->->->-> FletchHouse2x1 "No walkie-talkies or anything this time?"
+	with
+	newnode FletchHouse2,
+	content "~No walkie-talkies or anything this time?~^
+	~Nah,~ he says.  ~I mean, you remember last time, when the pigs confiscated 'em.  I mean, fortunately we managed to give the other guys a heads-up so they'd know to shut up, but it could be a serious problem if the cops were listening in on our talk.~  He sighs.  ~Plus, it's expensive to lose good walkie-talkies like that.  So Gary and I figured we'd pass on that this time.~";
+
+		NLine ->->->-> FletchHouse2x2 "Uh, is that gonna work?"
+	with
+	content "~Uh,~ I say, ~is that gonna work?~^
+	~I fucking hope so,~ he says.  ~I mean, most of the guys aren't even bringing watches, 'cause they're afraid they're gonna get stolen or broken or something --~^
+	~Yeah, I'm not bringing one.  Mine got cracked last time.~^
+	~Right.  But then it's like, how are we going to know when it's time to head back to the van?~";
+
+			RNLine ->->->->-> FletchHouse2x2x0 "Are there any, like, big public clocks?"
+		with
+		newnode FletchHouse2x2,
+		content "~Are there any, like, big public clocks?~^
+		~I don't really know.  But anyway, that's kind of lame.  There's any number of things that could get in the way of that kind of timekeeping.~";
+
+			NLine ->->->->-> FletchHouse2x2x1 "We could look at the sun."
+		with
+		content "~We could look at the sun,~ I suggest.^
+		~I guess that's what we're going to be doing.  It's not actually that bad of a plan.  I know Gary and I can get a pretty good idea of what time it is by the sun, and Pilar, and you.  I'm worried about Nora, though.~";
+
+				NLine ->->->->->-> FletchHouse2x2x1x0 "I think everybody is."
+			with
+			content "~I think everybody is.~^
+			~Well, it's hard not to.  I mean, she's definitely dedicated and into the cause and all that, but she's so. . .~";
+
+					RNLine ->->->->->->-> FletchHouse2x2x1x0x0 ". . .little?"
+				with
+				newnode FletchHouse,
+				content "~. . .little?~^
+				~Well, yeah, but that's no big deal.  It's just that she's so -- she's so, like, new.  Y'know?  She hasn't got the hang of stuff yet.~";
+
+					RNLine ->->->->->->-> FletchHouse2x2x1x0x1 ". . .innocent?"
+				with
+				newnode FletchHouse,
+				content "~. . .innocent?~^
+				Fletch rolls his eyes.  ~You <e>know</e> she's not innocent, by any stretch.  Still, it's hard not to think of her that way, isn't it?~";
+
+					RNLine ->->->->->->-> FletchHouse2x2x1x0x2 ". . .fragile?"
+				with
+				newnode FletchHouse,
+				content "~. . .fragile?~^
+				He grimaces.  ~That sounds corny.  But I guess I know what you mean.  You feel like you could break her in half, in some funky metaphysical sense or something.~";
+
+					RNLine ->->->->->->-> FletchHouse2x2x1x0x3 ". . .bright-eyed and bushy-tailed?"
+				with
+				newnode FletchHouse,
+				content "~. . .bright eyed and bushy-tailed?~ I suggest, half-joking.^
+				~Heh,~ he says.  ~Yeah, sort of.  Perhaps. . .~  He pauses impressively, pulling down his glasses to look at me over their rims in mock melodrama.  ~. . .<e>too</e> bright-eyed.  And <e>too</e> bushy-tailed.~  He chuckles.";
+
+				RNLine ->->->->->-> FletchHouse2x2x1x1 "Me too."
+			with
+			newnode FletchHouse2x2x1,
+			content "~Me too.~^
+			~I hope she'll be all right.  She's never been to a rally before, has she?~^
+			~Some little ones.  Local stuff.  Nothing like this.~^
+			Fletch sighs.",
+			after [; FletchHouse2x2x1x0.deactivate(); ];
+
+				NLine ->->->->->-> FletchHouse2x2x1x2 "Oscar's looking out for her."
+			with
+			content "~Oscar's looking out for,~ I say hopefully.^
+			~A good thing too.~  He chuckles.  ~What a combination.  Are they, like, hooked up?~";
+
+					RNLine ->->->->->->-> FletchHouse2x2x1x2x0 "I don't think so."
+				with
+				newnode FletchHouse,
+				content "~I don't think so.~^
+				~Hm,~ he says.";
+
+					RNLine ->->->->->->-> FletchHouse2x2x1x2x1 "Not that I know of."
+				with
+				newnode FletchHouse,
+				content "~Not that I know of,~ I say.^
+				~Huh,~ he says.";
+
+					RNLine ->->->->->->-> FletchHouse2x2x1x2x2 "I don't know."
+				with
+				newnode FletchHouse,	
+				content "~I don't know,~ I say.  What the fuck does he care?  He's watched people like Nora and Oscar come and go, and hook up and then unhook -- lots of times.^
+				~Yeah, yeah. . .~ Fletch says.";
+
+					RNLine ->->->->->->-> FletchHouse2x2x1x2x3 "Are they?"
+				with
+				newnode FletchHouse,
+				content "~Are they?~  If they are, that's news to me.^
+				He shrugs hastily.  ~Oh, I have no idea.  I mean, just, they're together a lot, so I was just wondering.~";
+
+		NLine ->->->-> FletchHouse2x3 "What, we're just going to wander around and hope we manage to link up again at the end?"
+	with
+	content "~What,~ I say sarcastically, ~we're just going to wander around and hope we manage to link up again at the end?~^
+	~Hopefully not,~ Fletch says, ~but I'm afraid you may be right, some.  The only way I can see to avoid it would be for us all to stay together, and that would, well, suck.~";
+
+			NLine ->->->->-> FletchHouse2x3x0 "It would?"
+		with
+		content "~It would?~^
+		~Well, I mean, it's kind of crazy having 8 people -- how many of us are there?  8?  9. -- 9 people just locked together into this big, like, clump.  Plus it makes it easier for them to incarcerate us all at once.~";
+
+				NLine ->->->->->-> FletchHouse2x3x0x0 "Incarcerate?  What the fuck are you talking about?"
+			with
+			content "~Incarcerate?~ I say, giving him a funny look.  ~What the fuck are you talking about?~^
+			~Incarcerate means imprison, Iris.~";
+
+					RNLine ->->->->->->-> FletchHouse2x3x0x0x0 "I mean, who suddenly gives a fuck if we get 'incarcerated'?"
+				with
+				newnode FletchHouse,
+				content "~I mean, who suddenly gives a fuck if we get 'incarcerated'?~^
+				~I think everybody does, Iris.  I mean, sure, civil disobedience and all that, but I'd really rather not make it too easy for them to haul us away.~";
+
+					RNLine ->->->->->->-> FletchHouse2x3x0x0x1 "I know that."
+				with
+				newnode FletchHouse,
+				content "~I know that,~ I say.  What the fuck is this?  Because he's a college grad he thinks I don't know the word 'incarcerate'?^
+				~Well, so -- ah, forget it,~ he says.";
+
+					RNLine ->->->->->->-> FletchHouse2x3x0x0x2 "I fucking <e>know</e> what it means, Fletch."
+				with
+				newnode FletchHouse,
+				content "~I fucking <e>know</e> what it means, Fletch.~^
+				~Oh, shit, don't get all pissed off, man.  I'm just saying we're a bigger target if we stay together, okay?  Sheesh.~";
+
+				RNLine ->->->->->-> FletchHouse2x3x0x1 "Dude, it's solidarity!"
+			with
+			newnode FletchHouse,
+			content "~Dude,~ I say, ~it's solidarity~^
+			He gives a token chuckle.  ~Right.~";
+
+				RNLine ->->->->->-> FletchHouse2x3x0x2 "Whatever."
+			with
+			newnode FletchHouse,
+			content "~Whatever.~^
+			He just nods.";
+
+			NLine ->->->->-> FletchHouse2x3x1 "How so?"
+		with
+		content "~How so?~^
+		~Well, it'd just be, like, everybody's sort of tied to everybody else, you know.~";
+
+			NLine ->->->->-> FletchHouse2x3x2 "I guess."
+		with
+		content "~I guess.~^
+		~Yeah, yeah. . .~";
+		
+!
+! Part 2	(Not present)
+!
+
+!
+! Part 3
+!
+
+Holder ->-> FletchRally
+with
+sharing FletchRallyStuff;
+
+	RNLine ->->-> FletchRally0 "Hey, Fletch."
+with
+newnode FletchRally,
+content "~Hey, Fletch,~ I say.^
+~Iris,~ he says, nodding in acknowledgement.";
+	
+	RNLine ->->-> FletchRally1 "What's the situation?"
+with
+newnode FletchRally,
+content "~What's the situation?~ I ask Fletch.^
+~What are you talking about?~^
+~I mean, y'know, are we leaving, or are we all good, or what?~^
+~<e>I</e> dunno.  I'm in no hurry to leave.  I don't think we have, like, a consensus or anything.~";
+	
+	RNLine ->->-> FletchRally2 "Where's Gary?"
+has ~on
+with
+newnode FletchRally,
+content "~Where's Gary?~ I ask Fletch.^
+~Ah, he's around somewhere.~";
+
+	Holder ->->-> FletchRallyStuff;
+	
+	RNLine ->->->-> FletchRallyMask0 "That your mask, Fletch?"
+has ~on
+with
+newnode FletchRally,
+content "~That your mask, Fletch?~ I ask, kidding him.^
+He doesn't get it.  ~What?  No, man.~^
+~I'm kidding.~^
+~Oh,~ he says.  ~Heh.~";
+	
+	Holder ->->->-> FletchRallyMask1
+	with
+	switchedTo [;
+	"~Whoa, who's in there?~ Fletch says to me.  ~Is that Iris?~^";
+	];
+	
+		RNLine ->->->->-> FletchRallyMask1x0 "Yeah."
+	with
+	newnode FletchRally,
+	content "~Yeah,~ I answer.^
+	~Crazy.~";
+	
+		NLine ->->->->-> FletchRallyMask1x1 "Who?"
+	with
+	forget [;
+	if (Mask hasnt worn) Fletch.chooseNode(FletchRally);
+	],
+	content "~Who?~ I ask, totally fooling him.^
+	~Oh,~ he says, ~I thought you were somebody else.~";
+
+	RNLine ->->->-> FletchRallyCorpse0 "Fletch, that guy is dead!"
+has ~on
+with
+newnode FletchRally,
+content "~Fletch,~ I say, ~that guy is dead!~^
+He's standing there shaking his head slowly.  ~Holy mother of fuck.~";
+
+!
+! Part 4b
+!
+
+Holder ->-> FletchPost;
+
+	RNLine ->->-> FletchPost0 "Good rally?"
+with
+newnode FletchPost,
+content "~Good rally?~ I ask Fletch.^
+~Good rallyyyyyy,~ he responds.";
+
+	RNLine ->->-> FletchPost1 "You didn't see Kyla and Jen anywhere?"
+with
+newnode FletchPost,
+content "~You didn't see Kyla and Jen anywhere?~ I say to Fletch.^
+~Well, not recently, no.~";
+

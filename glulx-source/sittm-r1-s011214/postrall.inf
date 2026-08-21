@@ -1,0 +1,40 @@
+! Stick it to the man
+!	Scene 4b: post-rally meeting
+
+[BeginPart4b a;
+move Brad to PostRally;
+move Fletch to PostRally;
+move Gary to PostRally;
+move Nora to PostRally;
+move Oscar to PostRally;
+move Pilar to PostRally;
+
+Brad.chooseNode(BradPost);
+Fletch.chooseNode(FletchPost);
+Gary.chooseNode(GaryPost);
+Nora.chooseNode(NoraPost);
+Oscar.chooseNode(OscarPost);
+Pilar.chooseNode(PilarPost);
+
+Game.timeOfDay="Afternoon";
+
+while(child(SideStreet)) move child(SideStreet) to PostRally;
+
+	objectloop (a ofclass Talker) {
+a.lastheard=-1;
+a.number=0;
+	}
+
+PlayerTo(PostRally);
+];
+
+	Room PostRally "Side Street"
+with
+name 'side',
+description "We're back where we started.  It's the same as it was.  Where the fuck are Jen and Kyla?",
+before [;
+	Listen: "I can hear the sounds of shouting and chanting and rally-ish noises, somewhere not too far away.";
+	Smell: if (~~noun) "It smells filthy.";
+],
+w_to "Not by myself.  We're going together, in the van, when it's time.",
+e_to "It's tempting, but, really, it would just make things worse if everybody had to worry about ~where's Iris?~ in addition to ~where's Kyla?~ and ~where's Jen?~";

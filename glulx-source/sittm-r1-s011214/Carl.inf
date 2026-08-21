@@ -1,0 +1,204 @@
+! Stick it to the man
+!	Carl
+
+	Man Carl "Carl" Limbo
+has concealed
+with
+name 'carl' 'naked' 'man' 'well-endowed' 'well' 'endowed',
+description "Carl.  Hmm.  It looks like he was roughed up a little.  Probably woke up here, like me.  He's got sort of sandy-blond hair, like a surfer.  Damn it, I'm trying not to be totally carnal here, but, yes, he's well-endowed, as they say.",
+color [; return $00FF00; ],
+bgcolor [; return $CC0066; ],
+NPCbefore [;
+	Kiss,Touch: if (Handcuffs hasnt general) rfalse;
+if (self.sexy==No) "I just -- I dunno, it's not like I'm tied to Brad or anything, but I really just don't want to.";
+print "It's kind of hard with the handcuffs, but I sort of squat down next to Carl and start to tickle him.^
+~Hey!~ he says, ~hey!~^
+Well, as they say, one thing leads to another, and that's leading to another, and that probably would lead to another in a few minutes, except that right then the guard comes back in with his camera, sees us, and right away snaps a few shots.^
+~Wow,~ he says, ~even better than I'd hoped.~  He takes a couple more as I struggle to get up.  The damn handcuffs are making it hard.  ~I knew you were a fucking slut,~ he says, unholstering his gun and opening the cell door.  He keeps the gun levelled at me.  ~You want something?  You want a little something?  I got something for you, you little fuck.  Get over there to that bed.  And you --~ he nods to Carl ~-- can just watch, huh?~";
+AfterGameOver();
+],
+sexy Maybe,
+number 0,
+each_turn [;
+		if (Guard notin Jail && random(100)<50 && player.lastspoke>2 && CarlSex hasnt visited) {
+	Carl.chooseNode(CarlSex);
+		}
+		if (random(100)<50 && Carl.lastheard>1) {
+	self.number++;
+	switch (self.number) {
+1: "Carl stretches his legs out.";
+2: "Carl rolls his neck around in a circle, cracking his vertebrae.";
+3: "Craning his neck backwards, Carl tries to get a view of the room.";
+4: "I catch Carl looking at me, and he looks away immediately.";
+5: "Carl grunts, apparently in pain.";
+6: self.number=random(3);
+	}
+		}
+
+];
+
+	RNLine ->-> Carl0 "I'm Iris, by the way."
+with
+newnode Carl,
+content "~I'm Iris, by the way,~ I say to Carl.^
+~Nice to --~^
+~Shut up, you fucks,~ says the guard.";
+
+	RNLine ->-> Carl1 "How'd you get here?"
+with
+newnode Carl,
+content "~How'd you get here?~ I say, lowering my voice.^
+~Dunno,~ he says softly.  ~I was just standing there, and some guy threw a rock into this line of cops, and I tried to get out of there, but --~^
+~Shut up,~ says the guard.",
+after [;
+CarlAlone1.deactivate();
+];
+
+	RNLine ->-> Carl2 "Who were you with?"
+with
+newnode Carl,
+content [; print "~Who were you with?~ I ask.^
+~Just a couple friends,~ he says.  ~A guy named Zac and a ";
+if (Zac.known) "--~^
+~Oh,~ I say, ~I met him.~^
+~Did you?  Was he --~^
+~Shut up, you fucking fucks,~ the guard says.";
+else "girl named Danielle.  How about you?~^
+~I --~^
+~You shitheads shut up,~ the guard says.";
+],
+after [;
+CarlAlone2.deactivate();
+CarlAlone3.activate();
+];
+
+	RNLine ->-> Carl3 "Are you all right?"
+with
+newnode Carl,
+content "~Are you all right?~ I ask.^
+~I guess I got a little beat up, but I'm --~^
+~Shut up,~ says the guard.";
+
+Holder ->-> CarlAlone
+with
+switchedTo [;
+if (self hasnt visited) "~I guess we can talk now,~ says Carl, ~if there's anything to be said.~";
+];
+
+	RNLine ->->-> CarlAlone0 "Good riddance to that fucking pig."
+with
+newnode CarlAlone,
+content "~Good riddance to that fucking pig,~ I say.^
+~Yeah,~ he says.";
+
+	NLine ->->-> CarlAlone1 "So, what are you in for?"
+with
+content "~So,~ I say, ~what are you in for?~^
+~Who knows?~  He tries to shrug his shoulders, but the handcuffs are kind of restrictive.  ~I was just going along, you know, waving my sign, and then some guy kind of nearby heaves this rock at the cops -- they were in this line, you know.  So I figure I better get out of there, but before I can even really get anywhere somebody knocks me out from the back.  I don't even know if the cops knocked me out, or if they just found me and brought me in.~",
+after [;
+CarlAlone4.activate();
+];
+
+		RNLine ->->->-> CarlAlone1x0 "Either way, this sucks."
+	with
+	newnode CarlAlone,
+	content "~Either way,~ I say, ~this sucks.~^
+	~Fuckin' a,~ he says.";
+
+		RNLine ->->->-> CarlAlone1x1 "Somebody threw a <e>rock</e>?"
+	with
+	newnode CarlAlone,
+	content "~Somebody threw a <e>rock</e>?~ I ask.^
+	~I know,~ he says, shaking his head, ~it seems so, like, old-school.  These days everybody throws, I don't know, beer bottles or whatever.~";
+	
+		RNLine ->->->-> CarlAlone1x2 "They had a police line there?"
+	with
+	newnode CarlAlone,
+	content "~They had a police line there?~ I ask.  I never saw that.^
+	~Well, yeah,~ he says.  ~There was maybe 20 cops all lined up at one of the side streets.  Riot gear and everything.~";
+
+
+	NLine ->->-> CarlAlone2 "So who were you there with?"
+with
+content "~So who were you there with?~^
+~This guy Zac, and this girl Danielle.  Just some friends.~",
+after [;
+if (Zac has known) CarlAlone2x0.activate();
+else Carl.chooseNode(CarlAlone);
+];
+
+		RNLine ->->->-> CarlAlone2x0 "Hey, I met them."
+	with
+	newnode CarlAlone,
+	content "~Hey,~ I say, ~I met them.~^
+	~Really?  Do you know if they got out?~^
+	~No,~ I say.";
+
+	RNLine ->->-> CarlAlone3 "You were with Zac and Danielle, huh?"
+has ~on
+with
+newnode CarlAlone,
+content "~You were with Zac and Danielle, huh?~^
+~Well, you know,~ he says, ~I wasn't, like, right there <e>with</e> them, but yeah, I came with them.~";
+
+	RNLine ->->-> CarlAlone4 "You got any idea on how to get out of here?"
+has ~on
+with
+newnode CarlAlone,
+content "~You got any idea on how to get out of here?~^
+~Well, <e>I'm</e> stuck good here.  What are your cuffs hooked to?~^
+~This pipe, or something,~ I say.^
+~Does it have a handle or anything?  Maybe you can, like, unscrew it or something.~";
+
+Holder ->-> CarlFree
+with
+switchedTo [;
+"~Whoa,~ Carl says, ~excellent!~";
+];
+
+	NLine ->->-> CarlFree0 "Okay, so now what?"
+with
+content "~Okay, so now what?~ I ask Carl.^
+~I bet there's a key to the cuffs around here,~ he says.  ~See if you can get out of the cell.~";
+
+		NLine ->->->-> CarlFree0x0 "Yeah, but, like, how?"
+	with
+	content "~Yeah, but, like, how?~^
+	~I don't know,~ he says.  ~Try the door, for starters.~";
+	
+Holder ->-> CarlSex
+with
+forget [;
+if (Carl.lastheard>3) self.chooseNode(CarlAlone);
+],
+switchedTo [;
+"~It's too bad we can't get at each other,~ he says nervously, like he's trying to make a joke he's afraid will fall flat.  ~We could have some fun.~";
+];
+
+	NLine ->->-> CarlSex0 "I'm, uh, spoken for."
+with
+newnode CarlAlone,
+content "~I'm, uh, spoken for,~ I say umcomfortably.^
+~Oh, sorry.  I'm not trying to be dirty or anything.~^
+~Forget it.~",
+after [;
+Carl.sexy=No;
+];
+
+	NLine ->->-> CarlSex1 "Yeah, it would be better if just <e>one</e> of us was handcuffed."
+with
+newnode CarlAlone,
+content "~Yeah,~ I say with a little chuckle, ~it would be better if just <e>one</e> of us was handcuffed.~^
+~Ooh, true,~ he says.  ~But which one?~  Apparently a rhetorical question.",
+after [;
+Carl.sexy=Yes;
+];
+
+	NLine ->->-> CarlSex2 "I was thinking the same thing."
+with
+newnode CarlAlone,
+content "~I was thinking the same thing,~ I say.^
+~Mmm,~ he muses.",
+after [;
+Carl.sexy=Yes;
+];

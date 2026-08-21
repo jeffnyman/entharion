@@ -1,0 +1,71 @@
+! Stick it to the man
+!	Pilar
+
+	Woman Pilar "Pilar" Limbo
+with name 'pilar',
+description [;
+if (Game.houseFucked) "She looks the same as she did before we left.  It's weird -- everybody tends to look different, y'know, in different situations and stuff, but Pilar always looks the same.  It's like we're living in a photograph and somebody cut her out of a different picture and just pasted her in here, and she's just sort of there, not really part of it, y'know?";
+"Pilar reminds me of Jen, somehow, even though they really look nothing like each other.  I guess they both tend to wear kind of the same facial expression, like they're seething inside.  With Jen, though, you can sort of tell she's glad to be mad, in some weird kind of way, but with Pilar, when I look at her, I really get the feeling she's been angry for a long time.  I can never seem to think of anything to say to her, or any way to get to know her, or whatever.";
+],
+color [; return $FFFFFF; ],
+bgcolor [; return $000000; ],
+switchedTo [;
+self.chooseNode(self.sceneNode());
+],
+NPCbefore [;
+	Kiss: "I can't even begin to foresee the consequences of that.";
+],
+forget [;
+if (self.lastheard>5) self.chooseNode(self.sceneNode());
+if (location~=parent(self)) self.chooseNode(self.sceneNode());
+],
+sceneNode [;
+	switch (parent(self)) {
+FrontYard: if (Game.houseFucked) return PilarBack; else return PilarHouse;
+default: return self;
+	}
+],
+number 0,
+each_turn [;
+			switch (parent(self)) {
+		FrontYard:
+
+			}
+];
+
+Holder ->-> PilarHouse;
+
+	RNLine ->->-> PilarHouse0 "Morning, Pilar."
+with
+newnode PilarHouse,
+content "~Morning, Pilar.~^
+~Hmm,~ she says, nodding to me.";
+
+!
+! Parts 2 & 3	(not present)
+!
+
+!
+! Part 4b
+!
+
+Holder ->-> PilarPost;
+
+	NLine ->->-> PilarPost0 "So how'd it go, Pilar?"
+with
+content "~So how'd it go, Pilar?~ I ask.^
+~Just fine,~ she says.^
+It's so fucking <e>weird</e>.  Sometimes I wonder if she's a robot or something.  I mean, it's like you say stuff to her, and no matter what, she's just, like, rock solid.  You could probably slap her mother in the face right in front of her and she wouldn't say a word.  I start laughing.^
+~What?~ she says.  Whoa, reaction!^
+~Pilar, you're the perfect anarchist.~",
+after [;
+AfterGameOver();
+];
+
+
+
+!
+! Part 4c
+!
+
+Holder ->-> PilarBack;

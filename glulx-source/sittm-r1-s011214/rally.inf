@@ -1,0 +1,844 @@
+! Stick it to the man
+!	Part 3 -- at the rally
+
+[BeginPart3 a;
+
+	objectloop (a ofclass Talker) {
+a.lastheard=-1;
+a.number=0;
+	}
+
+move Fletch to RallyLimbo;
+move Gary to RallyLimbo;
+move Jen to RallyLimbo;
+move Kyla to RallyLimbo;
+move Nora to RallyLimbo;
+move Oscar to RallyLimbo;
+
+move Zac to RallyLimbo;
+move Danielle to RallyLimbo;
+Brad.chooseNode(BradRally);
+Fletch.chooseNode(FletchRally);
+Gary.chooseNode(GaryRally);
+Jen.chooseNode(JenRally);
+Kyla.chooseNode(KylaRally);
+Nora.chooseNode(NoraRally);
+Oscar.chooseNode(OscarRally);
+
+Zac.chooseNode(ZacRallyUnknown);
+Danielle.chooseNode(DanielleRallyUnknown);
+
+	if (player.stickTogether==Yes) {
+move Brad to Rally;
+if (Nora in location) print "Nodding to Nora and Oscar, we ";
+else print "We ";
+print "walk down to the corner and turn onto another deserted street flanked by giant buildings.  At the next corner we turn again onto a similar street, but this one intersects a much wider, more heavily-travelled street two blocks ahead.  That narrow space between the two buildings at the intersection is crammed with people, a huge mass of people, shoving, standing still, waving banners, waving signs, wearing black, wearing white, wearing green.  Some people are emerging from the crowd and coming toward us, others, like us, are moving toward the crowd.  Brad tightens his hand around mine and gives me a maverick grin of apprehension, anticipation, and adrenalin.  I hit him on the shoulder -- he's just being silly.  We move into the noisy bunch.^";
+	}
+	else {
+move Brad to RallyLimbo;
+if (Nora in location) print "Nodding to Nora and Oscar, ";
+print "I walk to the corner and turn onto another side street bordered by tall buildings.  At the next corner I turn onto a similar street, but this one intersects the large street where the rally is taking place.  I can see dozens of people moving, and some standing just outside the intersection, catching their breath.  We were lucky to find this place -- actually, Gary probably scouted it out yesterday and didn't tell anybody.  Not a single cop in sight.  It's a good bet they've got most of the side streets blocked off, though.  Shit, it's possible they just haven't gotten around to blocking this one off yet -- it's still fairly early.  We could be cut off from the van.^
+The rally isn't the time to think about these things.  I don't have the keys, I can't move the van.  There's nothing I can do about this now, and this -- goddamn it, <e>this</e> is something I can't do anything about!  Not all that shit I've heard a hundred times: ~The government sucks.~  ~Well, yeah, but there's nothing you can do about it.~  ~Cops are brutal.~  ~Well, yeah, but there's nothing you can do about it.~  ~There's really no reason in the world why I should have to obey laws passed by people who never even asked me what I thought.~  ~Well, yeah, but there's nothing you can do about it.~  Well there fucking <e>is</e>!  And this is it!  Who gives a shit if I can't move the fucking van right now?  Who gives a flying fuck if I can't stop the fucking pigs from blocking off this street and penning us into the main road like cattle?  Right now we're going to take another step to stopping <e>all</e> that shit!^";
+	}
+
+PlayerTo(Rally);
+];
+
+	Room Rally "In the rallying crowd"
+with
+description [a flag;
+	print (string) random (
+"There must be -- shit, I don't <e>know</e> how many people here.",
+"There's barely enough room to stand here.",
+"I'm right in the thick of the rally.",
+"The crowd presses me on all sides, but, oddly, I feel more embraced than stifled."
+	), "  ";
+	print (string) random (
+"I'm being jostled and buffeted, but no one's being harsh or anything -- it's more like they just accidentally bump into me, like they didn't even know I was there, as they weave their way through the crowd, going who knows where.",
+"People are bumping into me from all sides.  This would be a pickpocket's heaven if there weren't so many cops around.",
+"No matter how many of these I go to, I still get this weird feeling when I'm in the crowd, like I could just relax all my muscles and go limp, and I still wouldn't fall because somehow they'd catch me.",
+	), "  ";
+	print (string) random (
+"People in black shirts, white shirts, red shirts, green shirts -- a mass of colors squirms and wiggles all around me.",
+"Up ahead, in the distance, someone is standing on someone else's shoulders, swaying like crazy, shaking his fist and screaming at the top of his lungs.  Then somebody moves in front of me, blocking my view.",
+"A little way to my left, I can see someone on the ground -- well, actually, all I can see is his legs, and someone else's knees as they crouch next to him.  Actually, now I can't even see that -- somebody's standing in the way.",
+"Glancing over my shoulder, I see a man dressed all in black, with a black ski mask, carrying a baseball bat.  He disappears into the crowd.",
+"Peering through the maze of heads and shoulders, I see a long-haired, goateed guy, dressed in tye-dye and chanting something I can't quite make out.  I glance away and when I look back he's gone."
+	), "  ";
+	print (string) random (
+"I can hear, in the distance, some people chanting some kind of mantra-sounding thing.",
+"Someone not too far away is singing.  He's got a great voice, but I can't make out the words.",
+"Behind me, several dozen voices are chanting, ~Peace!  Love!  Unity!  Respect!~",
+"Somewhere to my right, a bunch of people are chanting, ~Fuck the government!  Fuck the government!~",
+"I hear a lone voice, ragged from shouting, shout nonetheless: ~ANARCHYYYYYY!~"
+	), "  ";
+	print (string) random (
+"The smell of sweat is very strong here.",
+"Fuck, that smells like marijuana!  Someone's smoking a bowl in the middle of all this?",
+"I smell gunpowder, faintly.",
+"There's a faint, acrid smell, like some kind of crowd-control gas was used here recently."
+	), "  ";
+	print (string) random (
+"It's so great to see all these people making it happen.",
+"Fuck, man, this is great!",
+"I hope the other guys are doing all right.",
+"If my fucking dad could see me now, he'd rupture some kind of internal organ.",
+"This is what it's all about."
+	);
+flag=0;
+	objectloop (a in self && a~=player or Crowd or Sun && a provides describe) {
+if (~~flag) { print "^"; flag=1; }
+give a concealed;
+PrintOrRun(a, describe, 1);  print "  ";
+	}
+flag=0;
+objectloop (a in self && a hasnt concealed or scenery) flag++;
+if (~~flag) print "^";
+],
+number 0,
+each_turn [;
+self.number++;
+if (self.number==40) Game.timeOfDay="Noonish";
+if (self.number==60) Game.timeOfDay="Afternoon";
+],
+before [a b;
+	Listen: "The crowd is roaring like an I don't know what.  <e>This</e> is the ~voice of the people~ -- not some stupid mark on a ballot.";
+	Smell: if (~~noun) "There are tons of smells here: sweat, gunpowder, weed -- what an aroma, man.";
+	Go: "There's no way I can force my way through this crowd in any particular direction -- I'll wear myself out.  I just sorta have to, y'know, <e>go</e>.";
+	VagueGo:
+
+!	print "1 -> ";
+!	KeyCharPrimitive();
+	
+	objectloop (a in self && a~=player or Crowd or Sun) {
+give a workflag;
+move a to RallyLimbo;
+	}
+
+!	print "2 -> ";
+!	KeyCharPrimitive();
+
+		objectloop (a in RallyLimbo && ~~(a ofclass Talker)
+		&& a~=BillyClub or Gun or RiotGear or BodyPaint) {
+	if (b>4) break;
+	if (random(100)<30 && a hasnt workflag) {
+b++;
+move a to self;
+	}
+	else give a ~workflag;
+		}
+
+b=0;
+
+!	print "3 -> ";
+!	KeyCharPrimitive();
+
+if (player.stickTogether==Yes) move Brad to Rally;
+	
+		objectloop (a in RallyLimbo && a ofclass Talker) {
+	if (b>2) break;
+	if (random(100)<20) {
+b++;
+a.moveToRally();
+	}
+		}
+
+!	print "4 -> ";
+!	KeyCharPrimitive();
+
+!print "Brad -> ";
+!KeyCharPrimitive();
+	if (Brad in Rally) {
+objectloop (a in Rally) Brad.notice(a);
+objectloop (a in RallyLimbo || (~~(a ofclass Room) && parent(a)==0) ) Brad.ignore(a);
+	}
+	
+!print "Fletch -> ";
+!KeyCharPrimitive();
+	if (Fletch in Rally) {
+if (Gary notin Rally) FletchRally2.tryActivate();
+else FletchRally2.deActivate();
+if (Mask in Rally) Fletch.notice(Mask);
+else Fletch.ignore(Mask);
+if (Corpse in Rally) Fletch.notice(Corpse);
+else Fletch.ignore(Corpse);
+	}
+
+!print "Gary -> ";
+!KeyCharPrimitive();
+	if (Gary in Rally) {
+if (Flyer in Rally) Gary.notice(Flyer);
+else Gary.ignore(Flyer);
+if (Corpse in Rally) Gary.notice(Corpse);
+else Gary.ignore(Corpse);
+	}
+
+!print "Jen -> ";
+!KeyCharPrimitive();
+	if (Jen in Rally) {
+if (Kyla notin Rally) JenRally1.tryActivate();
+else JenRally1.deActivate();
+if (Corpse in Rally) Jen.notice(Corpse);
+else Jen.ignore(Corpse);
+	}
+	
+!print "Kyla -> ";	
+!KeyCharPrimitive();
+	if (Kyla in Rally) {
+if (Jen notin Rally) KylaRally1.tryActivate();
+else KylaRally1.deActivate();
+if (Sign in Rally) Kyla.notice(Sign);
+else Kyla.ignore(Sign);
+if (Mask in Rally) Kyla.notice(Mask);
+else Kyla.ignore(Mask);
+if (Corpse in Rally) Kyla.notice(Corpse);
+else Kyla.ignore(Corpse);
+	}
+
+!print  "Nora -> ";
+!KeyCharPrimitive();
+	if (Nora in Rally) {
+if (Oscar notin Rally) NoraRally1.tryActivate();
+else NoraRally1.deActivate();
+if (Flyer in Rally) Nora.notice(Flyer);
+else Nora.ignore(Flyer);
+if (Mask in Rally) Nora.notice(Mask);
+else Nora.ignore(Mask);
+if (Corpse in Rally) Nora.notice(Corpse);
+else Nora.ignore(Corpse);
+	}
+
+!print "Oscar -> ";
+!KeyCharPrimitive();
+	if (Oscar in Rally) {
+if (Nora notin Rally) OscarRally2.tryActivate();
+else OscarRally2.deActivate();
+if (StoreFront in Rally) Oscar.notice(StoreFront);
+else Oscar.ignore(StoreFront);
+if (Corpse in Rally) Oscar.notice(Corpse);
+else Oscar.ignore(Corpse);
+	}
+
+!print "Zac -> ";
+!KeyCharPrimitive();
+	if (Zac in Rally) {
+if (Corpse in Rally) Zac.notice(Corpse);
+else Zac.ignore(Corpse);
+	}
+	
+	
+!	print "5 -> ";		
+!	KeyCharPrimitive();
+	
+	print "I go with the flow of the crowd, moving at random.^";
+	<<Look>>;
+];
+
+	Decor -> Crowd "crowd"
+with
+name 'crowd' 'people' 'person' 'green' 'black' 'red' 'white' 'man' 'woman',
+description "This crowd is pretty rowdy, compared to some I've seen, but, on the other hand, tame compared to others.  It's pretty much impossible to get a handle on 'the crowd' per se, because, y'know, the part of the crowd that <e>I</e> see is changing every second.  One second such-and-such guy is standing right next to me, the next he's gone, the next he's back again.  In fact, it's kind of hard to tell whether I'm actually, y'know, <e>moving</e>, or whether the crowd is just sort of shifting around me.";
+
+	Decor -> Sun "sun"
+with
+name 'sun' 'sky',
+description [;
+"Hmmm, the sun's there, so, that'd make it roughly, hmmm.  ", (string) Game.timeOfDay,".";
+];
+
+	Room RallyLimbo "RallyLimbo"
+with
+name 'limbo' 'rally',
+description "[<a>BUG</a>: You shouldn't be here.]";
+
+	Object -> Bat "baseball bat"
+with
+name 'bat' 'baseball',
+describe "A baseball bat is lying on the ground here.",
+description "A baseball bat -- the game piece of the national pastime of the anarcho-punk nation: window-smashing.",
+before [;
+	Take:
+if (player.violence==No) "I don't want to look like I'm looking for a fight.";
+],
+after [;
+	Take:
+if (player.violence==Yes) "~Excellent,~ I mutter, hefting the bat in my hands.";
+	if (player.violence==Maybe) {
+player.violence=Yes;
+"Fuck, I guess this is it.  I pick up this bat, it's just one step away from smashing.";
+	}
+	Drop:
+player.violence=No;
+remove self;
+"The more I think about it, the more I think it's a bad idea to smash shit up.  As I drop it on the ground, a kid with spiked hair and a painted face looks at me, then picks it up and disappears into the crowd.";
+];
+
+	Object -> Flyer "flyer"
+with
+name 'flyer' 'paper' 'piece' 'of' 'paper',
+describe "There's a piece of paper on the ground.  Looks like some kind of flyer.",
+description [;
+give self general;
+"<q>THE CASE FOR ACTION^
+Have you ever thought that maybe your life wasn't as good as it could be?  If so, what do you think would make it better?  Most people in our society today are taught that quality of life is commensurate with social and economic status -- if you are popular and rich, you will be happy.  Conversely, if you are friendless or poor, you will be sad.  We are taught that middle-class life is just bearable, but really we'd all like to own our own yacht and golf every day.
+Why do we need to be rich to be happy?  Why do we feel incomplete without a big-screen TV, a new car, and an Armani suit?^
+Do you have a love life?  Would you like to have one?  Are you one of the many people who, despite being involved in a romantic relationship, fantasize about celebrities?  In our society, we are taught that our girlfriends and boyfriends are nice, but if Britney Spears or Brad Pitt walked up and asked us for a date, we would drop our current significant other like a hot potato.^
+Have you ever talked with Britney Spears?  Or Brad Pitt?  Do you think they would be fun to be with?  Do you even think they're good looking, or do you just go along with that opinion because it's blasted at you from every newspaper and TV program and by every brainless fan?^
+To really change your life, you don't need a TV, you don't need a yacht, you don't need Brad Pitt.  All you need is the will to make a difference.  Work to combat the machine that teaches you to want Britney Spears and Armani clothing.  Work to create a society in which people get what they want, because they want things they actually WANT, not things they are ~supposed~ to want.^
+Visit www.infoshop.org today!</q>";
+];
+
+	Object -> Storefront "store window"
+has static
+with
+name 'storefront' 'store' 'front' 'window' 'place' 'fast' 'food',
+describe "To one side is a store -- well, actually, all I can see is the front window.  It looks like a fast food place.",
+description "It's closed down now -- I guess they figured not too many ralliers were going to buy a burger.",
+before [;
+	Attack:
+	if (Bat in player) {
+print "I swing the bat hard, flinching away as the glass shatters.  Most of it falls into the store, but a few shards fly out, cutting my arms.  One stabs a middle-aged man in the cheek and remains fixed there.  He grunts in pain and pulls it out.  The window has a jagged hole in the center of it.  A short young guy carrying some kind of pipe pushes his way through the crowd, sees what I've done, raises his fist, shouts ~Smash the corporations!~ and hurls his pipe at the window, which now shatters completely, sending several more shards into the crowd.^
+Suddenly people start running like mad in all directions.  I turn around to see a policeman mounted on a giant horse lumbering toward me.  I try to run, but another cop on another horse is coming from another direction and cuts me off.  The guy who threw the pipe starts hollering at the pigs: ~You fucking pigs!  You're in the payroll of the corporations!  Would you be arresting us if we were millionaires protesting the oppression of the masses!  I don't <e>think</e> so!  You fuckers are--~^
+One of the cops shoots him in the face with a rubber bullet.  He falls backward, landing on a shard of glass sticking up from the windowsill, and slumps to the ground with the shard -- about 10cm long -- still sticking into his lower back.^
+I move toward him to help, but the cop's horse blocks me.  ~You've gotta help him!~ I scream up at the cop.  His eyes are hidden behind mirrored sunglasses, as he looks down at me.  ";
+if (Brad in location) { Brad.preventArrest(); rtrue; }
+if (Gary in location) { Gary.preventArrest(); rtrue; }
+if (Oscar in location && Nora in location) { Oscar.preventArrest(); rtrue; }
+if (Zac in location && Zac.known==Yes) { Zac.preventArrest(); rtrue; }
+print "I feel a sharp pain in the back of my head as I am struck from behind with a billyclub by the other cop and I^";
+BeginPart4a();
+rtrue;
+	}
+	else "I'm not stupid enough to try to smash a window with my bare hands.";
+	Search:
+<<Examine self>>;
+];
+
+	Object -> Sign "sign"
+with
+name 'sign' 'protest' 'slogan',
+describe "Somebody left a protest sign here.",
+description "It has two columns of text.  The first column has three lines of text, each line crossed out with a red X:^
+<q>OF THE PEOPLE^
+BY THE PEOPLE^
+FOR THE PEOPLE</q>^
+The second has three more lines:^
+<q>OF THE HELPLESS^
+BY THE RUTHLESS^
+FOR THE PROFIT OF THE UNSCRUPULOUS</q>",
+before [;
+	Wave: "I hoist the sign overhead and wave it around for a few minutes, until somebody jostles me and I have to put my arms down to keep steady on my feet.";
+];
+
+	Object -> Mask "ski mask"
+has clothing
+with
+name 'mask' 'ski' 'black',
+describe "I can see a black ski mask -- I guess somebody left it here.",
+description "A wool ski mask.  It's black, and there's a red anarchy symbol ironed onto the back.",
+each_turn [;
+	if (self has worn && random(100)<30) print_ret (string) random (
+"This stupid mask really itches.",
+"<e>Fuck</e>, this mask itches!",
+"This fucking mask is incredibly itchy.",
+"I'm itching like a crazy person from this goddamn mask."
+	);
+],
+after [;
+	Disrobe: "Ugh, glad to have that thing off.";
+	Wear: "Okay, I'll put it on -- aw, shit, this thing itches like a motherfucker.";
+];
+
+	Object -> Corpse "corpse"
+with
+name 'corpse' 'body' 'dead' 'man' 'shirt',
+describe [;
+	if (self hasnt general) {
+give self general;
+print "Also -- holy fuck!  There's a fucking <e>corpse</e> here!";
+	}
+	else print "There's that corpse again.  Did it move, or did I just come around in a circle?";
+],
+description "This guy was obviously a rallier.  He's lying on his face, and the back of his shirt says ~Let your life be a counter-friction to stop the machine.~  It looks like his skull is smashed in.  Shit, I've seen some fucked-up shit at some of these rallies, but this is fucking <e>brutal</e>.",
+before [;
+	Push,Pull,Take: "I'm not messing with this.";
+	Search: "There's nothing in his pockets or anything.  Either he was smart enough not to bring anything, or he's already been looted by some asshole.  Shit, I'm surprised nobody's taken his fucking <e>pants</e>.";
+];
+
+! Minor NPCs and associated objects
+
+! Cop
+	Man -> Pig "pig"
+with
+name 'pig' 'policeman' 'officer' 'cop' 'police' 'man' 'riot' 'gear',
+describe "Oh, great.  There's one of those fucking pigs.  All decked out with riot gear.",
+description "He's got his fucking mirrored sunglasses on <e>underneath</e> his fucking face shield, with his fucking stupid helmet.  He's got one of those fucking riot shields they use to deflect stuff people throw at them.  He's got a fucking billyclub and a fucking gun.  Goddamn those fuckers.",
+color [; return $FFFF00; ],
+bgcolor [; return $000099; ],
+NPCbefore [;
+	Attack:
+	if (Bat in player) {
+print "It's hard to tell when he's not looking, with those sunglasses he's got, but when I think he is I step forward quickly, pull back my arm and swing hard.  Apparently he wasn't looking completely away, because he reacts before the bat makes contact.  He raises his riot shield hastily, but can't quite get it to fully block the blow.  The bat hits the riot shield and the force is transmitted to his arm and his body.  He is knocked off balance somewhat, but taking that big of a swing leaves me <e>totally</e> off balance, plus his little billyclub is a lot lighter than the bat.  Before I can pull it up to hit again, he raps me on the shoulder, hard, and I drop the bat involuntarily.^";
+if (Brad in location) { Brad.preventArrest(); rtrue; }
+if (Gary in location) { Gary.preventArrest(); rtrue; }
+if (Oscar in location && Nora in location) { Oscar.preventArrest(); rtrue; }
+if (Zac in location && Zac.known==Yes) { Zac.preventArrest(); rtrue; }
+print "Then I turn to get the fuck out of there, but he knocks me on the knee and I drop to the ground.  I start to get up right away, but I hear a little whistling, zipping sound as his club moves through the air and I feel something like a hot sheet of metal on the back of my head for a fraction of a";
+BeginPart4a();
+rtrue;
+	}
+	else "Putting my dukes up against a guy with a club and a gun would be stupid.";
+],
+moveToRally [;
+move self to Rally;
+move BillyClub to Rally;
+move Gun to Rally;
+move RiotGear to Rally;
+],
+number 0,
+each_turn [;
+		if (random(100)<75) {
+	self.number++;
+	if (Bat in location && random(100)<30) {
+remove Bat;
+"The cop reaches out with a booted foot and kicks the baseball bat back toward himself, then picks it up and sort of hides it somewhere behind his giant riot shield.";
+	}
+	if (Bat in player && random(100)<40) "The cop looks long and hard at my baseball bat.";
+	switch (self.number) {
+1: "The cop glares around malevolently.";
+2: "That fucking cop is jabbering to himself.  Probably got a radio in his helmet.";
+3: "The cop prods some guy with his billyclub.  The guy gives him the finger and disappears into the crowd.";
+4: "The cop glances down at his gun in its holster.";
+5: "The cop says, ~Everybody stay calm, we don't want anybody to get hurt,~ a few times.  What the fuck <e>is</e> that?";
+6: self.number=random(3);
+	}
+		}
+];
+
+	SNLine ->-> Pig0 "You fucking pig!"
+with
+content "~You fucking pig!~ I scream at the fucking pig.  He says nothing.";
+
+		SNLine ->->-> Pig0x0 "I said you're a <e>fucking</e> pig!"
+	with
+	content "~I said you're a <e>fucking</e> pig.~  Still nothing.";
+	
+			SNLine ->->->-> Pig0x0x0 "I said you're a motherfucking pig and your whole fucking family is a herd of motherfucking swine."
+		with
+		content "~I said,~ I say, ~you're a motherfucking pig and your whole fucking family is a herd of motherfucking swine.",
+		after [;
+		if (Brad in location) { Brad.preventArrest(); rtrue; }
+		if (Gary in location) { Gary.preventArrest(); rtrue; }
+		if (Oscar in location && Nora in location) { Oscar.preventArrest(); rtrue; }
+		if (Zac in location && Zac.known==Yes) { Zac.preventArrest(); rtrue; }
+		print "Without a word, the cop swings his club.  I turn around as fast I can, but I feel a sharp pain on the back of my head and";
+		BeginPart4a();
+		rtrue;
+		];
+		
+			SNLine ->->->-> Pig0x0x1 "You're not worth the fucking time to talk to."
+		with
+		content "~You're not worth the fucking time to talk to,~ I say.  No response.";
+
+		SNLine ->->-> Pig0x1 "Ah, the strong silent type."
+	with
+	content "~Ah,~ I say, ~the strong silent type.~  He glares at me but says nothing.";
+	
+			SNLine ->->->-> Pig0x1x0 "I love the strong silent type."
+		with
+		content "~I love the strong silent type,~ I say.  He turns his head slightly.";
+		
+				NLine ->->->->-> Pig0x1x0x0 "Hear that?  I said you're my type, man.  What I mean is I'd like you to fuck me."
+			with
+			content "~Hear that?~ I say.  ~I said you're my type, man.  What I mean is I'd like you to fuck me.~  He turns his head straight at me.  ~Yeah, I would.~^
+			~Anytime, baby,~ he says softly.";
+			
+					SNLine ->->->->->-> Pig0x1x0x0x0 "Ha!  You think I'm serious?  Not in a million fucking years, shithead."
+				with
+				content "~Ha!~ I burst out.  ~You think I'm serious?  Not in a million fucking years, shithead.~",
+				after [;
+				Pig0x0x0.after();
+				];
+
+			SRLine ->->->-> Pig0x1x1 "I hate the strong silent type."
+		with
+		newnode Pig,
+		content "~I hate the strong silent type,~ I say.  He does not reply.";
+
+		SNLine ->->-> Pig0x2 "I take it by your silence that you agree."
+	with
+	content "~I take it by your silence that you agree,~ I say.  Still no response.";
+	
+	SNLine ->-> Pig1 "Pretty cocky, aren't you, with your nice little firearm?"
+with
+content "~Pretty cocky, aren't you,~ I say to the cop, ~with your nice little firearm?~  He says nothing.";
+
+		SNLine ->->-> Pig1x0 "I guess you don't have a problem shooting peaceful protesters."
+	with
+	content "~I guess you don't have a problem shooting peaceful protesters.~^
+	The cop puts his hand on his gun.";
+	
+		SNLine ->->-> Pig1x1 "I say a big <e>fuck you</e> to you and your fucking firearm."
+	with
+	content "~I say a big <e>fuck you</e> to you and your fucking firearm.~",
+	after [;
+	Pig0x0x0.after();
+	];
+
+		NLine ->->-> Pig1x2 "How long you think that thing could protect you if, say, 100 of these people decided to take you down?"
+	with
+	content "~How long you think that thing could protect you,~ I ask the cop, ~if, say, a hundred of these people --~ I gesture at the crowd ~-- decided to take you down?~^
+	~I'd shoot you first,~ the cop grunts, his voice thick with hatred.";
+	
+			SNLine ->->->-> Pig1x2x0 "Ooh, I heard an oink."
+		with
+		content "~Ooh, I heard an oink,~ I say.",
+		after [;
+		Pig0x0x0.after();
+		];
+		
+			NLine ->->->-> Pig1x2x1 "Even if I wasn't one of the hundred?  Or does that not matter?"
+		with
+		content "~Even if I wasn't one of the hundred?~ I ask.  ~Or does that not matter?~^
+		~In your case,~ he says hatefully, ~no.~";
+		
+				NLine ->->->->-> Pig1x2x1x0 "Just like the whole bunch, just ready to kill and kill and kill even if nobody's after your ass."
+			with
+			content "~Just like the whole bunch,~ I say, ~just ready to kill and kill and kill even if nobody's after your ass.~^
+			~You're after my ass,~ the cop says.^
+			~I'm not after your ass, fucker.  I want you to live a long and happy life.  <e>You're</e> the one who's after <e>my</e> fucking ass, and because of that we're opponents here.  If you'd get rid of that fucking gun and let me do my think, there'd be no problem at all.~^
+			~You'd destroy the world,~ he says, with the confident ignorance of someone who doesn't know what they're talking about.^
+			~<e>I'd</e> destroy the world?~  I laugh out loud.  ~You're the one with the gun, man, and the guys you're supporting are the ones who are polluting the world and raping it so by the time your grandkids are your age they'll be wearing gas masks 24/7.  And you're worried about destroying the world?~^
+			The cop just stands there for about 5 minutes, saying nothing, looking right at me -- I can tell, even with those sunglasses he's got.  Then he shakes his head, adjusts his grip on his riot shield, and melts away into the crowd.",
+			after [;
+			remove Pig;
+			];
+		
+			SRLine ->->->-> Pig1x2x2 "Wow, I'm honored."
+		with
+		newnode Pig,
+		content "~Wow,~ I say, ~I'm honored.~  He says nothing.";
+	
+	SNLine ->-> Pig2 "You sure you're on the right side, man?"
+with
+content "~You sure you're on the right side, man?~ I ask the cop.  He says nothing.";
+
+	SNLine ->-> Pig3 "You make me sick."
+with
+content "~You make me sick,~ I tell the cop.  He says nothing.";
+
+
+	Object -> BillyClub "billyclub"
+has concealed
+with
+name 'billyclub' 'club' 'billy' 'nightstick' 'stick' 'night' 'cop^s' 'pig^s' 'policeman^s' 'guard^s',
+description "The cop would normally be using this to beat up people who hate him and everything he stands for.  Right now he's just holding on to it.",
+before [;
+	Take: "He'd beat the shit out of me.";
+];
+
+	Object -> Gun "gun"
+has concealed
+with
+name 'gun' 'firearm' 'pistol' 'holster' 'cop^s' 'pig^s' 'policeman^s',
+description "A gun, the tool of repression and war, rests in the policeman's holster.",
+before [;
+	Take: "Not gonna happen.";
+];
+
+	Object -> RiotGear "riot gear"
+has concealed
+with
+name 'gear' 'riot' 'shield' 'face' 'helment' 'vest' 'bulletproof' 'cop^s' 'pig^s' 'policeman^s',
+description "The cop is arrayed in sumptuous fashion for this glorious occasion, sporting a bulletproof vest, a thick plastic helmet with face shield, and a tall bulletproof riot shield.  This is the ceremonial dress used at the ~unchanging of the guard,~ when, according to tradition, the representatives of those currently in power are sent to defeat by violence a popular movement to scrap the government.  Legend has it that one day we'll actually <e>do</e> it, but until then, we keep having to deal with fuckers like this.",
+before [;
+	Take: "I wouldn't want to strip the cop down, even if that were possible.";
+];
+
+
+! Green machine
+
+	Woman -> GreenMachine "green machine"
+with
+name 'machine' 'green' 'woman' 'naked' 'nude',
+describe "Aw, man, there's a naked woman here with neon green hair and body paint -- a fucking green machine.",
+description "One of those gung-ho environmentalists -- earth child, friend of the flora and fauna, etc.  We call 'em green machines because they're like a machine where no matter what you put in, you get ~save Gaia~ nonsense back.  It's not that they don't have a point -- they have a great point -- it's just that they have nothing <e>but</e> a point, and they hammer it home with their gentle words of ~wisdom~ so much it just drives me nuts.^
+This one's as wacky as they come -- buck naked, for starters, with neon green hair, and she's moanin' and a-groanin' about ~earth this~ and ~Gaia that~.  She's got all kinds of body paint all over her (green and otherwise), and it looks like there's supposed to be a significance to the position of each little design.  Like, her breasts are two mountains; one's got the aureole painted white, like a snow cap, the other one's painted red, like a volcano.  Her belly is supposed to be the ocean, I guess, 'cause it's painted blue with little whales.  Her legs are covered with paintings of vines.  Her vagina -- anyway, that's the general idea.",
+color [; return $0000FF; ],
+bgcolor [; return $00FF00; ],
+moveToRally [;
+move self to Rally;
+move BodyPaint to Rally;
+],
+number 0,
+each_turn [;
+		if (random(100)<50) {
+	self.number++;
+	switch (self.number) {
+1: "The green machine cavorts around in some kind of dance undoubtedly designed to make me think of plants swaying in the breeze.";
+2: "The machine caresses her thighs and moans about the plight of the poor Earth.";
+3: "~We are all children of Gaia!~ the green machine proclaims.  ~We are doing irreparable damage to our earth mother, and only by realizing this and seeking to bind up her wounds can we find redemption.~  Sheesh.";
+4: "The green machine begins to sing some sappy, tuneless ~song~.";
+5: "~The earth is as naked and vulnerable as I am now,~ the green machine wails, ~and we are raping her!~";
+6: "~The earth needs <e>us</e>,~ chants the green machine, ~and we need <e>the earth</e>.  The earth needs <e>us</e>, and we need <e>the earth</e>.~";
+7: self.number=random(4);
+	}
+		}
+];
+
+	NLine ->-> Green0 "Okay, so what's your plan for, uh, saving Gaia, or whatever?"
+with
+content "~Okay,~ I say to the green machine, dreading the response, ~so what's your plan for, uh, saving Gaia, or whatever?~^
+~Gaia can only be saved though the love of her children,~ she croons, ~and their tender ministrations.~";
+
+		RNLine ->->-> Green0x0 "What kind of ministrations?"
+	with
+	newnode GreenMachine,
+	content "~What kind of ministrations?~^
+	She waves her hand ~mysteriously~.  ~Tender loving care -- tender loving care is required.~";
+	
+		RNLine ->->-> Green0x1 "Oh, for fuck's sake."
+	with
+	newnode GreenMachine,
+	content "~Oh, for fuck's sake,~ I say.  This is such a non-conversation.^
+	~A dirty word, but a clean concept,~ says the machine.  ~Be fertile, as Gaia is!~";
+	
+		RNLine ->->-> Green0x2 "This Gaia must be quite a gal to have so many children.  Are they all from the same father?"
+	with
+	newnode GreenMachine,
+	content "~This Gaia must be quite a gal to have so many children,~ I say with a straight face.  ~Are they all from the same father?~^
+	She doesn't get it.  ~Gaia is both father and mother to us all.~";
+
+	RNLine ->-> Green1 "Knock it off, why don't you?"
+with
+newnode GreenMachine,
+content "~Knock it off, why don't you?~ I snap at the green machine.^
+~Gaia's message must be spread,~ she says.";
+
+	NLine ->-> Green2 "Aren't you scared you're going to get raped, or at least arrested for lewdness?"
+with
+content "~Aren't you scared you're going to get raped,~ I ask the machine, ~or at least arrested for lewdness?~  It's kind of a silly question, since I'm certainly not rape-proof, and everybody here is pretty much at risk of being arrested.^
+~We are all being raped because Gaia is being raped,~ she replies.  ~As for lewdness, why should we cover our natural forms?~";
+
+		RNLine ->->-> Green2x0 "Gaia's being raped?  Call 911!"
+	with
+	newnode GreenMachine,
+	content "~Gaia's being raped?~ I exclaim in mock horror.  ~Call 911!~^
+	~Sadly,~ says the machine, ~there is no one Gaia can call on in her hour of need.~";
+	
+		RNLine ->->-> Green2x1 "Maybe we shouldn't, as a general course, but right now it might be a good idea."
+	with
+	newnode GreenMachine,
+	content "~Maybe we shouldn't, as a general course,~ I say -- shit, <e>I</e> certainly don't see the point of clothes -- ~but right now it might be a good idea.~^
+	~If once, then ever,~ she intones mournfully.  ~Right now is now different than any other time.~";
+	
+	RNLine ->-> Green3 "Nice outfit."
+with
+newnode GreenMachine,
+content "~Nice outfit,~ I say.^
+~My raiment --~ I roll my eyes ~-- reflects the original purity of Gaia,~ says the machine, ~but today this purity is rapidly disappearing.~";
+
+	Object -> BodyPaint "green machine's body paint"
+has concealed
+with
+name 'paint' 'body' 'green' 'machine^s' 'woman^s' 'naked' 'nude',
+description "I must admit, it's really well done.  It covers her from her forehead to her toenails, and it goes all the way around her body and all the way around her legs and arms.";
+
+
+! Anarcho-punk
+
+	Man -> Punk "anarcho-punk"
+with
+name 'punk' 'anarcho' 'anarcho-punk' 'anarchist' 'activist' 'young' 'little' 'howie',
+describe "A young anarcho-punk is standing a little ways away, screaming at the top of his lungs about oppression.",
+description "Wow, what a classic.  He's about 160cm tall, with a shaved head -- looks like he's maybe 17.  His t-shirt says ~SMASH THE STATE~ in huge letters across the back -- obviously homemade.  It's black, as are his pants and his shoes.  His vocal cords have got to be about ready to fucking <e>die</e>, because he's screaming like a crazy man, nonstop.^
+These little guys -- they've got the right idea.  Anti-government, anti-capitalism, sure, sure.  I'm just worried they're going to burn themselves up in wasted rage before they get to do anything, y'know, <e>major</e>.  Like this guy -- I mean, he's doing serious damage to his throat right now.",
+color [; return $000000; ],
+bgcolor [; return $FF0000; ],
+moveToRally [;
+move self to Rally;
+],
+number 0,
+each_turn [;
+		if (random(100)<40) {
+	self.number++;
+	if (Bat in location && random(100)<30) "The punk eyes the baseball bat thoughtfully as he catches his breath between screams.";
+	if (Bat in player && random(100)<40) "The punk looks strangely at the baseball bat I'm carrying.";
+	switch (self.number) {
+1: "The punk screams, ~Down with the corporations!~";
+2: "The anarcho-punk yells, ~End capitalism!~";
+3: self.chooseNode(PunkIntroduce); <<SwitchConversation self>>;
+4: "Shaking his fist, the young anarcho-punk decries the tyranny of the state.";
+5: "Screaming <e>as loud as he possibly can</e>, the punk says ~100% freedom for all without encroachment by governments or corporations!~ all in one breath.";
+6: "The punk hollers, ~Oppression!~";
+7: "The punk engages in a brief, heated debate with another protester about the pros and cons of syndicated vs. individualist anarchism.";
+8: "The little anarcho-punk yells viciously: ~Government is the enemy!~";
+9: self.number=random(3)+4;
+	}
+		}
+];
+
+	RNLine ->-> Punk0 "Smash the state!"
+with
+newnode Punk,
+content "~Smash the state!~ I yell at the punk.^
+~<e>Fuck</e> yes!~ he replies enthusiastically.  ~<e>Fuck</e> yes!~";
+
+	NLine ->-> Punk1 "Did you make that shirt yourself?"
+with
+content "~Did you make that shirt yourself?~ I ask the anarcho-punk.^
+~Fucking right I did -- stole the fabric and sewed it myself.  No <e>fucking</e> sweatshops!~";
+
+		RNLine ->->-> Punk1x0 "What about the shoes?"
+	with
+	newnode Punk,
+	content "~What about the shoes?~ I ask.^
+	~<e>Smash</e> --~ the punk begins, then turns to me.  ~What?  My shoes?~^
+	~Yeah,~ I say, ~did you make them too?~^
+	He grimaces angrily.  ~No.  Goddamn fuck.  Can't find any fucking materials!  I just <e>know</e> I'm supporting some <e>fucking</e> monster corporation!  <e>Fuck</e>!";
+	
+		RNLine ->->-> Punk1x1 "Cool."
+	with
+	newnode Punk,
+	content "~Cool,~ I say.  Most of these guys don't have that kind of day-to-day commitment.^
+	~<e>Fucking</e> right it's cool,~ he says.  ~Fighting back against the <e>fucking</e> man is <e>always fucking cool</e>!~";
+	
+		RNLine ->->-> Punk1x2 "Didn't spin the fabric yourself?"
+	with
+	newnode Punk,
+	content "~Didn't spin the fabric yourself?~ I ask, trying to keep from smiling.^
+	~Can't find any <e>fucking</e> materials,~ he says.  ~Fucking corporations got a <e>fucking monopoly</e> on all the <e>fucking</e> materials.  An individual can't buy a single <e>fucking thing</e> except what's prepackaged and delivered to his <e>fucking door</e> by a fucking <e>fuck</e> in a fucking <e>uniform</e> who tells you to have a <e>nice fucking day</e>!~^
+	Well, that's not how I usually think of it, but whatever.";
+
+	NLine ->-> Punk2 "Look, man, you're seriously going to hurt yourself yelling like that."
+with
+content "~Look, man,~ I say, ~you're seriously going to hurt yourself yelling like that.~  Man, her seriously is.^
+~I don't care if I fucking <e>die</e>!  I fucking <e>fuck</e> around all day, every day, keep my <e>fucking</e> mouth shut.  I come to rally, I'm gonna fucking <e>scream</e> the fucking shit I'm keeping inside all the rest of the fucking time.~";
+
+		NLine ->->-> Punk2x0 "I'm serious, man.  I am <e>totally</e> with you, but you're not helping anybody yelling like a maniac."
+	with
+	content "~I'm serious, man,~ I say.  ~I am <e>totally</e> with you, but you're not helping anybody yelling like a maniac.~^
+	~Who am I fucking supposed to be <e>helping</e>?~ he retorts.";
+	
+			NLine ->->->-> Punk2x0x0 "The anarchist cause, man!"
+		with
+		content "~The anarchist cause, man!~  Shit, like he's thinking about something else?^
+		~Helping the cause?  I'm fucking <e>helping the cause</e> -- I'm <e>right fucking here</e> at this rally!~^
+		~You aren't doing shit but yelling,~ I say.  ~You want to do something, do some stuff at home.  Next time you come, bring 2 other people with you.  That's the way to help.~^
+		He pauses, obviously controlling the urge to spew more profanity.  ~Well -- fuck, okay!~ he says.  ~I'll bring 2 fucking more people next fucking time!~^
+		~Right on,~ I say.  ~And go easy on that voice.~^
+		~Fuck that,~ he says absently as he disappears into the crowd.",
+		after [;
+		remove Punk;
+		];
+		
+			NLine ->->->-> Punk2x0x1 "Those people in the sweatshops!  The victims of the corporations!"
+		with
+		content "~Those people in the sweatshops!~ I say.  ~The victims of the corporations!~^
+		~I fucking --~ he begins, but I cut him off.^
+		~Nobody in a sweatshop can hear you yelling out here,~ I say.  ~Activism does not begin and end with the rally.  You want to help them?  Connect with other people in your community!  Anarchism is all about community, man!  Find some other people who you can get together with, do some stuff -- pretty soon you'll be posting something to a website telling people about a rally at your hometown, organized by you.~^
+		It's obvious that the idea of running his own rally appeals to him.  ~Shit!~ he says.  ~I'm fucking gonna do that!~^
+		~All you gotta --~ I begin, but he's gone, disappeared into the crowd.",
+		after [;
+		remove Punk;
+		];
+		
+	Holder ->-> PunkIntroduce
+with
+switchedTo [;
+"~Hey!~ the punk says, suddenly standing right in front of me.  He grabs my hand and clenches it in his fist.  ~I'm Howie.  Anarchist.  From Pennsylvania.~  I can hardly tell if he actually wants to talk to me, since he immediately breaks off the ~handshake~ to scream a slogan to the crowd at large.";
+];
+
+		NLine ->->-> PunkIntroduce0 "I'm Iris.  Anarchist too."
+	with
+	content "~I'm Iris,~ I say.  ~Anarchist too.~^
+	~<e>Fuck</e> yeah,~ he says.  ~I figured.~  What the fuck kind of person comes up to somebody and just says, ~hey, I'm an anarchist~?^
+	He goes on.  ~You here with anybody?  Some group?  I'm by myself.  This your first rally?  Where you from?~^
+	Obviously <e>his</e> first rally.";
+	
+			NLine ->->->-> PunkIntroduce0x0 "I'm here with a few people."
+		with
+		content "~I'm here with a few people,~ I say cautiously.^
+		~Right on, man,~ he says.  ~Keep the cells small, keep 'em small.  The bigger the bunch the bigger the target.~";
+		
+				NLine ->->->->-> PunkIntroduce0x0x0 "What the fuck are you talking about?"
+			with
+			content "~What the fuck are you talking about?~ I ask.  Cells?^
+			~The cells, man, the cells,~ he says.  This guy reminds me of Brad Pitt in <n>12 Monkeys</12>.  ~Gotta keep 'em small, you know?  We get in a big bunch, the heat can target us, man.~^
+			~Right,~ I say slowly.  What.  The fuck.  Does he think he's talking about organization?  He's <e>by himself</e>, for fucking out loud!  That's one fucking small cell, for sure.^
+			~<e>Fuck the fucking government</e>!~ he screams, and runs off into the crowd.",
+			after [;
+			remove Punk;
+			];
+			
+				NLine ->->->->-> PunkIntroduce0x0x1 "Uh, yeah, keep 'em small."
+			with
+			content "~Uh, yeah,~ I say, ~keep 'em small.~  Is he talking about, like, organizational cells?  Who made him the world authority on the optimum size of an anarchist group?^
+			~A big <e>fuck you</e> to the state!~ he screams, running like a crazy man into the crowd.",
+			after [;
+			remove Punk;
+			];
+			
+			NLine ->->->-> PunkIntroduce0x1 "I'm here with 8 other people.  We're sort of a little, y'know -- we go to rallies together, and stuff."
+		with
+		content "~I'm here with 8 other people,~ I say.  ~We're sort of a little, y'know -- we go to rallies together, and stuff.~  How do I explain it?  We <e>do</e> go to rallies together, but I'm leaving almost everything out.  I guess I could say we share opinions and ideas and we discuss how we each implement them in our own hometowns, but that'd probably go over his head (literally).  Besides, he's already jabbering again.^
+		~Cool, man,~ he says.  ~That's great.  Gotta have those little bunches, you know?  Bringing people together -- that's what it's all about, man.~  Right.  Like this guy's got the scoop on what anarchism is ~all about~.";
+		
+				NLine ->->->->-> PunkIntroduce0x1x0 "Thanks for the tip."
+			with
+			content "~Thanks for the tip,~ I say.^
+			~What?~ he says.  I hear a shot somewhere in the distance, followed by a chorus of yells.  ~Those fucking pigs!~ screams the punk.  ~Those fucking pigs!~  He runs off toward the sound, pushing and weaving his way though the crowd.  Good riddance.",
+			after [;
+			remove Punk;
+			];
+			
+				NLine ->->->->-> PunkIntroduce0x1x1 "I think I've got a pretty good handle on what anarchism is about, thanks."
+			with
+			content "~I think I've got a pretty good handle on what anarchism is about, thanks.~^
+			~Right on, right on,~ the guy says.  ~Hey, man, do you --~ without pausing, he breaks off and runs into the crowd.  What a lunatic.",
+			after [;
+			remove Punk;
+			];
+
+			NLine ->->->-> PunkIntroduce0x2 "This is, like, my 17th rally, or something."
+		with
+		content "~This is, like, my 17th rally, or something,~ I say.  18th?^
+		~Whoa,~ he says, ~right on.  That's a lot of rallies in -- how old are you?~";
+		
+				NLine ->->->->-> PunkIntroduce0x2x0 "21."
+			with
+			content "~21,~ I say.^
+			~Blackjack!~ he says.  Something in the crowd catches his eye.  ~Catchyoulaterbye!~  He's gone.",
+			after [;
+			remove Punk;
+			];
+		
+			RNLine ->->->-> PunkIntroduce0x3 "I'm from California."
+		with
+		newnode PunkIntroduce0,
+		content "~I'm from California,~ I say.^
+		~Right on,~ he says.  ~We've got, like, this nationwide movement, man!  California to Pennsylvania!  From sea to fucking sea!~";
+	
+		RNLine ->->-> PunkIntroduce1 "Are you talking to me?"
+	with
+	newnode PunkIntroduce,
+	content "~Are you talking to me?~ I ask.^
+	He screams ~Democracy is a gyp!~  Then he turns to me.  ~Yeah,~ he says.";
+	
+		RNLine ->->-> PunkIntroduce2 "For fuck's sake, slow down, man."
+	with
+	newnode PunkIntroduce,
+	content "~For fuck's sake,~ I say, ~slow down, man.~  This guy is seriously juiced on adrenalin -- or, come to think of it, maybe on something else.^
+	~What?~  He says.  ~Slow down?  Oh, am I talking too fast?~  Aw, <e>no way</e>, man, I didn't mean <e>that</e>.  ~Sorry.  I'm Howie.  I'm from Pennsylvania.~  He turns away immediately to scream ~Fuck the USA!~";
+	
+		RNLine ->->-> PunkIntroduce3 "Uh, I'm Iris?"
+	with
+	newnode PunkIntroduce0,
+	content "~Uh,~ I say hesitantly, ~I'm Iris?~  It's hard to tell what he's expecting me to say.^
+	~Are you asking me?~ he says.  Before I can respond he goes on.  ~All <e>right</e>!  Iris!  Cool, man!  So what's up?  Who you with?  I'm by myself.  Where you from?~";
+	
+		RNLine ->->-> PunkIntroduce4 "Are you on some kind of drug?"
+	with
+	newnode PunkIntroduce,
+	content "~Are you on some kind of drug?~ I ask.  This guy is too hyper to be real.^
+	~What are you, the <e>heat</e>?~ he says, then laughs.  Wow, what cool jargon.  ~No way, man -- no juicing up on the job.  Can't fight the man when you're high, man.~";

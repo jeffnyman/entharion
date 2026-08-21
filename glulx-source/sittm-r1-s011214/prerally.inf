@@ -1,0 +1,89 @@
+! Stick it to the man
+!	Part 2 -- in the city, just before the rally
+
+[BeginPart2 a;
+move Brad to SideStreet;
+move Nora to SideStreet;
+move Oscar to SideStreet;
+	Game.timeOfDay="Midmorning";
+objectloop (a ofclass Talker) a.number=0;
+print "We all go out and pile into the van.  Gary gets in the driver's seat and starts it up, letting the old engine warm up while Fletch is closing the glove compartment and buckling into the shotgun.  Clanging and grumbling like all get out, the van pulls out of the driveway and onto the deserted street.^
+Gary drives slowly down the street.  Sandwiched between Brad and Kyla, I lean forward and look sideways to see out the windows.  Houses and houses, looking for all the world like nobody lives in them, line both sides of the street.  All the same, like some 50s vision of the perfect suburb.  Now they're just unwanted real estate in a shitty section of town.^
+Fletch mumbles something to Gary, who nods.  He glances into the rear-view mirror, which makes me want to laugh -- who the fuck does he think is behind us? -- but I keep silent because I feel like I'd be disrupting something.^
+When I was young, like Nora, I used to laugh at stuff like that.  Rallies were fun, and sticking it to the man was something I did so I could tell other people to do it.  Nora, I notice as I think of her, is looking out the window from the back seat, where's she's sitting like a flimsy piece of grass between the side of the van and Oscar, who's sprawled over 2 seats.  I can tell he's watching her with at least one eye, and I'm glad he's taken a shine to her.  She's so fucking small, I feel like <e>I</e> could break her -- thinking about cops and clubs and pepper spray and rubber bullets makes me swallow in apprehension, with that feeling of Nora's fragility so fresh in my mind.  Looking out the window again, I can see her reflection on the glass, as she turns to point something out to Oscar.  I fucking hope she sticks close to him.^
+Gary brings the van to a stop next to an empty dumpster.  Shit, I'm not so old.  Fucking 21.  Why do I feel like it's been decades since I went to that first rally in Chicago -- hell, I feel like it's been decades since the <e>last</e> rally, in LA.^
+I slide out of my seat and hop out of the van.  Pilar is the last one out, and she closes the door and checks the lock.  Nora's looking at Gary like she expects a pep talk, but he just smiles at her and starts walking east toward the rally with Fletch.  Pilar follows them at a distance, and Jen and Kyla follow her, after a short murmured conversation.  They turn a corner and disappear.^";
+
+	objectloop (a ofclass Talker) {
+a.lastheard=-1;
+a.number=0;
+	}
+	
+Brad.chooseNode(Brad.sceneNode());
+Nora.chooseNode(Nora.sceneNode());
+Oscar.chooseNode(Oscar.sceneNode());
+
+GxScriptManager.updateWindow();
+
+PlayerTo(SideStreet);
+];
+
+	Room SideStreet "Side Street"
+with name 'side',
+description "This little street is a few blocks from where the rally's happening.  (Even so, I can hear this low murmur from the east -- the noise of the demonstrations, I assume.)  It's crammed between two giant buildings, one steel and glass, the other brick.  There's no sidewalk or anything; the buildings just stop right at the asphalt.  The van's parked next to a big, empty dumpster.  Beyond that, to the west, is where we came from.",
+before [;
+	Listen: "I can hear the sounds of shouting and chanting and rally-ish noises, somewhere not too far away.";
+	Smell: if (~~noun) "It smells filthy.";
+],
+w_to "I'm not going back there.  The rally's east, man.",
+e_to [;
+if (player.stickTogether==Yes) print "I take Brad's hand.  ";
+else player.stickTogether==No;
+BeginPart3();
+rtrue;
+];
+
+	Decor -> Street "street"
+with name 'street' 'asphalt' 'ground' 'road' 'pavement',
+description "The road is in perfect condition.  Just got repaved, looks like.",
+before [;
+	Smell: "It smells harsh and dirty.";
+	Touch: "It feels gritty and hard.";
+];
+
+	Decor -> SteelBuilding "steel building"
+with name 'building' 'steel' 'glass',
+description "It's a fucking <e>office</e> building, where tons of people go to work every day like fucking slaves or something for some company that's probably sucking the indigenous people of some third-world country dry, sending <e>them</e> to work in some giant building like this one, only crappier, because who cares about all the little shit like air conditioning when it's just some starving nobody you're working like a dog 14 hours every fucking day?  Making shoes or some shit for the very fuckers who are working in this building.  So everybody's fucking each other over.  Fuck, even the victims are giving the shaft to some other victims down the ladder.",
+before [;
+	Touch: "It is smooth and cold.";
+];
+
+	Decor -> BrickBuilding "brick building"
+with name 'building' 'brick',
+description "Some kind of warehouse, looks like.  Old.  Probably full of surplus shit that they couldn't sell, so they let it collect dust, saving for a rainy day.  And the poor fucks who made it don't get their measly cut till it sells.",
+before [;
+	Touch: "It's rough to the touch.";
+];
+
+	Decor -> Dumpster "dumpster"
+has container open
+with name 'dumpster' 'empty' 'trash' 'garbage' 'bin',
+description "These fucking things are everywhere, in every city.  Full of trash.  Where the <e>fuck</e> does all that trash come from?  Who's throwing shit away, to go sit in a fucking landfill while some people starve shoeless.  This one's empty, at least.",
+before [;
+	Enter: "I'm not Popeye the sailor man.  I don't live in a garbage can.  I'm not strong to the finish.  I don't eat my spinach.  I'm not Popeye the sailor man.  Toot toot.";
+	Smell: "It smells like garbage.";
+	Touch: "No way.  I don't mind getting my hands dirty, but there's no point right now.";
+];
+
+	Decor -> TempVan "van"
+with
+name 'van' 'our' 'big' 'black' 'door' 'sliding',
+description "It's the van.",
+before [;
+	Enter, Open:
+if (self in PostRally) "We're in no rush right now.  I'd rather not strap myself into a machine.";
+else "It's locked, and besides, why would I want to go back already?";
+];
+	
+
+

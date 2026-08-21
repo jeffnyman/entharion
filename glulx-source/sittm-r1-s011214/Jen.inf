@@ -1,0 +1,199 @@
+! Stick it to the man
+!	Jen
+
+	Woman Jen "Jen" Limbo
+with name 'jen' 'jennifer',
+description "I can hardly help chuckling when I look at her.  She's always glowering and glaring and ranting about injustice and stuff, but it's so constant that it's obvious she's not as mad as she lets on.  She <e>is</e> mad, though.  She's pissed off in a major way, but it's sort of below the surface, not immediate, the way she tries to make it look.^
+She showed up at a few little meetings with Kyla, starting maybe a few months ago, and I've hung out with a her a little, but I've never been at a rally or anything with her.  I kind of wonder if she'll go bonkers or something.  Fuck, it seems like she's half-bonkers anyway -- well, maybe, like, one-third bonkers.",
+color [; return $FFFFFF; ],
+bgcolor [; return $990000; ],
+switchedTo [;
+self.chooseNode(self.sceneNode());
+],
+NPCbefore [;
+	Kiss: "I don't want to give the wrong impression.";
+],
+forget [;
+if (self.lastheard>5) self.chooseNode(self.sceneNode());
+if (location~=parent(self)) self.chooseNode(self.sceneNode());
+],
+sceneNode [;
+	switch (parent(self)) {
+Kitchen: return JenHouse;
+Rally: return JenRally;
+RallyLimbo: return self.node;
+default: return self;
+	}
+],
+notice [a;
+	switch (a) {
+Bat: ;
+Flyer: ;
+StoreFront: ;
+Sign: ;
+Mask: ;
+Corpse: JenRallyCorpse0.tryActivate();
+	}
+],
+ignore [a;
+	switch (a) {
+Bat: ;
+Flyer: ;
+StoreFront: ;
+Sign: ;
+Mask: ;
+Corpse: JenRallyCorpse0.deActivate();
+	}
+],
+moveToRally [;
+move self to Rally;
+if (Kyla in RallyLimbo && random(100)<70) move Kyla to Limbo;
+],
+number 0,
+each_turn [;
+			switch (parent(self)) {
+		Kitchen:
+		if (random(100)<50 && player.lastspoke>3 && self.number==0) {
+	self.number=1;
+	"~Hey,~ Jen says to Gary, ~are we ready to go, almost?~  She's chomping at the bit, man.^
+	~Almost, I think,~ says Gary.";
+		}
+		Rally:
+		if (player.lastspoke>0 || GxScriptManager.recent==self) {
+	if (Mask has worn && JenRallyMask hasnt visited) {
+self.chooseNode(JenRallyMask);
+<<SwitchConversation self>>;
+	}
+	if (random(100)<50) {
+	self.number++;
+	switch(self.number) {
+1: "Jen screams like a maniac about the evils of society.";
+2: "Jen jumps up and down, waving her arms and yelling.";
+3: if (Kyla in location) "Jen gives Kyla a full-on kiss for no apparent reason -- but just no <e>apparent</e> reason.";
+else "Jen chews her lip.";
+4: if (Oscar in location) "Jen exchanges a few words with Oscar.";
+else "Jen looks around eagerly for who knows what.";
+5: if (Kyla in location) "Jen kisses Kyla on the neck and whispers something to her.";
+else "Jen grimaces.";
+6: self.number=random(3);
+	}	
+	}
+		}
+		
+			}
+];
+
+Holder ->-> JenHouse;
+
+	RNLine ->->-> JenHouse0 "Hey, Jen."
+with
+newnode JenHouse,
+content "~Hey, Jen.~^
+~Hey, Iris.~";
+
+	NLine ->->-> JenHouse1 "So, uh, you looking forward to the rally?"
+with
+switchedTo [;
+JenHouse0.deactivate();
+],
+content "~So, uh, you looking forward to the rally?~  My tongue's always sort of in my cheek when I talk to Jen like this, 'cause I <e>know</e> she's gonna get all fired up, and I've come to realize (like everybody has) that you can't take it too seriously.^
+~Goddamn right I am,~ she says.  ~Goddamn right, fuckin' a.  It's about <e>fucking</e> timing we're back on the fucking streets.  God damn.  It's been a fucking long time since the last rally.~";
+
+		NLine ->->->-> JenHouse1x0 "Like, 2 months, I thought.  Maybe 2 and a half."
+	with
+	content "~Like, two months, I thought,~ I say.  ~Maybe two and a half.~^
+	~Fuck that,~ she says.  ~Too fucking long.  It's a fucking <e>daily</e> struggle -- it's gotta be a fucking <e>daily</e> struggle.  Hourly, for fuck's sake!  By the minute!  What kind of shit is this?  We go out and march with our banners and then we sit on our fucking asses for two and a fucking half fucking months before we go again?~";
+	
+			RNLine ->->->->-> JenHouse1x0x0 "Nobody's sitting on their ass!"
+		with
+		newnode JenHouse,
+		content "~Nobody's sitting on their ass!~ I exclaim.  Shit, where does she get these ideas?  Like she's the only one who's doing anything and the rest of us are just kissing up to politicians or something?^
+		~Ah, fuck,~ Jen says.  ~I know.  I mean, I don't mean it like that.  I know you're keeping the -- you know, you keep fighting back.  Everybody does, I know, I know.  But fuck, man!~^
+		Well, how could I possibly respond to that?";
+		
+			RNLine ->->->->-> JenHouse1x0x1 "Right, like you've been singlehandedly keeping the anarchist movement alive."
+		with
+		newnode JenHouse,
+		content "~Right,~ I say saracastically, ~like you've been singlehandedly keeping the anarchist movement alive.~^
+		~Fuck <e>no</e>.  But I'm doing shit!  I'm passing out my pamphlets and screaming at the shitheads and stuff!~^
+		Is she out of her mind?  Giving out pamphlets is suddenly the ultimate test of devotion to the cause?  ~Jen,~ I say wearily, ~just forget it, okay.  Never mind.~";
+	
+		NLine ->->->-> JenHouse1x1 "It doesn't seem like that long."
+	with
+	content "~It doesn't seem like that long.~^
+	~That's just the thing,~ says Jen.  ~Everything's so fucked up, we don't even <e>notice</e> we're not even doing anything.  It's like staring at the fucking TV all day.  You sit there and suddenly you look at your watch and you go, 'Holy fuck!  The day is almost over and all I did was sit on my ass and watch the fucking screen!'  That's what that shit does to you.~";
+	
+			RNLine ->->->->-> JenHouse1x1x0 "That's not what I meant, Jen."
+		with
+		newnode JenHouse,
+		content "~That's not what I meant, Jen.~  She really can go crazy, man.  Fly off the fucking handle.^
+		~Oh, I know,~ she says hastily.  ~I didn't mean you're brainwashed or anything.  Seriously.~  Her eyes are open real wide, looking at me.  She really wants to convince me.^
+		~Right, right.~  Whatever.  It's not like I'm wounded in my fucking soul or anything.^
+		~I just meant, you just -- I mean, nobody realizes how quickly the time goes.  When you think about it, two and a half months is a long time to go without any kind of organized action or anything.~^
+		There are so many things I could say to that.  In the first place, just because we haven't gotten together for a rally doesn't mean there hasn't been one.  We can't go to every fucking march in every fucking city.  And shit, even if we <e>aren't</e> going, that doesn't mean there's no organized action.  We've all got our little groups back home, we're all organizing on a local level.  Plus, there's -- fuck this.  There's really no point in explaining this to her when she's all wound up.^
+		~Uh-huh,~ I say.";
+		
+			RNLine ->->->->-> JenHouse1x1x1 "What the fuck are you talking about?"
+		with
+		newnode JenHouse,
+		content "~What the fuck are you talking about?~  I seriously think Jen has mental problems or something.  We're talking about how long it's been since the last rally, and suddenly she's going crazy about TV brainwashing us?  What <e>is</e> that?^
+		She looks kind of dazed, and she blinks a whole bunch.  It looks like <e>she</e> doesn't even know what the fuck she's talking about.  I feel bad.  She looks like I just hit her in the forehead with a brick.  ~Uh,~ she says, ~never mind.~";	
+	
+		RNLine ->->->-> JenHouse1x2 "Well, it's not like we've been doing nothing -- at least, I haven't."
+	with
+	newnode JenHouse,
+	content "~Well,~ I say, ~it's not like we've been doing nothing -- at least, I haven't.~^
+	~I fucking hope not!  I sure haven't been doing nothing.  I've been fucking the man over nonstop, man.  Nonstop.~^
+	~Well,~ I say, ~good for you.~  She cracks me up.  I just <e>know</e> that the ~fucking the man over~ she's talking about is the weird little shit she does: putting up homemade posters on corporate buildings, distributing pamphlets on the sidewalk, cussing out people in suits.  I suppose it's for the cause, but it seems -- man, it just seems silly.";
+
+	RNLine ->->-> JenHouse2 "Jen, how's it going for you and Kyla?"
+with
+switchedTo [;
+JenHouse0.deactivate();
+],
+newnode JenHouse,
+content "~Jen,~ I say, ~how's it going for you and Kyla?~^
+Her face softens a little.  ~It's good.  It's good.~  She nods, staring at the air in front of her.  ~We're doing good.~^
+~Glad to hear it.~";
+
+!
+! Part 2 	(not present)
+!
+
+!
+! Part 3
+!
+
+Holder ->-> JenRally
+with
+sharing JenRallyStuff;
+
+	RNLine ->->-> JenRally0 "Jen, what's up?"
+with
+newnode JenRally,
+content "~Jen, what's up?~ I ask.^
+~Goddamn fuckers,~ she mutters.  ~Fucking oppression everywhere you look.~  Man, she is so weird.";
+	
+	RNLine ->->-> JenRally1 "Where's Kyla?"
+has ~on
+with
+newnode JenRally,
+content "~Where's Kyla?~ I ask Jen.^
+~Dunno,~ she grumbles.  ~I was right next to her and then next thing she's gone.  I'm looking around.~";
+	
+	Holder ->->-> JenRallyStuff;
+
+	Holder ->->->-> JenRallyMask
+	with
+	switchedTo [;
+	Jen.chooseNode(JenRally);
+	"~That you in there Iris?~ Jen says abrubtly, peering at my mask.^
+	~Yeah,~ I say, startled.  Wow, she's really got some kind of recognition skills.";
+	];
+	
+	RNLine ->->->-> JenRallyCorpse0 "Jen, that guy's dead, man!"
+has ~on
+with
+newnode JenRally,
+content "~Jen, that's guy's dead, man!~^
+~Fucking pigs,~ she growls.  ~Fucking us over all the fucking time.~";

@@ -1,0 +1,105 @@
+! Stick it to the man
+!	Window stuff
+
+	Window SITTMMainWin
+with type BufferWin,
+winIdentify [; rfalse; ],
+indent 	[hinting; switch (hinting) {
+		StyleQuote: return 18;
+		default: return 0; } ],
+paragraph 	[hinting; switch (hinting) {
+		StyleNormal,StyleQuote,StyleUser1: return 5;
+		default: return 0; } ],
+justify 	[hinting; switch (hinting) {
+		StyleNormal: return JustifyLeft;
+		StyleHeader,StyleSubheader: return JustifyCenter;
+		StyleQuote: return JustifyFull;
+		default: return -1; } ],
+fontsize 	[hinting; switch (hinting) {
+		StyleHeader: return 2;
+		StyleSubheader,StyleAlert: return 1;
+		default: return 0; } ],
+weight 	[hinting; switch (hinting) {
+		StyleEmphasized,StyleAlert,StyleHeader,StyleSubheader,StyleUser1: return 1;
+		default: return 0; } ],
+oblique 	[hinting; switch (hinting) {
+		StyleNote: return 1;
+		default: return -1; } ],
+proportional [hinting; switch (hinting) {
+		StylePreformatted,StyleQuote: return 0;
+		default: return 1; } ],
+color 	[hinting; switch (hinting) {
+		StyleHeader: return $0000FF;
+		! 0000FF
+		StyleSubheader: return $990099;
+		! 0080F6
+		StyleAlert: return $FFFF00;
+		! FF0000
+		StyleInput: return $000099;
+		! 000000
+		default: return $000000; } ],
+		! 096673
+bgcolor 	[; return $66CCFF; ],
+! 00FF60
+reverse 	[; return 0; ];
+
+	Window SITTMStatusWin
+with type GridWin,
+winIdentify [; rfalse; ],
+fontsize 	[; return 2; ],
+weight 	[; return 0; ],
+oblique 	[hinting; switch (hinting) {
+		StyleNote: return 1;
+		default: return -2; } ],
+proportional [hinting; switch (hinting) {
+		StylePreformatted,StyleQuote: return 0;
+		default: return 1; } ],
+color 		[; return $2864FF; ],
+bgcolor 	[; return $F9F05A;],
+reverse 	[; return 0; ];
+
+
+! Entry point routines (not handled by Entry)
+[InitGlkWindow phase;
+	if (phase==GG_MAINWIN_ROCK) {
+SITTMMainWin.winStylehint(indent); SITTMMainWin.winStylehint(paragraph);
+SITTMMainWin.winStylehint(justify); SITTMMainWin.winStylehint(fontsize);
+SITTMMainWin.winStylehint(weight); SITTMMainWin.winStylehint(oblique);
+SITTMMainWin.winStylehint(proportional); SITTMMainWin.winStylehint(color);
+SITTMMainWin.winStylehint(bgcolor); SITTMMainWin.winStylehint(reverse);
+	}
+	if (phase==GG_STATUSWIN_ROCK) {
+SITTMStatusWin.winStylehint(indent); SITTMStatusWin.winStylehint(paragraph);
+SITTMStatusWin.winStylehint(justify); SITTMStatusWin.winStylehint(fontsize);
+SITTMStatusWin.winStylehint(weight); SITTMStatusWin.winStylehint(oblique);
+SITTMStatusWin.winStylehint(proportional); SITTMStatusWin.winStylehint(color);
+SITTMStatusWin.winStylehint(bgcolor); SITTMStatusWin.winStylehint(reverse);
+	}
+	if (phase==1) {
+SITTMMainWin.winUnStylehint(); SITTMStatusWin.winUnStylehint();
+	}
+rfalse;
+];
+
+! Replaced routines
+[DrawStatusLine width length offset;
+if (gg_statuswin==0) return;
+if (location==0 || parent(player)==0) return;
+
+GlkWinClear(gg_statuswin);
+GlkWinSet(gg_statuswin);
+width=GlkWinWidth(gg_statuswin);
+
+length=PrintAnyToArray(-1,0,location);
+offset=((width/2)-length)/2;
+GlkWinMoveCursor(gg_statuswin,offset,0);
+print (name) location;
+
+length=PrintAnyToArray(-1,0,Game,timeOfDay);
+offset=(width/2)+((width/2)-length)/2;
+GlkWinMoveCursor(gg_statuswin,offset,0);
+Game.timeOfDay();
+
+GlkWinSet(gg_mainwin);
+];
+

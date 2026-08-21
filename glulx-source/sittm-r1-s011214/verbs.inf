@@ -1,0 +1,60 @@
+! Stick it to the man
+! 	Grammar extensions
+
+[FlushSub;
+"I can't really flush ",(ThatOrThose) noun,".";
+];
+
+Verb 'flush'
+	*	noun										-> Flush;
+
+Verb 'start'	'drive'
+	*	noun										-> SwitchOn;
+	
+[FoldSub;
+print_ret (CTheyreOrThats) noun," not foldable.";
+];
+
+[UnfoldSub;
+print_ret (CTheyreOrThats) noun," not unfoldable.";
+];
+
+Verb 'fold'
+	*	noun										-> Fold;
+	
+Verb 'unfold'
+	*	noun										-> Unfold;
+	
+[AboutSub;
+"This is the post-competition release of <b>Stick it to the man</b>.  Questions, comments, feedback, etc. are welcomed at <b>hfield@@64joinme.com</b> .";
+];
+
+Verb 'about'
+	*											-> About;
+
+[KickSub;
+"I don't want to kick ",(ThatOrThose) noun,".";
+];
+
+[StandSub;
+if (parent(player) has supporter) <<Exit>>;
+"I'm already standing.";
+];
+
+Extend only 'stand' replace
+	*												-> Stand
+	*	'up'											-> Stand;
+	
+Extend only 'get' first
+	*	'up'											-> Stand;
+	
+Extend only 'fuck' replace
+	*	noun										-> Kiss
+	*												-> Strong
+	*	topic											-> Strong;
+
+	
+Verb 	'nuzzle' 	'caress' 	'massage'	'stroke'	'tickle'		=	'touch';
+
+Verb		'lick'		'nibble'	'french'	'tongue'				=	'kiss';
+	

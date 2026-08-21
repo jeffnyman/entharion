@@ -1,0 +1,279 @@
+! Stick it to the man
+!	Nora
+
+	Woman Nora "Nora" Limbo
+with name 'nora',
+description [;
+if (Game.houseFucked) "She's got a funny look, now.  She doesn't look so cute anymore.  She looks more mad, kind of like Jen, only more set-jaw and less flapping-lip.";
+"She is <e>so cute</e>.  I feel like an airheaded teeny-bopper just for <e>thinking</e> that, but I can't help it.  And, really, I'm misleading myself.  She's really devoted, she's really passionate, she's really ready to go out there and make it happen.  She's inexperienced, sure, but that's just temporary.  She's just got one of those faces that makes you want to wrap her up in a big blanket and give her hot cocoa.";
+],
+pissedOff No,
+color [; return $00FFFF; ],
+bgcolor [; return $CC00CC; ],
+switchedTo [;
+self.chooseNode(self.sceneNode());
+],
+NPCbefore [;
+	Kiss: "It's sort of tempting to give her a motherly little kiss or something, but I don't want to treat her like a kid.";
+],
+forget [;
+if (self.lastheard>5) self.chooseNode(self.sceneNode());
+if (location~=parent(self)) self.chooseNode(self.sceneNode());
+],
+sceneNode [;
+	switch (parent(self)) {
+Kitchen: return NoraHouse;
+SideStreet: return NoraPreRally;
+Rally: return NoraRally;
+RallyLimbo: return self.node;
+FrontYard: return NoraBack;
+default: return self;
+	}
+],
+notice [a;
+	switch (a) {
+Bat: ;
+Flyer: if (Flyer has general) NoraRallyFlyer0.tryActivate();
+StoreFront: ;
+Sign: ;
+Mask: NoraRallyMask0.tryActivate();
+Corpse: NoraRallyCorpse0.tryActivate();
+	}
+],
+ignore [a;
+	switch (a) {
+Bat: ;
+Flyer: NoraRallyFlyer0.deActivate();
+StoreFront: ;
+Sign: ;
+Mask: NoraRallyMask0.deActivate();
+Corpse: NoraRallyCorpse0.deActivate();
+	}
+],
+moveToRally [;
+move self to Rally;
+if (Oscar in RallyLimbo && random(100)<90) move Oscar to RallyLimbo;
+],
+number 0,
+each_turn [;
+			switch (parent(self)) {
+		Kitchen:
+		if (random(100)<50 && player.lastspoke>3) {
+	self.number++;
+	switch(self.number) {
+1: "~Morning,~ Nora says to Fletch.^
+~Good morning,~ he says.";
+2: "Nora gets some fruit from the fridge and munches on it.";
+	}
+		}
+		SideStreet:
+		if (random(100)<30) {
+	self.number++;
+	switch(self.number) {
+1: "Nora pokes the wall of the brick building with her finger, sending a bit of red dust crumbling to the ground.";
+2: "Nora looks around apprehensively.";
+	}
+		}
+		Rally:
+		if (Rally.number>40 && random(100)<30) {
+	self.chooseNode(NoraRallyLeave);
+	<<SwitchConversation self>>;
+		}
+		if (player.lastspoke>0 || GxScriptManager.recent==self) {
+	if (Mask has worn && NoraRallyMask1 hasnt visited) {
+self.chooseNode(NoraRallyMask1);
+<<SwitchConversation self>>;
+	}
+	if (random(100)<50) {
+	self.number++;
+	switch(self.number) {
+1: if (Oscar in location) "Nora takes Oscar's hand.";
+2: if (Brad in location) "Nora waves to Brad.  He waves back.";
+3: "Nora looks around.  She's not as wide-eyed as you might expect.";
+4: "Nora engages some random guy in a brief conversation.";
+5: if (Oscar in location) "Nora says something to Oscar.  It looks like she's asking him a question and he's answering.";
+6: self.number=random(3);
+	}
+	}
+		}
+	
+	
+
+			}
+];
+
+Holder ->-> NoraHouse;
+
+	NLine ->->-> NoraHouse0 "Morning, Nora."
+with
+content "~Morning, Nora.~^
+~Hi Iris.  How are you?~",
+after [;
+NoraHouse2.tryActivate();
+];
+
+		RNLine ->->->-> NoraHouse0x0 "Good."
+	with
+	newnode NoraHouse,
+	content "~Good,~ I reply.^
+	~Glad to hear it,~ she says.";
+	
+		RNLine ->->->-> NoraHouse0x1 "I'm fine.  How are you?"
+	with
+	newnode NoraHouse,
+	content "~I'm fine.  How are you?~^
+	~Good,~ says Nora.  ~I'm looking forward to the rally.~  I'll bet she is.";
+	
+	RNLine ->->-> NoraHouse1 "Sleep well?"
+with
+newnode NoraHouse,
+content "~Sleep well?~ I ask.^
+~Like a baby,~ she says.",
+after [;
+NoraHouse0.deactivate();
+NoraHouse2.tryActivate();
+];
+
+	RNLine ->->-> NoraHouse2 "So did you come in with Oscar last night?"
+has ~on
+with
+active false,
+newnode NoraHouse,
+content "~So,~ I ask, ~did you come in with Oscar last night?~^
+~Yeah, he was coming in on the train and I joined him at my station.~";
+
+!
+! Part 2
+!
+
+Holder ->-> NoraPreRally;
+
+	NLine ->->-> NoraPreRally0 "You and Oscar go on ahead."
+with
+content "~You and Oscar go on ahead,~ I say to Nora.^
+~Why?~";
+
+		NLine ->->->-> NoraPreRally0x0 "Just go on."
+	with
+	content "~Just go on,~ I say.^
+	She shrugs and takes a deep breath.  ~Okay.~  Oscar lumbers up beside her and together they walk to the corner and turn out of sight.",
+	after [;
+	move Nora to RallyLimbo;
+	move Oscar to RallyLimbo;
+	Brad.chooseNode(BradPreRallyTalk);
+	];
+	
+		NLine ->->->-> NoraPreRally0x1 "Because otherwise you'll sit here stalling and Oscar will be too polite to rush you."
+	with
+	content "~Because otherwise you'll sit here stalling,~ I say, suddenly exasperated, ~and Oscar will be too polite to rush you.~^
+	~I wasn't --~ she begins, then stops.  ~Fine, whatever.~  She beckons to Oscar, who walks up beside her.  Together they walk to the corner and turn out of sight.",
+	after [;
+	Nora.pissedOff=Yes;
+	NoraPreRally0x0.after();
+	];
+	
+		NLine ->->->-> NoraPreRally0x2 "I want to talk to Brad alone."
+	with
+	content "~I want to talk to Brad alone,~ I say.^
+	Nora glances over my shoulder at Brad.  ~Sure,~ she says.  She and Oscar walk down to the corner and turn down another street, out of sight.",
+	after [;
+	NoraPreRally0x0.after();
+	];
+	
+		RNLine ->->->-> NoraPreRally0x3 "Forget it."
+	with
+	newnode NoraPreRally,
+	content "~Forget it.~^
+	She scrunches up her face and shakes her head.  ~What?  Uh, okay, sure.~",
+	after [;
+	Nora.pissedOff=Yes;
+	];
+	
+!
+! Part 3
+!
+
+Holder ->-> NoraRally
+with
+sharing NoraRallyStuff;
+
+	RNLine ->->-> NoraRally0 "How's it going, Nora?"
+with
+newnode NoraRally,
+content "~How's it going, Nora?~ I ask.^
+~Oh, Iris,~ she says.  ~This is so cool.  I'm so glad to be here.~  Man, I wish I felt like that.  It's -- it's true, I guess, that you can get so accustomed to protesting that it's no longer even a protest, it's just sort of normal.";
+	
+	RNLine ->->-> NoraRally1 "Where the fuck is Oscar?"
+with
+newnode NoraRally,
+content "~Where the fuck is Oscar?~ I ask.^
+~Oh, geez, Iris,~ Nora says.  ~He's around here somewhere.  Don't worry about it.~^
+I'm about to bust out with some shit about ~you shouldn't be alone~, and just as I'm about to do it I feel like a mother hen, and I almost throw up.";
+	
+	Holder ->->-> NoraRallyLeave
+with
+switchedTo [;
+print "~Iris,~ says Nora, ~are we ready to leave?  It feels like it's getting late.~^
+I don't want to make her feel like she's wimping out, so I say, ~Yeah, it is,~ and add, ~but I'm not really sure where we are, y'know, like, how to get back to the van.~^
+~I know where it is,~ she says.  Hmm, I'm impressed.  ~C'mon.~^
+She weaves her way confidently through the crowd, with me";
+if (Oscar in location) print "and Oscar ";
+if (Brad in location) print "and Brad ";
+print "following.  Sure enough, she leads us right to the street where we came in.  We retrace our steps back to the van and find ";
+if (Oscar notin location) print "Oscar, ";
+if (Brad notin location) print "Brad, ";
+print "Pilar and Fletch already there.  Gary shows up right after we do, but no Jen or Kyla.^";
+BeginPart4b();
+];
+
+	Holder ->->-> NoraRallyStuff;
+
+	RNLine ->->->-> NoraRallyFlyer0 "Did you see that flyer?"
+has ~on
+with
+newnode NoraRally,
+content "~Did you see that flyer?~ I ask, pointing it out to Nora.^
+~Yeah,~ she says.  ~It's so cool!~";
+	
+	RNLine ->->->-> NoraRallyMask0 "Nora, take a look at that mask."
+has ~on
+with
+newnode NoraRally,
+content "~Nora,~ I say, feeling like a wizened old mentor, ~take a look at that mask.~^
+~Whoa, how classic,~ she says.  ~It's totally what you'd expect to see at a rally.~  She chuckles.  ~It's crazy, Iris.  I mean, how many people probably think of a mask like this when they think of an anarchist?~  She chuckles some more.  ~Too many.~";
+
+	Holder ->->->-> NoraRallyMask1
+	with
+	switchedTo [;
+	Nora.chooseNode(NoraRally);
+	"~Whoa, you look like the big bad anarchist everybody hates, Iris!~ Nora says to me.^
+	~Apparently I still look like the Iris everybody loves, though.~^
+	~Well, yeah, if <e>I</e> can recognize you.~";
+	];
+	
+	RNLine ->->->-> NoraRallyCorpse0 "Holy fuck, there's a dead guy right there, Nora."
+has ~on
+with
+newnode NoraRally,
+content "~Holy fuck,~ I say, ~there's a dead guy right there, Nora.~^
+She's just sort of staring at the corpse.  ~Oh man.  Oh man.~";
+
+!
+! Part 4b
+!
+
+Holder ->-> NoraPost;
+
+	NLine ->->-> NoraPost0 "How'd you like it?"
+with
+content "~How'd you like it?~ I ask Nora.^
+~It was so cool,~ she blurts, and rushes into a big deal about how cool it was.  I sort of wonder if I was this embarassingly open at my first rally, but then I sort of hope I was.  She's talking about stuff I've seen a bunch of times before, but it's all new to her.  For a minute I feel like a real old-timer, and then I realize I'm probably feeling just like Gary feels.  I'm sort of, like, honored.",
+after [;
+AfterGameOver();
+];
+
+!
+! Part 4c
+!
+
+Holder ->-> NoraBack;

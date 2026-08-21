@@ -1,0 +1,338 @@
+! Stick it to the man
+!	LibraryMessages
+!	AuthorsChoice
+
+	Object LibraryMessages "[LibraryMessages]"
+with before [;
+Answer,Ask,Order,Tell: "[To talk to characters, use SAY X, where X is an option on the dialogue menu.]";
+Attack: "That'd be the last resort; I still think there's a peaceful way.";
+Blow: "I'm gonna blow ",(a) lm_o,"?  Right.";
+Burn: "I'm not one of those ~burn, baby, burn~-style anarchists.";
+Buy: "Buying implies capitalism.  I don't support capitalism.  Hence, I don't buy.  I do, however, support life -- more so than I oppose capitalism.  Hence, I buy to promote life, if necessary.  But this -- this isn't really in that category.";
+Climb: "Man, I lived in a tree for 4 months at that environmentalist, tree, live-in, y'know, thing.  Climbing is sort of old now.";
+Close: switch (lm_n) {
+	1: "I don't think I can close ",(ThatOrThose) lm_o,".";
+	2: rfalse;
+	3: "Okay, I closed ",(ItOrThem) lm_o,".";
+}
+Consult: "Nothing interesting in there.";
+Cut,Dig,Rub,Tie: "What the fuck for?";
+Disrobe: switch (lm_n) {
+	1: "I'm way ahead of you -- I'm not even wearing ",(ItOrThem) lm_o,".";
+	2: "Uh, okay, I'm not wearing ",(ItOrThem) lm_o," anymore.";
+}
+Drink: "I don't see anything drinkable.";
+Drop: switch (lm_n) {
+	1: print_ret (CTheyreOrThats) lm_o," right there.";
+	2: "I don't have ",(ThatOrThose) lm_o,".";
+	3,4: rfalse;
+	}
+Eat: switch (lm_n) {
+	1: "I don't like to put shit like ",(ThatOrThose) lm_o," into my body.";
+	2: "Delish.";
+	}
+EmptyT: switch (lm_n) {
+	1: print_ret (CThatOrThose) lm_o, " can't contain things.";
+	2: print_ret (CTheyreOrThats) lm_o, " closed.";
+	3: print_ret (CTheyreOrThats) lm_o, " empty already.";
+	4: "That wouldn't be very fucking useful.";
+	}
+Enter: switch (lm_n) {
+	1: "I'm there already.";
+	2: "I can't enter <e>",(ThatOrThose) lm_o,"</e>.";
+	3: print_ret (CTheyreOrThats) lm_o," closed, though.";
+	4: "The physics of that don't work out.";
+	5: "Okay, I'm there.";
+	}
+Examine: switch (lm_n) {
+	1: "It's, like, dark.";
+	2: "Looks pretty normal.";
+	3: rfalse;
+	}
+Exit: switch (lm_n) {
+	1: "I'm not in anything.";
+	2: print_ret (The) lm_o," ",(IsOrAre) lm_o," closed.";
+	3: "Okay, done.";
+	}
+Fill: "There's no filler, if you know what I mean.";
+FullScore: switch (lm_n) {
+	1: "The score is <n>Capitalist Oppressors: 1 / Anarchists: 0</n> -- but it's not over yet.";
+	2,3,4: rtrue;
+	}
+GetOff: "I'm not on anything.";
+Give: switch (lm_n) {
+	1: "I don't have ",(ThatOrThose) lm_o,".";
+	2: "Giving stuff to myself?  Shit, that's just stupid.";
+	3: "I'm not giving ",(ThatOrThose) noun," to ",(ItOrThem) noun,".";
+	}
+Go: switch (lm_n) {
+	1:	if (lm_o has container) "Not while I'm in ",(the) lm_o,".";
+		else "Gotta get off ",(the) lm_o," first.";
+	2: "I can't go that way.";
+	3: "Can't seem to climb there.";
+	4: "Can't seem to get down there.";
+	5: print_ret (The) lm_o," ",(IsOrAre) lm_o," in the way.";
+	6: print_ret (The) lm_o," leads nowhere.  Some funky Winchester thing, or something.";
+	}
+Insert: switch (lm_n) {
+	1: "I don't have ",(ThatOrThose) lm_o,".";
+	2: print_ret (CThatOrThose) lm_o," can't contain other stuff.";
+	3: print_ret (The) lm_o," ",(IsOrAre) lm_o," closed.";
+	4: "Gotta take ",(ItOrThem) lm_o," off first.";
+	5: "Fuck, man, I can't put something inside itself!";
+	6: rfalse;
+	7: print_ret (The) lm_o," ",(IsOrAre) lm_o," full.";
+	8: rfalse;
+	9: "Okay, so I've got ",(the) lm_o," in ",(the) second,".";
+	}
+Inv: switch (lm_n) {
+	1: "I'm empty-handed.";
+	2: print "I've got"; rtrue;
+	}
+Jump: "Well, <e>whoop</e>-de-doo.";
+JumpOver: "But there could be deadly spikes or beasts on the other side!  Get real.";
+Kiss: "No.";
+Listen: "I'm not hearing anything spectacular. . .";
+LMode1,LMode2,LMode3: rfalse;
+Lock: switch (lm_n) {
+	1: "I can't lock ",(ThatOrThose) lm_o,".";
+	2: print_ret (CTheyreOrThats) lm_o," already locked.";
+	3: print_ret (CTheyreOrThats) lm_o," not closed yet.";
+	4: print_ret (CThatOrThose) lm_o," won't fit in the lock.";
+	5: "Okay, locked.";
+	}
+Look: switch (lm_n) {
+	1,2,3,4: rfalse;
+	5,6: if (lm_o==location && lm_o ofclass AutoRoom) rtrue; else rfalse;
+	}
+LookUnder: switch (lm_n) {
+	1: "Too dark; can't see shit.";
+	2: "Nothing interesting there.";
+	}
+Mild: "<e>Fuck</e> yeah.";
+ListMiscellany: rfalse;
+Miscellany: switch (lm_n) {
+	1: rfalse;
+	2: "I was done before I started!";
+	3: " I'm dead ";
+	4: " Anarchy triumphs ";
+	5,6,7,8: rfalse;
+	9: "What the fuck, suddenly it's dark?";
+	10: "That was fucking <e>profound</e>.";
+	11,12,13,14: rfalse;
+	15: "Oops my ass.  Forget it.";
+	16: rfalse;
+	17: "It's too fucking dark in here to see.  This sucks.";
+	18: print "me"; rtrue;
+	19: "I'm stunning.  Really.  But I let Brad worry about my looks.";
+	20: rfalse;
+	21: "[Repeating nothing doesn't do much good.]";
+	22: "[,<e>You</e> can't start with a comma.]";
+	23,24,25: "[To talk to characters, use SAY X, where X is a number from the dialogue menu.]";
+	26: rfalse;
+	27: "Wait, what?";
+	28: print "Um, I got the part about wanting to "; rtrue;
+	29: "What number was that?";
+	30: "I don't see anything like that.";
+	31: "Shouldn't there be a bit more to that?";
+	32: "I don't have that.";
+	33: "I can't really do that to more than one thing at a time.";
+	34: "That's a little too complicated for me, I think.";
+	35: rfalse;
+	36: "What?  It's not like I was going to include that anyway.";
+	37: "I fucking prefer not to ",(address) verb_word," inanimate objects.";
+	38: "Do <e>what</e>?";
+	39: "I don't think I need to worry about that.";
+	40: "I can't see ",(address) pronoun_word," (assuming you mean ",(the) pronoun_obj,").";
+	41: "What was that gobbledygook at the end?";
+	42: if (lm_o) "There are only ",lm_o," here."; else "There aren't any.";
+	43: "There.  That wasn't very hard.";
+	44: "There aren't any.";
+	45: print "Who, "; rtrue;
+	46: print "Which, "; rtrue;
+	47: "I can't ",(address) verb_word," them all.";
+	48: print "Um, "; PrintCommand(); " who?";
+	49: print "Um, "; PrintCommand(); " what?";
+	50: 	if (lm_o>0) "Score ",lm_o," for anarchy!";
+		else { lm_o=-lm_o; "Shit, score ",lm_o," for capitalism, oppression, and all that crap."; }
+	51: "[Your list of commands has been cut short due to some game event.]";
+	52,53: rfalse;
+	}
+No: "Right <e>on</e>!  Just say no to capitalist shit!";
+NotifyOff: "[Score notification off.]";
+NotifyOn: "[Score notification on.]";
+Objects: switch (lm_n) {
+	1: "I've dealt with:^";
+	2,3,4,5,6,7,8,9,10: rfalse;
+	}
+Open: switch (lm_n) {
+	1: "I can't open ",(ThatOrThose) lm_o,".";
+	2: print_ret (CTheyreOrThats) lm_o," locked.";
+	3: "What for?  ",(CTheyreOrThats) lm_o," already open.";
+	4: 	print "Okay, it's open.  In there I see ";
+		if (WriteListFrom(child(lm_o),ENGLISH_BIT+TERSE_BIT+CONCEAL_BIT)==0) {
+			"nothing.";
+		}
+	          else 	".";
+	5: "Okay, opened.";
+	}
+Places: "I've been to: ";
+Pray: "I don't believe in that crap.";
+Prompt: rfalse;
+Pull,Push: switch (lm_n) {
+	1: "Can't; ",(ItsOrTheyre) lm_o,", like, solid.";
+	2: "I can't move it.";
+	3: "Okay.  What did that accomplish?";
+	4: "~Pulling someone's leg~ is just a figure of speech.";
+	}
+PushDir: switch (lm_n) {
+	1: "That wouldn't do shit.";
+	2: "Push it <e>where</e>?";
+	3: "That won't work.";
+	}
+PutOn: switch (lm_n) {
+	1: "I don't have ",(ThatOrThose) lm_o,".";
+	2: "How the fuck I am supposed to put ",(the) lm_o," on itself?";
+	3: "I'm not putting anything on there.";
+	4: "That would be quite a fucking feat.";
+	5: rfalse;
+	6: "There's no room.";
+	7: rfalse;
+	8: "Okay.";
+	}
+Quit: switch (lm_n) {
+	1: "Yes or no.";
+	2: "[Are you sure you want to quit?]";
+	}
+Remove: switch (lm_n) {
+	1: print_ret (The) lm_o," ",(IsOrAre) lm_o," closed.";
+	2: "I don't see ",(ThatOrThose) lm_o," here.";
+	3: "Okay, done.";
+	}
+Restart: switch (lm_n) {
+	1: "[Are you sure you want to restart?]";
+	2: "[Restart failed.]";
+	}
+Restore: switch (lm_n) {
+	1: "[Restore failed.]";
+	2: "[Game restored.]";
+	}
+Save: switch (lm_n) {
+	1: "[Save failed.]";
+	2: "[Game saved.]";
+	}
+Score: "The score is <n>Capitalist Oppressors: 1 / Anarchists: 0</n> -- but it's not over yet.";
+ScriptOff: switch (lm_n) {
+	1: "[Transcripting already off.]";
+	2: "^[End of transcript.]";
+	3: "[Attempt to end transcript failed.]";
+	}
+ScriptOn: switch (lm_n) {
+	1: "[Transcripting already on.]";
+	2: "[Starting transcript of";
+	3: "[Attempt to begin transcript failed.]";
+	}
+Search: switch (lm_n) {
+	1: "It's too dark.";
+	2: "There's nothing on ",(the) lm_o,".";
+	3: rfalse;
+	4: "Nothing interesting there.";
+	5: print_ret (The) lm_o," ",(IsOrAre) lm_o," closed.";
+	6: print_ret (CTheyreOrThats) lm_o," empty.";
+	7: rfalse;
+	}
+Set,SetTo: print_ret (CTheyreOrThats) lm_o," not, like, settable.";
+Show: switch (lm_n) {
+	1: "I don't have ",(ThatOrThose) lm_o,".";
+	2: "No reaction.";
+	}
+Sing: "I think it would be better for everyone if I didn't.";
+Sleep: "I'm not tired.";
+Smell: "Smells like air.";
+Sorry: "Sorry my ass.  Forget it.";
+Squeeze: switch (lm_n) {
+	1: "I'm not squeezing ",(ThatOrThose) lm_o,".";
+	2: "Wow, what a turn-on.  What was the point of that?";
+	}
+Strong: "Damn right.  Stick it to the man!";
+Swim: "There'd have to be some, um, water.";
+Swing: "What would that accomplish?";
+SwitchOff: switch (lm_n) {
+	1: "I can't switch ",(ThatOrThose) lm_o,".";
+	2: print_ret (CTheyreOrThats) lm_o," already off.";
+	3: "Okay, I turned ",(ItOrThem) lm_o," off.";
+	}
+SwitchOn: switch (lm_n) {
+	1: "I can't switch ",(ThatOrThose) lm_o,".";
+	2: print_ret (CTheyreOrThats) lm_o," already on.";
+	3: "Okay, ",(ItsOrTheyre) lm_o," off now.";
+	}
+Take: switch (lm_n) {
+	1: "Got ",(ItOrThem) lm_o,".";
+	2: "I've got a pretty good handle on myself already.";
+	3: "That wouldn't be cool.";
+	4: "I'd have to get ",(OffOrOut) lm_o," of ",(the) lm_o," first.";
+	5: "I've got ",(ThatOrThose) lm_o," already.";
+	6: 	if (noun has pluralname) print "Those belong "; else print "That belongs ";
+		" to ",(the) lm_o,".";
+	7:	if (noun has pluralname) print "Those are "; else print "That's ";
+		" part of ",(the) lm_o,".";
+	8: print_ret (CTheyreOrThats) lm_o," not here.";
+	9: print_ret (The) lm_o," is closed, so I can't reach.";
+	10: "I don't think that'll work.";
+	11: "I can't move it.";
+	12: "I've got too much crud already.";
+	13: rfalse;
+	}
+Taste: "Pretty bland.";
+Touch: switch (lm_n) {
+	1: "I'm not touching ",(ItOrThem) lm_o,"!";
+	2: "Nothing unusual.";
+	3: "I'll leave that to Brad.";
+	}
+Think: "As if I wasn't.";
+ThrowAt: switch (lm_n) {
+	1: "That'd be pointless.";
+	2: "I've never had much of a throwing arm.";
+	}
+Unlock: switch (lm_n) {
+	1: "There's no lock.";
+	2: print_ret (CTheyreOrThats) lm_o," already unlocked.";
+	3: print_ret (CTheyreOrThats) lm_o," not fitting in the lock.";
+	4: "Okay, ",(ItsOrTheyre) lm_o," unlocked.";
+	}
+VagueGo: "Which way, though?";
+Verify: switch (lm_n) {
+	1: "[Game file verified as intact.]";
+	2: "[Game file did not verify -- it may be corrupt.]";
+	}
+Wait: "Hum de dum.";
+Wake: "Maybe if I was <e>sleeping</e>. . .";
+WakeOther: "Sleep is valuable.";
+Wave: switch (lm_n) {
+	1: "I don't have ",(the) lm_o,".";
+	2: "Okay, I'm waving ",(the) lm_o,".  Whee.";
+	}
+WaveHands: "Fucking <e>why</e>?";
+Wear: switch (lm_n) {
+	1: "Um, not my size.";
+	2: "I don't have ",(ItOrThem) lm_o,".";
+	3: "I'm wearing ",(the) lm_o," already.";
+	4: "Okay, I'm wearing ",(the) lm_o,".";
+	}
+Yes: "Right on.";
+];
+
+[AuthorsChoice a;
+if (a==-1) return 8;
+"First of all, I'd just like to say a little something.  I've written some stuff on this theme before, and people tend to react with ~that's unrealistic~ or ~it's too biased towards your own beliefs.~  (Unless they're anarchists or communists or whatever themselves, in which case they say, ~Fuck yeah!~)  So, basically, just keep in mind with this game that, yes, it is a game.  It's not meant to be a totally accurate reproduction of reality.  It's important to also remember that TV shows and movies and all that mass media you get thrown at you are <e>also</e> unrealistic.  I'm just writing something I want to share -- I don't necessarily agree with all the beliefs the characters hold.^
+I'd like to acknowledge Andrew Plotkin for making Glulx, which is just great.  Also, thanks to Brendan Barnwell for the GxScript library, which I used in this game.^
+Um, beta-testing.  There wasn't much.  Hopefully you haven't already realized that.  This is a big game, and I didn't really realize how big it was going to be until pretty late in the writing, so I wound up finishing it way too close to the deadline.  However, immense thanks go to Roger Carbol for beta-testing even at that late time.";
+];
+
+[Banner;
+print "<h>",(string) Story,"</h>";
+print "<1>",(string) Headline,"</1>";
+print "Post-competition release^";
+print "Inform 6.21 (G0.36) Library 6/10^^";
+];
