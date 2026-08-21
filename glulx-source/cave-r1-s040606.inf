@@ -1,0 +1,865 @@
+
+Constant Story "Cave";
+Constant Headline
+	"^by William Stott^";
+Release 1;
+
+! standard stuff:
+
+Constant MAX_CARRIED 6;
+! or else the inventory object drawing may run out of screen room
+
+Constant SACK_OBJECT = sack;  
+! automatically puts the least used objects into the sack when the
+! inventory limit is reached - see DM4
+
+Include "Parser";
+! Include "WriteList";	! for Inform 6.21 - v6.3 has this built-in
+Include "VerbLib";
+Include "HelpCave"; 	! info on the game
+
+#ifdef TARGET_GLULX;		! set up stuff for Glulx only:
+
+Constant GG_PICWIN_ROCK 210;	! Glulx picture window setup - 
+				! 210 is suggested default value in Gull
+Constant GG_MUSICCHAN_ROCK 410; ! Glulx sound channel setup - 
+				! 410 is suggested default value in Gull
+
+Include "Infglk";  	! needed when compiling to Glulx
+Include "cave.bli"; 	! needed when compiling into a Blorb file
+
+Global gg_picwin = 0; 	! handle for Glulx picture window
+Global gg_schan = 0;	! handle for Glulx sound channel
+ 
+Global xpos; ! 
+Global ypos; ! top left corner coords of picture for inventory item drawing
+ 
+Global soundon = true;	  ! so the sounds can be turned off by the player
+
+Global mapon = false;     ! the map isn't being shown on screen this turn
+Global match_lit = false; ! false if a match isn't being struck at the moment
+
+Global csou = 0;	! variable for currently selected sound effect
+Global picm; 		! variable for current displayed main room picture
+Global pic;		! variable for current invent item picture displayed
+
+Global map1 = false;	! flags for rooms visited for the map
+Global map2 = false;	! as 'has visited' doesn't seem to work
+			! (you could equally well use an array I suppose)
+
+#endif;			! turn off Glulx-specific stuff
+
+! ================================
+! set up classes:
+
+Class 	room
+  has 	light;
+
+Class	room_d
+  has 	~light;
+  
+! ================================
+! genaral objects:
+
+Object temp_bag "temp bag"
+! For sack examine - move items from the sack here, counting
+! as you go, then move everything back again to get the number for
+! 'a sack containing 8 items' or something similar
+ has 	container transparent
+ 	;
+
+! ---------------------------------------------------------------------------
+! 1
+room	lake "Lake in the Forest",
+  with	description
+	"Dragonflies hum and hover, and you hear the occasional splash of  
+	 feeding fish. There is a little path winding between dense trees 
+	 towards the south.
+	 ^You can go south (further into the trees).",
+  	initial [; ! play sound as location is visited for the first time:
+  		#ifdef TARGET_GLULX;
+  		if (location hasnt visited) 
+  			{
+			csou=s_splash; 
+			sou(); 
+			} 
+		#endif; 
+		],
+	s_to by_stump,
+	cant_go "You can't go that way.",
+	;
+
+object	reeds "long reeds" lake,
+  with 	name 	'reeds' 'reed' 'rushes' 'rush' 'lake' 'water',
+  	before [; 
+  	examine, search: 
+  		print "^You see a mass of reeds that sway gently in the 
+  		 shallow water.^";
+  		if (sack.found==false) 
+  			{
+  			move sack to lake;
+  			sack.found=true;
+  			"Looking in the reeds, you find a sack. 
+  			There is something inside..."; 
+  			}
+  	listen:	#ifdef TARGET_GLULX; ! 'listen to reeds' etc
+  			csou=s_splash; 
+  			sou(); 
+  		#endif;
+  		"You just hear the occasional splash of fish feeding near
+  		the surface.";
+	],
+  	article "some",
+  has	static pluralname,
+  	;
+
+object 	sack "brown hessian sack",
+  with 	name 	'bag' 'hessian' 'sack' 'brown',
+  	found false,
+  	invent [; ! to tidy up room description if sack is present
+  		  ! (needs Roger Firth'e WriteList if not using Inform 6.3)
+  	
+  	if (c_style&FULLINV_BIT) rfalse; ! distinguish inv from room descrip
+  	if (inventory_stage==1 && self has container) 
+  		switch (children(self)) {
+  			0: print "a large, empty hessian sack.";
+  			default: print "a large hessian sack (with 
+  				something inside)";
+  			}
+  		rtrue;
+  	],
+  	before [ icount; 
+  	examine, open, search: 
+  		icount=0;
+  		if (flute.found==false) 
+  			{
+			give sack open;
+  			give sack ~openable;
+  			give sack transparent;
+  			flute.found=true;
+  			"You see a hessian sack. 
+  			^Inside is a reed flute..."; 
+  			}
+  		if (child(sack)==0) 
+  			"You see a large hessian sack. It is empty.";
+  		while (child(sack)~=0) 
+  			{ ! count the contents:
+  			move child(sack) to temp_bag;
+  			icount++; 
+  			} ! then move them back:
+  		while (child(temp_bag)~=0) move child(temp_bag) to sack;
+  		if (icount==1) 
+  			"You see a large hessian sack. 
+  			There is one item inside.";
+  		if (icount>1) 
+  			{ 
+  			print "You see a large hessian sack. There are ";
+  			print icount;
+  			" items inside."; 
+  			}
+  	],
+  has	container openable,
+	;
+
+object	flute "reed flute" sack,
+  with 	name 	'flute' 'pipe' 'instrument' 'pungri',
+  	found false,
+  	played false,
+  	description
+  		"The flute is made of elaborately-carved wood.",
+  	before [; 
+  	play, blow:
+		#ifdef TARGET_GLULX; csou=s_squish; sou(); #endif;
+		"OK... squeeeak...
+		^(You don't know how to play it properly - perhaps you 
+		need an instruction booklet...)"; 
+  	listen:	"You need to blow it to make a sound.";
+  	],
+  	;
+
+object 	key "large iron key" lake,
+  with	name	'key' 'iron' 'dull',
+  	description
+  		"You see a large, dull iron key that must be for 
+  		an ancient door.",
+  	;
+
+! ---------------------------------------------------------------------------
+! 2
+room	by_stump "Tree Stump",
+  with	description
+	"The twisting path leads east deeper into the forest 
+	and continues north, winding into the trees.
+	There is an old tree-stump next to the path where once a 
+	great oak tree must have stood. It seems to be hollow in the centre.
+	^You can go north (along a path to a lake) or east 
+	(further into the forest).",
+	n_to lake,
+	e_to by_cave,
+	cant_go "You can't go that way.",
+	;
+
+object	hollow "hollow tree stump" by_stump,
+  with	name	'stump' 'hollow' 'hol' 'stu' 'tree' 'tre',
+  	examined false,
+  	before [; 
+  	examine: if (self.examined==false) 
+  			{
+  			give self container;
+  			give self open;
+  			give self transparent;
+    			move matches to self;
+  			self.examined=true;
+  			"You look carefully in the hollow tree stump and.
+  			find a box of matches..."; 
+  			}
+  		"You see a hollow tree stump."; 
+  	],
+  has	static,
+  	;
+
+object	matches "box of matches",
+  with	name	'matches' 'box' 'matchbox' 'match-box',
+  	before [;
+  	examine: "You see a box of matches. It's nearly full.";
+  	],
+  	invent [; ! tidy up the inventory listing again:
+  	if (c_style&FULLINV_BIT)
+  		{
+  		if (self has open)
+  			{
+  	 		print "a box full of matches (which is open)";
+  	 		rtrue;
+  	 		}
+  	 	print "a box of matches";
+  	 	rtrue;
+  	 	}
+  	if (inventory_stage==1) 
+  		{
+  		print "a box of matches";
+  		rtrue;
+  		}
+  	],
+  has	container openable,
+  	;
+
+object	matches_in_box "matches" matches,
+  with	name	'matches',
+  	before [;
+  	examine: "The box is full of matches.";
+  	take: 	if (match in player)
+  			"You already have a match.";
+  		"You might drop them if you try to take them all at once.
+  		^Just take one.";
+  	],
+  	article "some",
+  has	transparent,
+  	;
+
+object 	match "match" matches,
+  with	name	'match' 'one',
+  	before [;
+  	take:	if (self in player)
+  			"You already have a match.";
+  		give match ~scenery;
+  		rfalse;
+  	burn:	give self scenery;
+ 		move self to matches;
+ 		print "Your match shines brightly for a few moments...^";
+  		#ifdef TARGET_GLULX; 
+  			csou=s_light;	! choose the sound name
+  			sou();		! then play it
+ 			if (location hasnt light) 
+ 				{
+ 				match_lit=true;	! turn on light for drawing
+ 				drawmain();	! show the picture
+ 				sleep(30);	! for 3 seconds
+				match_lit=false; ! turn off light for drawing
+ 				drawmain();	! show darkness again
+ 				}
+ 		#endif;
+ 		"It flickers and goes out as it burns away to nothing...";
+  	drop:	move self to matches;
+  			"Dropped. You lose the match down a crack in the
+  			ground.";
+  	],
+  has	scenery,
+  	;
+
+! ---------------------------------------------------------------------------
+! 3
+room	by_cave "Cave Entrance",
+  with	description
+	"The opening to a deep cave leads eastwards into darkness, 
+	and the path winds west into the forest.
+	^You can go west (to the forest) or east (into the dark cave).",
+	w_to by_stump,
+	in_to tunnel,
+	e_to tunnel,
+	cant_go "You can't go that way.",
+	;
+
+object	candle "small candle stub" by_cave,
+  with	name	'candle' 'stub' 'small',
+  	short_name [; 
+  		if (self has light) 
+  			{
+  			print "small, burning candle stub";
+  			rtrue; 
+  			}
+  		print "small candle stub (unlit)"; 
+  		rtrue; 
+  	],
+  	description [; 
+  		if (self has light)
+  			"The candle is lit and shining brightly.";
+  		"You see a small candle stub.";
+  	],
+  	before	[; 
+  	burn:	if (matches in player) 
+  			{
+  			if (self has light) "It's already lit...";
+  		 	give self light;
+  		 	give self on;
+			#ifdef TARGET_GLULX; ! play a sound here:
+				csou=s_light;
+				sou(); 
+			#endif;
+  			"OK... you light the candle using the matches..."; 
+  			}
+  		"You have nothing to light it with.";
+ 	],
+  	;
+
+object	coin "ancient silver coin" by_cave,
+  with	name	'coin' 'money' 'cash' 'ancient' 'silver',
+  	description
+  		"The coin is very old and made of silver. On one side 
+  		you see the portrait of an ancient king, on the other 
+  		there is a picture of a galloping horse. 
+  		It looks quite valuable.",
+  	;
+
+! ---------------------------------------------------------------------------
+! 4
+room_d	tunnel "Damp Tunnel",
+  with	description 
+	"The cave floor is moist from condensation, and your flickering 
+	candle casts pools of pallid light which sway and dance 
+	through the shadows.
+	^The cave exit is to the west.",
+	w_to by_cave,
+	cant_go "You can't go that way.",
+	;
+
+object	boot "mouldy old boot" tunnel,
+  with	name	'boot' 'shoe' 'mouldy' 'old',
+  	description 
+  		"You see an old, mouldy boot.",
+  	;
+
+! ===========================================================================
+!Entry point routines
+
+[ Initialise; 
+	location = lake;
+	lookmode = 2;	! verbose
+
+
+#ifdef TARGET_GLULX;
+
+! first create graphics window for pictures, if using Glulx:
+
+! First, completely clear top window to white if player uses 'restart', 
+! otherwise bits of pictures seem to get left behind:
+if (gg_picwin ~= 0) glk_window_fill_rect(gg_picwin,$FFFFFF,2,2,1600,216); 
+
+! (1600 is an arbitrary number bigger than the max. expected screen width
+! 216 is slighly less than the height of the graphics window in pixels
+
+! Next, set up the top graphics window, 220 pixels high if it doesn't 
+!  already exist:
+ if (gg_picwin == 0) 
+ 	gg_picwin = glk_window_open(gg_mainwin,(winmethod_Above+winmethod_fixed), 220, wintype_Graphics, GG_PICWIN_ROCK); 
+
+! now, similarly set up the sound channel if it doesn't already exist:
+ if (gg_schan == 0) 
+   	gg_schan = glk_schannel_create(GG_MUSICCHAN_ROCK);
+
+#endif;
+! back to the standard stuff:
+
+player.description = "You are wearing the traditional clothing of an 
+		 	adventurer.";
+
+"^A small game file showing one way to use pictures and sounds in games. 
+^(Type INFO at any time for more information.)^";
+];
+
+! ===
+
+#ifdef TARGET_GLULX;  ! the 3 following routines only needed for Glulx:
+
+[ GamePostRoutine;
+! does an inventory redraw after every game action
+! (just in case anything happens between AfterPrompt and GamePost routines):
+ dr();
+
+ return false;
+! needs rfalse here or the room descriptions aren't printed
+];
+
+#endif;
+
+! ===
+
+! This handles the graphics window if the main game window is resized 
+! by the player (taken from the Gull guide):
+
+#ifdef TARGET_GLULX;
+
+[ HandleGlkEvent ev context abortres; switch (ev-->0) 
+	{ 
+ 	evtype_Redraw, evtype_Arrange:red();
+      	evtype_Timer: if (context==1) glk_cancel_char_event(gg_mainwin);
+      	else glk_cancel_line_event(gg_mainwin, GLK_NULL);
+      	abortres-->0 = 0;
+      	return 2;
+ 	} 
+ ]; 
+
+#endif;
+
+! ===
+
+! This zeroes the graphics window and sound channel
+! (combining the sound and graphics init routines from the Gull guide):
+
+#ifdef TARGET_GLULX;
+
+[ IdentifyGlkObject phase type ref rock id;
+	if (phase==0) {gg_picwin=0; gg_schan=0; return;}
+	if (phase==1) {switch (type) { 0: switch (rock) { GG_PICWIN_ROCK: gg_picwin = ref; } 1: 2: } return;}
+	if (phase==2) {red(); id=glk_schannel_iterate(0,gg_arguments);
+	while(id) {switch (gg_arguments-->0) {GG_MUSICCHAN_ROCK:gg_schan=id;}
+	id=glk_schannel_iterate(id,gg_arguments);} csou=0; sou(); }
+];
+
+#endif; 	! now back to the standard Inform stuff:
+
+! ===
+
+! This bit stops children automatically typing 'get all' at every location
+! (as detailed in Roger Firth's FAQ help pages and DM4):
+
+[ ChooseObjects obj code;
+
+obj=obj; 	!  stops Inform pointing out an object was unused
+
+if (code < 2)  
+        {
+  	! if the parser wants to include this obj in an 'all', force 
+  	!   its exclusion:
+    	if (action_to_be == ##Take || action_to_be == ##Remove) return 2; 
+    	}
+
+return 0; 	!Carry on with normal parser rules
+
+];
+
+! ===
+
+! This handle paser errors from the above routine:
+! (you can also modify this to get things like 'draw giraffe'/'write xyzzy' 
+! to work properly)
+
+[ ParserError error_code;
+ 
+! The error message if 'all' turns out empty:
+if (error_code==NOTHING_PE)
+
+! Give a new error message:
+if (action_to_be == ##Take || action_to_be == ##Remove)
+  	"You need to say which objects you want to take.";
+
+rfalse; ! otherwise print the standard parser error message
+
+];
+
+! ===
+
+[ AfterPrompt;
+! extinguish candle if placed in sack (or perhaps burn the sack?)
+if (candle has light && candle in sack) 
+	{ 
+	give candle ~light;
+	give candle ~on;
+	"The candle goes out.^";
+	}
+
+! Now redraw the entire room and the inventory objects:
+drawmain();
+
+];
+
+! =============================================
+! Standard and extended grammar
+
+Include "Grammar";
+
+[drawmain;
+! This chooses the main room picture, then calls a full graphics redraw.
+! Also sets map flags for rooms visited 
+!  (using 'if (by_stump has visited)' doesn't seem to work for some reason)
+
+#ifdef TARGET_GLULX;
+if (mapon==false) 	! if map isn't being displayed
+	{
+	
+   	! first, put 'dark' picture if you're in a dark place with 
+   	!   no match lit:
+   	if (location==thedark && match_lit==false) 
+   		{ 
+   		picm=pic50; 
+   		red(); 
+   		rtrue; 
+   		}
+
+   ! otherwise, choose and show the main picture for every room:
+   	switch (real_location) 
+   		{
+     		lake: picm=pic1; red(); rtrue;
+     		by_stump: picm=pic2; red(); map1=true; rtrue;
+     		by_cave: picm=pic3; red(); map2=true; rtrue;
+     		tunnel: picm=pic4; red(); rtrue;
+     		}
+	}
+else mapon=false;	! if showing the map this turn, remove it next turn
+#endif; 		! end the Glulx-only stuff
+
+];
+
+! ===
+
+! This is the full screen graphics redraw routine:
+#ifdef TARGET_GLULX; 	!Glulx-only stuff again:
+
+[red;	! redraw
+
+! First, draw the current main room picture, set by picm:
+glk_image_draw(gg_picwin, picm, 148, 4);
+ 
+! Next, draw the frame round the main picture
+! (actually, 4 black rectangles, 1 pixel thick) - see the Gull guide:
+glk_window_fill_rect(gg_picwin,$000000,147,3,1,214); !left
+glk_window_fill_rect(gg_picwin,$000000,480,3,1,214); !right
+glk_window_fill_rect(gg_picwin,$000000,147,3,332,1); !top
+glk_window_fill_rect(gg_picwin,$000000,147,216,332,1); !bottom
+! (rectangles are solid filled - if you draw a big one then put the picture
+! over the top of it to get a border, the screen will flicker)
+ 
+! Now call a full redraw of all the inventory objects:
+dr();
+
+! Finally, place any picture overlays on top of the main picture
+! (these need to be .png files if you need transparent backgrounds):
+if (location==tunnel && boot in location) 
+ 	glk_image_draw(gg_picwin, x_boo, 260, 170);
+
+];
+
+#endif; ! end the Glulx bit
+
+! ===
+
+[dr; 
+! This clears and redraws pictures of all the inventory items:
+
+#ifdef TARGET_GLULX;	! Glulx-only again
+
+! First, set the start coordinates for the pictures
+! (top left, from the top left of the Glulx pcture window)
+xpos=4; ypos=2;
+
+! Next, clear both sides of the main room picture (to cope with undos 
+!    and restores) - draw solid white rectangles, as in the Gull guide:
+glk_window_fill_rect(gg_picwin,$FFFFFF,2,2,134,216);   ! clear left block
+glk_window_fill_rect(gg_picwin,$FFFFFF,494,2,134,216); ! clear right block
+ 
+! Now select and draw each possible item in the player's inventory
+! (you need to test and draw every object, so you can't use a switch here): 
+if (boot in player) 
+    	{
+    	pic=boo; 	! choose the right picture
+    			! and draw it at xpos, ypos:
+    	glk_image_draw(gg_picwin, pic, xpos, ypos); 
+    	ypos = ypos+72; ! move down 72 pixels ready for the next picture
+    	if (ypos > 170) ! if not enough room to draw the next one then...
+ 		{
+ 		ypos=2; 	! reset ypos back up to the top
+ 		xpos=xpos+494;	! move 494 pixels to the right, to the 
+ 				!   2nd column
+ 		}
+    	}
+
+! And do the same for every item in the game:
+
+if (candle in player && candle hasnt light) {pic=can; glk_image_draw(gg_picwin, pic, xpos, ypos);ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+
+if (candle in player && candle has light) {pic=ca1; glk_image_draw(gg_picwin, pic, xpos, ypos);ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+
+if (coin in player) {pic=coi; glk_image_draw(gg_picwin, pic, xpos, ypos);ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+ 
+if (flute in player) {pic=pip; glk_image_draw(gg_picwin, pic, xpos, ypos);ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+
+if (key in player) {pic=ke1; glk_image_draw(gg_picwin, pic, xpos, ypos);ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+
+if (matches in player && matches has open) {pic=mat; glk_image_draw(gg_picwin, pic, xpos, ypos);ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+
+if (matches in player && matches hasnt open) {pic=ma1; glk_image_draw(gg_picwin, pic, xpos, ypos);ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+
+if (match in player) {pic=ma2; glk_image_draw(gg_picwin, pic, xpos, ypos);ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+ 
+ if (sack in player && child(sack)~=0 && flute.found==true) {pic=sak2; glk_image_draw(gg_picwin, pic, xpos, ypos);ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+
+ if (sack in player && flute.found==false) {pic=sak2; glk_image_draw(gg_picwin, pic, xpos, ypos);ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+
+ if (sack in player && child(sack)==0 && flute.found==true) {pic=sak1; glk_image_draw(gg_picwin, pic, xpos, ypos); ypos = ypos+72; if (ypos > 170) {ypos=2; xpos=xpos+494;}}
+
+#endif;		! end of Glulx-only stuff
+
+];
+
+! ===
+
+[ MapSub;
+! This draws the map, which only shows locations visited so far:
+
+#ifdef TARGET_GLULX; 	! Glulx only
+
+! the player might not know what to do to get rid of the map:
+ print"(Type LOOK or L, or enter any instruction to leave the map)^";
+
+ mapon = true; ! set this so the screen redraw doesn't immediately
+               !  overwrite the map
+
+! Next, show the map background in place of the location picture:
+ glk_image_draw(gg_picwin, map, 148, 4);
+
+! Next, put in the map chunks for the locations visited so far:
+! (maps can be jpegs, mixed with .pngs if you need any transparency)
+if (map1==true) glk_image_draw(gg_picwin, m1, 245, 105);
+if (map2==true) glk_image_draw(gg_picwin, m2, 313, 110);
+
+! Now, put a pin in the current location:
+if (location==lake) glk_image_draw(gg_picwin, pin, 248, 82);
+if (location==by_stump) glk_image_draw(gg_picwin, pin, 266, 130);
+if (location==by_cave) glk_image_draw(gg_picwin, pin, 330, 128);
+
+#ifnot;
+"The map is only available in the Glulx version.";  ! if not Glulx
+
+#endif;
+];
+
+! ===
+
+#ifdef TARGET_GLULX; ! Glulx-only
+
+[sou; 
+! This routine plays the AIFF sound set by 'csou' once
+! (as detailed in the Gull guide):
+
+if (soundon==true) 	! Firstly, does the player want sound on?
+   	{
+   	if (gg_schan) 	! Next, check the sound channel has been set up
+		{ 
+			! Next, in case of any restores/restarts when 
+			!   no sound is playing (not really needed as we've 
+			!   no looped sounds in this game - see Gull guide):
+		if (csou==0) glk_schannel_stop(gg_schan);
+
+			! Otherwise, all is ok so play the sound once:	
+		else glk_schannel_play_ext(gg_schan,csou,1,0);
+		} 
+   	} 
+];
+
+#endif;
+
+! ===
+
+[SoundOnSub;		! so the player can choose to have the sound on
+#ifdef TARGET_GLULX;
+
+soundon=true; "The sound is on.";
+
+#ifnot;
+"Sound is only available in the Glulx version.";
+
+#endif;
+];
+
+! ===
+
+[SoundOffSub;		! so the player can choose to have the sound off
+#ifdef TARGET_GLULX;
+
+soundon=false; "The sound is off.";
+#ifnot;
+"Sound is only available in the Glulx version.";
+
+#endif;
+];
+
+! ===
+
+#ifdef TARGET_GLULX;
+
+[ Sleep x; 
+! Pause for x tenths of a second - useful so sounds can be played in sequence
+! ie, Sleep(20) in the game code will pause for 2 seconds (while a sound
+!   is being played or a picture is being shown) before going on
+
+if (glk_gestalt(gestalt_Timer) && x > 0) 
+ 	{
+   	glk_request_timer_events(x*100);
+  	KeyCharPrimitive();
+  	glk_request_timer_events(0); 
+  	}
+];
+! #ifnot;
+! [Sleep; ];	! include a dummy if you've used 'sleep' anywhere non-Glulx
+
+#endif;
+
+! ====================
+
+! standard Inform verb stuff:
+
+[ LightSub;
+if (noun==candle) 
+	{
+	if (candle has light) "It's already lit...";
+	if (candle notin player && candle notin location) 
+		"You aren't carrying it...";
+	if (matches notin player && matches notin location) 
+		"You don't have anything to light it with...";
+	give candle light;
+	give candle on;
+ 	#ifdef TARGET_GLULX; csou=s_light; sou(); #endif;
+	"You light the candle..."; 
+	}
+];
+
+[StrikeSub;
+if (matches notin player && matches notin location) 
+	"You aren't carrying any.";
+if (matches in player || matches in location) 
+  	{ 
+  	give match scenery;
+ 	move match to matches;
+ 	print "Your match shines brightly for a few moments...^";
+ 	! show the location briefly when a match is struck in the dark:
+ 	#ifdef TARGET_GLULX; 
+ 		csou=s_light; sou();
+ 		if (location hasnt light) 
+ 			{
+ 			match_lit=true;
+ 			drawmain();
+ 			sleep(30);
+			match_lit=false;
+ 			drawmain();
+ 			}
+ 	#endif;
+ 	"It flickers and goes out as it burns away to nothing...";
+  	}
+"You can't strike that.";
+];
+
+[ ExtinguishSub;
+if (candle notin player && candle notin location) 
+	"You aren't carrying it.";
+if (candle hasnt light) 
+	"It's already out...";
+give candle ~light; 
+give candle ~on;
+"You blow out the candle...";
+];
+
+[HintSub;
+if (location == thedark)
+	"You really need some light...";
+if (location == by_stump && hollow.examined==false)
+	"Examine the stump...";
+if (location == lake && sack.found==false)
+	"Examine the reeds...";
+"Look around and examine things...
+^(Type INFO if you want more information on the game)";
+];
+
+[InfoSub;
+CaveIntro();  ! library extension about the game
+];
+
+[PlaySub;
+if (noun notin player) 
+	"You aren't carrying that.";
+"You can't play that.";
+];
+
+[ ListenGenSub;
+! if the player types 'listen' at a location:
+switch (location) 
+	{
+	lake:	#ifdef TARGET_GLULX; csou=s_splash; sou(); #endif;
+		"You hear the occasional splash of fish feeding near
+  		the surface.";
+	}
+"You hear nothing unexpected.";
+];
+
+
+
+! ================================
+
+Verb	'Info'
+	*		-> Info;
+
+Verb	'Hint' 'Help'
+	*		-> Hint;
+
+Verb	'Off'
+	* held		-> Extinguish;
+	
+Verb	'On'
+	* held		-> Light;
+
+Verb	'Candle'
+	* 'off'		-> Extinguish
+	* 'on'		-> Light;
+	
+Verb	'Extinguish'
+	* 'candle'	-> Extinguish
+	* 'light'	-> Extinguish;
+	
+Verb	'ignite'
+	* noun		-> Burn;
+
+Verb    'Strike'
+	* 'match'	-> Strike;
+
+Verb	'Play'
+	* noun		-> Play;
+	
+Extend 'listen' first
+	*		-> ListenGen;
+
+Verb 'Map'
+	*		-> Map;
+
+Verb	'Sound'
+	* 'on'		-> SoundOn
+	* 'off'		-> SoundOff;
+
+! ================================
