@@ -1,0 +1,297 @@
+! $Id: chess.inf 1.8 1999/01/17 11:02:19 mol Exp $
+
+! chess.inf - implementation of a chess board
+! ****************************************************************
+! This is part of the source distribution of
+!
+! Zugzwang - the interactive life of a chess piece
+! a TextFire demo.
+!
+! Copyright 1998-99 by Magnus Olsson (zebulon@pobox.com).
+! All rights reserved.
+!
+! THIS CODE MAY BE DISTRIBUTED FREELY AS LONG AS IT IS NOT MODIFIED
+! IN ANY WAY, NO FEE IS CHARGED EXCEPT FOR DISTRIBUTIONS COST, AND
+! THIS COPYRIGHT NOTICE IS NOT ALTERED OR DELETED, WITH THE FOLLOWING
+! EXCEPTION:
+! PROGRAMMERS MAY USE THE CODE, CLASSES AND ALGORITHMS BELOW AS PART
+! OF THEIR OWN CODE, AS LONG AS THE FOLLOWING CONDITIONS ARE MET:
+!
+! 1) No use of the characters, plot or text of the game "Zugzwang" are 
+!    used in the derivative work (i.e. you may write another game 
+!    about chess pieces using this code, but you may not publish an
+!    "improved" version of Zugzwang) without the author's permission.
+! 2) The use of this code, and its origin, are acknowledged in the
+!    derivative work.
+! ****************************************************************
+
+attribute white;
+attribute black;
+
+! The board is represented by an array, with one element for each square.
+! If the element is zero, the square is empty. Otherwise, the element
+! refers to a piece (i.e. it contains that piece's object number).
+
+! Pieces are represented by objects of the class piece (defined below).
+! Different kinds of pieces are identified by the following constants,
+! and their colour by the sign of the constant, so e.g. a White pawn
+! has the value PAWN and a Black knight the value -KNIGHT.
+constant PAWN = 1;
+constant KNIGHT = 2;
+constant BISHOP = 3;
+constant ROOK = 4;
+constant QUEEN = 5;
+constant KING = 6;
+
+! The letters representing the pieces when the array is printed;
+! e.g. pieces->BISHOP == 'B', the abbreviation for "bishop".
+! pieces->0 is a space, the representation of an empty square.
+array pieces -> " PNBRQK";
+
+! The array representing the board
+array board_array --> 64;
+
+! The object representing a chessboard.
+! Ideally, board_array should be a member of this object, but for technical
+! (Inform-specific) reasons, it has to be a global array. This is of course
+! only a problem if there are more than one chessboard in the game (in
+! which case board should be made a class, and have a member that points
+! to the corresponding board_array).
+object board "chessboard"
+with
+    ! Clear the board
+    init [ i j;
+        for (i = 'a' : i <= 'h' : ++i)
+	    for (j = 1 : j <= 8 : ++j)
+	        self.setpiece(i, j, 0);
+    ],
+
+    ! Put a piece on a square. Squares are identified by file ('a' - 'h')
+    ! and rank (0 - 9). setpiece(file, rank, piece) puts a piece on that
+    ! square. If piece == 0, then the square is emptied.
+    setpiece [ f r piece i;
+        i = self.index(f, r);
+	board_array-->i = piece;
+	if (piece ~= 0) {
+	    ! Tell the piece where it is standing. (This should really
+	    ! be done via a method call rather than by writing into
+	    ! the piece's members).
+	    piece.rank = r;
+	    piece.file = f;
+	}
+    ],
+
+    ! getpiece(file, rank) returns the piece standing on the specified
+    ! square, or 0 if the square is empty.
+    getpiece [ file rank i;
+        i = self.index(file, rank);
+	return board_array-->i;
+    ],
+
+    ! movepiece(fromfile, fromrank, tofile, torank) moves a piece
+    ! between two squares. If there already was a piece on the destination
+    ! square, remove it from the board and return it, otherwise
+    ! return 0.
+    movepiece [ fromfile fromrank tofile torank p q;
+        ! Let p = the piece to be moved
+        p = self.getpiece(fromfile, fromrank);
+	if (p == 0) {
+	    print "***ERROR: No piece at ", (char) fromfile, fromrank, "^";
+	    quit;
+	}
+	! q = contents of destination square
+	q = self.getpiece(tofile, torank);
+	if (q ~= 0) {
+	    ! The destination square wasn't empty; remove the piece that
+	    ! was already there.
+  	    q.file = 0;
+	    q.rank = 0;
+	    remove q;
+	}
+	self.setpiece(tofile, torank, p);
+	self.setpiece(fromfile, fromrank, 0);
+	! Update the global variable that tells whose move it is
+	whites_move = ~~whites_move;
+	return q;
+    ],
+
+    ! printboard() prints a representation of the board
+    printboard [ file rank;
+	for (rank = 8 : rank >= 1 : --rank) {
+	    print rank, " ";
+	    for (file = 'a' : file <= 'h' : ++file) 
+	        self.printsquare(file, rank);
+	    style reverse;
+            new_line;
+	}
+	print "   a  b  c  d  e  f  g  h";
+    ],
+
+private
+    ! Translate a file/rank pair (the coordinates used on the chess-
+    ! board, such as ('b', 3)) to the square's index in the board_array.
+    ! This is necessary since Inform only supports one-dimensional
+    ! arrays.
+    index [ file rank;
+	if (file < 'a' || file > 'h' || rank < 1 || rank > 8) {
+	    print "***ERROR: Bad square ", (char) file, rank, "^";
+	    quit;
+	}
+        return ((file - 'a') + 8 * (rank - 1));
+    ],
+
+    ! Print one square on the board
+    printsquare [ file rank p;
+	p = self.getpiece(file, rank);
+	self.printblank(file, rank);
+	if (p == 0)
+	    self.printblank(file, rank);
+	else {
+	    p = p.piecetype;
+	    if (p < 0) {
+ 	        style reverse;
+	        print (char) pieces->(-p);
+	    }
+	    else {
+	        style roman;
+	        print (char) pieces->p;
+	    }
+	}
+	self.printblank(file, rank);
+    ],
+
+    printblank [ file rank;
+	if ((file - 'a' + rank - 1) % 2 == 0)
+	    style reverse;
+	else
+	    style roman;
+	print " ";
+    ]
+;    
+
+! Each chess piece is represented by an object of the class piece.
+! These are ordinary Inform objects that are manipulated by the
+! player (or resist manipulation, if they're of the wrong colour.
+! In this game, they're also animate, but that's because it's
+! from the point of view of one of them.
+! This class is subclassed for black and white pieces.
+class piece
+with
+    name 'piece',
+    life [ ;
+        ! In chess terminology, "attacking" a piece means threatening
+	! to capture it, not actually capturing it, but for the benefit of
+	! players more used to adventure games than chess, we'll sacrifice
+	! correctness for convenience and let "kill" and "attack"
+	! be synonyms for "take".
+        Attack:
+	    << Take self >>;
+    ],
+    
+    parse_name [ ;
+        if (parser_action == ##TheSame)
+	    return -2; ! Pieces are unique, even if they have the same name
+	return -1;
+    ],
+
+    ! moveto(filestep, rankstep) moves the piece. The parameters
+    ! give the motion relative to the current position (e.g.
+    ! "two steps forward" - cf. how newfile and newrank are computed).
+    moveto [ filestep rankstep newfile newrank enemy;
+        newrank = self.rank + rankstep;
+        newfile = self.file + filestep;
+	! Move the piece, and let enemy be the piece captured (if
+	! the destination square was occupied).
+        enemy = board.movepiece(self.file, self.rank, newfile, newrank);
+	if (enemy == player)
+	    ! If the player is one of the pieces, and was captured,
+	    ! then the game is over.
+	    EndGame(1);
+	if (enemy ~= 0)
+	    print "With a faint popping sound ", (the) enemy,
+	        " vanishes from the board.^";
+        return location;
+    ],
+    
+    ! Current position of piece
+    rank 0,
+    file 0,
+
+    ! The type of piece (one of the constants PAWN, BISHOP etc.
+    piecetype 0,
+    
+has
+    concealed animate neuter
+;
+
+! A subclass for black pieces. The code is hard-wired so that the
+! player is always White, hence he should not be allowed to move
+! the Black pieces around.
+class black_piece
+class
+    piece,
+with
+    adjective 'black' 'enemy',
+    before [ direction;
+        Push:
+	    ! Push is the action generated by the more usual command
+	    ! "move". But White can't move Black's pieces.
+	    "The game would be rather simple if you could move
+	    the Black pieces around at will. Unfortunately you can't.";
+
+        Take, Remove:
+	    ! White can capture Black's pieces, but only if it's
+	    ! his move.
+ 	    if (whites_move) {
+	        ! In this game, the player is a White pawn, so
+		! he can actually only move himself, not other
+		! white pieces. First check if the player pawn can
+		! move to this piece's location, and in that case
+		! in which direction it must move to do so.
+	        ! In a game where the player controls all the pieces,
+		! we would need to keep track of which piece is doing
+		! the capturing ("Capture pawn with knight").
+ 	        direction = player.can_capture(self);
+		if (direction ~= 0)
+		    ! Capture possible, move pawn
+		    << Go direction >>;
+  	        print "To capture ", (the) self, ", you must move
+	            into the same square as ";
+		ItOrThem(self);
+		".";
+	    }
+	    "But it's not your move!";
+    ],
+    
+    life [ ;
+        Order:
+	    "The game would be rather simple if you could order
+	    the Black pieces around. Unfortunately you can't.";
+    ],
+has
+    black
+;
+
+! A subclass for White pieces. Since the player is just a lowly
+! pawn, he can't move the other White pieces around either.
+class white_piece
+class
+    piece,
+with
+    adjective 'white',
+    life [ ;
+        Order:
+	    "You're not giving the orders here, you just
+	    obey them.";
+    ],
+    before [ ;
+        Take, Remove:
+	    print_ret "You can only capture enemy pieces.";
+	Push:
+	    "If you ever get to be a King, you can determine where
+	    the other pieces go, but you're only a Pawn now.";
+    ],
+has
+    white    
+;
+

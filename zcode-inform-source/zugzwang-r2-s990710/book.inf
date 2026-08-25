@@ -1,0 +1,179 @@
+! $Id: book.inf 1.10 1999/07/09 22:16:07 mol Exp $
+
+! book.inf - rule book
+! ****************************************************************
+! This is part of the source distribution of
+!
+! Zugzwang - the interactive life of a chess piece
+! a TextFire demo.
+!
+! Copyright 1998-99 by Magnus Olsson (zebulon@pobox.com).
+! All rights reserved.
+!
+! THIS CODE MAY BE DISTRIBUTED FREELY AS LONG AS IT IS NOT MODIFIED
+! IN ANY WAY, NO FEE IS CHARGED EXCEPT FOR DISTRIBUTIONS COST, AND
+! THIS COPYRIGHT NOTICE IS NOT ALTERED OR DELETED, WITH THE FOLLOWING
+! EXCEPTION:
+! PROGRAMMERS MAY USE THE CODE, CLASSES AND ALGORITHMS BELOW AS PART
+! OF THEIR OWN CODE, AS LONG AS THE FOLLOWING CONDITIONS ARE MET:
+!
+! 1) No use of the characters, plot or text of the game "Zugzwang" are 
+!    used in the derivative work (i.e. you may write another game 
+!    about chess pieces using this code, but you may not publish an
+!    "improved" version of Zugzwang) without the author's permission.
+! 2) The use of this code, and its origin, are acknowledged in the
+!    derivative work.
+! ****************************************************************
+
+! The rule book. This is really a hint menu system, but invoked by
+! reading the book rather than by the usual "help" command.
+[ bookmenu width;
+    switch (menu_item) {
+        0:
+	    item_name = "Chess Rules";
+	    item_width = 5;
+	    return 11;
+	1:
+	    item_name = "The Game of Chess";
+	    width = 17;
+	2:
+	    item_name = "Your Part in the Game";
+	    width = 21;
+	3:
+	    item_name = "The Pawn";
+	    width = 8;
+	4:
+	    item_name = "The Knight";
+	    width = 10;
+	5:
+	    item_name = "The Bishop";
+	    width = 10;
+	6:
+	    item_name = "The Rook";
+	    width = 8;
+	7:
+	    item_name = "The Queen";
+	    width = 9;
+	8:
+	    item_name = "The King";
+	    width = 8;
+	9:
+	    item_name = "Castling";
+	    width = 8;
+       10:
+            item_name = "Strategy and Tactics";
+	    width = 20;
+       11:
+	    item_name = "The Term 'Zugzwang'";
+            width = 18;
+    }
+    item_width = width / 2;
+];
+
+[ bookinfo ;
+    switch (menu_item) {
+        1:
+	    print_ret "Chess is played on an 8x8 board by two players,
+	        called ", (sul) "White", " and ", (sul) "Black",
+		". Each player starts the game with 16 pieces: 8 ",
+		(sul) "Pawns", ", 2 ", (sul) "Knights", ", 2 ",
+		(sul) "Bishops", ", 2 ", (sul) "Rooks", ", one ",
+		(sul) "Queen", " and one ", (sul) "King", ".^^
+		White and Black take turns moving one of their own
+		pieces. Each piece has its own mode of movement
+		(see the entries for each piece). If a piece 
+		moves onto a square occupied by an enemy piece, the
+		enemy piece is ", (sul) "captured", " and removed
+		from the game.^^
+		The Kings can't be captured. If an enemy piece
+		threatens to capture your King, the King is said to be
+		in ", (sul) "check", " and must be moved.
+		If the King can't move out of check, he is ",
+		(sul) "mate", " and the game is over.^^
+		The game can also end if one player has no legal
+		move to make. This is called ", (sul) "stalemate",
+		" and counts as a drawn game.";
+	2:
+	    "In this game you take the part of one of the White chess
+	    pieces. You start as a humble Pawn, but if you play well
+	    you may advance through the ranks, all the way up to
+	    royal status.^^
+	    As an individual piece, you will find that you have very
+	    little influence on the game as a whole: you can only
+	    control your own moves, not those of other pieces, and
+	    you will only move when told to do so.
+	    Only when you've advanced all the way to King, you'll
+	    be in charge of the entire game, and you'll be able
+	    to order the other pieces around.^^
+	    During the game, a diagram of the chess board with the
+	    current position is shown in the status bar. Pieces
+	    are represented by capital letters (inverted for the Black
+	    pieces).^^
+            The White Pawns move upwards in the diagram. To
+	    map the game into a standard IF format, this direction
+	    has been labeled as 'north'.";
+	3:
+	    print_ret "The Pawn is the least powerful piece. Pawns move only
+	        forward, except when capturing enemy pieces: Pawns capture
+	        diagonally. So a White Pawn can only move to the north,
+	        and capture pieces immediately to the northeast or northwest
+	        (but not capture to the north, so a Black piece immediately
+	        to the north of a White Pawn will block its progress).^^
+	        Pawns move slowly, one square at a time, except on their
+	        first move, when they have a choice of moving either one
+	        or two squares.^^
+	        When a Pawn reaches the last rank, it is ",
+		(sul) "promoted", " into any other kind of piece
+		(except for a King).";
+        8:
+	    print_ret "The King is the most important piece of all,
+	        for if it is lost, the entire game is lost. If an
+		enemy piece threatens to capture your King, your
+		are said to be in ", (sul) "check", ", and you must
+		immediately move the King somewhere where it isn't
+		threatened. The King must never move to a field where
+		it is in check, either.^^
+		The King can move one step in any direction.";
+	11:
+	    print_ret "The term ", (sul) "zugzwang", " (from German,
+	        meaning ~obligation to move~) is used to describe
+		a situation where any move a player can make
+		will worsen his position. The rules force him
+		to make a move, even if it means that he will lose
+		the game.";
+	default:
+            print "The complete text of this rulebook is available with
+	           the full registered version of ";
+            style bold; print "Zugzwang"; style roman;
+            ".  Type REGISTER for additional information.";
+    }
+];
+    
+object rulebook "rule book"
+with
+    name 'rule' 'book' 'rules' 'rulebook',
+    description [ ;
+        @erase_window -1;
+        DoMenu("Chess Rules^
+	        ^    The Game of Chess
+		^    Your Part in the Game
+		^    The Pawn
+		^    The Knight
+		^    The Bishop
+		^    The Rook
+		^    The Queen
+		^    The King
+		^    Castling
+		^    Strategy and Tactics
+		^    The Term 'Zugzwang'^^",
+	       bookmenu, bookinfo);
+	"^^^";
+    ],
+    before [ ;
+        Drop:
+	    "You'd better hang onto your rule book. You never know
+	    when you might need to consult it.";
+    ]	    
+;    
+
+

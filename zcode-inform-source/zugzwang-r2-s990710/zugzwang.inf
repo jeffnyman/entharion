@@ -1,0 +1,792 @@
+! $Id: zugzwang.inf 1.19 1999/07/09 22:16:07 mol Exp $
+
+! zugzwang.inf - main program 
+! ****************************************************************
+! This is part of the source distribution of
+!
+! Zugzwang - the interactive life of a chess piece
+! a TextFire demo.
+!
+! Copyright 1998-99 by Magnus Olsson (zebulon@pobox.com).
+! All rights reserved.
+!
+! THIS CODE MAY BE DISTRIBUTED FREELY AS LONG AS IT IS NOT MODIFIED
+! IN ANY WAY, NO FEE IS CHARGED EXCEPT FOR DISTRIBUTIONS COST, AND
+! THIS COPYRIGHT NOTICE IS NOT ALTERED OR DELETED, WITH THE FOLLOWING
+! EXCEPTION:
+! PROGRAMMERS MAY USE THE CODE, CLASSES AND ALGORITHMS BELOW AS PART
+! OF THEIR OWN CODE, AS LONG AS THE FOLLOWING CONDITIONS ARE MET:
+!
+! 1) No use of the characters, plot or text of the game "Zugzwang" are 
+!    used in the derivative work (i.e. you may write another game 
+!    about chess pieces using this code, but you may not publish an
+!    "improved" version of Zugzwang) without the author's permission.
+! 2) The use of this code, and its origin, are acknowledged in the
+!    derivative work.
+! ****************************************************************
+
+switches d2;
+
+constant Story "Zugzwang";
+constant Headline "^The Interactive Life of a Chess Piece^
+    DEMO version for the TextFire 12-PACK^
+    (Type ~about~ for more information)^
+    Copyright (c) 1998-99 by Magnus Olsson. All rights reserved.^";
+
+release 2;
+
+! Most players seem to find automatic pronouns a nuisance.
+constant MANUAL_PRONOUNS;
+! Put "UNDO" on the "You have lost" menu.
+constant DEATH_MENTION_UNDO;
+! Override the Library's compass - see the CompassDirection
+! definitions below.
+constant WITHOUT_DIRECTIONS;
+! Of course, you can't get 450 points in this demo, but in the
+! (hypothetical) full game, you can.
+constant MAX_SCORE = 450;
+
+replace DrawStatusLine;
+replace QuitSub;
+replace JumpSub;
+
+! Global status flag which is true if it's White's move
+global whites_move = true;
+
+! Global variables used to get information out of the "square" grammar
+! token (see below).
+global parsed_rank;
+global parsed_file;
+
+! A format routine for printing underlined (or italic on some
+! interpreters) strings. Usage: 'print (sul) some_string;'
+[ sul str;
+    style underline;
+    print (string) str;
+    style roman;
+];
+
+! Replace the noun parsing mechanism to handle adjectives, in a way
+! very similar to that in the Designer's Manual. Read about how it
+! works there...
+
+property additive adjective;
+
+[ ParseNoun obj w nouns adjs;
+    nouns = 0;
+    adjs = 0;
+    while (true) {
+        w = NextWord();
+	if (IsAWordIn(w, obj, name))
+	    ++nouns;
+	else if (IsAWordIn(w, obj, adjective))
+	    ++adjs;
+	else
+	    break;
+    }
+    if (nouns > 0)
+        return nouns + adjs;
+    else
+        return 0;
+];
+
+[ IsAWordIn wrd obj prop p n w;
+    p = obj.&prop;
+    n = (obj.#prop) / 2;
+    for (w = 0 : w < n : ++w)
+        if (wrd == p-->w)
+	    rtrue;
+    rfalse;
+];
+
+include "parser";
+
+! Draw a status "line" which is really nine lines, containing a
+! picture of the chess board. The Designer's Manual contains a
+! good description of how to use assembly language to draw
+! the status line; this code just elaborates a little on that.
+[ DrawStatusLine i;
+    @split_window 9;
+    @set_window 1;
+    @set_colour 2 9;
+    style reverse;
+    for (i = 1 : i <= 9 : ++i) {
+        @set_cursor i 1;
+	spaces (0->33)-1;
+    }
+    @set_cursor 3 29;
+    print "Your position: ", (char) player.file, player.rank;
+    @set_cursor 5 29;
+    if (whites_move)
+        print "White";
+    else
+        print "Black";
+    print " to move";
+
+    @set_cursor 1 1;
+    board.printboard();
+
+    @set_cursor 1 1;
+    style roman;
+    @set_window 0;
+    @set_colour 1 1;
+];
+
+! Our own compass directions, with some special synonyms (such as
+! 'forward' for 'north'. Note that this only really works when the
+! player is White; if the point of view could shift between Black
+! and White, words like 'forward' would have to be handled in a
+! more flexible way.
+CompassDirection n_obj "north" compass
+with
+    name 'n//' 'north' 'forward' 'forwards' 'onward',
+    door_dir n_to
+;
+
+CompassDirection s_obj "south" compass
+with
+    name 's//' 'south' 'back' 'backwards' 'backward',
+    door_dir s_to
+;
+
+CompassDirection e_obj "east" compass
+with
+    name 'e//' 'east',
+    door_dir e_to
+;
+
+CompassDirection w_obj "west" compass
+with
+    name 'w//' 'west',
+    door_dir w_to
+;
+
+CompassDirection ne_obj "northeast" compass
+with
+    name 'ne' 'northeast',
+    door_dir ne_to
+;
+
+CompassDirection nw_obj "northwest" compass
+with
+    name 'nw' 'northwest',
+    door_dir nw_to
+;
+
+CompassDirection se_obj "southeast" compass
+with
+    name 'se' 'southeast',
+    door_dir se_to
+;
+
+CompassDirection sw_obj "southwest" compass
+with
+    name 'sw' 'southwest',
+    door_dir sw_to
+;
+
+CompassDirection u_obj "ceiling" compass
+with
+    name 'u//' 'up' 'ceiling',
+    door_dir u_to
+;
+
+CompassDirection d_obj "floor" compass
+with
+    name 'd//' 'down' 'floor',
+    door_dir d_to
+;
+
+! **********************
+! Miscellaneous routines
+! **********************
+
+! Copyright info, etc. Of course, all the TextFire references are
+! bogus, but I've kept them in for amusement value.
+[ AboutSub;
+    print "The demo version of ";
+    style bold; print "Zugzwang"; style roman;
+    print " was written by Alfred Timpson for TextFire, Inc.^^
+        About the author:^^
+        Alfred Timpson was born in Dundee, Scotland, but spent most
+        of his childhood in Piedmont, California. He later moved back
+        to Britain, got a degree in geography from Durham University, and
+        is now living in Edinburgh, working as a freelance writer. A
+        recent high school reunion brought him back into contact with
+        the founders of TextFire. Apart from computer games, his hobbies
+        include chess, ornithology, hang gliding and trainspotting.^^
+        About TextFire:^^
+        TextFire, Inc. is a partnership of authors formed for the
+        purpose of providing quality works of interactive fiction to a
+        worldwide community of players, hobbyists, and enthusiasts.
+        Help support our efforts to keep interactive fiction alive!";
+    print_ret "^^", (sul) "Well, not really.", " TextFire was an April Fool's
+ 	joke, and Alfred Timpson doesn't exist. The real author is
+	Magnus Olsson (zebulon@@64pobox.com), who has almost nothing
+	in common with poor non-existant Alfred.^^";
+        
+];
+
+[ HelpSub;
+    print "Hints are available with the full registered version of ";
+    style bold; print "Zugzwang"; style roman;
+    ".  Type REGISTER for additional information.";
+];
+
+
+[ RegisterSub;
+    print "On-line registration for TextFire products will be available at
+        http://www.textfire.com on or before June 30, 1998.  Thanks for your
+        patience!";
+    print "^^", (sul) "Well, not really.", " TextFire was an April Fool's
+ 	joke, there is no need to register, and there is no full version of ";
+    style bold; print "Zugzwang"; style roman;
+    ".";
+];
+
+[ EndGame df i;
+    deadflag = df;
+    print "^^    ";
+    style bold;
+    print "*** ";
+    DeathMessage();
+    print " ***";
+    style roman;
+    print "^^^";
+    ScoreSub();
+    DisplayStatus();
+
+    ! I didn't write the following code; it was cut and pasted from
+    ! InformLibrary::play() and slightly hacked.
+    .RRQPL;
+    L__M(##Miscellany,5);
+    .RRQL;
+    print "> ";
+    temp_global=0;
+    read buffer parse DrawStatusLine; 
+    i=parse-->1;
+    if (i==QUIT1__WD or QUIT2__WD) { PrintClosingText(); quit;}
+    if (i==RESTART__WD)      @restart;
+    if (i==RESTORE__WD)      { RestoreSub(); jump RRQPL; }
+    if (i==FULLSCORE1__WD or FULLSCORE2__WD && TASKS_PROVIDED==0)
+    {   new_line; FullScoreSub(); jump RRQPL; }
+        if (deadflag==2 && i==AMUSING__WD && AMUSING_PROVIDED==0)
+    {   new_line; Amusing(); jump RRQPL; }
+
+    if (i==UNDO1__WD or UNDO2__WD or UNDO3__WD)
+    {   if (undo_flag==0)
+        {   L__M(##Miscellany,6);
+            jump RRQPL;
+        }
+        if (undo_flag==1) jump UndoFailed2;
+        @restore_undo i;
+        if (i==0)
+        {   .UndoFailed2; L__M(##Miscellany,7);
+        }
+        jump RRQPL;
+    }
+    L__M(##Miscellany,8);
+    jump RRQL;
+];
+
+[ QuitSub ;
+    L__M(##Quit,2);
+
+    if (YesOrNo()) {
+   	PrintClosingText();
+        quit;
+    }
+];
+
+[ PrintClosingText ;
+    print "^Thank you for playing the demo version of ";
+    style bold; print "Zugzwang"; style roman;
+    print ", a TextFire release. On-line registration for TextFire
+        products will be available at http://www.TextFire.com on or before
+        June 30, 1998. Thanks for your patience!^^";
+];
+
+
+[ PrintOpeningText ;
+    "It has been a fierce battle, full of bold moves, daring attacks,
+    surprising gambits and heroic sacrifices. Throughout this, you've
+    remained at your starting point, patiently waiting for orders.
+    But now that the metaphorical dust has settled and most pieces have
+    been exchanged, it finally looks as if it is your turn. The White
+    King and one of your Pawn colleagues have managed to nail the
+    Black King with his back to the edge of the board, but they can't
+    finish him off without help.^^
+    The White King calls you to action. It is time to make your move.";
+];
+
+[ DeathMessage ;
+    switch (deadflag) {
+ 	1:
+ 	    print "You have been captured";
+	2:
+            print "You have completed the demo";
+	3:
+            print "You have thrown away the victory";
+    }
+];
+
+[ PrintRank ;
+    print ", earning you the rank of ";
+    if (score < 20)
+        "Pawn";
+    "Knight";
+];
+
+include "verblib";
+include "chess.inf";
+
+! ***************
+! Room definition
+! ***************
+
+! The only room in the game. When the player moves, he still stays in
+! this room; only his coordinates on the chessboard change.
+object board_room "Chessboard"
+with
+    short_name [ ;
+        print "Chessboard (on ", (char) player.file, player.rank, ")";
+	rtrue;
+    ],
+    description [ ;
+        << Examine board_obj >>;
+    ],
+    ! All movement is redirectioned to the player object's moveto
+    ! method. Note that the following code is very pawn-specific.
+    ! Things would be much more complicated for other pieces that can
+    ! move more than one step at a time.
+    e_to [ ;
+        return player.moveto(1, 0);
+    ],
+    w_to [ ;
+        return player.moveto(-1, 0);
+    ],
+    n_to [ steps;
+        steps = 1;
+        if (player.rank == 2) {
+	    print "On your first move, you may choose to move two steps
+	        forwards instead of just one. Would you like to do that? ";
+	    if (YesOrNo())
+	        steps = 2;
+	}
+        return player.moveto(0, steps);
+    ],
+    s_to [ ;
+        return player.moveto(0, -1);
+    ],
+    ne_to [ ;
+        return player.moveto(1, 1);
+    ],
+    nw_to [ ;
+        return player.moveto(-1, 1);
+    ],
+    se_to [ ;
+        return player.moveto(1, -1);
+    ],
+    sw_to [ ;
+        return player.moveto(-1, -1);
+    ],
+has
+    light
+;
+
+! **********************
+! Chess board and pieces
+! **********************
+
+! This object is the actual chess board that the player can interact
+! with (as opposed to the "abstract" chess board, defined in the file
+! chess.inf, which keeps track of where the different pieces are).
+object -> board_obj "chessboard"
+with
+    name 'board' 'chessboard' 'surface' 'square' 'squares',
+    adjective 'chess' 'white' 'black',
+    description "The chessboard is almost empty, now that most pieces
+	have been exchanged. Its surface is perfectly smooth, its
+	64 squares alternatingly deep black and pearly white.",
+    before [ ;
+	Take, Remove:
+	    "That would be something: a pawn picking up the entire
+	    board!";
+    ],
+has
+    supporter concealed static
+;    
+
+! The pieces. All the pieces except the White pawn (which is the player)
+! are NPC's. 
+white_piece -> white_king "White King"
+with
+    name 'king',
+    adjective 'my' 'mine',
+    piecetype KING,
+    react_after [ ;
+        Wait:
+	    if (whites_move)
+	        "The White King looks impatient. ~What are you waiting
+		for? It's your move!~";
+    ],
+has
+    male ~neuter    
+;
+
+black_piece -> black_king "Black King"
+with
+    name 'king',
+    piecetype -KING,
+    ! Black's moves are generated by a daemon. It is arguable whether
+    ! it really belongs in the black_king object - after all, the king
+    ! is just a piece among the others, but _in the game_, the Black
+    ! king is the boss... Note that this daemon generates all Black's
+    ! action, and also some of White's.
+    daemon [ bpr;
+        if (whites_move) 
+	    return; ! Don't do anything unless it's our move
+	bpr = black_pawn.rank;
+        ! self.count is used to make the Black King think for a
+	! turn before making a move
+	++self.count;
+	switch (bpr) {
+	    0: ! Pawn has been captured
+		print "^The White King cries out in frustration: ~You fool!
+		    You weren't supposed to do that!~^^
+		    The Black King, however, can't hide his pleasure.
+		    ~I haven't got any legal moves left. It's a stalemate!~
+		    He pats the White King on the shoulder.
+		    ~Seems like you don't win after all, old chap.~^";
+		EndGame(3);
+	    5:
+  	        if (player.rank == 3) {
+		    if (self.count == 1) {
+      		        score = score + 5;
+		        "^The Black King scratches his head. 
+			~Hmmm. A difficult position - I might have to
+			sacrifice my last pawn. Let's see...~";
+		    }
+	            black_pawn.moveto(0, -1);
+	            "^The Black King sighs. ~It looks like we don't have
+	            much choice. Pawn, one step forward!~ His sole remaining
+	            subject moves one square to the south, to g4.";
+	        }
+		if (self.count == 1) 
+		    "^The Black King first looks surprised, and then starts
+		    to smile triumphantly. The White King hides his face
+		    in his hands and groans. ~Why do I always get the
+		    stupid Pawns? It's not fair!~";
+	        print "^The Black King grins at his colleague.
+	            ~It looks like we win anyway, thanks to your Pawn!~ He
+	            makes a chopping gesture with his hand, and the Black
+	            Pawn moves in for the kill.^^
+		    As you are removed from the board, you realize that
+		    your move has lost the game: nothing can stop the Black
+		    Pawn from turning into a Queen and winning now.^^
+		    But that's no concern of yours anymore.^";
+	        black_pawn.moveto(-1, -1);
+	    4:
+		if (self.count == 1) {
+  	            score = score + 5;
+		    "^The Black Pawn looks a bit surprised, and more than
+		    a little relieved, that you didn't capture it. The
+		    White King nods his approval, however: ~Well done!
+		    Just continue north, and don't get distracted!~";
+		}
+	        black_pawn.moveto(0, -1);
+		"^The Black King smiles grimly. ~So you didn't fall
+		for my little trap? In that case, we'll have to see
+		whose pawn is the fastest!~ He gestures to his Pawn,
+		which takes a step towards the south, to g3.
+		The White King waves at you to continue your march.";
+	    3:
+	        if (self.count == 1)
+		    "^You take another step forwards. The Black King
+		    rather nervously orders his pawn to continue.";
+		black_pawn.moveto(0, -1);		
+		"^The Black Pawn continues south. It is now dangerously
+		close to becoming a Queen, and you can't help throwing
+		some nervous glances in its direction. The White King,
+		however, encourages you: ~Don't worry, they won't
+		have the time to do anything.~";
+            2:
+	        if (self.count == 1)
+		    "^The Black King gives you a worried look, but
+		    then turns to his own Pawn. ~Just one more step
+		    and you'll be promoted!~";
+	        black_pawn.moveto(0, -1);
+		remove black_pawn;
+		move black_queen to board_obj;
+		board.setpiece(black_pawn.file, 1, black_queen);
+		"^As the Black Pawn set foot on the first rank,
+		it is surrounded by a golden glow. With a fanfare from
+		invisible trumpets, the Pawn is transformed into a
+		Queen! The White King looks at her, and snorts.
+		~Impressive - but it will
+		not help a bit. Finish them off, Pawn!~";
+		
+	    1:		
+  	        score = score + 10;
+		print "^You boldly advance and threaten the Black
+		    King. ~Check!~ you cry, and the White King fills
+		    in: ~...and mate!~^^
+		    The Black King desperately looks around for an
+		    escape, but can't find any. He extends his hand
+		    to his White colleague. ~It looks like you win
+		    again. But just wait - I'll get my revenge 
+		    next time!~^^
+		    The White King pats your back. ~Well done! I think
+		    there's a vacancy as a Knight - I'll see if I
+		    can get you promoted in time for the next game.~^";
+		EndGame(2);
+	}
+    ],
+    count 0,
+has
+    male ~neuter    
+;
+
+white_piece -> white_pawn "White Pawn"
+with
+    name 'pawn',
+    piecetype PAWN
+;
+
+black_piece -> black_pawn "Black Pawn"
+with
+    name 'pawn',
+    piecetype -PAWN
+;
+
+black_piece black_queen "Black Queen"
+with
+    name 'queen',
+    piecetype -QUEEN,
+has
+    ~neuter female
+;
+
+! The player is a White piece as well as a player object.
+class player_object
+class
+    white_piece,
+with
+    short_name "yourself",
+    number 0,
+    rank 0,
+    file 0,
+    ! The moveto(filestep, rankstep) moves the player.
+    moveto [ filestep rankstep newfile newrank enemy;
+        if (~~whites_move)
+	    "But it's not your move!";
+        newrank = self.rank + rankstep;
+        newfile = self.file + filestep;
+        if (newrank > 8 || newrank < 1 || newfile < 'a' || newfile > 'h') 
+	    "That would take you over the edge of the board!";
+        enemy = board.movepiece(self.file, self.rank, newfile, newrank);
+	if (enemy ~= 0)
+	    print "With a faint popping sound ", (the) enemy,
+	        " vanishes from the board.^";
+	black_king.count = 0;
+        return location;
+    ],
+    before [ ;
+        Push: ! Catches commands like "move me north"
+	    if (second == 0)	    
+	        << VagueGo >>;
+	    << Go second >>;
+    ],
+has
+    proper animate
+;
+
+! The player_object class doesn't know which type of piece the player
+! is. Here we instantiate a player object that's a pawn and knows
+! how a pawn moves. The overridden moveto method contains the rules
+! for pawn movement and tells the player if he's tried to move in
+! an illegal way.    
+player_object player_pawn
+with
+    moveto [ filestep rankstep p pf pr;
+        if (rankstep == 0 && filestep == 0)
+	    print_ret "But you are already standing on ",
+	        (char) self.file, self.rank, "!";
+        if (rankstep <= 0) 
+	    "It is deeply ingrained in your nature as a Pawn only
+	    to move forwards. Onward, ever onward; that's your motto.";
+	if (rankstep > 2 || (rankstep == 2 && self.rank > 2))
+	    "You can't move that far in one move!";
+
+	pf = self.file + filestep;
+	pr = self.rank + rankstep;
+	p = board.getpiece(pf, pr);
+        if (filestep ~= 0) {
+	    if (p == 0)
+                print_ret "You can only move diagonally when capturing
+	            an enemy piece, and there is no Black piece
+	            on ", (char) pf, pr, ".";
+	    if (filestep > 1 || filestep < -1 || rankstep ~= 1)
+	        "You can only capture pieces that are immediately
+		to your northwest or northeast.";
+	    if (p.piecetype > 0)
+	        print_ret "You can't capture ", (the) p, ": you're
+		    on the same side!";
+	}
+	! The move was legal, so call the baseclass method
+	! to do the actual move.
+	return self.player_object::moveto(filestep, rankstep);
+    ],
+    can_capture [ piece fstep;
+        if (piece.rank == self.rank + 1) {
+	    fstep = piece.file - self.file;
+	    if (fstep == -1)
+	        return nw_obj;
+	    if (fstep == 1)
+	        return ne_obj;
+	}
+	rfalse;
+    ],
+    piecetype PAWN
+;    
+   
+include "book.inf";
+
+! *************************
+! Initialization
+! *************************
+
+
+! Check that the screen size is large enough to display the fancy
+! status line.
+[ check_screen ans;
+    if (0->33 < 48 && 0->32 < 16) {
+        print "Your interpreter reports a screen size too small
+	       to display this game properly.^^
+	       Do you wish to continue anyway (y/N)? ";
+	@read_char 1 0 0 ans;
+	new_line;
+	if (ans ~= 'y' or 'Y')    
+	    quit;
+    }
+];
+
+[ initialise ;
+    print "^^^^^^^^^^^";
+    check_screen();
+    board.init();
+
+    ChangePlayer(player_pawn);
+    location = board_room;
+    player_pawn.file = 'f';
+    player_pawn.rank = 2;
+    move rulebook to player;
+
+    board.setpiece('f', 2, player);
+    board.setpiece('e', 7, white_pawn);
+    board.setpiece('e', 6, white_king);
+    board.setpiece('e', 8, black_king);
+    board.setpiece('g', 5, black_pawn);
+
+    startdaemon(black_king);
+    PrintOpeningText();
+    print "^";
+];
+
+! *************************
+! Grammar and verb routines
+! *************************
+
+! Define a new grammar token 'square' that matches coordinates like
+! "f2" or "a3", and puts the rank and file of the specified square
+! in global variables. This is so that the player can issue commands
+! such as "move to f2".
+[ square w rank file;
+    parsed_rank = 0;
+    parsed_file = 0;
+    if (wn <= parse->1 && WordLength(wn) > 0) {
+        w = WordAddress(wn);
+	file = w->0;
+	rank = w->1;
+	if (WordLength(wn) == 2 && file >= 'a' && file <= 'h'
+	                        && rank >= '1' && rank <= '8') {
+	    parsed_rank = rank - '0';
+	    parsed_file = file;
+  	    ++wn;
+	    return 0;
+	}
+	else
+	    parsed_rank = -1;
+    }
+    return -1;
+];
+
+! Augment ParserError so that it prints an appropriate error message
+! when the parser expects a square (i.e. after "move to") but finds
+! something that isn't the name of a square.
+! Note that BeforeParsing sets parsed_rank to 0 before any parsing
+! is done, so if parsed_rank = -1 then there must have been a failed
+! attempt at parsing a square name in this command (there was a'
+! bug in release 1: parsed_rank never got reset, so sometimes the
+! "There is no square" message got printed at inappropirate movements.)
+[ ParserError pn;
+    if (pn == CANTSEE_PE && parsed_rank == -1)
+        "There is no such square.";
+    rfalse;
+];
+
+[ BeforeParsing ;
+    parsed_rank = 0;
+];
+
+
+! Verb routine to move to a specific square.
+[ GoSquareSub ;
+    if (noun == 0 or player)
+        player.moveto(parsed_file - player.file, parsed_rank - player.rank);
+    else
+       << Push noun >>;
+];
+
+[ JumpSub ;
+    "Only Knights can jump in chess. Wait until you're promoted!";
+];
+
+include "grammar";
+
+verb meta 'info' 'about'
+     *					-> About;
+
+verb meta 'hint' 'hints' 'help'
+     *					-> Help;
+
+verb meta 'register' 'registration'
+     *					-> Register;
+
+! The following rule looks redundant, but isn't: it makes the parser
+! prefer black pieces to white when disambiguating commands like
+! "capture pawn", so it doesn't ask you silly questions about whether
+! you want to capture the white pawn or the black pawn.
+extend 'take' first
+     * black				-> Take;
+
+verb 'capture' = 'take';     
+verb 'travel' = 'go';
+
+extend 'go'
+     * 'to' square			-> GoSquare;
+
+extend 'jump'
+     * 'to' square			-> Jump;
+     
+extend 'move' replace
+     *					-> VagueGo
+     * 'to' square			-> GoSquare
+     * noun=ADirection			-> Go
+     * noun				-> Push
+     * noun noun=ADirection		-> Push
+     * noun 'to' square                 -> GoSquare;
+
+extend 'consult' first
+     * held				-> Examine;
+
