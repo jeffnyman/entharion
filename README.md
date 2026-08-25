@@ -174,7 +174,11 @@ _Bomber_ (bomber-r3-s971123.z5; source included) is a good one because it requir
 
 _Bronze_ (bronze-r11-s060503.zblorb; source included) is one of the few Inform 7 games included in this repo. It does some interesting things with the status line that are worth making sure an interpreter can handle.
 
+_Cloak of Darkness_ (cloak-of-darkness-r3-s221116.z5; source included; resource blorb provided) is a version of the game written with Arcturus.
+
 _Curses_ (curses-r16-s951024.z5, curses-r17-s210531.z8; source included) is an interesting game. The original source is lost but was recreated. See Allen Garvin's [curses repo](https://github.com/allengarvin/curses). That source is included here, which is for the release 17 revision.
+
+_The Curse of Rabenstein_ (rabenstein-r1-s260825.z5; source included; resource blorb provided) is a game written with Arcturus.
 
 _Custard_ (custard-r1-s000314) is included only because it is one of the very few games compiled to the version 7 format of the Z-Machine.
 
@@ -184,11 +188,17 @@ _Freefall_ (freefall-r2-s951111.z5; source included) is an "abuse" of the Z-Mach
 
 _Frobozz Magic Video Poker_ (fmvpoker.z6) is a weird one. It's the only z6 I know of that requires the pre-Blorb picture format.
 
+_The Impossible Stairs_ (impossible-stairs-r3-s241006.z8; source included) is a Dialog game.
+
 _Little Green Robbing Hood_ (green-r1-s060120.z2) is a version 2 game, which are rare to find.
 
 _Jigsaw_ (jigsaw-r3-s951129.z5, jigsaw-r3-s951129.z8) comes in two versions and the puzzle pieces in the game are a good thing to see rendering correctly. Unfortunately, the source code has never been released.
 
 _Magic Toyshop_ (magic-toyshop-r1-s951018.z5; source included) is included mainly for some of the interesting mechanics it showcases.
+
+_Mini-Cluedo_ (cluedo-r1-s250711.z5) is included because it is a Dialog game.
+
+_Miss Gosling's Last Case_ (gosling-r3-s241016.zblorb) is included because it is a Dialog game. [Source code is here](https://bitbucket.org/dstelzer/miss-goslings-last-case/src/main/).
 
 _The Mulldoon Legacy_ (mulldoon-r6-s000724.z8) is included mainly because it was a popular game and good to test in the version 8 category.
 
