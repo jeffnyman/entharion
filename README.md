@@ -91,6 +91,7 @@ There are a lot of _Zork_ versions and they run the gamut from version 1 to vers
 - zork1-r15-sUG3AU5.z2
 - zork1-r88-s840726.z3 (MP; source included)
 - zork1-invclues-r52-s871125.z5 (Solid Gold; source included)
+- zork1-german-beta-r3-s880113.z5
 - zork2-r48-s840904.z3 (MP; source included)
 - zork3-r17-s840727.z3 (MP; source included)
 - zork0-r366-s890323.z6 (LTOI1, Amiga)
