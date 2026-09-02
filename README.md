@@ -70,6 +70,20 @@ make -C vendor/glulxe
 
 To build against GlkTerm instead, uncomment the `../glkterm` block near the top of `vendor/glulxe/Makefile`. Either way you will also want to set the appropriate `-DOS_UNIX`, `-DOS_MAC`, or `-DOS_WINDOWS` option in that same file.
 
+### Dialog and Arcturus
+
+Inform is not the only way to produce a story file, and it is useful to have compilers that arrive at the Z-Machine by a different route. When an interpreter handles Inform output cleanly but stumbles on zcode from one of these, that usually says something about an assumption baked into the interpreter rather than something about the compiler.
+
+- [Arcturus](https://github.com/ByteProject/Arcturus) is Stefan Vogt's high-level interactive fiction language. Its compiler is written in Python and emits standard version 5 story files, and its standard library is called Cosmos. Since the entire toolchain is meant to be hackable, it is a good source of z5 binaries that no version of Inform ever touched.
+- [Dialog](https://github.com/Dialog-IF/dialog) is Linus Åkesson's authoring language, built on a rule-based, Prolog-flavored core rather than on Inform's object model. Its compiler, `dialogc`, targets the Z-Machine directly (`-t z5`, `-t z8`, `-t zblorb`), which makes it a second independent producer of zcode worth testing an interpreter against.
+- [Å-machine](https://github.com/Dialog-IF/aamachine) is Dialog's other target (`-t aa`), a virtual machine of its own design standing in roughly the same relation to Dialog as Glulx does to Inform 7. Stories compile to `.aastory` files, and the engines here run everything from a web browser down to a Commodore 64. I include it mainly for the contrast. Seeing what a modern VM chose to do differently is a useful way to work out which parts of the Z-Machine design are essential and which are simply artifacts of 1979.
+
+Dialog ships prebuilt binaries, but it builds from source the usual way:
+
+```bash
+make -C vendor/dialog/src
+```
+
 ## Generating Dump and Disassembly Info
 
 I'm putting this here mainly for myself, because I tend to forget the options I want to pass to ztools when I want to generate the most helpful information for me. Here are the commands I recommend:

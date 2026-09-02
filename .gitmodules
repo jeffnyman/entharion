@@ -28,3 +28,12 @@
 [submodule "quixe"]
 	path = vendor/quixe
 	url = https://github.com/erkyrath/quixe
+[submodule "arcturus"]
+	path = vendor/arcturus
+	url = https://github.com/ByteProject/Arcturus
+[submodule "dialog"]
+	path = vendor/dialog
+	url = https://github.com/Dialog-IF/dialog
+[submodule "aamachine"]
+	path = vendor/aamachine
+	url = https://github.com/Dialog-IF/aamachine
