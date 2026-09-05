@@ -37,3 +37,6 @@
 [submodule "aamachine"]
 	path = vendor/aamachine
 	url = https://github.com/Dialog-IF/aamachine
+[submodule "vendor/scottkit"]
+	path = vendor/scottkit
+	url = https://github.com/MikeTaylor/scottkit
