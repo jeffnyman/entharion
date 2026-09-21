@@ -1,0 +1,6993 @@
+%% This is the complete source code for a post-comp version of Pas De Deux.
+%% It was designed for Dialog 0h/04, Standard Library version 0.31.
+%%
+%% Feel free to browse around, learn, and copy useful snippets. To the extent
+%% that it is possible to separate code from narrative, all the code is free
+%% for everybody to use (as in public domain).
+%%
+%% If you would like to release a derivative work involving a substantial part
+%% of the narrative, setting, or cast of characters, please get in touch first.
+%%
+%% Linus
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Metadata
+
+(story title)	Pas De Deux
+(story noun)	An Interactive Performance
+(story author)	Linus Åkesson
+(story ifid)	34EAC412-BAC2-49BE-9FEB-75E4147A82D4
+(story release 2)
+
+(story blurb)
+
+	Striding into the spotlight, you smile as you look out over the crowd.
+	It's a good turnout tonight. Now it is up to the Bournebrook Rill
+	Community Orchestra and you, maestro Nevada Elmsbee, to deliver a
+	spectacular performance.
+
+	(par)
+
+	Keep an eye on your score—or don't!—in this multi-layered parser/choice
+	hybrid. Casually explore the interactive scene, or tackle the full
+	puzzle lurking underneath to reach the best ending. Available for the
+	web \(recommended\) and as a traditional Z-machine story file.
+
+(style class @secondary)
+	font-style: italic;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: 4em;
+	margin-right: 4em;
+	text-align: left;
+
+(style class @authornote)
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: 4em;
+	margin-right: 4em;
+
+(style class @spacer)
+	margin-bottom: 1em;
+
+(style class @centerspacer)
+	margin-top: 1em;
+	margin-bottom: 1em;
+	text-align: center;
+
+(style class @barheadline)
+	font-weight: bold;
+	font-style: normal;
+
+(style class @clear)
+	clear: left;
+
+(style class @statuslinks)
+	float: right;
+	padding-left: 1ch;
+	padding-right: 1ch;
+
+(style class @status)
+	height: 1em;
+
+(style class @clipping)
+	margin-top: 2em;
+	margin-bottom: 2em;
+	width: 30ch;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px solid \#888;
+	padding: .2em;
+	text-align: justify;
+	font-family: "Times New Roman", monospace;
+
+(style class @picture)
+	margin-top: 1em;
+	margin-bottom: 1em;
+	text-align: center;
+
+(define resource @w) https://linusakesson.net/
+(define resource @i) https://imslp.org/
+(define resource @c) https://ifcomp.org/
+
+(define resource 1) feelies/score.pdf
+(define resource 2) feelies/how_to_read.pdf
+(define resource 3) feelies/seating.pdf
+
+(define resource #seating) seating/seating.png
+
+(library links enabled)
+(default actions enabled)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Object order
+
+%% A hack to force a particular order in "Did you mean the first violins or the
+%% second violins?".
+
+#violin1
+#violin2
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Rules of overriding priority
+
+(prevent $Action)
+	(current room #kitchen)
+	~(command $Action)
+	~($Action = [examine | $])
+	~($Action = [wait])
+	~($Action = [inventory])
+	~($Action = [look])
+	~(#newspaper is one of $Action)
+
+	But you're anxious to find out what the (link [paper]) paper has to
+	say about last night.
+
+(on every tick)
+	(current room #hall)
+	(div @clear) {}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Cutscenes
+
+(intro)
+	(status bar @status) { (story title) }
+
+	(if) (interpreter supports links) (then)
+		This
+	(else)
+		Note: The web version of this
+	(endif)
+	game can be played by typing commands at the prompt, or by
+	clicking on highlighted words. It is possible to reach a good ending
+	using either method, but some typing is required to unlock every part
+	of the narrative.
+
+	(par)
+
+	For an authentic experience, please print out a double-sided copy of
+	the enclosed (link resource 1) {score extract}, and make notes with a
+	soft pencil.
+
+	(par)
+
+	Before we begin, a matter of preference: You are Nevada Elmsbee,
+	artistic director of the Bournebrook Rill Community Orchestra, and you
+	have a big performance tonight. Do you wear a (link [suit]) suit or a
+	(link [dress]) dress ?
+
+	(if) (ask about suit) (then)
+		(now) (#suit is #wornby #maestro)
+		(par) Suit it is.
+	(else)
+		(now) (#dress is #wornby #maestro)
+		(par) Dress it is.
+	(endif)
+
+	(banner)
+
+	(par)
+
+	Type (link [about]) ABOUT for credits.
+
+	(spacer)
+
+	The applause begins the minute you enter the hall.
+
+	(par)
+
+	With practiced confidence, you stride into the spotlight and smile
+	sincerely as you look out over the (link [crowd]) crowd . It's a good
+	turnout tonight.
+
+	(div @spacer) {}
+
+	(try [look])
+	(tick)
+
+	(par)
+
+	The (#audience) is still clapping wildly.
+
+(ask about suit)
+	*(repeat forever)
+	(par)
+	> (get input $Input)
+	(handle first question $Input $Result)
+	(just)
+	($Result = 1)
+
+(handle first question [suit] 1)
+(handle first question [dress] 0)
+(handle first question [a suit] 1)
+(handle first question [a dress] 0)
+(handle first question [script/transcript | $More] $)
+	{ ($More = []) (or) ($More = [on]) }
+	(if) (transcript on) (then)
+		Transcript enabled.
+	(else)
+		Failed to enable transcript.
+	(endif)
+	(par)
+	(fail)
+(handle first question [about/credits] $)
+	(perform [about])
+	(par)
+	(fail)
+(handle first question [quit/q] $)
+	(quit)
+(handle first question [restore] $)
+	(restore)
+	Failed to restore the game state.
+	(par)
+	(fail)
+(handle first question $ $)
+	(line)
+	Please select (link [suit]) SUIT or (link [dress]) DRESS .
+	(fail)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Evaluation
+
+(global variable (good cues 0))
+(global variable (bad cues 0))
+
+%% A maximum of 23 good cues can be collected.
+
+(good cue)
+	(good cues $Old)
+	($Old plus 1 into $New)
+	(now) (good cues $New)
+
+%% A maximum of 25 bad cues can be collected.
+
+(bad cue)
+	(bad cues $Old)
+	($Old plus 1 into $New)
+	(now) (bad cues $New)
+
+(global variable (final result 1))
+
+(evaluate)
+	(good cues $Good)
+	(bad cues $Bad)
+	(if) ($Good > 20) ($Bad = 0) (then)
+		(now) (final result 5)
+	(elseif) ($Good > 16) ($Bad < 2) (then)
+		(now) (final result 4)
+	(elseif) ($Good > 4) ($Good > $Bad) (then)
+		(now) (final result 3)
+	(else)
+		(now) (final result 2)
+	(endif)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bars
+
+(global variable (bar 0))
+
+(bar headline 1)		Andante maestoso
+(bar headline 13)		Rehearsal letter A
+(bar headline 24)		Rehearsal letter B
+(bar headline 25)		Poco stringendo
+(bar headline 26)		Poco più mosso
+(bar headline 34)		Incalzando
+(bar headline 39)		Animando
+(bar headline 41)		Rehearsal letter C
+(bar headline 42)		Ritenuto
+(bar headline 46)		Tempo I
+(bar headline 50)		Rehearsal letter D
+(bar headline 51)		Poco stringendo
+(bar headline 55)		Tempo I
+(bar headline 64)		Rehearsal letter E
+(bar headline $)
+
+(location headline)
+	(current room #hall)
+	(bold) (room header #hall) (roman)
+	(if) (facing audience) (then)
+		\(facing the audience\)
+	(elseif) (facing sideways) (then)
+		\(facing sideways\)
+	(endif)
+
+(redraw status bar)
+	(status bar @status) {
+		(if) (interpreter supports links) (then)
+			(div @statuslinks) {
+				(link [help]) help
+				(link [look]) look
+				(link [wait]) wait
+				(link [score]) score
+				(link [undo]) undo
+			}
+		(endif)
+		(if)
+			(current room #hall)
+			(bar $Bar)
+			~($Bar = 0)
+		(then)
+			(if) (did trainwreck) (then)
+				($Progress = 25)
+			(else)
+				($Progress = $Bar)
+			(endif)
+			(progress bar $Progress of 74)
+		(else)
+			(status headline)
+		(endif)
+	}
+
+(on every tick)
+	(current room #hall)
+	(bar $Bar)
+	(if) ($Bar = 0) (then)
+		(div @spacer) {}
+		(select)
+
+			You shake hands with the (#concertmaster). She sits
+			down, and behind your back the rest of the (#orchestra)
+			follows her example.
+
+		(or)
+
+			The lights dim, and the applause comes to an end. You
+			hear a few coughs and excited whispers.
+
+			(now) ~(audience is lit)
+			(now) (#applause is nowhere)
+		(or)
+			Expectation is in the air.
+		(or)
+			(if) (facing audience) (or) (facing sideways) (then)
+				(select)
+					You should probably turn to face the
+					(#orchestra) now.
+				(or)
+					A sharp cough from the (#concertmaster)
+					at your side.
+					(par)
+					Better turn towards the (#orchestra)
+					now.
+				(or)
+					(face orchestra)
+				(stopping)
+			(endif)
+		(stopping)
+		(par)
+		(if) ~(facing audience) ~(facing sideways) (then)
+			(select)
+				The (#harp2) is waiting for your signal.
+				(notice #harp2)
+			(or)
+				The (#harp2) is waiting for your signal.
+				(notice #harp2)
+			(or)
+				The (#harp2) is patiently awaiting your signal.
+				(notice #harp2)
+			(or)
+				The (#harp2) is awaiting your signal.
+				A hushed whisper can be heard from the (#audience).
+			(or)
+				The (#harp2) is patiently waiting for your signal.
+				The (#audience) is beginning to murmur.
+				(par)
+				The (#concertmaster) emits a discreet but pointed cough.
+				(notice #concertmaster)
+			(or)
+				(if) (current gaze #concertmaster) (then)
+
+					The (#concertmaster) returns your glance, visibly
+					confused, and
+
+				(else)
+					The (#concertmaster)
+				(endif)
+				takes it upon herself to signal the (#harp2).
+				(par)
+				The (#harp2) plays (start the piece)
+			(stopping)
+		(endif)
+	(elseif) (stuck in silence) (then)
+		(div @spacer) {}
+		(select)
+			(link [everybody]) Everybody is sitting perfectly still in anticipation.
+		(or)
+			(link [everybody]) Everybody watches you in silent anticipation.
+		(or)
+			The silence begins to transition from artistic
+			to awkward.
+		(or)
+
+			The claps are hesitant at first, like the first few
+			drops of a deluge. Soon the entire hall is flooded with
+			thunderous applause.
+
+			(par)
+			No, no, no, not here! The fools!
+			(par)
+
+			The (#orchestra) is dumbstruck. Some of the musicians
+			have turned around to look at (link [sarah]) {Sarah}.
+			The cheering (#audience) is blissfully unaware of what
+			just happened.
+
+			(now) (#applause is #in #hall)
+			(now) (did trainwreck)
+			(now) (audience is lit)
+			(now) (bar 75)
+		(stopping)
+	(elseif) ($Bar < 75) (then)
+		($Bar plus 1 into $Bp1)
+		(enter bar $Bp1)
+	(endif)
+	(if) (bar 75) (then)
+		(div @spacer) {}
+		(select)
+			Your right hand slowly returns to your side.
+		(or)
+			(if) ~(did trainwreck) (then)
+				Suddenly,
+				(if) ~(facing audience) ~(facing sideways) (then)
+					applause, like a whip across your neck
+				(else)
+					a massive applause
+				(endif)
+				.
+				(evaluate)
+			(endif)
+			“Bravo!” cries some particularly annoying member of the (#audience).
+			(now) (#applause is #in #hall)
+		(or)
+			(select)
+				A roaring (#applause) fills the concert hall.
+
+				(par)
+
+				The (#concertmaster)
+				(if) (did trainwreck) (then)
+					seems internally conflicted, but then she
+				(endif)
+				stands up, and the rest of
+				the (#orchestra) follows her example.
+
+			(or)
+				(if) (facing audience) (then)
+					(par)
+
+					Eventually, the applause dwindles, and
+					the audience settles down, eager for
+					the next piece. You turn once more to
+					the orchestra.
+
+					(par)
+
+					The rest of the concert proceeds in
+					much the same way as the opening piece.
+
+					(if) (did trainwreck) (then)
+
+						Sarah collects herself soon
+						enough, but there are other
+						incidents.
+
+					(endif)
+
+					The audience remains exuberant, and
+
+					(if) (final result 5) (then)
+						you feel rather invigorated by
+					(else)
+						after a while you
+						(if) (did trainwreck) (then)
+							begin to feel grateful for
+						(else)
+							find yourself warming up to
+						(endif)
+					(endif)
+
+					their puppy-like enthusiasm.
+
+					(par)
+
+					Encores, flowers. The doors open, and
+					the concert hall is gradually vacated.
+					Spectators and musicians congregate in
+					small groups that drift into the night.
+					As usual, you end up personally
+					clearing the stage of chairs and stands
+					before driving the long way home.
+
+					(par)
+
+					You sleep until early afternoon the
+					next day.
+
+					(spacer)
+
+					(epilogue)
+				(else)
+					A roaring (#applause) fills the concert hall.
+				(endif)
+			(stopping)
+			(if) ~(facing audience) (then)
+				(par)
+				(select)
+				(or)
+
+					Protocol demands that you turn around
+					and face the cheering (#audience)
+					(if) (facing sideways) (then) fully (endif)
+					.
+
+				(or)
+					(now) ~(facing sideways)
+					(face audience)
+				(stopping)
+			(endif)
+		(stopping)
+	(endif)
+
+(spacer)
+	(div @centerspacer) {
+		\* \* \*
+	}
+
+(on every tick)
+	(if) ~(percussionist standing) (then)
+		(bar $N)
+		($N > 47)
+		($N < 60)
+		(random from 0 to 3 into 0)
+
+		(par)
+
+		Steve, the (cymbalist), gets on his feet. He's watching you very
+		attentively.
+
+		(now) (percussionist standing)
+	(elseif) (bar 60) (then)
+		(par)
+		The (cymbalist) discreetly sits down again
+		(if) ~(did cue perc-54) (then)
+			, with a worried look
+		(endif)
+		.
+		(now) ~(percussionist standing)
+	(else)
+		~(did cue perc-54)
+		(par)
+		The (cymbalist) is still watching you.
+		(par)
+	(endif)
+
+(on every tick)
+	(now) ~(inhibit clbas-pre-17)
+
+(handle the cymbals)
+	(par)
+	{
+		(did cue perc-54)
+	(or)
+		(current gaze #percussionist)
+		(now) (did cue perc-54)
+	}
+	(select)
+		(if) (bar 54) (then)
+
+			The (percussionist) acknowledges your cue
+			(if) ~(percussionist standing) (then)
+				, swiftly gets on his feet,
+				(now) (percussionist standing)
+			(endif)
+			and plays the cymbals, forte fortissimo, on the third beat.
+			(good cue)
+
+		(else)
+
+			Interpreting your glance as a go-ahead, the (percussionist)
+			(if) ~(percussionist standing) (then)
+				scrambles to his feet and
+				(now) (percussionist standing)
+			(endif)
+			brings the two concert cymbals together in a resounding crash,
+			(too early 54).
+			(bad cue)
+
+		(endif)
+	(or)
+		The (link [cymbals]) cymbals ring out again, on the downbeat
+		(if) ~(bar 55) (then)
+			, still (too early 55)
+		(endif)
+		.
+	(or)
+		The (percussionist) plays the cymbals on the third beat.
+		(if) ~(bar 56) (then)
+			He is consistently (too early 56).
+		(endif)
+	(or)
+		The (link [cymbals]) cymbals ring out a fourth time, on the downbeat
+		(if) ~(bar 57) (then)
+			, again (too early 57)
+		(endif)
+		.
+	(or)
+	(stopping)
+	(par)
+
+(handle the cymbals)
+
+(handle the timpani)
+	(par)
+	{ (did cue timp-71) (or) (did botch timp-71) }
+	(select)
+		%% This was already narrated when setting the flag.
+	(or)
+		(if) (bar 73) (then)
+
+			The (timpanist) plays another loud note on the downbeat,
+			still one bar too late. In the ensuing silence, he
+			suddenly gets his bearings and switches to a (tremolo).
+
+			(now) (force timpani tremolo)
+		(else)
+			The (timpanist)
+			(if) (did botch timp-71) (then)
+				, still disoriented, plays a
+			(else)
+				plays another
+			(endif)
+			loud note on the first beat of the bar.
+		(endif)
+	(or)
+		The (timpanist) plunges into a solo (tremolo), fortissimo, on the tonic.
+		(if) (did botch timp-71) (then)
+			He is still (too early 73).
+		(endif)
+		(now) (force timpani tremolo)
+	(or)
+		With a
+		(select) confused look (or) pained smile (stopping)
+		, the (timpanist) extends his (tremolo) for another bar.
+	(stopping)
+	(par)
+
+(handle the timpani)
+
+(enter bar 75)
+	(now) (bar 75)
+
+(enter bar $N)
+	(now) (bar $N)
+	(div @secondary) {
+		(div @barheadline) {
+			(bar headline $N)
+		}
+		(if) (did accidentally cue [$DesiredBar $Instr]) (then)
+			(narrate bad cue $DesiredBar $Instr)
+			(bad cue)
+		(endif)
+		(now) ~(there's a problem)
+		(narrate music $N)
+	}
+	(add audible objects to scope)
+	(par)
+	(if) ~(has opened the score) ($N = 9) (then)
+		It occurs to you that you haven't opened the (#score) yet.
+	(elseif) ($N > 1) ($N < 74) (#score is open) (then)
+		(current page $Page)
+		(score page $Page bars $B1 $B2 $B3)
+		(if) ($N < $B1) (or) ($N > $B3) (then)
+			You
+			(if) ~(got bearings) (then) desperately (endif)
+			scan the (#score {sheet music}) in front of you,
+			but what
+			(select)
+				you're hearing
+			(or)
+				you can hear
+			(purely at random)
+			right now is nowhere to be found.
+			(now) ~(got bearings)
+		(else)
+			(if) (got bearings) (then)
+				A glance at the (#score) confirms that you're
+				currently
+				(select)
+					listening to
+				(or)
+					hearing
+				(then purely at random)
+			(else)
+
+				With a glance at the (#score {printed score})
+				you get your bearings: This is
+
+				(now) (got bearings)
+			(endif)
+			(if) ($N < $B2) (then)
+				($N minus $B1 into $Offset)
+				($Subpage = @left-hand)
+			(else)
+				($N minus $B2 into $Offset)
+				($Subpage = @right-hand)
+			(endif)
+			($Offset plus 1 into $Nth)
+			the (narrate nth $Nth) bar on the $Subpage page.
+		(endif)
+	(endif)
+
+(narrate nth 1)		first
+(narrate nth 2)		second
+(narrate nth 3)		third
+(narrate nth 4)		fourth
+(narrate nth 5)		fifth
+(narrate nth 6)		sixth
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Musical structure
+
+(at 0 there's #silence)
+
+(start the piece)
+
+	the arpeggiated chord that leads up to the first bar of the
+	piece.
+
+	(par)
+
+	(face orchestra)
+
+	As though it had a mind of its own, your right hand
+	(if) (#baton has parent #stand) (then)
+		picks up the (#baton) and
+		(now) (#baton is #heldby #maestro)
+	(endif)
+	begins to trace out beats in the air.
+
+	(now) ~(audience is lit)
+	(now) (#applause is nowhere)
+	(now) (got bearings)
+	(enter bar 1)
+	(stop)
+
+(narrate music 1/2/3)
+
+	The (#harp2) (select) is playing (or) continues to play (stopping) a
+	series of soft, arpeggiated (link [chords]) chords , enhanced by
+	(#pizzicatos) in the (violins), (#viola), and (#bassi).
+
+	(par)
+
+	The (#harp1) plucks the individual chord notes, up and down in
+	soothing waves.
+
+(entrance 4 #celli)
+
+(narrate bad cue 4 $Target)
+
+	Confused by your (bad glance $Target [#celli #harold]), one of the
+	(#celli {cellists}) at the back emits a stray note, arco.
+
+	(par)
+	(now) (did botch celli-4)
+
+(narrate music 4)
+
+	(if) (did cue $Target) (then)
+
+		(now) (did cue celli-4)
+
+		Your timely (glance $Target [#celli #harold])
+
+		acts like a reassuring prompt for (#harold) and the other
+		(#celli {cellists}).
+
+		(good cue)
+		(par)
+
+		They pour out their emotions in a sudden, gripping fortissimo.
+		This is the (#mainmotif) of the piece, beginning with a
+		descending major scale on the downbeat, molto espressivo.
+
+	(else)
+
+		Delicately at first, then with increasing confidence, the
+		(#celli {cello section}) plays a descending major scale
+		starting on the downbeat. This is the (#mainmotif) of the
+		piece.
+
+	(endif)
+
+	(par)
+
+	Meanwhile, the (#harps), (violins), (#viola), and (#bassi) continue
+	their accompaniment, steadily, reliably.
+
+(at 4 there's #mainmotif)
+
+(narrate music 5)
+
+	The final note of the (#descendingscale) lingers for a while, softer,
+	but with undiminished emotional intensity.
+
+	(par)
+
+	The (#harps) and (strings) keep going, like clockwork.
+
+(at 5 there's #mainmotif)
+
+(narrate music 6)
+
+	In the (#celli), the last part of the (#mainmotif) is repeated with an
+	embellishment.
+
+	(if) (did cue celli-4) (then)
+
+		It is less intense this time, a calm reflection of the
+		emotional turmoil that preceded it.
+
+	(endif)
+
+	(par)
+
+	The soothing (#accompaniment) in the (#harps) and (strings) continues,
+	unruffled.
+
+(at 6 there's #mainmotif)
+
+(narrate music 7)
+
+	The (#celli) repeat the end of the (#mainmotif {motif}) again
+
+	(if) (did cue celli-4) (then)
+		. Now it is merely a faint echo
+	(endif)
+
+	, ending on a long, soft note.
+
+	(par)
+
+	The steady (#accompaniment) in the (#harps) and (strings) continues.
+
+	(par)
+
+	The soft note in the celli begins to crescendo, growing also in
+	intensity, striving, reaching for more.
+
+(at 7 there's #mainmotif)
+
+(narrate music 8)
+
+	(if) (did cue celli-4) (then)
+		Another eruption of emotions in the (#celli), again fortissimo.
+	(else)
+		Another (#descendingscale) in the (#celli), now in fortissimo.
+	(endif)
+
+	This time, the (#mainmotif) appears in a lower, minor key, tinged with
+	a lamenting quality.
+
+	(par)
+
+	The (#accompaniment) played by the (#harps) and (strings) continues in
+	the same lulling spirit, but with subtle harmonic adjustments to fit
+	the new scale.
+
+(at 8 there's #mainmotif)
+
+(narrate music 9)
+
+	The final note of the scale lingers for a while in the (#celli {cello
+	section}), persevering, but then, with an air of inevitability,
+	decreases in intensity.
+
+	(par)
+
+	The (#harps) and (strings) persist in their steadfast (#accompaniment).
+
+(at 9 there's #mainmotif)
+
+(narrate music 10)
+
+	The (#celli) restate the end of the preceding (#mainmotif {motif}),
+	again with an embellishment, another introspective comment on the
+	flare-up that came before it.
+
+	(par)
+
+	The (#accompaniment) in the (#harps) and (strings) continues,
+	relentlessly, like time itself.
+
+(at 10 there's #mainmotif)
+
+(narrate music 11)
+
+	Again, the (#celli) play a second echo of the end of the (#mainmotif
+	{motif}), faint, sad, almost resigned. And again, that last, lingering
+	note seems to gain new energy, eventually turning into a crescendo,
+	this time along with the rest of the (strings) and the (#harps), as the
+	ensemble strives towards a third recital of the motif, even more
+	powerful than the preceding ones.
+
+(at 11 there's #mainmotif)
+
+(narrate music 12)
+
+	This time, an upbeat leads to a modulated version of the (#mainmotif),
+	in a higher key that offers a fresh harmonical perspective, almost
+	triumphant in character.
+
+	(par)
+
+	The (#accompaniment) carried out by the (#harps) and (strings) is
+	louder now, but still restrained and stately.
+
+(at 12 there's #mainmotif)
+
+(narrate music 13)
+
+	The (#descendingscale) played by the (#celli) takes a turn upwards, and
+	lands in a major tonality. But the melody doesn't stop there. It keeps
+	going, and begins to (#chromatics {rise chromatically}).
+
+	(par)
+
+	The (#harps) and (strings) continue their (#accompaniment), dependably,
+	like clockwork.
+
+(at 13 there's #mainmotif/#chromatics)
+
+(entrance 14 #flutes/#clarinets)
+	~(did botch flcl-14)
+
+(narrate bad cue 14 $Target)
+
+	In response to your (bad glance $Target [#flutes #clarinets]), and to
+	your and their increasing horror, the (#flutes) and (#clarinets)
+	restate the (#mainmotif) (too early 14).
+
+	(par)
+	(now) (did botch flcl-14)
+
+(narrate music 14)
+
+	(if) (did cue $Target) (then)
+
+		The (#flutes) and (#clarinets) acknowledge your (glance $Target
+		[#flutes #clarinets]), and confidently restate the (#mainmotif),
+		fortissimo, in its original key.
+
+		(now) (did cue flcl-14)
+		(good cue)
+		(par)
+
+		At the same time, the
+
+	(elseif) (did botch flcl-14) (then)
+
+		The (#flutes) and (#clarinets) remain in silent shock after
+		their little incident. To their credit, they're still
+		projecting an air of confidence.
+
+		(par)
+
+		The
+
+	(else)
+
+		The (#flutes) and (#clarinets),
+		(if) (did botch obbs-16) (then)
+			visibly confounded, also play
+		(else)
+			in a somewhat tentative manner, repeat
+		(endif)
+		the (#mainmotif) in its original key.
+
+		(par)
+
+		At the same time, the
+
+	(endif)
+
+	melody played by the (#celli) continues to (#chromatics {rise
+	chromatically}) through a series of flourishes, steadily increasing in
+	intensity and dynamics.
+
+	(par)
+
+	The (#harps), (violins), (#viola), and (#bassi) carry on with their
+	(#accompaniment {arpeggios and plucked chords}).
+
+(at 14 there's #mainmotif/#chromatics)
+
+(narrate music 15)
+
+	(if) ~(did botch flcl-14) (then)
+
+		The (#flutes) and (#clarinets) hold the final note of their
+		scale.
+
+	(endif)
+
+	(par)
+
+	The (#celli) continue to (#chromatics {climb chromatically}) through a
+	series of flourishes, steadily increasing in intensity and dynamics.
+
+	(par)
+
+	The (#harps), (violins), (#viola), and (#bassi) join the celli in the
+	crescendo.
+
+(at 15 there's #mainmotif/#chromatics)
+
+(entrance 16 #oboes/#bassoons)
+	~(did botch obbs-16)
+
+(narrate bad cue 16 $Target)
+
+	Confused by your (bad glance $Target [#oboes #bassoons]), the (#oboes)
+	and (#bassoons) restate the (#mainmotif) (too early 16).
+
+	(par)
+	(now) (did botch obbs-16)
+
+(narrate music 16)
+
+	(if) (did cue $Target) (then)
+
+		At your (glance $Target [#oboes #bassoons] at musician), the
+		(#mainmotif) makes another appearance, fortissimo, in the
+		(#oboes) and (#bassoons).
+
+		(now) (did cue obbs-16)
+		(good cue)
+
+	(elseif) (did botch obbs-16) (then)
+
+		The (#oboes) and (#bassoons) remain silent, still embarrassed.
+
+	(elseif) (did botch flcl-14) (then)
+
+		There's supposed to be a restatement of the main motif here, in
+		the (#oboes) and (#bassoons), but to your dismay it doesn't
+		happen.
+
+		(now) (did botch obbs-16)
+	(else)
+
+		With noticeable trepidation, the (#oboes) and (#bassoons)
+		restate the (#mainmotif).
+
+	(endif)
+
+	(par)
+
+	The (#celli) continue to (#chromatics {climb chromatically}) through a
+	series of flourishes, steadily increasing in intensity and dynamics.
+
+	(if) (did botch horns-17) (then)
+
+		(par)
+
+		On top of this, somebody in the (#horns {horn section}) is
+		playing a series of (#wrongnotes {half-notes}), but that's
+		clearly wrong.
+
+	(endif)
+
+	(par)
+
+	The (#harps), (violins), (#viola), and (#bassi) also take part in the crescendo.
+
+(at 16 there's #mainmotif/#chromatics)
+
+(entrance 17 #horns)
+
+(narrate bad cue 17 $Target)
+
+	(randomly select $Victim from [#horn2 #horn3 #horn4])
+
+	Because of your (bad glance $Target [$Victim]), (link the $Victim)
+	begins to play (#wrongnotes {half-notes}) (too early 17).
+
+	(par)
+	(now) (did botch horns-17)
+	(now) (horns messed up)
+
+(at 15/16 there's #wrongnotes)
+	(did botch horns-17)
+
+(narrate music 17)
+
+	(if) (did botch obbs-16) (then)
+
+		The
+
+	(else)
+
+		The (#mainmotif) takes a turn upwards, and the (#oboes) and
+		(#bassoons) land on the tonic. At the same time, the
+
+	(endif)
+
+	(#celli) reach the end of their (#chromatics {chromatic climbing}).
+
+	(par)
+
+	(if) (did cue $Target) (then)
+		The
+		(if) (did botch horns-17) (then)
+			remaining
+		(endif)
+		(#horns) enter
+		(if) ($Target is targeted by [#horns]) (then)
+			on cue,
+		(else)
+			at your brief glance in their general direction,
+		(endif)
+		(good cue)
+	(else)
+
+		The (#horn1) enters with some certainty, and the rest of the
+		(#horns {section}) falls into line half a bar later. They're
+
+	(endif)
+
+	adding a dignified, solemn timbre to the slow cycle of chords in the
+	(#accompaniment).
+
+	(par)
+
+	The two (#harps) switch to playing in unison, plucking out individual
+	chord notes in rising and falling waves, while the (#violin2),
+	(#viola), and (#bassi) continue to play (pizzicato).
+
+(at 17 there's #mainmotif/#chromatics)
+
+(entrance 18 #flutes/#clarinets/#enghorn/#celli/#violin1)
+
+(immune at 15 #celli/#violin1)
+(immune at 16 #celli)
+
+(narrate bad cue 18 $Target)
+
+	(slice $Target $Slice)
+	*(entrance 18 $Musician)
+	(slice $Musician $Slice)
+
+	Due to your (bad glance $Target [$Musician]), (link the $Musician)
+	(if) (bar 16) (then)
+		happily restate(s $Musician) the (#mainmotif) now instead of two bars later.
+	(else)
+		let(s $Musician) out a few notes of the (#mainmotif).
+	(endif)
+	(par)
+
+(narrate music 18)
+
+	(if) (did cue $Target) (then)
+		Encouraged by your
+		(glance $Target [#flutes #clarinets #enghorn #celli #violin1]), the
+		(good cue)
+	(else)
+		The
+	(endif)
+
+	(#flutes), (#clarinets), (#enghorn), (#celli), and (#violin1)
+
+	(if) (did cue $) (then)
+		pour out their hearts in another instance of
+	(else)
+		restate
+	(endif)
+
+	the (#mainmotif), sempre fortissimo.
+
+	(par)
+
+	The (#harps) continue to play in unison, over the (#accompaniment
+	{harmonic cycle}) now carried by the (horns), together with the
+	unyielding, steady pulse of (#pizzicatos {pizzicato chords}) in the
+	(#violin2), (#viola), and (#bassi).
+
+(at 18 there's #mainmotif)
+
+(entrance 19 #bassclarinet)
+
+(narrate bad cue 19 $) %% not possible
+
+(narrate music 19)
+
+	(if) (did cue $Target) (then)
+
+		(if) ($Target = #bassclarinet) (then)
+			At your cue
+		(else)
+			Acknowledging your (glance $Target [#bassclarinet])
+		(endif)
+
+		, the (#bassclarinet) makes a humble entrance with a (link
+		[sustained note]) {sustained, mezzoforte note}.
+
+		(now) (did cue clbas-19)
+		(par)
+		(good cue)
+
+		Meanwhile, the overall
+	(else)
+		The
+	(endif)
+
+	intensity falls back in a diminuendo, as the (#flutes), (#clarinets),
+	(#enghorn), (#celli), and (#violin1) reach the end of the scale.
+
+	(par)
+
+	The (#harps), (horns), (#violin2), (#viola), and (#bassi) continue
+	their (#accompaniment), but join in the diminuendo.
+
+	(if) ~(did cue $) (then)
+		(par)
+		(if) (current gaze #bassclarinet) (then)
+			There's supposed to be a long note in the (#bassclarinet) here.
+		(else)
+			There's something missing in the (woodwinds).
+			(now) (there's a problem)
+		(endif)
+	(endif)
+
+(at 19 there's #mainmotif)
+(at 19 there's #susnote)
+	(did cue clbas-19)
+
+(narrate music 20)
+
+	The end of the (#mainmotif {motif}) is restated in mezzoforte with an
+	embellishment, still by the (#flutes), (#clarinets), (#enghorn),
+	(#celli), and (#violin1), like a whimper echoing the fierce outburst.
+
+	(par)
+
+	The (#harps), (horns), (#violin2), (#viola), and (#bassi) continue
+	their (#accompaniment).
+
+	(par)
+
+	(if) (did cue clbas-19) (then)
+
+		The (#bassclarinet) continues to play a (sustained note).
+
+	(elseif) (current gaze #bassclarinet) (then)
+
+		Noticing that you're looking straight at him, the
+		(#bassclarinet) scrambles to bring his instrument to his mouth,
+		and blows a (link [sustained note]) {low, sustained G}.
+
+		(now) (did cue clbas-19)
+
+	(else)
+
+		There's still something missing in the (woodwinds).
+		(now) (there's a problem)
+
+	(endif)
+
+(at 20 there's #mainmotif/#susnote)
+
+(narrate music 21)
+
+	In the (#flutes), (#clarinets), (#enghorn), (#celli), and (#violin1),
+	the end of the (#mainmotif {motif}) is restated once more, before it
+	begins to increase dynamically in anticipation of the next outburst.
+
+	(par)
+
+	The (#harps), (horns), (#violin2), (#viola), and (#bassi) take part in
+	the crescendo.
+
+	(par)
+
+	The (#bassclarinet)
+	(if) (did cue clbas-19) (then)
+		also
+	(else)
+		(if) (current gaze #bassclarinet) (then)
+		, noticing that you're looking straight at him,
+		(endif)
+		tentatively
+	(endif)
+	joins the crescendo.
+
+(at 21 there's #mainmotif)
+
+(narrate music 22)
+
+	The (#flutes), (#clarinets), (#enghorn), (#celli), and (#violin1) call
+	out in fortissimo once more, with the descending scale that begins the
+	(#mainmotif).
+
+	(par)
+
+	The (#accompaniment) carries on in the (#harps), (horns),
+	(#bassclarinet), (#violin2), (#viola), and (#bassi).
+
+	(if) (did botch bs-23-at-21) (then)
+		(par)
+
+		There's also a (sustained note) played by the (#bassoon1), but
+		it's not right.
+
+	(endif)
+
+(at 22 there's #mainmotif)
+
+(entrance 23 #bassoon1)
+	~(did botch bs-23)
+
+(narrate bad cue 23 $Target)
+
+	Distracted by your (bad glance $Target [#bassoon1]), the (#bassoon1)
+	enters
+
+	(if) (bar 21) (then)
+		two bars
+		(now) (did botch bs-23-at-21)
+	(else)
+		one bar
+	(endif)
+
+	early with a (link [sustained note]) {sustained, mezzoforte note}.
+
+	(par)
+	(now) (did botch bs-23)
+	(now) (did cue bs-23)
+
+(at 21/22 there's #susnote/#wrongnotes)
+	(did botch bs-23)
+
+(narrate music 23)
+
+	(if) (did cue $Target) (then)
+		(if) ($Target is one of [#bassoon1 #bassoons]) (then)
+			On your cue,
+		(else)
+			In response to your (glance $Target [#bassoon1]),
+		(endif)
+		the (#bassoon1) enters with a (sustained note), in mezzoforte.
+
+		(now) (did cue bs-23)
+		(good cue)
+		(par)
+	(endif)
+
+	In the (#flutes), (#clarinets), (#enghorn), (#celli), and (#violin1),
+	the descending scale of the (#mainmotif) reaches its final note.
+
+	(par)
+
+	The (#accompaniment) carries on in the (#harps), (horns), (#bassclarinet),
+	(#violin2), (#viola), and (#bassi).
+
+	(if) ~(did cue bs-23) (then)
+		(par)
+		There's something missing in the (woodwinds).
+		(now) (there's a problem)
+	(endif)
+
+(at 23 there's #mainmotif)
+(at 23 there's #susnote)
+	(did cue bs-23)
+
+(narrate music 24)
+
+	(if)
+		~(did cue bs-23)
+		(current gaze $Gaze)
+		($Gaze is one of [#bassoon1 #bassoons])
+	(then)
+		Noticing your glare, the (#bassoon1) uncertainly begins to
+		play a (link [sustained note]) {sustained note}.
+
+		(now) (did cue bs-23-late)
+		(par)
+	(endif)
+
+	The end of the (#mainmotif {motif}) is restated by the (#flutes),
+	(#clarinets), (#enghorn), (#celli), and (#violin1), softly, with an
+	embellishment.
+
+	(par)
+
+	The (#harps), (horns), (#bassclarinet), (#violin2), (#viola), and
+	(#bassi) keep up the clockwork (#accompaniment), but begin to withdraw
+	dynamically.
+
+	(par)
+
+	(if) (did cue bs-23) (then)
+		The (#bassoon1) continues to play a (sustained note).
+	(elseif) ~(did cue bs-23-late) (then)
+		There's still something missing in the (woodwinds).
+		(now) (there's a problem)
+	(endif)
+
+(at 24 there's #mainmotif)
+(at 24 there's #susnote)
+	(did cue bs-23)
+	(or) (did cue bs-23-late)
+
+(narrate music 25)
+
+	In the (#flutes), (#clarinets), (#enghorn), (#celli), and (#violin1),
+	the end of the (#mainmotif) is heard again, even softer, as a last,
+	faint echo.
+
+	(par)
+
+	The (#harps), (horns), (#bassclarinet),
+
+	(if) (did cue bs-23) (or) (did cue bs-23-late) (then)
+		(#bassoon1),
+	(endif)
+
+	(#violin2), (#viola), and (#bassi) settle down into a piano dynamic,
+	and eventually the (#accompaniment) comes to rest.
+
+(entrance 26 #oboe1)
+
+(narrate bad cue 26 $Target)
+
+	(if) (bar 24) (then)
+		(if) ($Target is one of [#oboe1 #oboes]) (then)
+
+			The (#oboe1) gives you a quizzical look. No, this is
+			clearly not the right time.
+
+			(par)
+		(endif)
+	(else)
+
+		To your absolute horror, the (#oboe1) begins her beautiful
+		(link [solo]) solo one bar too early, because of your (bad
+		glance $Target [#oboe1 #oboes]).
+
+		(par)
+		(now) (did botch oboe-26)
+	(endif)
+
+(at 25 there's #oboesolo)
+	(did botch oboe-26)
+
+(narrate music 26)
+
+	(now) (tuba is sleeping)
+
+	(if) (did botch oboe-26) (then)
+
+		The (#oboe1) continues to play her (#oboesolo {solo melody}),
+		oblivious to the fact that she started one bar too early.
+
+		(par)
+
+		An almost tangible wave of disbelief passes through the
+		(#orchestra), and for a moment you are certain that the whole
+		thing is going to fall apart. But somehow, everybody seems to
+		converge on a common course of action: Skip one bar, in order
+		to catch up with the wayward oboe.
+
+		(now) (bar 27)
+
+	(else)
+
+		(if) (current gaze $Gaze) ($Gaze is one of [#oboe1 #oboes]) (then)
+			Visibly grateful for your cue,
+			(good cue)
+		(else)
+			Clearly nervous about doing this without a cue,
+		(endif)
+
+		the (#oboe1) introduces a touching (#oboesolo {solo melody}),
+		dolce cantabile, softly accompanied by (#triplets) in the
+		(#horns).
+
+		(par)
+
+		The (#violin2) play a (rapid ascending scale). It is repeated
+		half a bar later by the (#violin1).
+
+	(endif)
+
+(at 26 there's #oboesolo/#rapidscale)
+
+(narrate music 27)
+
+	The (#oboe1) continues to play a (#oboesolo {solemn melody}).
+
+	(par)
+
+	The (#horns) are playing (#triplets).
+
+	(par)
+
+	The (#harp1) plays a (rapid ascending scale).
+
+(at 27 there's #oboesolo/#rapidscale)
+
+(narrate music 28)
+
+	The (#oboe1) continues to play a (#oboesolo {solemn melody}).
+
+	(par)
+
+	The (#horns) are playing (#triplets).
+
+	(par)
+
+	The (#celli) play a (rapid ascending scale). It is repeated half a bar
+	later by the (#viola).
+
+(at 28 there's #oboesolo/#rapidscale)
+
+(narrate music 29)
+
+	The (#oboesolo {solemn melody}) played by the (#oboe1 {solo oboist})
+	comes to a conclusion.
+
+	(par)
+
+	The (#horns) are playing (#triplets).
+
+	(par)
+
+	The (#harp2) plays a (rapid ascending scale).
+
+(at 29 there's #oboesolo/#rapidscale)
+
+(entrance 30 #bassclarinet)
+
+(narrate bad cue 30 $Target)
+
+	(if) ~(did botch clbas-30) (then)
+
+		The (#bassclarinet) makes a hurt face, almost led astray by
+		your (bad glance $Target [#bassclarinet]).
+
+		(par)
+		(now) (did botch clbas-30)
+	(endif)
+
+(narrate music 30)
+
+	(if) (did cue $Target) (then)
+		Reassured by your (glance $Target [#bassclarinet]), the
+		(#bassclarinet) introduces a second
+
+		(good cue)
+	(else)
+		The (#bassclarinet) responds with another
+	(endif)
+
+	(#clbassolo {solo melody}), this one cautiously hopeful, although still
+	an elaboration of the earlier statement by the (#oboe1 {oboe}).
+
+	(par)
+
+	The (#celli) and (#bassi) accentuate the first beat of the bar with a
+	subtle (pizzicato).
+
+	(par)
+
+	The (#horns) are playing (#triplets).
+
+	(par)
+
+	The (#violin2) play a (rapid ascending scale). It is repeated half a
+	bar later by the (#violin1).
+
+(at 30 there's #clbassolo/#rapidscale/#pizzicatos)
+
+(narrate music 31)
+
+	The (#bassclarinet) continues to play a hopeful, reassuring (#clbassolo
+	{melody}).
+
+	(par)
+
+	The (#celli) and (#bassi) accentuate the first beat of the bar with a
+	subtle (pizzicato).
+
+	(par)
+
+	The (#horns) are playing (#triplets).
+
+	(par)
+
+	The (#harp1) plays a (rapid ascending scale).
+
+(at 31 there's #clbassolo/#rapidscale/#pizzicatos)
+
+(narrate music 32)
+
+	The (#bassclarinet) continues to play a hopeful, reassuring (#clbassolo
+	{melody}), with a slight crescendo at this point.
+
+	(par)
+
+	The (#celli) and (#bassi) accentuate the first beat of the bar with a
+	subtle (pizzicato).
+
+	(par)
+
+	The (#horns) are playing (#triplets).
+
+	(par)
+
+	The (#violin2) play a (rapid ascending scale). It is repeated half a
+	bar later by the (#violin1).
+
+(at 32 there's #clbassolo/#rapidscale/#pizzicatos)
+
+(narrate music 33)
+
+	The (#bassclarinet) concludes the (#clbassolo {hopeful melody}) on a
+	long, tender note, gradually fading to nothing.
+
+	(par)
+
+	The (#horns) are playing (#triplets).
+
+	(if) (did botch tuba-34-at-32) (then)
+		(par)
+
+		The (#tuba) is playing a (sustained note) that doesn't belong.
+
+	(endif)
+
+	(par)
+
+	The (#harp2) plays a (rapid ascending scale).
+
+(at 33 there's #clbassolo/#rapidscale)
+
+(entrance 34 #tuba/#viola/#violin1)
+
+(narrate bad cue 34 $Target)
+
+	(slice $Target $Slice)
+	(if) ($Slice = 1) (then)
+
+		Confused by your (bad glance $Target [#violin1]), somebody in
+		the (#violin1 {first violin section}) plays a few notes of the
+		(#yearningmotif) completely out of context.
+
+		(par)
+		(now) (did botch vln-34)
+
+	(elseif) (tuba is sleeping) (then)
+
+		Confused by your (bad glance $Target [#viola]), somebody in the
+		(#viola {viola section}) plays a few notes of the
+		(#yearningmotif) completely out of context.
+
+		(par)
+		(now) (did botch vln-34)
+
+	(elseif) ~(did botch tuba-34) (then)
+
+		The (#tuba), confused by your (bad glance $Target [#tuba]),
+		enters with a (link [sustained note]) {sustained, pianissimo
+		note} (too early 34).
+
+		(par)
+
+		(if) (bar 32) (then)
+			(now) (did botch tuba-34-at-32)
+		(endif)
+		(now) (did botch tuba-34)
+		(now) (did cue tuba-34)
+
+	(endif)
+
+(at 32/33 there's #susnote)
+	(did botch tuba-34)
+
+(at 32/33 there's #wrongnotes)
+	(did botch tuba-34)
+	(or) (did botch vln-34)
+
+(at 32/33 there's #yearningmotif)
+	(did botch vln-34)
+
+(narrate music 34)
+
+	(if) ~(did botch tuba-34) (did cue #tuba) (then)
+		(if) ~(tuba is sleeping) (then)
+
+			At your cue, the (#tuba) starts to play a (link
+			[sustained note]) {sustained, pianissimo note}.
+
+			(now) (did cue tuba-34)
+			(par)
+		(endif)
+
+		The (violins) and (#viola)
+		(if) (tuba is sleeping) (then)
+			pick up on the cue intended for
+			(bad cue)
+		(else)
+			also pick up on your cue to
+		(endif)
+
+		the tuba, and introduce a (#yearningmotif {yearning
+		counter-motif}), softly at first, but with emotional intensity.
+
+		(good cue)
+
+	(else)
+
+		(if) (did cue $Target) (then)
+
+			In response to your (glance $Target [#viola #violin1]),
+			the (#violin1) and the (#viola) introduce a
+			(#yearningmotif {yearning counter-motif}), softly at
+			first, but with emotional intensity.
+
+			(good cue)
+		(else)
+
+			A (#yearningmotif {yearning counter-motif}) appears,
+			very uncertainly at first, in the (#violin1) and the
+			(#viola).
+
+		(endif)
+
+		(par)
+
+		(if) (did cue tuba-34) (then)
+			The (#tuba) is playing a (sustained note).
+		(elseif) (did cue $Target) ~(tuba is sleeping) (then)
+			(slice $Target $Slice)
+			(if) ($Slice = 1) (then)
+				In time with your cue
+				(if) ($Target = #violin1) (then)
+					to
+				(else)
+					in the direction of
+				(endif)
+				the (#violin1)
+			(else)
+				Picking up on your
+				(if) ($Target is one of [#violas #tuba]) (then)
+					cue
+				(else)
+					glance towards the nearby (name $Target)
+				(endif)
+			(endif)
+
+			, the (#tuba) starts to play a (link [sustained note])
+			{sustained, pianissimo note}.
+
+			(now) (did cue tuba-34)
+		(endif)
+	(endif)
+
+	(par)
+
+	The (#horns) are playing (#triplets).
+
+	(par)
+
+	The (#bassi) play short notes on every beat, alternating between two
+	octaves. The (#ostinato) contributes to a subtle feeling of unrest.
+
+	(post tuba)
+
+(at 34 there's #yearningmotif)
+(at 34 there's #susnote)
+	(did cue tuba-34)
+
+(narrate music 35)
+
+	(pre tuba)
+
+	The (#celli) join the (#yearningmotif {yearning melody}) played by the
+	(#violin1) and (#viola).
+
+	(par)
+
+	Both (#harps) respond to the yearning motif with a (flurry) of notes,
+	ascending and then descending.
+
+	(par)
+
+	The (#horns) are playing (#triplets).
+
+	(mid tuba)
+
+	The (#ostinato) in the (#bassi) contributes to a general feeling of
+	agitation.
+
+	(post tuba)
+
+(at 35 there's #yearningmotif/#flurry)
+(at 35 there's #susnote)
+	(did cue tuba-34)
+
+(pre tuba)
+	(if)
+		~(did cue tuba-34)
+		~(tuba is sleeping)
+		(current gaze $Gaze)
+		($Gaze is targeted by [#tuba])
+	(then)
+
+		Noticing that you're looking straight at him, the (#tuba)
+		skeptically plays a (sustained note), pianissimo at first.
+
+		(par)
+		(now) (will cue tuba-34)
+	(endif)
+
+(mid tuba)
+	(par)
+	(if) (did cue tuba-34) (then)
+		The (#tuba) is playing a (sustained note).
+		(par)
+	(elseif) (will cue tuba-34) (then)
+		(now) (did cue tuba-34)
+	(endif)
+
+(post tuba)
+	(if) ~(did cue tuba-34) (then)
+		(par)
+		(now) (there's a problem)
+		(select)
+			Something is missing.
+		(or)
+			Something is still missing.
+		(or)
+			There's something missing from this chord.
+		(or)
+			There's something missing in the (brass)
+			(if) (#basstrombone has parent $) (then)
+				, you think
+			(endif)
+			.
+		(or)
+			There's definitely something missing in the (brass).
+		(stopping)
+	(endif)
+
+(narrate music 36)
+
+	(pre tuba)
+
+	The (#yearningmotif) is repeated with more intensity by the (#violin1),
+	(#viola), and (#celli). The melody is somewhat elaborated this time.
+
+	(par)
+
+	The (#horns)
+	(if) (did botch fl-37) (then)
+		(if) (did botch ob-37) (then)
+			, (#oboes),
+		(endif)
+		and (#flutes)
+	(elseif) (did botch ob-37) (then)
+		and (#oboes)
+	(endif)
+	are playing (#triplets).
+
+	(mid tuba)
+
+	The (#ostinato) in the (#bassi) contributes to an unsettling feeling of
+	anxiety.
+
+	(post tuba)
+
+(at 36 there's #yearningmotif)
+(at 36 there's #susnote)
+	(did cue tuba-34)
+
+(entrance 37 #flutes/#oboes)
+
+(narrate bad cue 37 $Target)
+	(if) (slice $Target 2) (then)
+		(if) ~(did botch fl-37) (then)
+			(now) (did botch fl-37)
+			Distracted by your (bad glance $Target [#flutes]),
+			the (#flutes) begin to play triplets (too early 37).
+			(par)
+		(endif)
+	(else)
+		(if) ~(did botch ob-37) (then)
+			(now) (did botch ob-37)
+			Confused by your (bad glance $Target [#oboes]),
+			the (#oboes) begin to play triplets (too early 37).
+			(par)
+		(endif)
+	(endif)
+
+(at 35/36 there's #wrongnotes)
+	(did botch fl-37)
+	(or) (did botch ob-37)
+
+(narrate music 37)
+
+	(if) (did cue $Target) ~{ (did botch fl-37) (did botch ob-37) } (then)
+		At your cue
+		(if) ~($Target is one of [#flutes #oboes #flute1 #flute2 #oboe1 #oboe2]) (then)
+			in their general direction
+		(endif)
+		, the
+		(if) (did botch fl-37) (then)
+			(#oboes) join the (#flutes) and
+		(elseif) (did botch ob-37) (then)
+			(#flutes) join the (#oboes) and
+		(else)
+			(#flutes) and (#oboes) join the
+		(endif)
+		(#horns) in their (#triplets).
+		(par)
+		(good cue)
+	(endif)
+
+	(pre tuba)
+
+	The (#yearningmotif) continues in the (#violin1), (#viola), and (#celli).
+
+	(par)
+
+	Again, the (#harps) respond with a (flurry) of notes, ascending and then
+	descending.
+
+	(par)
+
+	(if) (did botch fl-37) (did botch ob-37) (then)
+		The (#flutes), (#oboes), and (#horns) are playing triplets.
+	(elseif) ~(did cue $) (then)
+		Tentatively, the
+		(if) (did botch fl-37) (then)
+			(#oboes) join the (#flutes) and
+		(elseif) (did botch ob-37) (then)
+			(#flutes) join the (#oboes) and
+		(else)
+			(#flutes) and (#oboes) join the
+		(endif)
+		(#horns) in their (#triplets).
+	(endif)
+
+	(mid tuba)
+
+	(if) (did botch timp-38-at-36) (then)
+
+		The faint (tremolo) continues in the (timpani), still a bar
+		early.
+
+		(par)
+	(endif)
+
+	The (#ostinato) in the (#bassi) contributes to an ominous feeling of tension.
+
+	(post tuba)
+
+(at 37 there's #yearningmotif/#flurry)
+(at 37 there's #susnote)
+	(did cue tuba-34)
+
+(entrance 38 #timpani)
+	~(did botch timp-38)
+
+(narrate bad cue 38 $Target)
+
+	In response to your (bad glance $Target [#timpani]), the (timpanist) begins
+	his (tremolo) (too early 38).
+
+	(par)
+
+	(if) (bar 36) (then)
+		(now) (did botch timp-38-at-36)
+	(endif)
+	(now) (did botch timp-38)
+
+(at 36/37 there's #susnote)
+	(did botch timp-38)
+
+(narrate music 38)
+
+	(if) (did cue $Target) (then)
+
+		At your (glance $Target [#timpani] at musician), a very faint,
+		dramatic (tremolo) begins in the (timpani).
+
+		(par)
+		(now) (did cue timp-38)
+		(good cue)
+	(endif)
+
+	The (#violin2) join the (#violin1), (#viola), and (#celli) in a
+	crescendo as the (#yearningmotif) is extended.
+
+	(par)
+
+	The (#harps) play another (flurry) of notes, ascending and then
+	descending, somewhat louder this time.
+
+	(par)
+
+	The (#flutes), (#oboes), and (#horns) are playing (#triplets). They are
+	joined by the (#clarinets) and (#bassoons), and begin to crescendo.
+
+	(par)
+
+	(if) (did cue tuba-34) (then)
+		The (#tuba) is playing a (sustained note), poco a poco crescendo.
+		(par)
+	(endif)
+
+	(if) (did botch timp-38) (then)
+		The faint (tremolo) continues in the (timpani).
+		(par)
+	(endif)
+
+	The (#ostinato) in the (#bassi) contributes to an increasing sense of alarm.
+
+	(post tuba)
+
+(at 38 there's #yearningmotif/#flurry)
+(at 38 there's #susnote)
+	(did cue tuba-34)
+	(or) (did cue timp-38)
+	(or) (did botch timp-38)
+
+(narrate music 39)
+
+	The (violins), (#viola), and (#celli) repeat a part of the
+	(#yearningmotif) over and over, each time a little higher on the scale.
+
+	(par)
+
+	The (#flutes), (#oboes), (#clarinets), (#bassoons), and (#horns) are
+	playing (#triplets).
+
+	(par)
+
+	(if) ~(tuba is sleeping) (then)
+		(if) (did cue tuba-34) (then)
+			The (#tuba) is playing a
+		(else)
+			The (#tuba) tentatively plays a
+		(endif)
+		(sustained note), poco a poco crescendo.
+		(par)
+	(endif)
+
+	(if) (did cue timp-38) (or) (did botch timp-38) (then)
+		The (timpani) (tremolo) grows louder.
+	(else)
+
+		Very faintly, a (tremolo) begins in the (timpani), one bar too
+		late.
+
+	(endif)
+
+	(par)
+
+	The (#ostinato) in the (#bassi) contributes to a general feeling of
+	distress and emotional turmoil.
+
+	(par)
+
+	(link [everybody]) Everybody takes part in the crescendo now.
+
+(at 39 there's #yearningmotif/#susnote)
+
+(narrate music 40)
+
+	With every recurrence, the repeated part of the (#yearningmotif) gets
+	more intense, more passionate, each time a little higher on the scale.
+
+	(par)
+
+	The (#flutes), (#oboes), (#clarinets), (#bassoons), and (#horns) are
+	playing (#triplets).
+
+	(par)
+
+	(if) ~(tuba is sleeping) (then)
+		The (#tuba) is playing a (sustained note), poco a poco crescendo.
+		(par)
+	(endif)
+
+	The (timpani) (tremolo) grows louder.
+
+	(par)
+
+	The (#ostinato) in the (#bassi) contributes to a turbulent, almost
+	violent sense of anticipation.
+
+	(par)
+
+	The crescendo intensifies.
+
+(at 40 there's #yearningmotif/#susnote)
+
+(entrance 41 #trumpets/#trombones)
+
+(narrate bad cue 41 $Target)
+	(if) ~(did botch tptb-41) (then)
+		(randomly select $Victim from [#trumpet1 #trumpet2 #trombone1 #trombone2])
+
+		Confused by your (bad glance $Target [$Victim]), (link the
+		$Victim) blurts out a fragment of the (#fanfare), (too early
+		41). (It $Victim) gives you a sour look.
+
+		(par)
+
+		(now) (did botch tptb-41)
+	(endif)
+
+(at 39/40 there's #fanfare)
+	(did botch tptb-41)
+
+(narrate music 41)
+
+	The (violins), (#viola), and (#celli) bring the (#yearningmotif) to a
+	climactic release.
+
+	(par)
+
+	(if) (did cue $Target) (then)
+
+		Acknowledging your (glance $Target [#trumpets #trombones]), the
+		(#trumpets) and (#trombones) erupt in a grand, exalted (#fanfare).
+
+		(good cue)
+	(else)
+
+		The (#trumpets) and (#trombones) join in, hesitantly at first,
+		with a (#fanfare).
+
+	(endif)
+
+	(par)
+
+	The (#flutes), (#oboes), (#clarinets), (#bassoons), and (#horns) are
+	playing (#triplets) in fortissimo.
+
+	(par)
+
+	(if) ~(tuba is sleeping) (then)
+		The (#tuba) is playing a (sustained note), poco a poco crescendo.
+		(par)
+	(endif)
+
+	The (timpani) (tremolo) grows even louder.
+
+	(par)
+
+	The (#bassi), too, switch to a tremolo.
+
+(at 41 there's #yearningmotif/#fanfare/#susnote)
+
+(narrate music 42)
+
+	The yearning motif in the (violins), (#viola), and (#celli) develops
+	into a (#descendingscale) of long notes.
+
+	(par)
+
+	The (#trumpets) and (#trombones) continue to play a piercing
+	(#fanfare).
+
+	(par)
+
+	The (#flutes), (#oboes), (#clarinets), (#bassoons), and (#horns) are
+	playing (#triplets) in fortissimo.
+
+	(par)
+
+	(if) ~(tuba is sleeping) (then)
+
+		The (#tuba) is playing a (sustained note)
+		(if) (#basstrombone has parent $) (then)
+			, now embellished by the (#basstrombone)
+		(endif)
+		.
+
+	(elseif) (#basstrombone has parent $) (then)
+		The (#basstrombone) plays a (loud note).
+	(endif)
+
+	(par)
+
+	The (timpani) and (#bassi) keep up their (tremolo).
+
+(at 42 there's #descendingscale/#fanfare/#susnote)
+
+(narrate music 43)
+
+	The (violins), (#viola), and (#celli) play a (#descendingscale) of long
+	notes.
+
+	(par)
+
+	The (#trumpets) and (#trombones) continue to play a piercing
+	(#fanfare).
+
+	(par)
+
+	The (#flutes), (#oboes), (#clarinets), (#bassoons), and (#horns) are
+	playing (#triplets) in fortissimo.
+
+	(par)
+
+	(if) ~(tuba is sleeping) (then)
+		The (#tuba) is playing a (sustained note)
+		(if) (#basstrombone has parent $) (then)
+			, embellished by the (#basstrombone)
+		(endif)
+		.
+	(elseif) (#basstrombone has parent $) (then)
+		The (#basstrombone) plays a (loud note).
+	(endif)
+
+	(par)
+
+	The (timpani) and (#bassi) keep up their (tremolo), now with a
+	crescendo in the timpani.
+
+(at 43 there's #descendingscale/#fanfare/#susnote)
+
+(narrate music 44)
+
+	The (violins), (#viola), and (#celli) conclude their yearning melody.
+
+	(par)
+
+	The (#flutes), (#oboes), (#clarinets), (#bassoons), and (#horns) cease
+	to play triplets.
+
+	(par)
+
+	(if) ~(tuba is sleeping) (then)
+		(if) (#basstrombone has parent $) (then)
+
+			A (loud note) in the (#basstrombone) accentuates the
+			end of the (#tuba) (no space) 's sustained note.
+
+		(else)
+			The (#tuba) reaches the end of his sustained note.
+		(endif)
+	(elseif) (#basstrombone has parent $) (then)
+		The (#basstrombone) plays a (loud note).
+	(endif)
+
+	(par)
+
+	The (timpani) tremolo comes to a sudden halt.
+
+	(par)
+
+	The (#bassi) join the (#trumpets) and (#trombones) in their fortissimo
+	fanfare, which has transformed into a (#descendingscale).
+
+(at 44 there's #descendingscale)
+
+(narrate music 45)
+
+	As the loud (#descendingscale) reaches new depths, the (#bassi) are
+	unfazed, but the (#trumpets) and (#trombones)
+	(if) (#basstrombone has parent $) (then)
+		hand over their share to the (#basstrombone)
+		(if) ~(tuba is sleeping) (then)
+			and (#tuba)
+		(endif)
+	(elseif) ~(tuba is sleeping) (then)
+		hand over their share to the (#tuba)
+	(else)
+		stop
+	(endif)
+	.
+
+(at 45 there's #descendingscale)
+
+(entrance 46 #horns/#bassclarinet)
+	~(did botch hnclbas-46)
+
+(narrate bad cue 46 $)
+	($List = [#horn1 #horn2 #horn3 #horn4])
+	(randomly select $Victim from [#bassclarinet | $List])
+	(collect $M)
+		*($M is one of $List)
+		~($M = $Victim)
+	(into $Others)
+	(randomly select $Onlooker from $Others)
+
+	Distracted by your apparent cue, (link the $Victim) produces a long,
+	magnificent chord note, (too early 46). (link The $Onlooker) gives
+	(them $Victim) an amused look.
+
+	(par)
+	(now) (did botch hnclbas-46)
+	(if) ~($Victim = #bassclarinet) (then)
+		(now) (horns messed up)
+	(endif)
+
+(narrate music 46)
+	(if) (did cue $) (then)
+		At your cue:
+		(good cue)
+	(endif)
+
+	Long, (stately chords), forte, in the (#horns), (#trumpets),
+	(#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(#bassclarinet),
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (#bassi).
+
+	(par)
+
+	The two (#harps) embellish the chords with wave-like (#flourishes).
+
+	(par)
+
+	The (timpanist) plays another (tremolo), pianissimo at first, then
+	gradually growing into a forte.
+
+(at 46 there's #flourishes/#susnote)
+
+(narrate music 47)
+
+	With full force, the descending major scale of the (#mainmotif)
+	returns, fortissimo marcato, played in unison by the (#piccolo),
+	(#flutes), (#oboes), (#enghorn), (#clarinets), (#bassoons), (violins),
+	(#viola), and (#celli).
+
+	(par)
+
+	Long, (stately chords) in the (horns), (#trumpets), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(#bassclarinet),
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	(#bassi), and (timpani) accompany the melody.
+
+	(par)
+
+	The two (#harps) embellish the chords with wave-like (#flourishes).
+
+(at 47 there's #mainmotif/#flourishes)
+
+(narrate music 48)
+
+	The (#piccolo), (#flutes), (#oboes), (#enghorn), (#clarinets),
+	(#bassoons), (violins), (#viola), and (#celli) continue to play the
+	(#mainmotif), fortissimo marcato.
+
+	(par)
+
+	Long, (stately chords) in the (horns), (#trumpets), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(#bassclarinet),
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (#bassi) accompany the melody.
+
+	(par)
+
+	The two (#harps) embellish the chords with wave-like (#flourishes).
+
+	(par)
+
+	The (timpanist) plays another (tremolo), pianissimo at first, then
+	gradually growing into a forte.
+
+(at 48 there's #mainmotif/#flourishes/#susnote)
+
+(narrate music 49)
+
+	A rapid, rising scale, still played in unison, serves as upbeat leading
+	to a restatement of the (#mainmotif) in the (#piccolo), (#flutes),
+	(#oboes), (#enghorn), (#clarinets), (#bassoons), (violins), (#viola),
+	and (#celli), sempre fortissimo marcato.
+
+	(par)
+
+	Long, (stately chords) in the (horns), (#trumpets), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(#bassclarinet),
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	(#bassi), and (timpani) accompany the melody.
+
+	(par)
+
+	The two (#harps) embellish the chords with wave-like (#flourishes).
+
+	(handle the cymbals)
+
+(at 49 there's #mainmotif/#flourishes)
+
+(narrate music 50)
+
+	The (#piccolo), (#flutes), (#oboes), (#enghorn), (#clarinets),
+	(#bassoons), (violins), (#viola), and (#celli) continue to play the
+	(#mainmotif), still in an unyielding fortissimo.
+
+	(par)
+
+	Long, (stately chords) in the (horns), (#trumpets), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(#bassclarinet),
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (#bassi) accompany the melody.
+
+	(par)
+
+	The two (#harps) embellish the chords with wave-like (#flourishes).
+
+	(par)
+
+	The (timpanist) plays another (tremolo), pianissimo at first, then
+	gradually growing into a mezzoforte.
+
+	(handle the cymbals)
+
+(at 50 there's #mainmotif/#flourishes/#susnote)
+
+(narrate music 51)
+
+	Another rapidly rising scale leading to a restatement of the
+	(#mainmotif) in the (#piccolo), (#flutes), (#oboes), (#enghorn),
+	(#clarinets), (#bassoons), (violins), (#viola), and (#celli). The first
+	few notes of the main motif are repeated a second time, with increasing
+	tension.
+
+	(par)
+
+	The (horns), (#trumpets), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(#bassclarinet),
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (#bassi) continue to accompany the melody with long, (stately
+	chords), now in a crescendo.
+
+	(par)
+
+	The two (#harps) embellish the chords with wave-like (#flourishes).
+
+	(par)
+
+	The (timpani) (tremolo) grows louder.
+
+	(handle the cymbals)
+
+(at 51 there's #mainmotif/#flourishes/#susnote)
+
+(narrate music 52)
+
+	The first few notes of the (#mainmotif) are repeated, incessantly, now
+	as triplets, by the (#piccolo), (#flutes), (#oboes), (#enghorn),
+	(#clarinets), (#bassoons), (violins), (#viola), and (#celli).
+
+	(par)
+
+	The (horns), (#trumpets), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(#bassclarinet),
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (#bassi) continue to accompany the melody with long, (stately
+	chords).
+
+	(par)
+
+	The two (#harps) embellish the chords with wave-like (#flourishes).
+
+	(par)
+
+	The (timpani) (tremolo) grows louder.
+
+	(handle the cymbals)
+
+(at 52 there's #mainmotif/#flourishes/#susnote)
+
+(narrate music 53)
+
+	The first few notes of the (#mainmotif) are repeated, with unyielding
+	intensity, now as sixteenth notes, by the (#piccolo), (#flutes),
+	(#oboes), (#enghorn), (#clarinets), (#bassoons), (violins), (#viola),
+	and (#celli).
+
+	(par)
+
+	The (horns), (#trumpets), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(#bassclarinet),
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (#bassi) continue to accompany the melody with long, (stately
+	chords).
+
+	(par)
+
+	The two (#harps) embellish the chords with wave-like (#flourishes).
+
+	(par)
+
+	The (timpanist) continues to play a (tremolo).
+
+	(handle the cymbals)
+
+(at 53 there's #mainmotif/#flourishes/#susnote)
+
+(narrate music 54)
+
+	The first few notes of the (#mainmotif) are repeated, mercilessly, now
+	as sextuplets, by the (#piccolo), (#flutes), (#oboes), (#enghorn),
+	(#clarinets), (#bassoons), (violins), (#viola), and (#celli).
+
+	(par)
+
+	The (#trumpets), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(#bassclarinet),
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (#bassi) play a (link [rising scale]) {rising scale} of eighth
+	notes.
+
+	(handle the cymbals)
+
+(at 54 there's #mainmotif)
+
+(narrate music 55)
+
+	In a spectacular release of tension, the full descending scale of the
+	(#mainmotif) is played, now in the (#trumpets), forte forte fortissimo.
+
+	(par)
+
+	The (#flutes), (#oboes), (#enghorn), (#horns), (#clarinets),
+	(#bassclarinet), (#bassoons), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (timpani) accompany the melody with long, (stately chords), forte
+	forte fortissimo.
+
+	(handle the cymbals)
+
+	(par)
+
+	The (violins), (#viola), and (#celli) embellish the chords with
+	wave-like (#flourishes), forte forte fortissimo.
+
+	(par)
+
+	The (#bassi) play (#sextuplets), forte forte fortissimo.
+
+	(par)
+
+	Cutting through all of this, the (#piccolo) delivers a series of
+	rapidly descending and ascending (#rapidscale {scales}), forte forte
+	fortissimo.
+
+(at 55 there's #mainmotif/#flourishes/#sextuplets/#rapidscale/#susnote)
+
+(narrate music 56)
+
+	The (#trumpets) continue to play the (#mainmotif).
+
+	(par)
+
+	The (#flutes), (#oboes), (#enghorn), (#horns), (#clarinets),
+	(#bassclarinet), (#bassoons), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (timpani) accompany the melody with long, (stately chords).
+
+	(handle the cymbals)
+
+	(par)
+
+	The (violins), (#viola), and (#celli) embellish the chords with
+	wave-like (#flourishes).
+
+	(par)
+
+	The (#bassi) play (#sextuplets).
+
+	(par)
+
+	The (#piccolo) delivers a series of rapidly descending and ascending
+	(#rapidscale {scales}).
+
+(at 56 there's #mainmotif/#flourishes/#sextuplets/#rapidscale/#susnote)
+
+(narrate music 57)
+
+	The (#trumpets) restate the descending major scale of the (#mainmotif).
+
+	(par)
+
+	The (#flutes), (#oboes), (#enghorn), (#horns), (#clarinets),
+	(#bassclarinet), (#bassoons), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (timpani) accompany the melody with long, (stately chords).
+
+	(handle the cymbals)
+
+	(par)
+
+	The (violins), (#viola), and (#celli) embellish the chords with
+	wave-like (#flourishes).
+
+	(par)
+
+	The (#bassi) play (#sextuplets).
+
+	(par)
+
+	The (#piccolo) delivers a series of rapidly descending and ascending
+	(#rapidscale {scales}).
+
+(at 57 there's #mainmotif/#flourishes/#sextuplets/#rapidscale/#susnote)
+
+(narrate music 58)
+
+	The (#trumpets) reach the final note of the descending scale on the
+	downbeat.
+
+	(par)
+
+	Likewise, the (#flutes), (#oboes), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	(violins), (#viola), and (#celli) end their accompaniment on
+	the downbeat.
+
+	(par)
+
+	Lingering, (#susnote) remain in the (#enghorn), (#bassclarinet), and
+	(#bassi).
+
+	(par)
+
+	The (timpani) (tremolo) is also sustained, but in a diminuendo.
+
+	(handle the cymbals)
+
+	(par)
+
+	(if) (did botch ob-59) (then)
+
+		The (#oboes), (#horns), and (#bassoons) are playing serene,
+		(stately chords), but the (#oboes) are playing the wrong notes.
+
+	(else)
+
+		The (#horns) and (#bassoons) continue to play (stately chords),
+		with a touch of serenity now.
+	
+	(endif)
+
+	(par)
+
+	The (#harp1) plays a (#risingfigure).
+
+(at 58 there's #susnote/#risingfigure)
+(at 58 there's #wrongnotes)
+	(did botch ob-59)
+
+(entrance 59 #oboes)
+	~(did botch ob-59)
+
+(immune at 56 #oboes)
+
+(narrate bad cue 59 $Target)
+
+	Noticing your (bad glance $Target [#oboes]), the (#oboes) join the
+	(#accompaniment) (too early 59).
+
+	(par)
+
+	(now) (did botch ob-59)
+
+(narrate music 59)
+
+	A heartbroken, (#wistfulmotif), like a deep sigh, is played by the
+	(#viola) and (#celli).
+
+	(par)
+
+	The (#harp2) responds to the sigh with a (#risingfigure).
+
+	(par)
+
+	(if) (did botch ob-59) (then)
+		The
+		(if) (did botch flcl-60) (then)
+			(#flutes), (#clarinets),
+		(endif)
+
+		(#oboes), (#horns), and (#bassoons) are playing serene,
+		(stately chords), but some of the notes are wrong.
+
+	(else)
+		(if) (did cue $Target) (then)
+			Acknowledging your (glance $Target [#oboes])
+			(good cue)
+		(else)
+			With some uncertainty
+		(endif)
+		, the (#oboes) join the
+		(if) (did botch flcl-60) (then)
+			(#flutes), (#clarinets), (#horns),
+		(else)
+			(#horns)
+		(endif)
+		and (#bassoons) in their serene, (stately chords).
+	(endif)
+
+	(handle the cymbals)
+
+	(par)
+
+	A (pedal point) is sustained by the (#bassi) and (timpani).
+
+(at 59 there's #wistfulmotif/#risingfigure/#susnote)
+(at 59 there's #wrongnotes)
+	(did botch ob-59)
+
+(entrance 60 #flutes/#clarinets)
+	~(did botch flcl-60)
+
+(immune at 57 #flutes/#clarinets)
+
+(narrate bad cue 60 $Target)
+
+	At your (bad glance $Target [#flutes #clarinets]), the (#flutes) and
+	(#clarinets) enter (too early 60).
+
+	(par)
+
+	(now) (did botch flcl-60)
+
+(narrate music 60)
+
+	The (heartbroken sigh) is repeated in a higher register by the
+	(violins), (#viola), and (#celli).
+
+	(par)
+
+	The (#harp1) responds to the sigh with a (#risingfigure).
+
+	(par)
+
+	(if) (did botch flcl-60) (then)
+
+		The (#flutes), (#clarinets), (#oboes), (#horns), and
+		(#bassoons) are playing serene, (stately chords), but some of
+		the notes are wrong.
+	
+	(else)
+		(if) (did cue $Target) (then)
+
+			In response to your (glance $Target [#flutes #clarinets]),
+			the (#flutes) and (#clarinets)
+
+			(good cue)
+		(else)
+			The (#flutes) and (#clarinets) hesitatingly
+		(endif)
+
+		join the (#oboes), (#horns), and (#bassoons) in their serene,
+		(stately chords).
+
+	(endif)
+
+	(par)
+
+	A (pedal point) is sustained by the
+	(if) (did botch clbas-61) (then)
+		(#bassclarinet), (#bassi),
+	(else)
+		(#bassi)
+	(endif)
+	and (timpani).
+
+(at 60 there's #wistfulmotif/#risingfigure/#susnote)
+
+(entrance 61 #bassclarinet)
+	~(did botch clbas-61)
+
+(narrate bad cue 61 $Target)
+	
+	Confused by your (bad glance $Target [#bassclarinet]), the
+	(#bassclarinet) commences his (link [pedal tone]) { pedal tone } (too
+	early 61).
+
+	(par)
+
+	(now) (did botch clbas-61)
+
+(narrate music 61)
+
+	(if) ~(did botch clbas-61) (then)
+		(if) (did cue $Target) (then)
+			At your (glance $Target [#bassclarinet]), the (#bassclarinet)
+			(good cue)
+		(else)
+			With a very uncertain look, the (#bassclarinet) gradually
+		(endif)
+
+		joins the (#bassi) and (timpani) in the (pedal point), which
+		goes into a crescendo.
+
+		(par)
+	(endif)
+
+	The (heartbroken sigh) is repeated with greater intensity in an even
+	higher register by the (violins), (#viola), and (#celli).
+
+	(par)
+
+	The (#harp2) responds to the sigh with a (#risingfigure).
+
+	(par)
+
+	The (#flutes), (#clarinets), (#oboes), (#horns), and (#bassoons) are
+	playing (stately chords).
+
+	(if) (did botch clbas-61) (then)
+		(par)
+
+		A (pedal point) is sustained by the (#bassclarinet), (#bassi),
+		and (timpani).
+
+	(endif)
+
+(at 61 there's #wistfulmotif/#risingfigure/#susnote)
+
+(narrate music 62)
+
+	In a higher register still, and with even greater intensity, the
+	(violins), (#viola), and (#celli) repeat the (heartbroken sigh) motif.
+
+	(par)
+
+	The (#harp1) responds to the sigh with a (#risingfigure).
+
+	(par)
+
+	The (#flutes), (#clarinets), (#oboes), (#horns), and (#bassoons) are
+	playing (stately chords).
+
+	(par)
+
+	A (pedal point) is sustained by the (#bassclarinet), (#bassi), and
+	(timpani).
+
+(at 62 there's #wistfulmotif/#risingfigure/#susnote)
+
+(narrate music 63)
+
+	The (violins), (#viola), and (#celli) repeat the (heartbroken sigh)
+	motif, this time in the same, high register.
+
+	(par)
+
+	The (#harp2) responds to the sigh with a (#risingfigure).
+
+	(par)
+
+	The (#flutes), (#clarinets), (#oboes), (#horns), and (#bassoons) are
+	playing (stately chords).
+
+	(par)
+
+	A (pedal point) is sustained by the (#bassclarinet), (#bassi), and
+	(timpani).
+
+(at 63 there's #wistfulmotif/#risingfigure/#susnote)
+
+(narrate music 64)
+
+	In the (violins), (#viola), and (#celli), the repeated heartbroken sigh
+	motif evolves into a (passionate melody) spiralling downwards.
+
+	(par)
+
+	Both (#harps) are playing (link [rising figures]) {rising figures} in
+	rapid succession.
+
+	(par)
+
+	The (#flutes), (#clarinets), (#oboes), (#horns), and (#bassoons) are
+	playing (stately chords).
+
+	(par)
+
+	A (pedal point) is sustained by the (#bassclarinet), (#bassi), and
+	(timpani).
+
+(at 64 there's #descendingscale/#risingfigure/#susnote)
+
+(narrate music 65)
+
+	The (passionate melody) continues to spiral downwards in the (violins),
+	(#viola), and (#celli).
+
+	(par)
+
+	Both (#harps) are playing (link [rising figures]) {rising figures} in
+	rapid succession.
+
+	(par)
+
+	The (#flutes), (#clarinets), (#oboes), (#horns), and (#bassoons) are
+	playing (stately chords).
+
+	(par)
+
+	A (pedal point) is sustained by the (#bassclarinet), (#bassi), and
+	(timpani).
+
+(at 65 there's #descendingscale/#risingfigure/#susnote)
+
+(narrate music 66)
+
+	The (violins), (#viola), (#celli), (#flutes), (timpani), (#harps), and
+	(#bassi) suddenly stop, on the downbeat.
+
+	(par)
+
+	The (#trumpets), (#trombones),
+	(if) (#basstrombone has parent $) (then)
+		(#basstrombone),
+	(endif)
+	(if) ~(tuba is sleeping) (then) (#tuba), (endif)
+	and (#piccolo) join them in a brief, loud chord on the downbeat.
+
+	(par)
+
+	The (#clarinets), (#bassclarinet), (#enghorn), (#bassoons), and then
+	also the (#oboes) and (#horns), play an increasingly (#rapidchords
+	{rapid series of chords}): First triplets, then sixteenth notes, in a
+	crescendo.
+
+(at 66 there's #rapidchords)
+
+(entrance 67 #harps)
+
+(immune at 64 #harps)
+
+(narrate bad cue 67 $Target)
+	(randomly select $Victim from [#harp1 #harp2])
+
+	(link The $Victim) is about to enter (too early 67), confused by your
+	(bad glance $Target [$Victim]), but she stops herself in time.
+
+	(par)
+
+(narrate music 67)
+
+	The (#clarinets), (#bassclarinet), (#enghorn), (#bassoons), (#oboes),
+	and (#horns) continue to play a series of (#rapidchords), now sextuplets,
+	in ever-increasing dynamics.
+
+	(par)
+
+	The (#flutes) and (#piccolo) join them.
+
+	(par)
+
+	Suddenly they all stop, and the (#harps) respond with a (#flurry),
+	forte fortissimo.
+
+(at 67 there's #rapidchords/#flurry)
+
+(entrance 68 #violin1/#violin2)
+
+(immune at 65 #violin1/#violin2)
+
+(narrate bad cue 68 $Target)
+	(if) (slice $Target 1) (then)
+		($Victim = #violin1)
+	(else)
+		($Victim = #violin2)
+	(endif)
+
+	Somebody in (link the $Victim) is confused by your (bad glance $Target
+	[$Victim]), and starts the (tremolo) (too early 68).
+
+	(par)
+	(now) (did botch vln-68)
+
+(at 66/67 there's #susnote)
+	(did botch vln-68)
+
+(narrate music 68)
+	(if) (did cue $Target) (then)
+		At your (glance $Target [#violin1 #violin2]),
+		(good cue)
+	(else)
+		At the (#concertmaster) (no space)'s cue, most of
+	(endif)
+	the (#violin1 {first}) and (#violin2 {second}) violins play a long
+	(tremolo), in fortissimo.
+
+	(par)
+
+	The (#trumpets), (trombones, bass trombone, and tuba) play (long chord
+	notes).
+
+	(par)
+
+	The (#harps) are busy with a (#flurry).
+
+(at 68 there's #susnote/#flurry)
+
+(entrance 69 #horns/#flutes/#clarinets)
+
+(immune at 66 #horns/#clarinets)
+
+(narrate music 69)
+
+	(handle the timpani)
+
+	(if) (did cue $Target) (then)
+		In response to your
+		(glance $Target [#horns #flutes #clarinets])
+		(good cue)
+	(else)
+		Hesitatingly
+	(endif)
+
+	, the (#flutes), (#clarinets), and (#horns) join the (#trumpets),
+	(trombones, bass trombone, and tuba) in the (long chord notes).
+
+	(par)
+
+	After a brief two-note upbeat, the (violins) move their (tremolo) one
+	step up the scale. The (#viola) join them.
+
+	(par)
+
+	The (#harps) are busy with a (#flurry).
+
+(at 69 there's #susnote/#flurry)
+
+(entrance 70 #oboes/#bassoons)
+
+(narrate bad cue 70 $Target)
+	(randomly select $Victim from [#oboe1 #oboe2 #bassoon1 #bassoon2])
+
+	Distracted by your (bad glance $Target [$Victim]), (link the $Victim)
+	briefly plays (its $Victim) (link [chord note]) { chord note } (too
+	early 70).
+
+	(par)
+
+(narrate music 70)
+
+	After another brief two-note upbeat, the (violins) and (#viola) move
+	their (tremolo) one step up the scale.
+
+	(par)
+
+	(if) (did cue $Target) (then)
+		Acknowledging your (glance $Target [#oboes #bassoons])
+		(good cue)
+	(else)
+		With some trepidation
+	(endif)
+
+	, the (#oboes) and (#bassoons) join the (#flutes), (#clarinets),
+	(#horns), (#trumpets), (trombones, bass trombone, and tuba) in the (long
+	chord notes).
+
+	(handle the timpani)
+
+	The (#harps) are busy with a (#flurry).
+
+	(par)
+
+	The (#celli) and (#bassi) accentuate each beat, stepping downwards
+	through the tonic chord, (pizzicato) fortissimo.
+
+(trombones, bass trombone, and tuba)
+	(if) ~(tuba is sleeping) (then)
+		(#trombones),
+		(if) (#basstrombone has parent $) (then)
+			(#basstrombone),
+		(endif)
+		and (#tuba)
+	(else)
+		(if) (#basstrombone has parent $) (then)
+			(#trombones),
+			and (#basstrombone)
+		(else)
+			and (#trombones)
+		(endif)
+	(endif)
+
+(at 70 there's #susnote/#flurry/#pizzicatos)
+
+(entrance 71 #timpani)
+	~(did botch timp-71)
+
+(narrate bad cue 71 $Target)
+
+	Deceived by your (bad glance $Target [#timpani]), the (timpanist) plays
+	a single, (loud note) on the downbeat, (too early 71).
+
+	(par)
+	(now) (did botch timp-71)
+
+(narrate music 71)
+	(if) (did cue $Target) (then)
+
+		At your (glance $Target [#timpani]), the (timpanist) plays a
+		single, (loud note) on the first beat of the bar.
+
+		(now) (did cue timp-71)
+		(par)
+		(good cue)
+	(endif)
+
+	After another brief two-note upbeat, the (violins) and (#viola) move
+	their (tremolo) one third higher.
+
+	(par)
+
+	The
+	(if) (did botch enghn-72) (then)
+		(#enghorn),
+	(elseif) (did botch clbas-72) (then)
+		(#bassclarinet),
+	(endif)
+
+	(#oboes), (#bassoons), (#flutes), (#clarinets), (#horns), (#trumpets),
+	(trombones, bass trombone, and tuba) continue to play (long chord
+	notes).
+
+	(handle the timpani)
+
+	The (#harps) are busy with a (#flurry).
+
+	(par)
+
+	The (#celli) and (#bassi) accentuate each beat, stepping downwards
+	through the tonic chord, (pizzicato), sempre fortissimo.
+
+(at 71 there's #susnote/#flurry/#pizzicatos)
+
+(entrance 72 #enghorn/#bassclarinet)
+	~(did botch enghn-72)
+	~(did botch clbas-72)
+
+(narrate bad cue 72 $Target)
+	(select)
+		($Victim = #enghorn)
+		(now) (did botch enghn-72)
+	(or)
+		($Victim = #bassclarinet)
+		(now) (did botch clbas-72)
+	(purely at random)
+
+	Misunderstanding your (bad glance $Target [$Victim]), (link the
+	$Victim) joins the (#accompaniment) (too early 72).
+
+	(par)
+
+(narrate music 72)
+
+	After another brief two-note upbeat, the (violins) and (#viola) move
+	their (tremolo) one fourth higher, reaching the tonic.
+
+	(par)
+
+	(if) (did botch enghn-72) (then)
+		Apprehensively, the (#bassclarinet) joins the (#enghorn),
+	(elseif) (did botch clbas-72) (then)
+		Apprehensively, the (#enghorn) joins the (#bassclarinet),
+	(else)
+		(if) (did cue $Target) (then)
+			At your (glance $Target [#enghorn #bassclarinet])
+			(good cue)
+		(else)
+			Exchanging an uncertain sideways glance
+		(endif)
+		, the (#enghorn) and (#bassclarinet) join
+	(endif)
+	
+	the (#oboes), (#bassoons), (#flutes), (#clarinets), (#horns),
+	(#trumpets), (trombones, bass trombone, and tuba) in the (long chord
+	notes), which are now in fortissimo.
+
+	(if) ~(did cue timp-71) ~(did botch timp-71) (then)
+		(par)
+
+		The (timpanist) plays a (loud note) on the downbeat, one bar too
+		late.
+
+		(now) (did botch timp-71)
+	(endif)
+
+	(handle the timpani)
+
+	The (#harps) are busy with a (#flurry).
+
+	(par)
+
+	The (#celli) and (#bassi) accentuate each beat, stepping downwards
+	through the tonic chord, (pizzicato), sempre fortissimo.
+
+(at 72 there's #susnote/#flurry/#pizzicatos)
+
+(narrate music 73)
+
+	All the (strings), (brass), and (woodwinds), as well as the two
+	(#harps), stop on the downbeat with a brief, fortissimo tonic chord.
+
+	(handle the timpani)
+
+	On the third beat, the (strings), (brass), and (woodwinds) play the
+	tonic chord again, briefly, in a different inversion.
+
+(narrate music 74)
+
+	The (timpanist) continues to play a (tremolo), fortissimo, on the tonic.
+
+	(par)
+
+	The (strings), (brass), and (woodwinds) play the tonic chord yet again,
+	briefly, in a different inversion.
+
+	(par)
+
+	On the third beat, the (timpani) tremolo ends with a bang. At the same
+	time, the (strings), (brass), and (woodwinds) play the tonic chord one
+	final time.
+
+	(par)
+
+	Then, silence.
+
+	(now) ~(force timpani tremolo)
+	(now) (audience is lit)
+
+(at 74/75 there's #silence)
+
+(narrate music $)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Audible objects
+
+#silence
+(name *)	silence
+(singleton *)
+(audible *)
+(* is #in #hall)
+(descr *)
+
+	You take a moment to enjoy the silence.
+
+(at $ there's *)
+	(stuck in silence)
+
+#mainmotif
+(name *)	main motif
+(dict *)	melody descending major scale theme subject
+(dict *)	(bar 54) sextuplets
+(singleton *)
+(audible *)
+(descr *)
+
+	Proud and elegant, with a tinge of finality.
+
+#chromatics
+(name *)	chromatic melody
+(dict *)	flourishes rise
+(singleton *)
+(audible *)
+(descr *)
+
+	Hopeful and striving.
+
+#yearningmotif
+(name *)	yearning motif
+(dict *)	theme subject
+(singleton *)
+(audible *)
+(descr *)
+
+	Passionate and heart-wrenchingly sad.
+
+#descendingscale
+(name *)	descending scale
+(dict *)	long notes passionate melody spiraling downwards
+(passionate melody)	(link [passionate melody]) { passionate melody }
+(singleton *)
+(audible *)
+(descr *)
+
+	Deeper and deeper.
+
+#oboesolo
+(name *)	oboe solo
+(dict *)	beautiful melody solemn
+(singleton *)
+(audible *)
+(descr *)
+
+	Fragile and touching.
+
+#clbassolo
+(name *)	bass clarinet solo
+(dict *)	beautiful melody solemn hopeful reassuring elaboration
+(heads *)	solo melody
+(singleton *)
+(audible *)
+(descr *)
+
+	Solemn and reassuring.
+
+#flurry
+(name *)	flurry of activity
+(dict *)	ascending descending notes
+(flurry)	(link [flurry]) flurry
+(audible *)
+(descr *)
+
+	Restless and jittery.
+
+#rapidchords
+(name *)	rapid chords
+(dict *)	series triplets sixteenth sextuplets series notes
+(plural *)
+(audible *)
+(descr *)
+
+	Restless and jittery.
+
+#ostinato
+(name *)	ostinato
+(singleton *)
+(audible *)
+(descr *)
+
+	Unsettling and haunting.
+
+(at $Bar there's *)
+	($Bar > 33) ($Bar < 41)
+
+#fanfare
+(name *)	fanfare
+(dict *)	piercing
+(singleton *)
+(audible *)
+(descr *)
+
+	Triumphant and malevolent.
+
+#wistfulmotif
+(name *)	wistful motif
+(dict *)	heartbroken heart broken deep sigh like sigh-like theme subject
+(heartbroken sigh)	(link [heartbroken sigh]) { heartbroken sigh }
+(singleton *)
+(audible *)
+(descr *)
+
+	Intense and heartfelt.
+
+#accompaniment
+(name *)	accompaniment
+(dict *)
+
+	stately chords chord notes rising falling soothing waves soft
+	arpeggiated music pianissimo long note harmonic cycle scale eighth
+	sixteenth single loud upbeat structure structures musical landscape
+
+(stately chords)	(link [stately chords]) { stately chords }
+(long chord notes)	(link [long chord notes]) { long chord notes }
+(loud note)		(link [loud note]) { loud note }
+(singleton *)
+(audible *)
+(descr *)
+
+	The accompaniment crucially underpins and frames the more prominent
+	themes and musical structures.
+
+(at $Bar there's *)
+	($Bar > 0)
+	($Bar < 74)
+	~(stuck in silence)
+
+#pizzicatos
+(name *)	pizzicatos
+(dict *)	pizzicato note notes subtle
+(pizzicato)	(link [pizzicato]) pizzicato
+(plural *)
+(audible *)
+(descr *)
+
+	Distinct and purposeful.
+
+(at $Bar there's *)
+	($Bar > 0) ($Bar < 25)
+
+#triplets
+(name *)	triplets
+(plural *)
+(audible *)
+(descr *)
+
+	Steady and impellent.
+
+(at $Bar there's *)
+	($Bar > 25) ($Bar < 44)
+
+#sextuplets
+(name *)	sextuplets
+(plural *)
+(audible *)
+(descr *)
+
+	Roaring with energy.
+
+#susnote
+(name *)	sustained notes
+(dict *)	long note held pedal point tone tremolo lines
+(plural *)
+(pedal point)	(link [pedal point]) { pedal point }
+(tremolo)	(link [tremolo]) tremolo
+(sustained note)
+		(link [sustained note]) { sustained note }
+(audible *)
+(descr *)
+
+	Long lines stretching across the musical landscape.
+
+(at $ there's *)
+	(force timpani tremolo)
+
+#rapidscale
+(name *)	rapid scale
+(dict *)	ascending scales series rapidly descending
+(rapid ascending scale)	(* {rapid, ascending scale})
+(audible *)
+(descr *)
+
+	Nimble and elegant.
+
+#flourishes
+(name *)	flourishes
+(dict *)	flourish wave-like wave like
+(plural *)
+(audible *)
+(descr *)
+
+	Nimble and elegant.
+
+#risingfigure
+(name *)	rising figure
+(dict *)	figures
+(audible *)
+(descr *)
+
+	Nimble and elegant.
+
+#wrongnotes
+(name *)	wrong notes
+(dict *)	half-notes sustained note
+(plural *)
+(singleton *)
+(audible *)
+(descr *)
+
+	Well, no performance is perfect.
+
+(add audible objects to scope)
+	(bar $Bar)
+	(exhaust) {
+		*(at $Bar there's $Obj)
+		~($Obj has parent #hall)
+		(now) ($Obj is #in #hall)
+	}
+
+(unlikely [examine (audible $Obj)])
+	(bar $Bar)
+	~(at $Bar there's $Obj)
+
+(unlikely [listen to ~(audible $)])
+
+(unlikely [listen to (audible $Obj)])
+	(bar $Bar)
+	~(at $Bar there's $Obj)
+
+(instead of [examine (audible $Obj)])
+	(try [listen to $Obj])
+
+(prevent [listen to (audible $Obj)])
+	(bar $Bar)
+	~(at $Bar there's $Obj)
+	You can't hear that at the moment.
+
+(perform [listen to (audible $Obj)])
+	(descr $Obj)
+
+(default action (audible $Obj) [listen to $Obj])
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Orchestra
+
+#orchestra
+(singleton *)
+(name *)		orchestra
+(dict *)
+	full ensemble tutti everybody everyone band
+	musicians rest instrumentalists members happy amateurs amateur players
+
+(* is #on #stage)
+
+(descr *)
+
+	The Bournebrook Rill Community Orchestra is a kaleidoscopic bunch of
+	happy amateurs. The musicians are seated in a large (#seating
+	{semi-circle}) around the (#stand).
+
+	(select)
+		(par)
+
+		When you moved to the neighbourhood, a complete stranger to
+		everyone, you wanted to find a way into the local music life. A
+		small sinfonietta happened to be looking for a new conductor,
+		and you jumped at the opportunity. The ensemble was in a pretty
+		sorry state back then, but with your experience and their
+		dedication, things have finally turned around. Your little
+		group is now attracting some of the best amateur
+		instrumentalists.
+
+		(par)
+
+		The best amateur instrumentalists of Bournebrook Rill, that is.
+	(or)
+	(stopping)
+
+(prevent [turn to *])
+	~(facing audience)
+	~(facing sideways)
+	You're already facing the orchestra.
+
+(perform [turn to *])
+	(face orchestra)
+
+#seating
+(plural *)
+(singleton *)
+(name *)	seating arrangement
+(heads *)	seating arrangement semi-circle slice slices
+(dict *)
+
+	four first second third fourth slice slices large semi-circle semi
+	circle layout plan seated arrangements
+
+(* is #partof #orchestra)
+(descr *)
+
+	The seating arrangement is a semi-circle, roughly made up of four
+	separate slices.
+
+	(if) (interpreter can embed *) (then)
+		(div @picture) (embed resource *)
+	(else)
+		(par)
+
+		\[ A (link resource 3) {diagram} is included in your (italic)
+		(story title) (roman) package. \]
+
+		(par)
+	(endif)
+
+	Starting at the far left, you've got the (#violin1) up close, headed by
+	the (#concertmaster). Behind them are the two (#harps), and at the back
+	you can see the (cymbalist) and the (link [timpani player]) {timpani
+	player}.
+
+	(par)
+
+	The second slice begins with the (#violin2). Behind them are the
+	(#flutes) and (#piccolo), then the (#clarinets) and (#bassclarinet),
+	and at the far back the (#horns).
+
+	(par)
+
+	In the third slice, you've got the (#viola) up front, then the
+	(#oboes), the (#enghorn), and the (#bassoons). Back against the wall
+	are the (#trumpets), (#trombones), (#basstrombone)
+	(if) ~(#basstrombone has parent $) (then)
+		\( no longer present \)
+	(endif)
+	, and (#tuba).
+
+	(par)
+
+	And to your right, in the fourth slice, the (#celli) are seated in
+	front of the (#bassi).
+
+(instead of [turn to *])
+	(try [turn to #orchestra])
+
+#woodwinds
+(name *)		woodwind section
+(dict *)		woodwinds reeds reed
+(heads *)		section
+(woodwinds)		(link [woodwinds]) woodwinds
+(* is #partof #orchestra)
+
+(descr *)
+
+			The woodwind section comprises two (#flutes) and a
+			(#piccolo), two (#oboes), an (#enghorn), two
+			(#clarinets), a (#bassclarinet), two (#bassoons), and
+			four (#horns).
+
+#brass
+(name *)		brass section
+(heads *)		section
+(brass)			(link [brass]) brass
+(* is #partof #orchestra)
+
+(descr *)
+
+			The brass section consists of two (#trumpets), two
+			(#trombones), a (#basstrombone)
+			(if) ~(#basstrombone has parent $) (then)
+				\( no longer present \)
+			(endif)
+			, and a (#tuba).
+
+#strings
+(name *)		string section
+(dict *)		strings
+(heads *)		section
+(strings)		(* {strings})
+(* is #partof #orchestra)
+
+(descr *)
+
+			The violins \( (#violin1 {first}) and (#violin2
+			{second}) \), (#viola), (#celli), and (#bassi) make up
+			the string section.
+
+#percussion
+(name *)		percussion section
+(heads *)		section
+(* is #partof #orchestra)
+
+(descr *)
+
+			You've got two percussionists: (link [rakesh]) Rakesh
+			and (link [steve]) Steve . Rakesh has installed himself
+			behind the timpani this time, and Steve plays the
+			cymbals.
+
+#harps
+(name *)		harps
+(dict *)		arpa
+(plural *)
+(section *)
+(* is #partof #orchestra)
+(slice * 1)
+
+(descr *)
+
+			This piece calls for two harps, but for practical
+			reasons it's usually performed with just one. Tonight,
+			you're very happy to be able to present the music the
+			way the composer intended.
+
+			(explain harps)
+
+(instead of [cue *])
+	(bar 0)
+	(try [cue #harp2])
+
+#flutes
+(name *)		flutes
+(plural *)
+(dict *)		traverse silver flautists flauti
+(section *)
+(* is #partof #woodwinds)
+(slice * 2)
+
+(descr *)
+
+			(link [pia]) Pia and (link [frank]) Frank play first
+			and second flute, respectively.
+
+#flute1
+(name *)		first flute
+(heads *)		flute
+(dict *)		pia flautist flauto
+(female *)
+(musician *)
+(* is #partof #flutes)
+
+(descr *)
+
+			Pia, first flute, is in her late twenties, has blond,
+			wavy, shoulder-length hair, and wears plenty of makeup.
+			She used to be married to (link [mika]) Mika , but left
+			him for (link [eve]) Eve .
+
+			(par)
+
+			You reminisce about the time when you did Salieri's
+			Concerto for Flute and Oboe with Pia and (link [sarah])
+			Sarah as soloists.
+
+#flute2
+(name *)		second flute
+(heads *)		flute
+(dict *)		frank flautist flauto
+(male *)
+(musician *)
+(* is #partof #flutes)
+
+(descr *)
+
+			Frank, second flute, is in his early thirties. He's got
+			short black hair, black horn-rimmed glasses, and a
+			slight beard
+
+			(select)
+				.
+
+				Last year, he won the prestigious Rill Dash,
+				much to the chagrin of (link [mika]) Mika .
+
+			(or)
+
+				, and he likes to play badminton with (link
+				[rakesh]) Rakesh .
+
+			(or)
+				.
+
+				He owns the gym where (link [jennifer])
+				Jennifer works.
+
+			(then at random)
+
+
+#piccolo
+(name *)		piccolo
+(dict *)		flute jeanette piccola flautist
+(heads *)		flute
+(female *)
+(musician *)
+(* is #partof #woodwinds)
+(slice * 2)
+
+(descr *)
+
+			Jeanette, your reliable piccolo player, is in her
+			forties, tall, quite thin, and has her auburn hair tied
+			back.
+
+			(select)
+
+				She used to work as a waiter at Chez (link
+				[anna]) Anna . But when she got into some
+				money, she decided to buy the whole
+				establishment, which has since turned
+				profitable.
+
+			(or)
+
+				As the owner of Chez (link [anna]) Anna , she
+				is the boss of (link [steve]) Steve .
+
+			(or)
+
+				She and (link [rakesh]) Rakesh often walk their
+				dogs together in the Botanic Garden.
+
+			(then purely at random)
+
+#clarinets
+(name *)		clarinets
+(plural *)
+(dict *)		clarinet clarinette clarinettes clarinetti
+(section *)
+(* is #partof #woodwinds)
+(slice * 2)
+
+(descr *)
+
+			(link [agnes]) Agnes and (link [mika]) Mika play first
+			and second clarinet, respectively, and (link [kevin])
+			Kevin plays the bass clarinet.
+
+#clarinet1
+(name *)		first clarinet
+(dict *)		agnes clarinette clarinetto
+(heads *)		clarinet clarinette clarinetto
+(female *)
+(musician *)
+(* is #partof #clarinets)
+
+(descr *)
+
+			Agnes, first clarinet, has a habit of contorting her
+			body like a dancing snake whenever she plays, which can
+			be a bit of a distraction, especially when it doesn't
+			make sense musically. But when she tries to sit still,
+			her phrasing goes all over the place instead, and so
+			you'd rather have the writhing.
+
+			(par)
+
+			She is the younger sister of (link [kevin]) Kevin .
+
+#clarinet2
+(name *)		second clarinet
+(dict *)		mika clarinette clarinetto
+(heads *)		clarinet clarinette clarinetto
+(male *)
+(musician *)
+(* is #partof #clarinets)
+
+(descr *)
+
+			Mika, second clarinet, is a blond 35-year-old sales
+			clerk at (link [harold]) Harold (no space) 's Garden
+			Supplies, who rides a unicycle to work. As good looking
+			as ever. Divorced.
+
+			(par)
+
+			An avid runner, Mika was the champion of the annual
+			Rill Dash for four years running, until (link [frank])
+			Frank robbed him of the title last year.
+
+#bassclarinet
+(name *)		bass clarinet
+(dict *)		kevin clarinette basso clarinetto
+(heads *)		clarinet clarinette
+(male *)
+(musician *)
+(* is #partof #woodwinds)
+(slice * 2)
+
+(descr *)
+
+			The bass clarinet, Kevin, is a large, muscular fellow
+			with a shaved head, ring in one of his ears, tattooed
+			knuckles, and a very kind and humble disposition. He is
+			the older brother of (link [agnes]) Agnes .
+
+			(bar $N)
+			(if) ($N > 2) ($N < 17) (then)
+				(select)
+					(par)
+
+					Noticing your glance, he suddenly freezes. Then
+					he scrambles to bring his instrument to his
+					mouth, and blows a low G. He keeps it up for
+					maybe half a bar before withdrawing into
+					silence. His cheeks have turned crimson.
+
+					(now) (inhibit clbas-pre-17)
+					(bad cue)
+				(or)
+				(stopping)
+			(endif)
+
+#oboes
+(name *)		oboes
+(plural *)
+(dict *)		oboe oboi
+(section *)
+(* is #partof #woodwinds)
+(slice * 3)
+
+(descr *)
+
+			(link [sarah]) Sarah and (link [stanislav]) Stanislav
+			play first and second oboe, respectively.
+
+#oboe1
+(name *)		first oboe
+(dict *)		sarah
+(heads *)		oboe
+(female *)
+(musician *)
+(* is #partof #oboes)
+
+(descr *)
+	(if) (did trainwreck) (then)
+
+		Sarah looks at you in disbelief, tears welling up in her eyes.
+
+	(else)
+
+		Sarah, first oboe, is hardly a day over twenty. Tight braids
+		arranged in a bun; thin gold-rimmed glasses. She likes to visit
+		Chez (link [anna]) Anna , especially on days when (link
+		[steve]) Steve is working, and you have fond memories of the
+		time when you did Salieri's Concerto for Flute and Oboe with
+		her and (link [pia]) Pia as soloists.
+
+		(par)
+
+		She's usually grinning from ear to ear, but right now she looks
+		very focused.
+
+	(endif)
+
+#oboe2
+(name *)		second oboe
+(dict *)		stanislav stan
+(heads *)		oboe
+(male *)
+(musician *)
+(* is #partof #oboes)
+
+(descr *)
+
+			Stanislav, second oboe, is a chatty, balding fellow
+			with a keen mind and an excellent embouchure. He
+			somehow makes a living selling used reeds.
+
+#bassoons
+(name *)		bassoons
+(plural *)
+(dict *)		bassoon fagotti
+(section *)
+(* is #partof #woodwinds)
+(slice * 3)
+
+(descr *)
+
+			(link [david]) David and (link [liu yang]) { Liu Yang }
+			play first and second bassoon, respectively.
+
+#bassoon1
+(name *)		first bassoon
+(dict *)		david
+(heads *)		bassoon
+(male *)
+(musician *)
+(* is #partof #bassoons)
+
+(descr *)
+
+			David, first bassoon, is a short, aubergine-shaped
+			fellow with a black mop of hair and a degree in
+			cartography.
+
+			(par)
+
+			He usually keeps to himself, although he seems to get
+			on well with (link [thomas]) Thomas . And ever since
+			October he's been having animated discussions with
+			(link [ed]) Ed about some kind of computerized
+			adventure stories that they both like.
+
+#bassoon2
+(name *)		second bassoon
+(dict *)		liu yang
+(heads *)		bassoon
+(female *)
+(musician *)
+(* is #partof #bassoons)
+
+(descr *)
+
+			Liu Yang, second bassoon, is a short, energetic lady in
+			her thirties.
+
+			(select)
+
+				She used to be in a book club with (link
+				[peter]) Peter and (link [joy]) Joy , with
+				regular meetings at Chez (link [anna]) Anna.
+
+			(or)
+				She is the mother of (link [melody]) Melody .
+			(then purely at random)
+
+			(select)
+				(par)
+
+				During last year's Halloween concert, she
+				demonstrated the Glove Trick: You put a rubber
+				glove over the top of the bassoon, and push it
+				all the way inside. Then, you play a creepy
+				melody that goes all the way down to the low
+				B-flat. At that point, all holes are covered,
+				and a rubber hand will slowly rise out of the
+				instrument.
+
+			(or)
+			(stopping)
+
+#enghorn
+(name *)		English horn
+(an *)
+(dict *)		mark hackett cor anglais corno inglese
+(heads *)		horn
+(male *)
+(musician *)
+(* is #partof #woodwinds)
+(slice * 3)
+
+(descr *)
+
+			Mark used to play the oboe until he unexpectedly
+			inherited a cor anglais from a distant relative in
+			London.
+
+#horns
+(name *)		French horns
+(horns)			(* {horns})
+(dict *)		horn section corni
+(plural *)
+(section *)
+(* is #partof #woodwinds)
+(slice * 2)
+
+(descr *)
+			(if) (horns messed up) (then)
+				The French horn section consists
+			(else)
+
+				You are (select) immensely (or) (stopping)
+				grateful for your solid French horn section,
+				consisting
+
+			(endif)
+
+			of (link [conrad]) Conrad \(first\), (link
+			[jennifer]) Jennifer \(second\), (link [eve]) Eve
+			\(third\), and (link [thomas]) Thomas \(fourth\).
+
+#horn1
+(name *)		first French horn
+(dict *)		conrad
+(heads *)		horn
+(male *)
+(musician *)
+(* is #partof #horns)
+
+(descr *)
+
+			Conrad, French horn, is in his late fifties. Grey, wavy
+			hair surrounds a prominent bald spot, and matches the
+			silver-rimmed glasses below.
+
+			(select)
+
+				He works as a teacher at Bournebrook High,
+				where (link [ed]) Ed is one of his students.
+
+			(or)
+
+				He is the father of (link [anthony]) Anthony .
+
+			(cycling)
+
+#horn2
+(name *)		second French horn
+(dict *)		jennifer jenni jenny jen
+(heads *)		horn
+(female *)
+(musician *)
+(* is #partof #horns)
+
+(descr *)
+
+			Jennifer, French horn, has curly orange-red hair, and
+			likes to wear pink ribbons just for the heck of it. She
+			is (link [michael]) Michael (no space) 's cousin, and
+			works as a personal trainer at (link [frank]) Frank (no
+			space) 's gym.
+
+#horn3
+(name *)		third French horn
+(dict *)		eve twin
+(plural dict *)		twins
+(heads *)		horn
+(female *)
+(musician *)
+(* is #partof #horns)
+
+(descr *)
+
+			Eve is the identical twin of (link [anna]) Anna and
+			married to (link [pia]) Pia . She is also the
+			headmaster of Bournebrook High, where (link [conrad])
+			Conrad works.
+
+#horn4
+(name *)		fourth French horn
+(dict *)		thomas tomas tom
+(heads *)		horn
+(male *)
+(musician *)
+(* is #partof #horns)
+
+(descr *)
+
+			Thomas, French horn, is doing a PhD in mathematics, and
+			totally looks the part. But when he opens his mouth,
+			his deep baritone evinces a background in stage poetry
+			and barbershop singing. He likes to hang out at Chez
+			(link [anna]) Anna , studying or chatting with his
+			friend (link [david]) David , and he recently moved in
+			with (link [melody]) Melody .
+
+#trumpets
+(name *)		trumpets
+(plural *)
+(dict *)		trumpet trombe
+(section *)
+(* is #partof #brass)
+(slice * 3)
+
+(descr *)
+
+			(link [michael]) Michael and (link [anna]) Anna play
+			first and second trumpet, respectively.
+
+#trumpet1
+(name *)		first trumpet
+(dict *)		michael mike
+(heads *)		trumpet
+(male *)
+(musician *)
+(* is #partof #trumpets)
+
+(descr *)
+
+			Michael, first trumpet, likes to wear a suit all day,
+			every day. Of course, everybody is in full dress
+			tonight, but Michael goes the extra mile with golden
+			cufflinks and a pocket watch that he keeps checking in
+			a meticulously casual manner.
+			(select)
+
+				(link [jennifer]) Jennifer says he grew up on a
+				pig farm.
+
+			(or)
+
+				He is engaged to be married to (link [lydia])
+				Lydia .
+
+			(then purely at random)
+
+#trumpet2
+(name *)		second trumpet
+(dict *)		anna twin
+(plural dict *)		twins
+(heads *)		trumpet
+(female *)
+(musician *)
+(* is #partof #trumpets)
+
+(descr *)
+
+			Anna is the identical twin of (link [eve]) Eve in the
+			(#horns), and the sister-in-law of (link [pia]) Pia .
+
+			Charming and outgoing but utterly restless, Anna has
+			been doing odd jobs for as long as you've known
+			her—everything from cichlid breeding to high rise
+			window cleaning. She tried to run a café for a while,
+			but it was difficult to make ends meet, and she
+			eventually sold it to (link [jeanette]) Jeanette , the
+			piccolo player.
+
+#trombones
+(name *)		trombones
+(plural *)
+(dict *)		trombone trombonists tromboni tenori
+(section *)
+(* is #partof #brass)
+(slice * 3)
+
+(descr *)
+
+			(link [jacob]) Jacob and (link [ed]) Ed play first and
+			second trombone, respectively, and (link [peter]) Peter
+			is on the bass trombone.
+
+#trombone1
+(name *)		first trombone
+(dict *)		jacob trombonist
+(heads *)		trombone
+(male *)
+(musician *)
+(* is #partof #trombones)
+
+(descr *)
+
+			Jacob, first trombone, cannot use his legs because of
+			life-long polio. He moves around with surprising
+			agility using a pair of crutches, and works as an
+			elementary school teacher together with (link [agnes])
+			Agnes .
+
+#trombone2
+(name *)		second trombone
+(dict *)		ed edward eddie trombonist
+(heads *)		trombone
+(male *)
+(musician *)
+(* is #partof #trombones)
+
+(descr *)
+
+			Ed, second trombone, is still in high school. He hasn't
+			been an orchestra musician for more than a few years,
+			but he makes steady progress. (link [jacob]) Jacob
+			keeps him under his wing.
+
+			(par)
+
+			In the last couple of weeks, Ed has been approaching
+			you with all sorts of questions about conducting. But
+			he's not planning to follow in your footsteps: It turns
+			out that he is playing some kind of music-related
+			computer game with (link [david]) David .
+
+#basstrombone
+(name *)		bass trombone
+(dict *)		peter trombonist basso
+(heads *)		trombone
+(male *)
+(musician *)
+(* is #partof #brass)
+(slice * 3)
+
+(descr *)
+
+			Peter, bass trombone, has a respectable lung capacity,
+			and the frame that goes with it. Reliable, cordial, and
+			good-natured. One of his eyes is made of porcelain.
+
+			(par)
+
+			He works at (link [harold]) Harold (no space) 's Garden
+			Supplies, and used to be in a book club with (link
+			[joy]) Joy and (link [liu yang]) {Liu Yang}.
+
+#tuba
+(name *)		tuba
+(dict *)		bass anthony tubaist
+(heads *)		tuba
+(male *)
+(musician *)
+(* is #partof #brass)
+(slice * 3)
+
+(descr *)
+			(if) (tuba is sleeping) (then)
+				(select)
+					Oh dear. Anthony seems to be
+				(or)
+					Anthony is
+				(stopping)
+				sound asleep.
+				(par)
+			(endif)
+
+			Anthony, tuba player and son of (link [conrad]) Conrad
+			, has his brown hair tied in a bun. He actually left
+			Bournebrook Rill to study engineering, but still comes
+			to rehearsals every week. You've got a hunch that he
+			sticks around because of (link [melody]) Melody .
+
+			(par)
+
+			(bar $Bar)
+			(if) ($Bar < 4) (then)
+			(elseif) ($Bar < 22) (then)
+				Anthony is looking
+				(if) ($Bar < 12) (then)
+					(select)
+						rather
+					(or)
+						quite
+					(purely at random)
+				(else)
+					(select)
+						very
+					(or)
+						dangerously
+					(or)
+						precariously
+					(purely at random)
+				(endif)
+				(select) tired. (or) weary. (purely at random)
+				(now) (tuba known to be sleepy)
+			(elseif) ($Bar < 25) (then)
+
+				Anthony is enjoying the beautiful music with
+				his eyes closed.
+
+			(endif)
+
+(violins)		(link [violins]) violins
+
+#violin1
+(name *)		first violins
+(plural *)
+(dict *)		violin fiddle violinist violinists fiddles violini
+(heads *)		violins
+(section *)
+(* is #partof #strings)
+(slice * 1)
+
+(descr *)
+
+			The twelve first violins are headed by the
+			concertmaster, (link [isabelle]) Isabelle .
+
+#concertmaster
+(name *)		concertmaster
+
+(dict *)		concert master leader lead violin violinist isabelle
+			isabella belle bella
+
+(female *)
+(musician *)
+(* is #partof #violin1)
+
+(descr *)
+
+			Isabelle, the concertmaster, is well liked in the
+			orchestra, and a skilled section leader considering her
+			young age. She's sporting a crew cut, dark-rimmed
+			glasses, piercings, and a light blue scarf.
+
+#noam
+(name *)		Noam
+(proper *)
+(male *)
+(musician *)
+(* is #partof #violin1)
+
+(descr *)
+
+			Noam, first violin, is a well-mannered man of short
+			stature, with a background in the navy and a weakness
+			for Iberian folk dance. He's got white, bushy hair and
+			a moustache, and his pointy black shoes are glistening
+			in the stage light.
+
+#violin2
+(name *)		second violins
+(plural *)
+(dict *)		violin fiddle violinist violinists fiddles violini
+(heads *)		violins
+(section *)
+(* is #partof #strings)
+(slice * 2)
+
+(descr *)
+
+			Eleven second violins usually grace the orchestra, but
+			(#linda) and (#jim) had to stay home tonight. Some
+			problem with the babysitter.
+
+#linda
+(name *)		Linda
+(dict *)		mackaye
+(proper *)
+(female *)
+(not here *)
+(* is #in #hall)
+(descr *)		(when * is not here)
+
+#jim
+(name *)		Jim
+(dict *)		mackaye
+(proper *)
+(male *)
+(not here *)
+(* is #in #hall)
+(descr *)		(when * is not here)
+
+(when $Obj is not here)
+			($Obj is one of [#jim #linda])
+			(name $Obj), second violin, couldn't be here tonight.
+
+#zuleika
+(name *)		Zuleika
+(proper *)
+(female *)
+(musician *)
+(* is #partof #violin2)
+
+(descr *)
+
+			Zuleika, second violin, is in her fifties, short and
+			skinny but somehow imposing. Her hair is black with
+			occasional streaks of grey. She wears bifocals and owns
+			a chain of ice cream shops.
+
+#charlotte
+(name *)		Charlotte
+(proper *)
+(female *)
+(musician *)
+(* is #partof #violin2)
+
+(descr *)
+
+			Charlotte, second violin, sometimes brings her
+			mischievous but absolutely adorable twin girls to
+			rehearsal. They have the same intense green eyes and
+			fiery red hair as their mother, who says it's been
+			running in the family ever since her great-grandmother
+			immigrated from northwestern Italy.
+
+#viola
+(name *)		violas
+(dict *)		viola section violist violists viole
+(section *)
+(* is #partof #strings)
+(slice * 3)
+
+(descr *)
+
+			There are eight violists altogether.
+
+#hypatia
+(name *)		Hypatia
+(proper *)
+(female *)
+(musician *)
+(* is #partof #viola)
+
+(descr *)
+
+			Hypatia, viola, moved to Bournebrook Rill after
+			retiring from her lifelong duty as librarian in some
+			remote mill town. A plain, black evening dress
+			accentuates her pallid complexion, and she watches you
+			keenly with large, unblinking eyes.
+
+#terrence
+(name *)		Terrence
+(dict *)		terence terrance terance terry
+(proper *)
+(male *)
+(musician *)
+(* is #partof #viola)
+
+(descr *)
+
+			Terrence, viola, is a guest musician from Toronto,
+			where he actually works as a commodities trader. He
+			went on some kind of sabbatical leave, to travel far
+			and wide and see the world, and took his viola with
+			him. Says he'll be in Bournebrook Rill for just a few
+			more days, until he can offload that last pallet of
+			mackerel.
+
+#celli
+(name *)		celli
+(plural *)
+
+(dict *)		cello violoncell cellist cellists section cellos
+			chellos chello chelli
+
+(section *)
+(* is #partof #strings)
+(slice * 4)
+
+(descr *)
+
+			All nine members of the cello section are present,
+			including (link [harold]) Harold , the section leader.
+
+#harold
+(name *)		Harold
+(proper *)
+(male *)
+(musician *)
+(* is #partof #celli)
+
+(descr *)
+
+			Harold, leader of the cello section, is a jovial man in
+			his early sixties. He's got a large, friendly-looking
+			moustache and sideburns, and what appears to be a
+			phalaenopsis pinned to his lapel.
+			(select)
+
+				Right behind him is his niece, (link
+				[lydia]) Lydia .
+
+			(or)
+
+				He is also the owner of Harold's Garden
+				Supplies, where (link [mika]) Mika and (link
+				[peter]) Peter work.
+
+			(then purely at random)
+
+#lydia
+(name *)		Lydia
+(proper *)
+(female *)
+(musician *)
+(* is #partof #celli)
+
+(descr *)
+
+			Lydia, cello, is in her early twenties, and studies to
+			become a nurse. Her jet black hair keeps falling down
+			over one of her eyes, in a manner that you would find
+			immensely irritating if you were her. She is engaged to
+			be married to (link [michael]) Michael .
+
+#maartje
+(name *)		Maartje
+(dict *)		martje
+(proper *)
+(female *)
+(musician *)
+(* is #partof #celli)
+
+(descr *)
+
+			Young Maartje doesn't speak, so you don't know much
+			about her, but the cello has given her a strong and
+			beautiful voice. A couple of years ago, after
+			rehearsal, you asked her if she'd like to perform a
+			solo piece with the orchestra. She thought for a
+			moment, and then responded with a few tentative bars of
+			Kol Nidrei. That was the starting point of one of your
+			most memorable projects with the orchestra, and her
+			tranquil, sincere interpretation at the concert was
+			nothing short of stunning.
+
+#bassi
+(name *)		bassi
+(plural *)
+(dict *)		double bass contrabass basses
+(heads *)		bassi basses contrabass
+(section *)
+(* is #partof #strings)
+(slice * 4)
+
+(descr *)
+
+			You've got two double basses in the orchestra: (#fred)
+			and (#melody). Not as many as you'd wish, of course,
+			but they're hard to find.
+
+#fred
+(name *)		Fred
+(dict *)		freddy freddie strickland
+(proper *)
+(male *)
+(musician *)
+(* is #partof #bassi)
+
+(descr *)
+
+			Fred recently turned sixty, and has been a cornerstone
+			of the orchestra since long before you entered the
+			picture. It feels like he'll remain behind that double
+			bass for another sixty years to come. But you've
+			started to see signs of forgetfulness, which is
+			worrying.
+
+#melody
+(name *)		Melody
+(proper *)
+(female *)
+(musician *)
+(* is #partof #bassi)
+
+(descr *)
+
+			Melody is (link [liu yang]) {Liu Yang} (no space) 's
+			daughter, and you still think of her as a teenage girl,
+			although she's well into her twenties by now, and in a
+			steady relationship with (link [thomas]) Thomas .
+
+			(par)
+
+			She's also an experienced contrabass player... by the
+			name of Melody. You pride yourself on never cracking
+			jokes about people's names, but this has been a
+			challenge.
+
+#percussionist
+(name *)		cymbalist
+
+(dict *)		cymbal cymbals piatto piatti percussion steve steven
+			percussionist
+
+(heads *)		player
+(male *)
+(musician *)
+(* is #partof #percussion)
+(slice * 1)
+(percussionist)		(link [percussionist]) percussionist
+(cymbalist)		(link [cymbalist]) cymbalist
+
+(descr *)
+
+			Steve is a skinny young man with blond hair and
+			freckles, who
+
+			(select)
+
+				works part-time as a waiter at Chez (link
+				[anna]) Anna .
+
+			(or)
+
+				is a regular at (link [frank]) Frank (no space)
+				's gym.
+
+			(at random)
+
+			A bit gawky, but conscientious, and a very
+			versatile percussionist. Tonight he's been allotted the
+			concert cymbals.
+
+			(par)
+
+			(bar $Bar)
+			He is currently
+			(if) (percussionist standing) (then)
+				standing up
+			(else)
+				sitting down on a chair
+			(endif)
+			(if)
+				~(did cue perc-54)
+				($Bar > 26)
+				~($Bar = 53)
+			(then)
+				, looking rather confused
+			(endif)
+			.
+
+#timpani
+(name *)		timpanist
+(dict *)		timpani timpanist kettle drum drums rakesh
+(timpani)		(link [timpani]) timpani
+(male *)
+(musician *)
+(* is #partof #percussion)
+(slice * 1)
+(timpanist)		(link [timpanist]) timpanist
+
+(descr *)
+
+			Rakesh, timpani, is in his late thirties, and sports a
+			shiny black pompadour and a trimmed beard. He makes his
+			own mallets, and has maybe a dozen pairs of various
+			sizes lined up on a table next to him.
+
+			(par)
+
+			(select)
+
+				Every day, Rakesh takes his Labrador for a walk
+				in the Botanic Garden, where they predictably
+				run into (link [jeanette]) Jeanette and her
+				Yorkshire Terrier.
+
+			(or)
+
+				He also likes to play badminton with (link
+				[frank]) Frank .
+
+			(then purely at random)
+
+#harp1
+(name *)		first harp
+(dict *)		joy patterson arpa
+(heads *)		harp
+(female *)
+(musician *)
+(* is #partof #harps)
+
+(descr *)
+
+			Joy Patterson, first harp, is a portly woman in her
+			fifties, with straight, black hair down to her
+			shoulders. She used to be in a book club with (link
+			[peter]) Peter and (link [liu yang]) {Liu Yang} , with
+			regular meetings at Chez (link [anna]) Anna .
+
+			(explain harps)
+
+#harp2
+(name *)		second harp
+(dict *)		rebecca arpa
+(heads *)		harp
+(female *)
+(musician *)
+(* is #partof #harps)
+
+(descr *)
+
+			Rebecca Ward, second harp, is in her mid-twenties. She
+			has her brown hair tied in a ponytail.
+
+			(explain harps)
+
+			(if) (bar 0) (then)
+				(par)
+				Rebecca acknowledges your cue, and plays
+				(start the piece)
+			(endif)
+
+(dict (musician $))		musician player
+(plural dict (section $))	sections
+
+(singleton (musician $))
+(singleton (section $))
+
+(explain harps)
+	(select)
+		(par)
+
+		The town council liked the idea of hosting a charity event for
+		the Botanic Garden so much that, in addition to the venue, they
+		insisted on throwing in a bit of cash. This you promptly spent
+		on hiring two professional harpists for the evening: (#harp1
+		{Joy Patterson}), who is teaching at the conservatory, and
+		(#harp2 {Rebecca Ward}), one of her top students at the moment.
+
+		(par)
+	(or)
+	(stopping)
+
+(prevent [take/push/pull $Obj])
+	($Obj has ancestor #orchestra)
+	(no more seating $Obj)
+
+(perform [talk to $])
+	You open your mouth as if to speak, but then you think better of it.
+	(tick) (stop)
+
+(instead of [tell $Obj to | $])
+	(try [talk to $Obj])
+
+(understand [cry] as [shout])
+
+(prevent [shout])
+
+	You cry out loud. Then you immediately regret it, and try to cover it
+	up with a cough.
+
+	(if) ~(stuck in silence) (then)
+		(par)
+		People just look at you.
+	(endif) %% when stuck in silence, we get "everybody watches you" next
+
+(prevent [sing])
+	(bar $Bar)
+	You absent-mindedly hum
+	(if) ($Bar > 0) ($Bar < 74) (then)
+		along with the music,
+	(else)
+		a few notes, and
+	(endif)
+	then snap your mouth shut, hoping that nobody noticed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Other objects
+
+#maestro
+(current player *)
+(* is #in #hall)
+(descr *)
+	(if) (current room #hall) (then)
+		(if) (#baton has parent #maestro) (then)
+			You're holding a (#baton {conductor's baton}).
+		(endif)
+
+		You're dressed for the occasion in
+		(if) (#suit has parent #maestro) (then)
+
+			a (#suit) with a (#shirt), a red satin (#tie), and a
+			pair of shiny black (#shoes).
+
+		(else)
+
+			an elegant black (#dress), kitten-heel (#heels), and
+			silver (#earrings).
+
+		(endif)
+
+	(else)
+		You're still in your (#pyjamas).
+		(notice #pyjamas)
+	(endif)
+
+(instead of [inventory])
+	(try [examine *])
+
+#suit
+(wearable *)
+(name *)		black suit
+(dict *)		jacket trousers pants
+(descr *)		Your black suit is impeccable.
+
+#shoes
+(wearable *)
+(name *)		shoes
+(dict *)		shiny black shoe
+(pair *)
+(* is #partof #suit)
+(descr *)		Your shoes glimmer in the spotlight.
+
+#shirt
+(wearable *)
+(name *)		white shirt
+(* is #partof #suit)
+(descr *)		Your white shirt is ironed and starched.
+
+#tie
+(wearable *)
+(name *)		necktie
+(dict *)		red satin tie windsor half-windsor knot
+(* is #partof #suit)
+(descr *)		It's your favourite necktie, bold and red, tied in a half-Windsor.
+
+#dress
+(wearable *)
+(name *)		dress
+(dict *)		black
+(descr *)		Your black dress is elegant and tasteful.
+
+#heels
+(wearable *)
+(name *)		shoes
+(dict *)		shoe kitten heel black kitten-heel
+(pair *)
+(* is #partof #dress)
+(descr *)		Your black kitten-heel shoes are stylish and practical.
+
+#earrings
+(wearable *)
+(your *)
+(name *)		earrings
+(dict *)		silver earring ear ring rings ear-ring ear-rings
+(pair *)
+(* is #partof #dress)
+(descr *)		They're your favourite earrings. Little drops of silver, gleaming in the spotlight.
+
+(prevent [remove (wearable $)])
+			This is hardly the time.
+
+#bodyparts
+(your *)
+(name *)		hand
+(dict *)		hands left right arm arms body
+(* is #partof #maestro)
+(descr *)
+	(no conscious movement)
+
+(instead of [examine *])
+	~(current room #hall)
+	(try [examine #maestro])
+
+(understand [lower | $Words] as [lower $Obj])
+	*(understand $Words as non-all object $Obj)
+
+(prevent [move/turn/wave/attack/push/pull/take/lower *])
+	(no conscious movement)
+
+(prevent [dance/jump/wave])
+	~(#applause has parent $)
+	(no conscious movement)
+
+(prevent [lower $Obj])
+	(when $Obj isn't directly held)
+
+(perform [lower #baton])
+	(try [drop #baton])
+
+(perform [lower $Obj])
+	You don't know how to lower (the $Obj).
+
+(instead of [look #down])
+	*($Obj is one of [#shoes #heels])
+	($Obj has ancestor #maestro)
+	(try [examine $Obj])
+
+(understand [avert])
+(understand [avert eyes] as [avert])
+(understand [look away] as [avert])
+(understand [examine nothing] as [avert])
+(understand [nothing] as [avert])
+
+(perform [avert])
+	You look at nothing in particular.
+	(if) (current room #hall) (then)
+		(now) (current gaze #hall)
+		(now) ~(will follow gaze $)
+	(endif)
+
+(understand [lift/raise | $Words] as [wave $Obj])
+	*(understand $Words as single object $Obj)
+
+(understand [speed up] as [wave])
+(understand [slow down] as [wave])
+(understand [beat/go faster/slower] as [wave])
+(understand [change/set tempo/speed] as [wave])
+(understand [conduct] as [wave])
+(understand [conduct orchestra] as [wave])
+(understand [stomp] as [dance])
+
+(no conscious movement)
+	(stuck in silence)
+	You're frozen in panic, trying to remember whom to cue at this critical
+	moment.
+
+(no conscious movement)
+	(select)
+
+		In a sense, your body is your instrument. Every gesture, every
+		little shift in weight, must happen exactly as during
+		rehearsals, and you've honed your ability to do this well
+		without thinking.
+
+		(par)
+
+		At a conscious level, your primary job is to listen, observe,
+		and communicate.
+
+	(or)
+
+		Through the years, you've learned not to focus on your body
+		movements during a performance.
+
+	(stopping)
+
+(understand [observe] as [look])
+(understand [where are we] as [look])
+
+#hall
+(name *)		concert hall
+(dict *)		auditorium
+(singleton *)
+(room *)
+(look *)
+
+	(link [myself]) You are standing at the focal point of the (#stage
+	{grand stage}) of the
+
+	(select)
+		Bournebrook Rill Concert Hall.
+		(par)
+		(descr *)
+	(or)
+		(* {Bournebrook Rill Concert Hall}).
+	(stopping)
+
+	(par)
+	(if) ~(facing audience) ~(facing sideways) (then)
+		(describe score)
+		Beyond is the (#orchestra).
+		(par)
+	(endif)
+
+(descr *)
+	%% Normally, [examine #hall] would invoke (look #hall) since it's the
+	%% visibility ceiling. But in this game, we override the default
+	%% behaviour of (perform [examine $]).
+
+	This spacious auditorium was built in the seventies, to endorse and
+	promote local drama productions and musical performances.
+
+	(descr #interior)
+
+(describe score)
+
+	The (#score {printed score}) lies
+	(if) (#score is closed) (then) unopened (endif)
+	in front of you, on the (#stand)
+	(if) (#baton has parent #stand) (then)
+		, next to your (#baton)
+	(endif)
+	.
+
+(from #hall go #out to #south)
+
+(narrate failing to leave #hall $)
+	This is not a good time to leave.
+
+#interior
+(name *)		interior
+(singleton *)
+(* is #in #hall)
+
+(dict *)		pine wood concrete ceiling brown felt panel panels
+			acoustics
+
+(descr *)
+
+	The interior is pine wood and concrete, and the ceiling is covered in
+	brown felt panels mounted at odd angles to improve the acoustics.
+	No windows, of course.
+
+#light
+(plural *)
+(name *)		lights
+(* is #in #hall)
+
+(dict *)		light lighting spotlight spot spots rig flood
+			floodlight floodlights
+
+(descr *)
+	(if) (audience is lit) (then)
+		All lights are on in the hall.
+	(else)
+		Floodlights bathe the (#stage) in heat.
+	(endif)
+
+#stage
+(name *)		stage
+(dict *)		main floor
+(* is #in #hall)
+(fixed in place *)
+
+(descr *)
+	(first face orchestra)
+
+	The main stage of the concert hall is the perfect size for your
+	orchestra. Consequently, accommodating the two visiting harps wasn't
+	trivial. But you're happy with the way it turned out.
+
+	(par)
+
+	On the main stage is your (#stand {stand}) and the (#orchestra).
+
+#stand
+(name *)		conductor's stand
+(singleton *)
+(supporter *)
+(* is #on #stage)
+(descr *)
+
+	On the conductor's stand you can see
+	(if) (#score is closed) (then) the unopened (else) the (endif)
+	(#score {printed score})
+	(if) (#baton has parent *) (then)
+		and your (#baton)
+	(endif)
+	.
+
+(unlikely [stand])
+
+#baton
+(name *)		baton
+(item *)
+(* is #on #stand)
+
+(dict *)		featureless mahogany rod conductor's my stick waving
+			white
+
+(descr *)
+
+	Conductors' batons come in all shapes and sizes. Yours is a featureless
+	mahogany rod.
+
+(appearance * #on #stand)
+
+(perform [drop *])
+	(if) (did trainwreck) (or) (bar 74) (or) (bar 75) (then)
+		(first face orchestra)
+		You (if) (did trainwreck) (then) slowly (endif) put the (#baton)
+		down on the stand.
+		(now) (* is #on #stand)
+	(else)
+		The show must go on.
+		(tick) (stop)
+	(endif)
+
+(perform [put * #on #stand])
+	(try [drop *])
+
+(perform [wave/push * | $])
+	(* has parent #maestro)
+	(if) (bar 0) (then)
+
+		If the (#harp2) is startled by your unannounced baton movement,
+		she doesn't show it. But you end up beating a full bar in
+		silence before she plays the arpeggiated chord that leads up to
+		the first bar of the piece.
+
+		(now) (got bearings)
+		(bad cue)
+		(enter bar 1)
+	(else)
+		(no conscious movement)
+		(tick)
+	(endif)
+	(stop)
+
+(perform [take *])
+	(* has parent #stand)
+	(first face orchestra)
+	You pick up the baton with your right hand.
+	(now) (* is #heldby #maestro)
+
+#details
+(name *)	inconsequential detail
+(an *)
+(the *)		an (name *)
+(* is #in #hall)
+(* is hidden)	%% prevent this from showing up in disambiguation questions
+
+(dict *)
+
+	glasses horn-rimmed dark-rimmed gold-rimmed silver-rimmed jet black
+	hair crew cut scarf short beard piercing piercings light blue pointy
+	white bushy crutch crutches arms legs eyes head ring knuckles green eye
+	unblinking pallid complexion plain evening dress cufflink cufflinks
+	cuff link links pocket watch clock blond wavy makeup make-up slight
+	auburn brown bun tears braids mop grey gray bald spot orange red
+	orange-red curly pink ribbon ribbons porcelain moustache bifocals
+	intense fiery sideburns phalaenopsis orchid mallet mallets straight
+	shoulder shoulders pony tail ponytail details podium
+
+(unlikely $Action)
+	(* is one of $Action)
+
+(prevent $Action)
+	(* is one of $Action)
+
+	You've always had a keen sense for detail, and it takes some willpower
+	to let go of this particular one and focus on the matter at hand.
+
+	(now) (* is hidden)
+
+#audience
+(name *)		audience
+(singleton *)
+(dict *)
+
+	community people listeners listener crowd gallery public darkness dark
+	faces annoying member local upper crust press politicians coterie
+	friends
+
+(* is #in #hall)
+(out of reach *)
+
+(audience is lit)
+(facing audience)
+
+(descr *)
+	(face audience)
+
+	(if) (did trainwreck) (then)
+		(select)
+			(par)
+
+			They're not to blame, of course. How were they to know
+			that the piece wasn't over?
+
+			(par)
+
+			You muster a benevolent smile.
+		(or)
+			The audience is clapping wildly.
+		(stopping)
+	(else)
+		(if) (#applause has parent #hall) ~(bar 0) (then)
+			(select)
+				(if) (final result 5) (then)
+
+					Rows upon rows of beaming, clapping
+					people.
+
+				(else)
+
+					Oh for crying out loud, they're
+					standing up. Don't these people have
+					any sense of integrity?
+
+				(endif)
+				(par)
+				You smile genially.
+			(or)
+				The audience is clapping wildly.
+			(stopping)
+			(par)
+		(endif)
+
+		It's a full house.
+		(if) (audience is lit) (then)
+
+			Press, politicians, and the local upper crust, mixed
+			with
+
+		(else)
+
+			You can't discern any faces in the darkness, but this
+			crowd is unmistakably larger than
+
+		(endif)
+
+		the usual coterie of friends and relatives of
+		
+		(select)
+			orchestra members.
+
+			In a unique collaboration with the town council,
+			tonight's concert is a fundraiser for a new “mallard
+			habitat” in the Botanic Garden, and you suspect that a
+			large proportion of the crowd are here primarily to
+			wallow in their own benevolence.
+		
+			(if) (bar 0) (then)
+				(par)
+
+				Not that any of that matters, of course. The
+				music does. The music and the (#orchestra).
+
+			(endif)
+		(or)
+			(#orchestra) members.
+		(stopping)
+	(endif)
+
+(prevent [turn to *])
+	{ (facing audience) (or) (facing sideways) }
+	You're already looking at the audience.
+
+(perform [turn to *])
+	(face audience)
+
+(face audience)
+	(maybe prevent facing audience)
+	(if) ~(facing audience) ~(facing sideways) (then)
+		(bar $N)
+		(if) ($N > 0) ($N < 74) (then)
+
+			You turn your body sideways and smile towards the audience, while
+			continuing to conduct the (#orchestra) with your right hand.
+
+			(now) (facing sideways)
+		(else)
+			You turn to face the audience.
+			(now) (facing audience)
+		(endif)
+		(par)
+		(now) (current gaze #audience)
+	(endif)
+
+(first face audience)
+	(maybe prevent facing audience)
+	(if) ~(facing audience) ~(facing sideways) (then)
+		(bar $N)
+		(if) ($N > 0) ($N < 74) (then)
+
+			You turn your body sideways and smile towards the audience, while
+			continuing to conduct the (#orchestra) with your right hand.
+
+			(now) (facing sideways)
+		(else)
+			\( first turning to face the audience \)
+			(now) (facing audience)
+		(endif)
+		(par)
+		(now) (current gaze #audience)
+	(endif)
+
+(maybe prevent facing audience)
+	(bar $Bar)
+	(if) ($Bar > 73) (#applause is nowhere) (then)
+		(link [wait]) Wait for it...
+		(stop)
+	(endif)
+
+(face orchestra)
+	(if) (facing audience) (or) (facing sideways) (then)
+		You turn to face the (#orchestra).
+		(par)
+		(now) ~(facing audience)
+		(now) ~(facing sideways)
+	(endif)
+
+(first face orchestra)
+	(if) (facing audience) (or) (facing sideways) (then)
+		\( first turning to face the (#orchestra) \)
+		(par)
+		(now) ~(facing audience)
+		(now) ~(facing sideways)
+	(endif)
+
+#applause
+(name *)	applause
+(dict *)	clapping
+(singleton *)
+(* is #in #hall)
+(descr *)
+
+	The sound of applause is indistinguishable from that of frying pork.
+
+#putterson
+(name *)	Ignatius E. Putterson
+(dict *)	(just) ignatius putterson critic reviewer
+(proper *)
+(male *)
+(* is #partof #audience)
+(descr *)
+
+		(first face audience)
+		(if) (audience is lit) (then)
+
+			Ignatius E. Putterson, music critic for the Bournebrook
+			Rill Herald, notices your gaze and writes something in
+			his notebook.
+
+		(else)
+
+			You can't see him in the darkness, but Putterson, the
+			music critic, is bound to be here.
+
+		(endif)
+
+(prevent [take *])
+	No, he paid for that seat.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% The score
+
+#score
+(name *)		score
+(dict *)
+
+	extract sheet written music composition transcript facsimile print
+	reprint broude brothers edition nutcracker casse noisette
+	casse-noisette book printed
+
+(score extract)		(* {score extract})
+(openable *)
+(singleton *)
+(* is #on #stand)
+
+(descr *)
+		(if) (* is open) (then)
+			(current page $P1)
+			($P1 plus 1 into $P2)
+			The score extract is currently open on pages $P1 - $P2.
+			(par)
+			(descr page)
+		(else)
+
+			A facsimile edition of the relevant pages from the
+			Broude Brothers reprint of the original 1892 (italic)
+			Nutcracker (roman) score. The composer's name is
+			displayed prominently on the cover, lost in
+			transliteration: Peter Ilich Tchaikovsky.
+
+			(par)
+
+			\[ This is the (link resource 1) {printed score} from
+			your (italic) (story title) (roman) package. \]
+
+			(par)
+
+			You could (link [open score]) {open the score extract}.
+		(endif)
+
+(instead of [turn to *])
+	(try [examine *])
+
+(unlikely [turn *])
+
+(understand [score] as [examine *])	%% ha!
+	(* is in scope)
+
+(perform [open *])
+	(flip to 418)
+
+(narrate closing *)
+	You close the printed score.
+	(now) (#currpage is nowhere)
+	(now) (#nextpage is nowhere)
+	(now) (#prevpage is nowhere)
+
+(prevent [take *])
+	The score is right where you want it, on the conductor's stand.
+
+(descr page)
+	(now) (current gaze #score)
+	(current page $P)
+	(descr page $P)
+	(par)
+	(no bar numbers)
+	(par)
+	You could look at the
+	(if) ($P = 418) (then)
+		(#nextpage)
+	(elseif) ($P = 444) (then)
+		(#prevpage)
+	(else)
+		(#nextpage {next}) or (#prevpage {previous}) page
+	(endif)
+	, turn to a given page number, or (link [close score]) close the score.
+
+(global variable (current page 0))
+
+(bar $Bar on page $Page)
+	*(score page $Page bars $ $ $Last)
+	~($Bar > $Last)
+
+(score page 418 bars 1 3 8)
+(descr page 418)
+
+	(fixed pitch) No. 14. PAS DE DEUX (roman)
+
+	(par)
+
+	This piece calls for two (#flutes), a (#piccolo), two (#oboes),
+	(#enghorn), two (#clarinets), (#bassclarinet), two (#bassoons), four
+	(#horns), two (#trumpets), two (#trombones), (#basstrombone), (#tuba),
+	(timpani), (link [cymbals]) cymbals , two (#harps), and a full
+	(#strings).
+
+	(par)
+
+	The first eight bars are visible, two on the left-hand page and six on
+	the right-hand page. They are mostly made up of a regular accompaniment
+	in the (#harps) and (strings), initially set in motion by the (#harp2).
+
+	(par)
+
+	The main motif is introduced in the (#celli), fortissimo, in the second
+	bar on the right-hand page.
+
+	(if) ~(did cue celli-4) (then)
+		(bar $Bar)
+		(if) ($Bar > 3) (then)
+			In hindsight, you should have cued this.
+		(else)
+			You will have to cue this, of course.
+		(endif)
+	(endif)
+
+(score page 420 bars 9 14 16)
+(descr page 420)
+
+	In the five bars on the left-hand page you see a continued
+	accompaniment in the (#harps) and (strings), and variations of the main
+	motif in the (#celli). The last of these bars is marked with rehearsal
+	letter A.
+
+	(par)
+
+	There are three bars on the right-hand page. The (#flutes) and
+	(#clarinets) begin at the top, in fortissimo, and the (#oboes) and
+	(#bassoons) enter two bars later.
+
+	(bar $Bar)
+	(if) ($Bar < 14) (then)
+		Better cue both of these entrances, just to be on the safe side.
+	(elseif) ($Bar < 16) (then)
+		(if) ~(did cue flcl-14) (then)
+
+			In hindsight, you should have cued the flutes and
+			clarinets. Better cue the upcoming entrance in the
+			oboes and bassoons, then.
+
+		(else)
+
+			You did cue the flutes and clarinets, and it's probably
+			a good idea to cue the oboes and bassoons too, just to
+			be on the safe side.
+
+		(endif)
+	(else)
+		(if) ~(did cue flcl-14) (or) ~(did cue obbs-16) (then)
+
+			In hindsight, you should have cued both of these
+			entrances.
+
+		(endif)
+	(endif)
+
+(score page 422 bars 17 19 20)
+(descr page 422)
+
+	There are two bars on the left-hand page. In the first, the (#horns)
+	start to play chords in half notes. In the second, the main motif
+	appears in the (#flutes), (#enghorn), (#clarinets), (#violin1), and
+	(#celli).
+
+	(par)
+
+	In the first of the two bars on the right-hand page, the
+	(#bassclarinet) enters with a sustained note.
+
+(score page 424 bars 21 23 24)
+(descr page 424)
+
+	Four bars, two per page, are visible on this spread. The fourth is
+	marked with rehearsal letter B. The music continues in the same general
+	style as on the previous spread.
+
+	(par)
+
+	In the third bar, the (#bassoon1) starts to play a sustained note.
+
+(score page 426 bars 25 27 32)
+(descr page 426)
+
+	Two bars are visible on the left-hand page. There's a stringendo in the
+	first, leading to a tempo change, poco più mosso, in the second. The
+	(#oboe1) plays a solo melody starting at the poco più mosso.
+
+	(par)
+
+	There are six bars on the right-hand page. In the fourth of them, the
+	solo melody is taken over by the (#bassclarinet).
+
+(score page 428 bars 33 36 38)
+(descr page 428)
+
+	There are six bars on this spread, three per page. The (#horns) are
+	playing triplets the entire time. The second bar of the first page is
+	marked “incalzando”.
+
+	(par)
+
+	At the start of the incalzando, the (#viola) and (#celli) introduce a
+	yearning counter-motif, and the (#tuba) enters with a sustained,
+	pianissimo note. The (horns) are joined by the (#flutes) and (#oboes)
+	in the second bar of the right-hand page. One bar later, a (timpani)
+	tremolo begins, pianissimo at first.
+
+(score page 430 bars 39 42 45)
+(descr page 430)
+
+	There's an animando for three bars on the left-hand page, followed by a
+	ritenuto for four bars on the right-hand page. The last of the animando
+	bars is marked with rehearsal letter C.
+
+	(par)
+
+	At letter C, a grand fanfare begins in the (#trumpets) and
+	(#trombones).
+
+(score page 432 bars 46 48 49)
+(descr page 432)
+
+	Four bars, two per page:
+
+	(par)
+
+	In the first bar, marked Tempo I, the (#horns), (#trumpets),
+	(#trombones), (#basstrombone), (#bassclarinet), (#tuba), and (#bassi)
+	begin to play a series of loud half-note chords.
+
+	(par)
+
+	In the second bar, the rest of the (#orchestra) joins in with a
+	climactic restatement of the main motif.
+
+(score page 434 bars 50 52 53)
+(descr page 434)
+
+	Two bars are visible on each page of this spread. The first bar is
+	marked with rehearsal letter D, and a stringendo begins in the second.
+
+(score page 436 bars 54 56 57)
+(descr page 436)
+
+	Four bars, two per page. The stringendo ends with a Tempo I in the
+	second bar on the left-hand page. Here, most of the orchestra is busy
+	supporting the (#trumpets) as they repeat the main motif in the very
+	Russian dynamic of forte forte fortissimo.
+
+	(par)
+
+	Each of these four bars contains a single, loud strike of the (link
+	[cymbals]) cymbals .
+
+(score page 438 bars 58 61 63)
+(descr page 438)
+
+	There are three bars on either page of this spread. The (strings) are
+	elaborating on a wistful, sigh-like motif, while the (#harps) are doing
+	arpeggios, and the (woodwinds) play chords.
+
+	(par)
+
+	The (#oboes) enter in the second bar, the (#flutes) and (#clarinets) in
+	the third, and the (#bassclarinet) in the fourth.
+
+(score page 440 bars 64 66 67)
+(descr page 440)
+
+	Four bars, the first of which bears rehearsal letter E. In the first
+	two bars, on the left-hand page, the (strings) continue the wistful
+	theme until it comes to a sudden stop at the beginning of the
+	right-hand page. There, the (woodwinds) respond with a rapid clatter of
+	sextuplets.
+
+	(par)
+
+	In the fourth bar, as everybody else goes quiet, the (#harps) enter
+	with a loud arpeggiated figure.
+
+(score page 442 bars 68 70 70)
+(descr page 442)
+
+	There are two bars on the left-hand page, and one bar on the right-hand
+	page. The (#harps) continue with their arpeggios, while the (#brass)
+	provides accompaniment in the form of long notes.
+
+	(par)
+
+	The (#violin1 {first}) and (#violin2 {second}) violins enter with a
+	long, melodic note, fortissimo, in the first bar. In the second bar,
+	the (#horns), (#flutes) and (#clarinets) join them, and in the third
+	bar, the (#oboes) and (#bassoons) do the same.
+
+(score page 444 bars 71 72 74)
+(descr page 444)
+
+	This last spread comprises four bars, one on the left-hand page and
+	three on the right-hand page. (link [everybody]) Everybody is taking
+	part in a prolonged, boisterous tonic, although the (#enghorn) and
+	(#bassclarinet) don't join in until the first bar of the right-hand
+	page. The piece ends with a bang on the third beat of the final bar.
+
+	(par)
+
+	The (timpanist) has brief, loud notes at the beginning of the first bar
+	of each page, and a tremolo beginning in the second-to-last bar.
+
+(no bar numbers)
+	(current page $N)
+	(if) ($N > 420) ($N < 444) ~(got bearings) (then)
+		(select)
+			You silently curse the fact that there are no printed
+			bar numbers
+			(select) in this edition of the score (or) (stopping).
+		(or)
+		(or)
+		(or)
+		(or)
+		(or)
+		(then at random)
+	(endif)
+
+#currpage
+(name *)	current page
+(dict *)	spread this two pages left-hand right-hand
+(heads *)	page spread pages
+
+(perform [examine *])
+	(descr page)
+
+(instead of [turn *])
+	(try [examine #nextpage])
+
+#nextpage
+(name *)	next page
+(dict *)	spread two pages
+(heads *)	page spread pages
+
+(unlikely [examine *])
+	(current page 444)
+
+(refuse [examine *])
+	(current page 444)
+	You're already on the last page of the (score extract).
+
+(perform [examine *])
+	(current page $P)
+	($P plus 2 into $NewP)
+	(flip to $NewP)
+
+(unlikely [turn *])
+
+(instead of [turn *])
+	(try [examine *])
+
+#prevpage
+(name *)	previous page
+(dict *)	spread two pages prev
+(heads *)	page spread pages
+
+(unlikely [examine *])
+	(current page 418)
+
+(refuse [examine *])
+	(current page 418)
+	You're already on the first page of the (score extract).
+
+(perform [examine *])
+	(current page $P)
+	($P minus 2 into $NewP)
+	(flip to $NewP)
+
+(unlikely [turn *])
+
+(instead of [turn *])
+	(try [examine *])
+
+#firstpage
+(name *)	first page
+(dict *)	spread two pages
+(heads *)	page spread pages
+(* is #partof #score)
+
+(perform [examine *])
+	(flip to 418)
+
+(unlikely [turn *])
+
+#lastpage
+(name *)	last page
+(dict *)	spread two pages
+(heads *)	page spread pages
+(* is #partof #score)
+
+(perform [examine *])
+	(flip to 444)
+
+(unlikely [turn *])
+
+(rewrite [turn to face | $Words] into [turn to | $Words])
+
+(understand [turn/flip/go/page to/towards | $Words] as [turn to $Obj])
+	*(understand $Words as single object $Obj)
+
+(understand [turn/flip/go/page/open to/towards page (number $N)] as [turn to $N])
+
+(understand [turn/flip/go/page/open (number $N)] as [turn to $N])
+
+(describe action [turn to (number $N)])
+	turn to page $N
+
+~(refuse [turn to $])
+
+(prevent [turn to (number $N)])
+	{ ($N < 418) (or) ($N > 445) }
+	There's no page with that number in the (score extract).
+
+(perform [turn to (number $N)])
+	($N divided by 2 into $NHalf)
+	($NHalf plus $NHalf into $First)
+	(if) (#score is open) (current page $First) (then)
+		The (score extract) is already open on that page.
+		(par)
+		(descr page)
+	(else)
+		(flip to $First)
+	(endif)
+
+(understand [examine/look/read (number $N)] as [examine $N])
+
+(understand [examine/look/read page (number $N)] as [examine $N])
+
+(prevent [examine (number $N)])
+	{ ($N < 418) (or) ($N > 445) }
+	There's no page with that number in the (score extract).
+
+(perform [examine (number $N)])
+	($N divided by 2 into $NHalf)
+	($NHalf plus $NHalf into $First)
+	(flip to $First)
+
+(flip to $NewP)
+	(first face orchestra)
+	($NewP plus 1 into $Second)
+	(if) (#score is closed) (then)
+		(now) (has opened the score)
+		You open the score extract
+		(if) ($NewP = 418) (then)
+			on the first two pages, numbered 418-419 in this facsimile edition.
+		(elseif) ($NewP = 444) (then)
+			on the last two pages, numbered 444-445 in this facsimile edition.
+		(else)
+			and locate pages $NewP - $Second.
+		(endif)
+		(par)
+		(now) (#score is open)
+		(now) (#currpage is #partof *)
+		(now) (#nextpage is #partof *)
+		(now) (#prevpage is #partof *)
+		(now) (current page $NewP)
+	(else)
+		(if) (current page $NewP) (then)
+			You study
+		(else)
+			(now) (current page $NewP)
+			You (select) turn (or) flip (purely at random) to
+		(endif)
+		pages $NewP - $Second.
+	(endif)
+	(par)
+	(descr page)
+
+(instead of [turn to $Obj])
+	($Obj is #partof #score)
+	(try [examine $Obj])
+
+(instead of [find $Obj])
+	($Obj is #partof #score)
+	(try [examine $Obj])
+
+(perform [turn to $Obj])
+	(try [examine $Obj])
+
+#letterA
+(name *)	rehearsal letter A
+(heads *)	letter
+(* is #partof #score)
+(instead of [examine *]) (try [examine 420])
+
+#letterB
+(name *)	rehearsal letter B
+(heads *)	letter
+(* is #partof #score)
+(instead of [examine *]) (try [examine 424])
+
+#pocopiu
+(name *)	poco più mosso
+(dict *)	piu
+(* is #partof #score)
+(instead of [examine *]) (try [examine 426])
+
+#stringendo1
+(name *)	stringendo on page 426
+(heads *)	stringendo
+(* is #partof #score)
+(instead of [examine *]) (try [examine 426])
+
+#incalzando
+(name *)	incalzando
+(an *)
+(* is #partof #score)
+(instead of [examine *]) (try [examine 428])
+
+#letterC
+(name *)	rehearsal letter C
+(heads *)	letter
+(* is #partof #score)
+(instead of [examine *]) (try [examine 430])
+
+#animando
+(name *)	animando
+(an *)
+(dict *)	ritenuto
+(* is #partof #score)
+(instead of [examine *]) (try [examine 430])
+
+#tempo1a
+(name *)	Tempo I on page 432
+(dict *)	primo 1
+(heads *)	tempo
+(* is #partof #score)
+(instead of [examine *]) (try [examine 432])
+
+#letterD
+(name *)	rehearsal letter D
+(heads *)	letter
+(* is #partof #score)
+(instead of [examine *]) (try [examine 434])
+
+#stringendo2
+(name *)	stringendo on page 434
+(heads *)	stringendo
+(* is #partof #score)
+(instead of [examine *]) (try [examine 434])
+
+#tempo1b
+(name *)	Tempo I on page 436
+(dict *)	primo 1
+(heads *)	tempo
+(* is #partof #score)
+(instead of [examine *]) (try [examine 436])
+
+#letterE
+(name *)	rehearsal letter E
+(heads *)	letter
+(* is #partof #score)
+(instead of [examine *]) (try [examine 440])
+
+(unlikely [examine #letterD/#letterE])	%% player probably intended down/east
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Epilogue
+
+(epilogue)
+	(now) ~(facing audience)
+	(now) ~(facing sideways)
+	(exhaust) {
+		*($O has parent #maestro)
+		(now) ($O is nowhere)
+	}
+	(now) (#pyjamas is #wornby #maestro)
+	(enter #kitchen)
+	(stop)
+
+#pyjamas
+
+(name *)	pyjamas
+(dict *)	pj pjs clothes clothing dress pajama pajamas pyjama flannel
+(your *)
+(plural *)
+(wearable *)
+(descr *)
+	Your flannel pyjamas are soft and very comfortable.
+
+(instead of [feel *])
+	(try [examine *])
+
+#kitchen
+(room *)
+(room header *)	Kitchen
+(singleton *)
+(name *)	kitchen
+(look *)
+
+	(uppercase) (#breakfast) is English muffins with ham and eggs, a dab of
+	hollandaise, and a cup of steaming hot (#tea {Darjeeling}).
+
+	(par)
+
+	The (link [herald]) Herald lies unopened in front of you.
+
+	(notice #newspaper)
+
+#table
+(name *)	table
+(dict *)	chair
+(on-seat *)
+(* is #in #kitchen)
+(descr *)
+
+	Yes, there's a table and a chair. Good thinking.
+
+#breakfast
+(name *)	breakfast
+(dict *)	english muffin muffins ham eggs dab hollandaise sauce food
+(* is #on #table)
+(descr *)
+
+		Perhaps you got a bit carried away with the hollandaise. But
+		life is a symphony, and sometimes you allow yourself to dive in
+		and perfect some arbitrary detail.
+
+#tea
+(name *)	tea
+(dict *)	cup steaming hot black darjeeling lemon
+(potable *)
+(* is #on #table)
+(descr *)
+
+		Black, with a drop of lemon.
+
+#newspaper
+(singleton *)
+(name *)	Bournebrook Rill Herald
+(dict *)	news newspaper morning local paper
+(item *)
+(openable *)
+(* is #on #table)
+
+(perform [examine/open/take *])
+	You snatch (the *) off the table, and eagerly turn to the culture pages.
+
+	(final result $Result)
+
+	(div @clipping) {
+		(review text $Result)
+		(line)
+		— (space) Ignatius E. Putterson, D.Mus.A.
+	}
+
+	(div @centerspacer) {
+		(bold) \*\*\*
+		(uppercase) (spell out $Result)
+		(if) ($Result > 1) (then) batons (else) baton (endif)
+		out of five
+		\*\*\* (unstyle)
+	}
+
+	(if) ($Result > 1) (then)
+		(par)
+
+		A non-diegetic suggestion: There are many online videos of
+		orchestras performing Tchaikovsky's Pas De Deux. If you haven't
+		already done so, please go ahead and watch one now, to get a
+		glimpse of yourself in action.
+
+		(par)
+	(endif)
+
+	(game over)
+
+(review text 1)
+
+	If the Bournebrook Rill Community Orchestra has not exactly advanced,
+	technically and musically, under the stewardship of Nevada Elmsbee, it
+	has nevertheless not remained stagnant. Indeed, from the vantage point
+	of last night's concert for the benefit of the Botanic Garden, the
+	potential for amelioration has never been greater. If their story
+	doesn't end here, one can safely look forward to the upswing for which
+	the ensemble is inevitably headed.
+
+(review text 2)
+
+	In light of its role as a fundraiser for the new Mallard Habitat of the
+	Botanic Garden, last night's sold-out performance by Nevada Elmsbee and
+	the Bournebrook Rill Community Orchestra was, albeit not in the
+	figurative, narrowly economical sense, for the birds. The subtle
+	intricate complexities and emotional Sturm und Drang characteristic of
+	late 19th century symphonic music were, on the whole, conspicuously
+	absent. One must nevertheless acknowledge that for the most part, the
+	ensemble did start and finish each piece in a roughly synchronous
+	manner.
+
+(review text 3)
+
+	With maestro Nevada Elmsbee at the baton, the Bournebrook Rill
+	Community Orchestra entered the stage, yesterday evening, in a
+	philanthropic enterprise aimed at the Botanic Garden. Musically, the
+	performance held together without any major incidents, and the general
+	atmosphere was poignant, occasionally even venturing into lyrical
+	territory. A certain lack of exactitude distracted from what could have
+	been a riveting exposition of the symphonic ideas of the Romantic
+	period. But the passion was there, and the grit and ambition. The
+	result, on the whole, was not entirely unfavourable.
+
+(review text 4)
+
+	Last night the Bournebrook Rill Community Orchestra, with maestro
+	Nevada Elmsbee at the helm, delved into a varied repertoire with
+	passion and courage, and not without a certain degree of accuracy. A
+	few rough corners must of course be expected, and excused, when amateur
+	musicians are involved. Nevertheless, on the whole, the endeavour did
+	come across as perhaps a little shaky, a little too ready to fall apart
+	at the seams at the slightest mishap. One cannot help but wonder if the
+	perceived level of musicality could not have been taken up a notch, if
+	the orchestra had settled for a less challenging programme.
+
+(review text 5)
+
+	Organizers of charity events always run the risk of delivering such
+	astounding performances that they, rather than the paying spectators,
+	are remembered as the main benefactors. During last night's concert for
+	the benefit of the Botanic Garden, maestro Nevada Elmsbee fell into
+	precisely this trap. Technically immaculate and musically deep, the
+	performance reduced the members of the audience to mere consumers,
+	getting their money's worth of entertainment for the evening. They will
+	be all but forgotten by future visitors to the Garden, who, as they
+	come upon the new Mallard Habitat, will be admiring and rejoicing at
+	the splashing, quacking, lasting legacy of the Bournebrook Rill
+	Community Orchestra.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Gaze
+
+(global variable (current gaze #maestro))
+
+(global variable (did cue $))
+(global variable (did accidentally cue $))
+
+(global variable (will follow gaze $))
+
+(try $)
+	(now) ~(did cue $)
+	(now) ~(did accidentally cue $)
+	(fail)
+
+(before [examine/cue $Obj])
+	{ (facing audience) (or) (facing sideways) }
+	($Obj has ancestor #stage)
+	~{
+		($Obj = #concertmaster)
+		{ (bar 0) (or) (#applause has parent #hall) }
+	}
+	(first face orchestra)
+
+(prevent [examine/cue $Obj])
+	{ (there's a problem) (or) (stuck in silence) }
+	{
+		($Obj is one of [#violin1 #violin2])
+	(or)
+		($Obj has parent #violin1)
+	(or)
+		($Obj has parent #violin2)
+	}
+	Violins aren't the answer to this one.
+
+(perform [examine $Obj])
+	(cue $Obj @examine)
+
+(perform [cue $Obj])
+	(cue $Obj @cue)
+
+(cue $Obj $Verb)
+	(current gaze $OldObj)
+	(now) (current gaze $Obj)
+	(bar $Bar)
+	(if) (will follow gaze $Follower) (then)
+		(now) ~(will follow gaze $)
+		(if)
+			{ (musician $Obj) (or) (section $Obj) }
+			~($Follower = $Obj)
+			~($Follower is nested #partof $Obj)
+			~($Bar = 75)
+		(then)
+			(link The $Follower)
+			follows your gaze towards
+			(the $Obj)
+			(if)
+				($Follower = #trumpet1)
+				(michael may frown)
+				($Obj is one of [#lydia #bassclarinet])
+			(then)
+				and frowns
+			(endif)
+			.
+			(if) ($Obj = #tuba) (tuba is sleeping) (then)
+				(It $Follower) notices that Anthony has fallen asleep,
+				(if) ($Follower = #basstrombone) (then)
+
+					and gives him a friendly but
+					dream-shattering kick on the (italic)
+					malleolus lateralis (unstyle). Then he
+					leans forward to indicate a place in
+					the sheet music on his dazed
+					neighbour's stand.
+
+					(now) ~(tuba is sleeping)
+					(now) (inhibit confused tuba)
+
+				(else)
+					but is too far away to do anything about it.
+				(endif)
+			(endif)
+			(par)
+		(endif)
+	(endif)
+	(if) ($Bar > 0) ($Bar < 75) { (musician $Obj) (or) (section $Obj) } (then)
+		(if) ($Obj = $OldObj) (then)
+			You
+			(select)
+				continue to watch
+			(or)
+				keep watching
+			(or)
+				keep your eyes on
+			(purely at random)
+			(the $Obj).
+			(if) ($Obj = #tuba) (tuba is sleeping) (then)
+				(par)
+				(select)
+					Oh dear. The tuba seems to be
+				(or)
+					The tuba is
+				(stopping)
+				sound asleep.
+			(endif)
+		(else)
+			(if) ($Verb = @examine) (or) ~(did describe $Obj) (then)
+				(descr $Obj)
+				(now) (did describe $Obj)
+			(else)
+				(you look at $Obj)
+			(endif)
+		(endif)
+		(par)
+		(cue $Obj at $Bar)
+	(else)
+		(if)
+			($Verb = @cue)
+			~{ ($Bar = 0) ($Obj is one of [#harp2 #harps]) }
+			{ (musician $Obj) (or) (section $Obj) }
+		(then)
+			(you look at $Obj)
+			(par)
+		(endif)
+		(descr $Obj)
+		(now) (did describe $Obj)
+	(endif)
+	(if) (slice $Obj 3) ($Bar < 22) ~(tuba known to be sleepy) (then)
+		(par)
+		(if) ($Obj = #tuba) (then)
+			You
+		(else)
+			Out of the corner of your eye, you
+		(endif)
+		notice the (#tuba) player stifling a yawn.
+		(now) (tuba known to be sleepy)
+	(endif)
+
+(you look at $Obj)
+	You
+	(select)
+		look at
+	(or)
+		turn your
+		(select) eyes (or) gaze (purely at random)
+		towards
+	(purely at random)
+	(the $Obj).
+
+(silence or music)
+	(bar $Bar)
+	(if) (stuck in silence) (or) ($Bar > 73) (then)
+		silence
+	(else)
+		music
+	(endif)
+
+(slice $Obj $Slice)
+	($Obj is #partof $Parent)
+	(slice $Parent $Slice)
+
+(cue $Obj at $Bar)
+	($Bar plus 1 into $Bp1)
+	*(entrance $Bp1 $CueObj)
+	(slice $CueObj $Slice)
+	(slice $Obj $Slice)
+	(now) (did cue $Obj)
+
+(cue $Obj at $Bar)
+	($Bar plus 2 into $Bp2)
+	*(entrance $Bp2 $CueObj)
+	~(immune at $Bar $CueObj)
+	(slice $CueObj $Slice)
+	(slice $Obj $Slice)
+	~{ ($Bp2 = 26) ~($Obj is one of [#oboe1 #oboes]) }
+	(now) (did accidentally cue [$Bp2 $Obj])
+
+(cue $Obj at $Bar)
+	($Bar plus 3 into $Bp3)
+	*(entrance $Bp3 $CueObj)
+	~(immune at $Bar $CueObj)
+	(slice $CueObj $Slice)
+	(slice $Obj $Slice)
+	~{ ($Bp3 = 26) ~($Obj is one of [#oboe1 #oboes]) }
+	(now) (did accidentally cue [$Bp3 $Obj])
+
+(cue $Obj at $Bar)
+	(entrance $Bar $Obj) %% Late cue, they won't be confused.
+
+%% Particular places where people won't get confused.
+
+(cue #bassclarinet at ($ < 17))
+	(inhibit clbas-pre-17)
+(cue #bassclarinet at 20)
+(cue #bassoon1/#bassoon2 at 23)
+(cue #celli at 34)
+(cue #tuba at $Bar)
+	{
+		(inhibit confused tuba)
+		(now) ~(inhibit confused tuba)
+	}
+	(or) (tuba is sleeping)
+	(or) ($Bar > 21) ($Bar < 25)
+	(or) ($Bar > 33)
+(cue $ at 46)
+(cue #percussionist at $N)
+	($N > 47)
+	($N < 60)
+(cue #trumpet1/#trumpet2 at 54)
+(cue #viola/#celli at 58)
+(cue $ at 65/66)
+(cue #enghorn/#bassclarinet at 71)
+(cue #timpani at 72)
+
+%% Otherwise, they do get confused.
+
+(cue (musician $Obj) at $Bar)
+	($Bar > 0)
+	($Bar < 75)
+	(now) (will follow gaze $Obj)
+	(if) (current gaze $Obj) (then)
+		(The $Obj)
+	(else)
+		(link The $Obj)
+	(endif)
+	(if) ($Obj = #bassclarinet) (then)
+		(exchange looks $Obj #lydia)
+	(elseif) ($Obj = #lydia) (then)
+		(exchange looks $Obj #bassclarinet)
+	(endif)
+	(select)
+		gives you a (confused adj) look.
+	(or)
+		returns your gaze with a (confused adj) look.
+	(or)
+		seems (confused verb) by your apparent cue.
+	(or)
+		looks back at you, (confused verb).
+	(then at random)
+	(notice $Obj)
+
+(exchange looks $From $To)
+	(select)
+		(now) (avoid suggesting lydia)
+	(or)
+		was momentarily distracted by something in the
+		(if) ($To = #lydia) (then)
+			(link [cello section]) { cello section }
+		(else)
+			(link [woodwind section]) { woodwind section }
+		(endif)
+		. Now (it $From)
+		(now) (michael may frown)
+	(or)
+		, after exchanging a quick glance with (link by name $To),
+	(or)
+		breaks eye contact with (link by name $To). (It $From)
+		(now) ~(avoid suggesting lydia)
+	(or)
+	(stopping)
+
+(link by name #bassclarinet)
+	(link [kevin]) Kevin
+
+(link by name $Obj)
+	($Obj)
+
+(confused adj)
+	(select)
+		quizzical
+	(or)
+		confused
+	(or)
+		confounded
+	(or)
+		perplexed
+	(or)
+		befuddled
+	(or)
+		bewildered
+	(at random)
+
+(confused verb)
+	(select)
+		confused
+	(or)
+		confounded
+	(or)
+		perplexed
+	(or)
+		befuddled
+	(or)
+		bewildered
+	(at random)
+
+(cue (section $Obj) at $Bar)
+	(collect $M)
+		*($M is #partof $Obj)
+		(musician $M)
+		{ ~(avoid suggesting lydia) (or) ~($M = #lydia) }
+	(into $List)
+	(randomly select $Victim from $List)
+	(cue $Victim at $Bar)
+
+(cue $ at $)
+
+(bad glance $Obj $Targets)
+	(select)
+		unfortunate
+	(or)
+		accidental
+	(or)
+		untimely
+	(or)
+	(at random)
+	(glance $Obj $Targets)
+
+(glance $Obj $Targets)
+	(select)
+		glance
+	(or)
+		cue
+	(or)
+		look
+	(or)
+		brief look
+	(at random)
+	(if) ~($Obj is targeted by $Targets) (then)
+		(select)
+			($Targets = [$First | $])
+			in (its $First) general direction
+		(or)
+			aimed at the nearby ($Obj)
+		(purely at random)
+	(endif)
+
+(glance $Obj $Targets at musician)
+	cue
+	(if) ~($Obj is targeted by $Targets) (then)
+		in the direction of the nearby ($Obj)
+	(endif)
+
+(too early $Bar)
+	(bar $Now)
+	(if) ($Now < $Bar) (then)
+		($Bar minus $Now into $Diff)
+		(spell out $Diff)
+		(if) ($Diff = 1) (then) bar (else) bars (endif)
+		too early
+	(else)
+		($Now minus $Bar into $Diff)
+		(spell out $Diff)
+		(if) ($Diff = 1) (then) bar (else) bars (endif)
+		too late
+	(endif)
+
+($Obj is targeted by $List)
+	($Obj is one of $List)
+
+($Obj is targeted by $List)
+	*($Sub is #partof $Obj)
+	($Sub is one of $List)
+
+($Obj is targeted by $List)
+	($Obj is nested #partof $Parent)
+	($Parent is one of $List)
+
+(randomly select $Obj from $List)
+	(length of $List into $N)
+	(random from 1 to $N into $X)
+	(nth $List $X $Obj)
+
+(describe action [examine $Obj])
+	(list $Obj)
+	examine (the full $Obj)
+
+(describe action [examine $Obj])
+	look at (the full $Obj)
+
+(perform [listen to #hall])
+	(bar $Bar)
+	(if) (stuck in silence) (then)
+		You listen to the silence
+		(select)
+		(or)
+			with increasing panic
+		(stopping)
+		.
+	(elseif) ($Bar > 0) ($Bar < 75) (then)
+		(current gaze $Obj)
+		(if) (musician $Obj) (or) (section $Obj) (then)
+			As you listen to the (silence or music), you
+			(select)
+				continue to watch
+			(or)
+				keep watching
+			(or)
+				keep your eyes on
+			(then purely at random)
+			(if) ($Obj = #tuba) (tuba is sleeping) (then)
+				the sleeping ($Obj)
+			(else)
+				(link the $Obj)
+			(endif)
+			.
+		(else)
+			You listen to the (silence or music).
+		(endif)
+	(else)
+		(if) (#applause has parent #hall) (then)
+
+			Loud (link [clapping]) clapping from the audience.
+
+		(else)
+
+			You
+			(select)
+				take a moment to enjoy
+			(or)
+				listen to
+			(then purely at random)
+			the silence.
+
+		(endif)
+	(endif)
+
+(stuck in silence)
+	(bar 25)
+	~(did botch oboe-26)
+	(current gaze $Obj)
+	~($Obj is one of [#oboe1 #oboes])
+
+(instead of [wait])
+	(current room #hall)
+	~(#applause has parent #hall)
+	(try [listen])
+
+(instead of [listen to $Obj])
+	(current room #hall)
+	{ (musician $Obj) (or) (section $Obj) (or) ($Obj = #maestro) }
+	%% Too much effort to model what each musician sounds like. Fall back
+	%% on just listening to the music.
+	(try [listen])
+
+(rewrite [turn eyes/gaze to/towards | $Words] into [cue | $Words])
+
+(understand [cue/signal | $Words] as [cue $Obj])
+	*(understand $Words as non-all object $Obj)
+
+(refuse [cue $Obj])
+	(just) (when $Obj is not here)
+
+(unlikely [cue $Obj])
+	~(musician $Obj)
+	~(section $Obj)
+
+(prevent [cue $Obj])
+	~(musician $Obj)
+	~(section $Obj)
+	You can signal an individual musician, or a group of musicians playing
+	the same part, such as the (#violin1).
+
+(understand [turn])
+(understand [turn around] as [turn])
+
+(perform [turn])
+	(if) ~(facing audience) ~(facing sideways) (then)
+		(try [examine #audience])
+	(else)
+		(face orchestra)
+	(endif)
+
+(refuse [climb/enter $])
+	You're perfectly fine where you are.
+
+(understand [bow])
+
+(perform [bow])
+	(bar $Bar)
+	(if) ($Bar = 0) (or) ($Bar > 73) (then)
+		(first face audience)
+		You bow respectfully.
+	(else)
+		(no conscious movement)
+		(tick) (stop)
+	(endif)
+
+(rewrite [wake up | $Words] into [wake | $Words])
+
+(understand [wake | $Words] as [wake $Obj])
+	*(understand $Words as single object $Obj preferably animate)
+
+(understand [wake | $Words] as [wake $Obj])
+	*(split $Words by [up] into $InnerWords and [])
+	*(understand $InnerWords as single object $Obj preferably animate)
+
+(prevent [wake #tuba])
+	(tuba is sleeping)
+	The (#tuba) player is not within reach.
+
+(prevent [wake (object $Obj)])
+	(The $Obj) (isn't $Obj) sleeping.
+
+(instead of [wake (current player $)])
+	(try [wake up])
+
+(understand [smile])
+(perform [smile])
+	You smile benevolently.
+
+(understand [frown])
+(perform [frown])
+	You frown sincerely.
+
+(understand [yawn])
+(perform [yawn])
+	You let out a discreet yawn.
+
+(perform [think])
+	That would be a good first step.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Silliness
+
+(prevent [$Verb (audible $Obj)])
+	~($Verb = @examine)
+	(The $Obj) (is $Obj) too abstract.
+
+(no more seating $Obj)
+	(The $Obj is) fine where (it $Obj) (is $Obj) (no space)
+	—you've already spent hours on the (link [seating]) seating .
+
+(perform [attack (animate $Obj)])
+
+	There is much to be said for civility, of course, but one has to draw
+	the line somewhere, and enough is quite simply enough. You charge at
+	(the $Obj), drag (them $Obj) out of (its $Obj) chair, and give (them
+	$Obj) a good, fair punch in the stomach.
+
+	(outrage, not $Obj)
+
+(prevent [kiss/feel (section $)])
+	Your body language must be precise and deliberate. Please select one
+	target at a time.
+
+(perform [kiss/feel (animate $Obj)])
+
+	These pent-up emotions, they simply cannot be subdued any longer! Your
+	secret, confined for so long to the murky recesses of your heart,
+	yearns for freedom. And you can certainly recognize a perfect
+	opportunity when you see it. A sense of calm determination comes over
+	you as you walk over to (the $Obj), and embrace (them $Obj)
+	passionately.
+
+	(par)
+
+	To your chagrin, (the $Obj) pushes back, and expresses (its $Obj)
+	hesitation with a series of increasingly disdainful invectives. In
+	fairness, you may have overestimated the mutuality of the attraction,
+	but it's nevertheless unfortunate that “get off me you pervert” has
+	such a negative ring to it, especially when amplified by concert hall
+	acoustics.
+
+	(outrage, not $Obj)
+
+(prevent [eat (current player $)])
+	You consider nibbling on yourself, but reject the idea.
+
+~(prevent [eat (animate $Obj)])
+
+(perform [eat (animate $Obj)])
+
+	It occurs to you that all human relations are ultimately governed by
+	the law of the jungle: Eat or be eaten. And by acting now, you can be
+	sure to have the element of surprise on your side. Cuspids bared, you
+	charge at (the $Obj) and take a healthy bite from (its $Obj) forearm.
+
+	(outrage, not $Obj)
+
+(before [throw/attack #baton | $])
+	(ensure #baton is held)
+
+(perform [attack #baton])
+
+	You snap the baton in half, and throw the pieces away. Who needs a
+	baton anyway!
+
+	(now) (#baton is nowhere)
+
+(perform [throw #baton at #tuba/#basstrombone])
+
+	The baton makes a beautiful arc through the air, and hits Peter, the
+	bass trombone player, squarely in the eye. Luckily, it's the porcelain
+	one, but Peter looks awfully upset anyway. He gets on his feet, and
+	remains standing for a while, fuming with anger but not quite sure what
+	to do. Then he storms out, slamming the door behind him.
+
+	(now) (#baton is nowhere)
+	(now) (#basstrombone is nowhere)
+	(if) (current gaze #basstrombone) (then)
+		(now) (current gaze #orchestra)
+	(endif)
+	(if) (will follow gaze #basstrombone) (then)
+		(now) ~(will follow gaze $)
+	(endif)
+
+(perform [throw #baton at $Obj])
+	(slice $Obj $Slice)
+
+	(collect $M)
+		*(musician $M)
+		(slice $M $Slice)
+	(into $List)
+	(randomly select $Target from $List)
+
+	The baton makes a beautiful arc through the air, narrowly misses (link
+	the $Target), and falls to the floor somewhere behind (them $Target).
+	Well, who needs a baton anyway.
+
+	(now) (#baton is nowhere)
+
+(perform [throw #baton at $])
+	(try [throw #baton])
+
+(perform [throw #baton])
+
+	The baton makes a beautiful arc through the air and falls to the floor
+	somewhere beyond your reach. Well, who needs a baton anyway.
+
+	(now) (#baton is nowhere)
+
+(outrage, not $Victim)
+	(collect $M)
+		*(musician $M)
+		~($M = $Victim)
+	(into $List)
+	(randomly select $Defender from $List)
+	(par)
+
+	Some of the
+	(if) ~($Victim = #putterson) (then)
+		other
+	(endif)
+
+	musicians keep playing, with a sense of duty perhaps more accurately
+	described as mental inertia, but most of them stop what they're doing
+	and just gape.
+
+	(par)
+
+	(The $Defender) leaps to the rescue, armed with (its $Defender) stand,
+	and starts beating you over the head in the very Russian dynamic of
+	forte forte fortissimo. Others are quick to join in, to the unabashed
+	thrill of the cheering audience, who are already splitting up into
+	factions as the tumult escalates into a full-on riot.
+
+	(par)
+
+	The rest of the evening is a blur of sharp words, contemptuous looks,
+	and strong hands dragging you feet first through damp, nocturnal
+	streets. You wake up on the cold checkerboard tiles of a public
+	restroom. Despite a screaming headache, you drag yourself up, and smile
+	at your bruised reflection in the mirror. A couple of missing teeth are
+	no big deal, not when you've finally had your breakthrough! This
+	performance, like the premiere of Stravinsky's Rite of Spring, will go
+	down in music history, and become the subject of countless meandering
+	anecdotes, related to weary orchestras by sparkly-eyed conductors
+	during the final fifteen minutes of every rehearsal from this day until
+	the end of time.
+
+	(div @centerspacer) {
+		(bold) \*\*\*
+		You are legend
+		\*\*\* (unstyle)
+	}
+
+	(game over)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Misc and meta
+
+(instead of [read $Obj])
+	(try [examine $Obj])
+
+(understand command [xyzzy])
+(understand [plugh/plover] as [xyzzy])
+(perform [xyzzy])
+
+	The anthropomorphic treble clef looks straight at you, service-minded
+	to the point of pity.
+
+	(par)
+
+	— (space) It looks like you're trying to advance the story by means of
+	magic thinking. Do you need (link [help]) HELP ?
+
+	(par)
+
+	Then it knocks on the screen from the inside, blinks a few times, and,
+	in a sudden burst of artificial intelligence, vanishes.
+
+(understand command [help])
+(understand [verbs/hint] as [help])
+(perform [help])
+
+	To advance the story, type simple sentences at the prompt, such as
+	(link [take baton]) {TAKE BATON}.
+
+	(par)
+
+	The default verb is EXAMINE; you may simply type (if) (interpreter
+	supports links) (then) \(or click on\) (endif) the name of the thing
+	you wish to inspect, such as the (link [audience]) AUDIENCE or the
+	(link [first violins]) {FIRST VIOLINS}.
+
+	(par)
+
+	Other supported verbs include LOOK \(AT\), LISTEN \(TO\), WAIT, CUE,
+	TAKE, OPEN, CLOSE, and TURN TO.
+
+	(par)
+
+	You can also (link [save]) SAVE , (link [restore]) RESTORE ,
+	(if) (interpreter supports quit) (then)
+		(link [quit]) QUIT ,
+	(endif)
+	or (link [restart]) RESTART the game
+	(if) (interpreter supports undo) (then)
+		, or (link [undo]) UNDO the last move
+	(endif)
+	.
+
+	(par)
+
+	Type (link [about]) ABOUT to see the credits for the game.
+
+	(par)
+
+	Three PDF files are distributed along with the game: A (link resource
+	1) {printed score}, a pamphlet on (link resource 2) {how to make sense
+	of the score}, and a diagram of the orchestra (link resource 3) seating
+	. These “feelies” may be useful when tackling the puzzle, but they are
+	not strictly necessary.
+
+(understand command [about])
+(understand [credits] as [about])
+(perform [about])
+	(banner)
+
+	Written for the 25th Annual Interactive Fiction Competition
+	\( (link resource @c) IFComp 2019 \).
+
+	(par)
+
+	(story release $RelN)
+
+	This is Release $RelN of (story title), with post-competition bugfixes
+	and improvements.
+
+	(par)
+
+	A thousand thanks to my beta testers:
+	Mike Carletta,
+	Brian Rushton,
+	Marnix,
+	Bikibird,
+	Jason Guest,
+	and Björn Paulsen.
+
+	(par)
+
+	The Nutcracker score is in the public domain, including reprints. The
+	scanned version was generously provided by the Petrucci Music Library,
+	(link resource @i) {IMSLP.org}.
+
+(game over option)
+	(final result $Result)
+	($Result > 1)
+	read a (link [note]) NOTE by the author,
+
+(parse game over [note])
+	(final result $Result)
+	($Result > 1)
+	(div @authornote) {
+
+		Thank you for playing my game!
+
+		(par)
+
+		In a Pas De Deux \(steps for two\), a pair of dancers, usually
+		a male and a female, perform ballet steps together. A similar
+		kind of timing-critical interplay exists between conductor and
+		orchestra, and between a work of interactive fiction and its
+		reader.
+
+		(par)
+
+		The role of the conductor has of course been greatly simplified
+		in the story, to improve gameplay. While it is true, in a
+		sense, that it's a good idea to move and behave just as during
+		rehearsals, a real conductor will also use their body language
+		to communicate and tweak dynamics and timing in response to
+		what the musicians are doing.
+
+		(par)
+
+		But knowing when and where to look is crucial. And you cannot
+		observe without being observed.
+		
+		(par)
+
+		(link resource @w) {Linus Åkesson}
+
+	}
+
+(link the (proper $Obj))	($Obj)
+(link The (proper $Obj))	($Obj)
+
+(link the $Obj)			the ($Obj)
+(link The $Obj)			The ($Obj)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Library hacks
+
+(try-complex [examine [+ #oboes #bassoons]])
+	(try [examine #oboes])
+	(tick)
+
+(try-complex [examine [+ #bassoons #oboes]])
+	(try [examine #bassoons])
+	(tick)
+
+(try-complex [examine [+ #flutes #clarinets]])
+	(try [examine #flutes])
+	(tick)
+
+(try-complex [examine [+ #clarinets #flutes]])
+	(try [examine #clarinets])
+	(tick)
+
+(try-complex [cue [+ #oboes #bassoons]])
+	(try [cue #oboes])
+	(tick)
+
+(try-complex [cue [+ #bassoons #oboes]])
+	(try [cue #bassoons])
+	(tick)
+
+(try-complex [cue [+ #flutes #clarinets]])
+	(try [cue #flutes])
+	(tick)
+
+(try-complex [cue [+ #clarinets #flutes]])
+	(try [cue #clarinets])
+	(tick)
+
+(try-complex [examine/cue [+ | $]])
+
+	Your eye movements must be precise and deliberate. Please select one
+	target at a time.
+
+	(stop)
+
+(the [#oboes #bassoons])	the oboes and bassoons
+(the [#flutes #clarinets])	the flutes and clarinets
+
+(perform [greet])
+	You wave to nobody in particular.
+
+(rewrite [shake hands/hand with/of | $Words] into [greet | $Words])
+
+(instead of [greet $Obj])
+	(try [examine $Obj])
+
+(rewrite [i] into [inventory]) %% Prevent interference with Tempo I.
+
+(story author or default)
+	%% Hook into this library predicate to insert a link.
+	(link resource @w) (story author)
+
