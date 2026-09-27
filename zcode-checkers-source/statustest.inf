@@ -1,0 +1,15 @@
+[ Main;
+	print "Main window one.^";
+	@split_window 1; ! Make a one-line status bar
+	@set_window 1;
+	@set_cursor 1 1;
+	print "First line.";
+	@split_window 2; ! Two lines?
+	@set_cursor 2 1;
+	print "Second line.";
+	@split_window 3; ! Three lines??
+	@set_cursor 3 1;
+	print "Third line.";
+	@set_window 0;
+	print "Main window two.^";
+];
